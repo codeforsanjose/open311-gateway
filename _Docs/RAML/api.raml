@@ -1,0 +1,215 @@
+#%RAML 1.0
+title: gw311
+version: 0.1
+baseUri: http://api.gateway311.com/{version}
+types:
+  Jurisdiction:
+    type: object
+    properties:
+      id:
+        description: Unique identifier for the Jurisdiction (e.g. City).  This will be our internal ID.
+        type: number
+      name:
+        description: The public name for the Jurisdiction (e.g. 'San Jose').
+        type: string
+  Service:
+    type: object
+    properties:
+      id:
+        description: This ID uniquely maps to a specific Authority (e.g. City, Organization, etc.).
+        type: integer
+      name: string
+      categories:
+        description: This is an array of category tags.  This places a service into a larger, more general category.
+        type: string[]
+  Device:
+    type: object
+    properties:
+      id: string
+      type: string
+      model: string
+  LatLng:
+    type: object
+    properties:
+      latitude: number
+      longitude: number
+  Address:
+    type: object
+    properties:
+      address: string
+      city: string
+      state: string
+      zip: string
+  Author:
+    type: object
+    properties:
+      firstName: string
+      lastName: string
+      email: string
+      phone: string
+      isAnonymous: boolean
+  Image:
+    type: object
+    properties:
+      base: string
+      small: string
+      medium: string
+      xlarge: string
+  Comment:
+    type: object
+    properties:
+      requestID: string
+      comment: string
+  Comments:
+    type: Comment[]
+    minItems: 0
+    uniqueItems: true
+  Request:
+    type: object
+    properties:
+      id: string
+      type: string
+      created: date
+      updated: date
+      device: Device
+      latlng: LatLng
+      address: Address
+      author: Author
+      image: Image
+      description: string
+      status: string
+      votes: integer
+      comments: Comments
+  Requests:
+    type: Request[]
+    minItems: 0
+    uniqueItems: true
+
+  SrchParms:
+    type: object
+    properties:
+      start: date
+      end: date
+      max: integer
+
+  SrchLatLng:
+    type: object
+    properties:
+      lat: number
+      lng: number
+      radius: integer
+      parms: SrchParms
+  SrchAddress:
+    type: object
+    properties:
+      address: string
+      city: string
+      state: string
+      radius: integer
+      parms: SrchParms
+
+/services:
+  get:
+    description: Get a list of services available for the current location.
+    queryParameters:
+      latLng:
+        description: Find services available for the specifed location.
+        type: SrchLatLng
+        required: false
+      address:
+        description: Find services available for the specified street address.
+        type: SrchAddress
+        required: false
+    responses:
+      201:
+        description: Success.
+        body:
+          application/json:
+            type: Service[]
+      404:
+        description: The request failed.
+
+/requests:
+  /{id}:
+    get:
+      description: Get a single request from it's ID.
+      responses:
+        200:
+          body:
+            application/json:
+              type: Request
+        400:
+          description: Other failure.
+        404:
+          description: Invalid ID.
+
+    /upvote/{id}:
+      description: Add a single upvote for the specified request.
+      put:
+        responses:
+          200:
+          400:
+            description: Other failure.
+          404:
+            description: Invalid ID.
+    /comment/{id}:
+      description: Add a comment to the specified request.
+      put:
+        body:
+          application/json:
+            properties:
+              comment: string
+        responses:
+          200:
+          400:
+            description: Other failure.
+          404:
+            description: Invalid ID.
+  get:
+    description: Get a list of zero or more requests, based on the query parameters.  At least one query parameter must be specified - if no query parameters are specified, the request will fail with a 404 response.  More than one query parameter can be specified.  If more than one query parameter is specified, then the query parameters will be AND'ed - i.e. only requests meeting all of the query parameters will be returned.
+    queryParameters:
+      deviceID:
+        description: Find requests for the specified deviceID.
+        type: string
+        required: false
+      latLng:
+        description: Find requests for the specified coordinates
+        type: SrchLatLng
+        required: false
+      address:
+        description: Find requests for the specified street addres.
+        type: SrchAddress
+        required: false
+    responses:
+      201:
+        description: Query successful, and at least one request was found matching the query parameters.
+        body:
+          application/json:
+            type: Requests
+      400:
+        description: Other failure.
+      404:
+        description: "EITHER: 1) no requests were found matching the specified query parameters, or 2) no query parameters were specified."
+
+  post:
+    description: Create a request.
+    body:
+      application/json:
+        type: Request
+    responses:
+      201:
+        description: Created OK.
+        headers:
+          Location:
+            example: /request/12345
+        body:
+          application/json:
+            properties:
+              id: string
+              imageURL:
+                type: string
+                description: the upload destination for an image associated to the issue.
+      400:
+        description: Other failure.
+      404:
+        description: Request create failed.

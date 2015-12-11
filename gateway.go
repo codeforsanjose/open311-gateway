@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Gateway311/report"
+	"Gateway311/request"
 	"log"
 	"net/http"
 
@@ -10,10 +10,10 @@ import (
 
 func main() {
 
-	testrequests := report.TestReports{
-		Store: map[string]*report.TestReport{},
+	testrequests := request.TestReports{
+		Store: map[string]*request.TestReport{},
 	}
-	rpt := report.CreateReport{}
+	rpt := request.CreateReport{}
 
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
@@ -27,7 +27,7 @@ func main() {
 
 		rest.Get("/:jid/requests", rpt.GetAll),
 		rest.Get("/:jid/requests/:id", rpt.Get),
-		rest.Post("/:jid/requests", report.Create),
+		rest.Post("/:jid/requests", request.Create),
 		rest.Put("/:jid/requests/:id", rpt.Update),
 		rest.Delete("/:jid/requests/:id", rpt.Delete),
 	)

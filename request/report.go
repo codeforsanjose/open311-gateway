@@ -1,7 +1,9 @@
-package report
+package request
 
 import (
 	"Gateway311/common"
+	"Gateway311/integration"
+
 	"fmt"
 	"net/http"
 	"strconv"
@@ -9,6 +11,7 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
+// todo: this is a to do item.
 // Create creates a new Report and adds it to Reports.
 func Create(w rest.ResponseWriter, r *rest.Request) {
 	jid, err := strconv.ParseInt(r.PathParam("jid"), 10, 64)
@@ -22,7 +25,7 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response, err := BECreate(jid, &report)
+	response, err := processCS(&report)
 	if err != nil {
 		fmt.Println("!! PrepOut failed.")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -89,28 +92,6 @@ func (u *CreateReport) Get(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(&response)
 }
 
-// Create creates a new Report and adds it to Reports.
-func (u *CreateReport) run(w rest.ResponseWriter, r *rest.Request) {
-	jid := r.PathParam("jid")
-	fmt.Printf("[Create] - jid: (%T)%q\n", jid, jid)
-	report := CreateReport{}
-	if err := r.DecodeJsonPayload(&report); err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if _, err := prepOutCS(&report); err != nil {
-		fmt.Println("!! PrepOut failed.")
-		return
-	}
-
-	response := CreateReportResp{
-		Message:  "success",
-		ID:       "12345",
-		AuthorID: "99999",
-	}
-	w.WriteJson(&response)
-}
-
 // Update updates the report specified by ID.
 func (u *CreateReport) Update(w rest.ResponseWriter, r *rest.Request) {
 	// id := r.PathParam("id")
@@ -131,6 +112,50 @@ func (u *CreateReport) Delete(w rest.ResponseWriter, r *rest.Request) {
 		AuthorID: "99999",
 	}
 	w.WriteJson(&response)
+}
+
+func toCreateCS(src *CreateReport) (*integration.CSReport, error) {
+	requestTypeID, err := strconv.ParseInt(src.TypeID, 10, 64)
+	if err != nil {
+		fmt.Printf("Unable to parse request type id: %q\n", src.TypeID)
+		return nil, fmt.Errorf("Unable to parse request type id: %q", src.TypeID)
+	}
+	rqst := integration.CSReport{
+		APIAuthKey:        "a01234567890z",
+		APIRequestType:    "CreateThreeOneOne",
+		APIRequestVersion: "1",
+		DeviceType:        src.DeviceType,
+		DeviceModel:       src.DeviceModel,
+		DeviceID:          src.DeviceID,
+		RequestType:       src.Type,
+		RequestTypeID:     requestTypeID,
+		Latitude:          src.Latitude,
+		Longitude:         src.Longitude,
+		Description:       src.Description,
+		AuthorNameFirst:   src.FirstName,
+		AuthorNameLast:    src.LastName,
+		AuthorEmail:       src.Email,
+		AuthorTelephone:   src.Phone,
+		AuthorIsAnonymous: src.IsAnonymous,
+	}
+	return &rqst, nil
+}
+
+func fromCreateCS(src *integration.CSReportResp) (*CreateReportResp, error) {
+	resp := CreateReportResp{
+		Message:  src.Message,
+		ID:       src.ID,
+		AuthorID: src.AuthorID,
+	}
+	return &resp, nil
+}
+
+func processCS(src *CreateReport) (interface{}, error) {
+	rqst, _ := toCreateCS(src)
+	resp, _ := rqst.Process(1)
+	ourResp, _ := fromCreateCS(resp)
+
+	return ourResp, nil
 }
 
 // Displays the contents of the Spec_Type custom type.
