@@ -5,6 +5,11 @@
 
 ## Log
 
+[2015.12.14 - Mon]
+
+* Added design documentation for the Service Router capabilities.  
+* Saved to GIT.
+
 [2015.12.10 - Thu]
 
 * Doing other things for a few days.  Coursework, etc.  Back on the case now!
