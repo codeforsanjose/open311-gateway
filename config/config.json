@@ -1,0 +1,411 @@
+{
+  "serviceAreas": [
+    {
+      "id": 1,
+      "city" : "San Jose"
+    }
+  ],
+  "serviceProviders": [
+    {
+      "id": 1,
+      "areaID": 1,
+      "name": "CitySourced",
+      "interfaceType": "CitySourced",
+      "URL": "http://localhost:5050/api/",
+      "key": "a01234567890z"
+    }
+  ],
+  "serviceCategories": [
+    "Abandoned",
+    "Eyesore",
+    "Graffiti",
+    "Street",
+    "Trash"
+  ],
+  "services": [
+    {
+      "id": 1,
+      "providerID": 1,
+      "name": "Abandoned Bicycle",
+      "category": ["Abandoned"]
+    },
+    {
+      "id": 2,
+      "providerID": 1,
+      "name": "Abandoned Car",
+      "category": ["Abandoned"]
+    },
+    {
+      "id": 3,
+      "providerID": 1,
+      "name": "Abandoned Home",
+      "category": ["Abandoned"]
+    },
+    {
+      "id": 4,
+      "providerID": 1,
+      "name": "Abandoned Shopping Cart",
+      "category": ["Abandoned"]
+    },
+    {
+      "id": 5,
+      "providerID": 1,
+      "name": "Abandoned Vehicle",
+      "category": ["Abandoned"]
+    },
+    {
+      "id": 6,
+      "providerID": 1,
+      "name": "Animal Services (Not Permitted)",
+      "category": []
+    },
+    {
+      "id": 7,
+      "providerID": 1,
+      "name": "Crosswalk Re-Striping",
+      "category": ["Streets"]
+    },
+    {
+      "id": 8,
+      "providerID": 1,
+      "name": "Dangerous Intersection",
+      "category": ["Streets"]
+    },
+    {
+      "id": 9,
+      "providerID": 1,
+      "name": "Dark Mill Smoke",
+      "category": []
+    },
+    {
+      "id": 10,
+      "providerID": 1,
+      "name": "Dilapidated Home",
+      "category": ["Eyesore"]
+    },
+    {
+      "id": 11,
+      "providerID": 1,
+      "name": "Fire Hazard Potential",
+      "category": []
+    },
+    {
+      "id": 12,
+      "providerID": 1,
+      "name": "Foreclosed Home",
+      "category": ["Eyesore"]
+    },
+    {
+      "id": 13,
+      "providerID": 1,
+      "name": "Gang Activity",
+      "category": []
+    },
+    {
+      "id": 14,
+      "providerID": 1,
+      "name": "Garbage Can Out Early",
+      "category": []
+    },
+    {
+      "id": 15,
+      "providerID": 1,
+      "name": "Garbage Cart Missed Pickup",
+      "category": []
+    },
+    {
+      "id": 16,
+      "providerID": 1,
+      "name": "Garbage from Shopping Center",
+      "category": ["Trash"]
+    },
+    {
+      "id": 17,
+      "providerID": 1,
+      "name": "Garbage Not Picked Up",
+      "category": []
+    },
+    {
+      "id": 18,
+      "providerID": 1,
+      "name": "Graffiti",
+      "category": ["Graffiti"]
+    },
+    {
+      "id": 19,
+      "providerID": 1,
+      "name": "Graffiti - In Parks",
+      "category": ["Graffiti"]
+    },
+    {
+      "id": 20,
+      "providerID": 1,
+      "name": "Graffiti Removal",
+      "category": ["Graffiti"]
+    },
+    {
+      "id": 21,
+      "providerID": 1,
+      "name": "Homeless Encampment",
+      "category": ["Eyesore"]
+    },
+    {
+      "id": 22,
+      "providerID": 1,
+      "name": "Illegal Dumping / Trash",
+      "category": ["Trash"]
+    },
+    {
+      "id": 23,
+      "providerID": 1,
+      "name": "Illegal Dumping/Trash",
+      "category": ["Trash"]
+    },
+    {
+      "id": 24,
+      "providerID": 1,
+      "name": "Illegal Signage",
+      "category": ["Eyesore"]
+    },
+    {
+      "id": 25,
+      "providerID": 1,
+      "name": "Illegal Signage ? Private Property",
+      "category": ["Eyesore"]
+    },
+    {
+      "id": 26,
+      "providerID": 1,
+      "name": "Illegal Signage ? Roadway",
+      "category": ["Eyesore"]
+    },
+    {
+      "id": 27,
+      "providerID": 1,
+      "name": "Illegal Signage (Private Property)",
+      "category": ["Eyesore"]
+    },
+    {
+      "id": 28,
+      "providerID": 1,
+      "name": "Illegal Signage (Roadway)",
+      "category": ["Eyesore"]
+    },
+    {
+      "id": 29,
+      "providerID": 1,
+      "name": "Illegal Trash / Dumping",
+      "category": ["Trash"]
+    },
+    {
+      "id": 30,
+      "providerID": 1,
+      "name": "Illegal Trash / Dumping ? Private Property",
+      "category": ["Trash"]
+    },
+    {
+      "id": 31,
+      "providerID": 1,
+      "name": "Illegal Trash / Dumping ? Roadway",
+      "category": ["Trash"]
+    },
+    {
+      "id": 32,
+      "providerID": 1,
+      "name": "Illegal Trash / Dumping (Private Property)",
+      "category": ["Trash"]
+    },
+    {
+      "id": 33,
+      "providerID": 1,
+      "name": "Illegal Trash / Dumping (Roadway)",
+      "category": ["Trash"]
+    },
+    {
+      "id": 34,
+      "providerID": 1,
+      "name": "Illegally Parked Car",
+      "category": []
+    },
+    {
+      "id": 35,
+      "providerID": 1,
+      "name": "Illegally Parked in Driveway",
+      "category": []
+    },
+    {
+      "id": 36,
+      "providerID": 1,
+      "name": "Information Only (Please Describe)",
+      "category": []
+    },
+    {
+      "id": 37,
+      "providerID": 1,
+      "name": "Other (Not Listed Please Describe)",
+      "category": []
+    },
+    {
+      "id": 38,
+      "providerID": 1,
+      "name": "Other (Please Describe)",
+      "category": []
+    },
+    {
+      "id": 39,
+      "providerID": 1,
+      "name": "Parking Issue",
+      "category": []
+    },
+    {
+      "id": 40,
+      "providerID": 1,
+      "name": "Parking Issues",
+      "category": []
+    },
+    {
+      "id": 41,
+      "providerID": 1,
+      "name": "Parks General Issue",
+      "category": []
+    },
+    {
+      "id": 42,
+      "providerID": 1,
+      "name": "Photos for DAM",
+      "category": []
+    },
+    {
+      "id": 43,
+      "providerID": 1,
+      "name": "Plants / Trees Danger",
+      "category": []
+    },
+    {
+      "id": 44,
+      "providerID": 1,
+      "name": "Plants / Trees Diseased",
+      "category": []
+    },
+    {
+      "id": 45,
+      "providerID": 1,
+      "name": "Plants / Trees Dying",
+      "category": []
+    },
+    {
+      "id": 46,
+      "providerID": 1,
+      "name": "Plants / Trees Overgrown",
+      "category": []
+    },
+    {
+      "id": 47,
+      "providerID": 1,
+      "name": "Plants / Trees Trimming",
+      "category": []
+    },
+    {
+      "id": 48,
+      "providerID": 1,
+      "name": "Plants / Yard Clippings",
+      "category": []
+    },
+    {
+      "id": 49,
+      "providerID": 1,
+      "name": "Plants & Trees",
+      "category": []
+    },
+    {
+      "id": 50,
+      "providerID": 1,
+      "name": "Potholes",
+      "category": ["Streets"]
+    },
+    {
+      "id": 51,
+      "providerID": 1,
+      "name": "Roadway Degradation (Pothole, etc.)",
+      "category": ["Streets"]
+    },
+    {
+      "id": 52,
+      "providerID": 1,
+      "name": "Sidewalk Cracked",
+      "category": ["Streets"]
+    },
+    {
+      "id": 53,
+      "providerID": 1,
+      "name": "Sidewalk Raised",
+      "category": ["Streets"]
+    },
+    {
+      "id": 54,
+      "providerID": 1,
+      "name": "Sidewalks",
+      "category": ["Streets"]
+    },
+    {
+      "id": 55,
+      "providerID": 1,
+      "name": "SJ13-1458",
+      "category": []
+    },
+    {
+      "id": 56,
+      "providerID": 1,
+      "name": "Street Light",
+      "category": ["Streets"]
+    },
+    {
+      "id": 57,
+      "providerID": 1,
+      "name": "Streetlight Out/Broken",
+      "category": ["Streets"]
+    },
+    {
+      "id": 58,
+      "providerID": 1,
+      "name": "Streets & Roads",
+      "category": ["Streets"]
+    },
+    {
+      "id": 59,
+      "providerID": 1,
+      "name": "Traffic Violation (Speeding, etc.)",
+      "category": []
+    },
+    {
+      "id": 60,
+      "providerID": 1,
+      "name": "Trash / Waste / Dumping",
+      "category": ["Trash"]
+    },
+    {
+      "id": 61,
+      "providerID": 1,
+      "name": "Trash, Waste & Dumping",
+      "category": ["Trash"]
+    },
+    {
+      "id": 62,
+      "providerID": 1,
+      "name": "Vehicle Issue",
+      "category": []
+    },
+    {
+      "id": 63,
+      "providerID": 1,
+      "name": "Water Waste",
+      "category": []
+    },
+    {
+      "id": 64,
+      "providerID": 1,
+      "name": "Yard Waste Removal",
+      "category": []
+    }
+  ]
+}

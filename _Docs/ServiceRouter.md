@@ -52,13 +52,14 @@ __NOTE:__ The Service endpoint and credentials define a "Service Provider".  Tha
 #### Service Areas
 |Name|Type|Description|
 |----|----|-----------|
+|ID|int|UniqueID|
 |City|string|Unique ID|
-|Providers|[int]|List of Service Provider ID's servicing this city|
 
 #### Service Providers
 |Name|Type|Description|
 |----|----|-----------|
 |ID|int|Unique ID|
+|AreaID|int|Mandatory reference to a Service Area.  This is essentially a mandatory foreign key to Service Areas.|
 |Name|string|Service Provider's name|
 |InterfaceType|string|Specifies the interface subsystem used to communicate with the Provider (e.g. CitySourced, SeeClickFix, etc)|
 |URL|string|The endpoint for accessing the Service Provider|
@@ -70,6 +71,18 @@ __NOTE:__ The Service endpoint and credentials define a "Service Provider".  Tha
 |ID|int|Unique ID|
 |ProviderID|int|The ID of the Service Provider for this service|
 |Name|string|Service name|
+|Categories|[string]|List of categories. _Used to group services into major categories (see below)._|
+
+#### Service Categories
+Used to place the Services into more manageable, user friendly major groups.  __NOTE__: these categories may change, and will be editable on the Gateway Admin page.
+
+|Name|Comments|
+|----|---|
+|Graffiti||
+|Abandoned|Abandoned cars, bicycles, shopping carts, etc.|
+|Trash|Trash and illegal dumping.|
+|Street|Streets, sidewalks, lighting, etc.|
+|Eyesore|Dilapidated or foreclosed homes, illegal signage, etc.|
 
 ### Notes
 
