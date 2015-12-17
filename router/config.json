@@ -1,0 +1,281 @@
+{
+	"serviceCategories": [
+		"Abandoned",
+		"Eyesore",
+		"Graffiti",
+		"Street",
+		"Trash"
+	],
+	"serviceAreas": {
+		"san jose": {
+			"id": 1,
+			"name": "San Jose",
+			"serviceProviders": {
+				"citysourced": {
+					"id": 1,
+					"name": "CitySourced - SJ",
+					"interfaceType": "CitySourced",
+					"url": "http://localhost:5050/api/",
+					"key": "a01234567890z",
+					"services": [{
+						"id": 1,
+						"name": "Abandoned Bicycle",
+						"catg": ["Abandoned"]
+					}, {
+						"id": 2,
+						"name": "Abandoned Car",
+						"catg": ["Abandoned"]
+					}, {
+						"id": 3,
+						"name": "Abandoned Home",
+						"catg": ["Abandoned"]
+					}, {
+						"id": 4,
+						"name": "Abandoned Shopping Cart",
+						"catg": ["Abandoned"]
+					}, {
+						"id": 5,
+						"name": "Abandoned Vehicle",
+						"catg": ["Abandoned"]
+					}, {
+						"id": 6,
+						"name": "Animal Services (Not Permitted)",
+						"catg": []
+					}, {
+						"id": 7,
+						"name": "Crosswalk Re-Striping",
+						"catg": ["Streets"]
+					}, {
+						"id": 8,
+						"name": "Dangerous Intersection",
+						"catg": ["Streets"]
+					}, {
+						"id": 9,
+						"name": "Dark Mill Smoke",
+						"catg": []
+					}, {
+						"id": 10,
+						"name": "Dilapidated Home",
+						"catg": ["Eyesore"]
+					}, {
+						"id": 11,
+						"name": "Fire Hazard Potential",
+						"catg": []
+					}, {
+						"id": 12,
+						"name": "Foreclosed Home",
+						"catg": ["Eyesore"]
+					}, {
+						"id": 13,
+						"name": "Gang Activity",
+						"catg": []
+					}, {
+						"id": 14,
+						"name": "Garbage Can Out Early",
+						"catg": []
+					}, {
+						"id": 15,
+						"name": "Garbage Cart Missed Pickup",
+						"catg": []
+					}, {
+						"id": 16,
+						"name": "Garbage from Shopping Center",
+						"catg": ["Trash"]
+					}, {
+						"id": 17,
+						"name": "Garbage Not Picked Up",
+						"catg": []
+					}, {
+						"id": 18,
+						"name": "Graffiti",
+						"catg": ["Graffiti"]
+					}, {
+						"id": 19,
+						"name": "Graffiti - In Parks",
+						"catg": ["Graffiti"]
+					}, {
+						"id": 20,
+						"name": "Graffiti Removal",
+						"catg": ["Graffiti"]
+					}, {
+						"id": 21,
+						"name": "Homeless Encampment",
+						"catg": ["Eyesore"]
+					}, {
+						"id": 22,
+						"name": "Illegal Dumping / Trash",
+						"catg": ["Trash"]
+					}, {
+						"id": 23,
+						"name": "Illegal Dumping/Trash",
+						"catg": ["Trash"]
+					}, {
+						"id": 24,
+						"name": "Illegal Signage",
+						"catg": ["Eyesore"]
+					}, {
+						"id": 25,
+						"name": "Illegal Signage ? Private Property",
+						"catg": ["Eyesore"]
+					}, {
+						"id": 26,
+						"name": "Illegal Signage ? Roadway",
+						"catg": ["Eyesore"]
+					}, {
+						"id": 27,
+						"name": "Illegal Signage (Private Property)",
+						"catg": ["Eyesore"]
+					}, {
+						"id": 28,
+						"name": "Illegal Signage (Roadway)",
+						"catg": ["Eyesore"]
+					}, {
+						"id": 29,
+						"name": "Illegal Trash / Dumping",
+						"catg": ["Trash"]
+					}, {
+						"id": 30,
+						"name": "Illegal Trash / Dumping ? Private Property",
+						"catg": ["Trash"]
+					}, {
+						"id": 31,
+						"name": "Illegal Trash / Dumping ? Roadway",
+						"catg": ["Trash"]
+					}, {
+						"id": 32,
+						"name": "Illegal Trash / Dumping (Private Property)",
+						"catg": ["Trash"]
+					}, {
+						"id": 33,
+						"name": "Illegal Trash / Dumping (Roadway)",
+						"catg": ["Trash"]
+					}, {
+						"id": 34,
+						"name": "Illegally Parked Car",
+						"catg": []
+					}, {
+						"id": 35,
+						"name": "Illegally Parked in Driveway",
+						"catg": []
+					}, {
+						"id": 36,
+						"name": "Information Only (Please Describe)",
+						"catg": []
+					}, {
+						"id": 37,
+						"name": "Other (Not Listed Please Describe)",
+						"catg": []
+					}, {
+						"id": 38,
+						"name": "Other (Please Describe)",
+						"catg": []
+					}, {
+						"id": 39,
+						"name": "Parking Issue",
+						"catg": []
+					}, {
+						"id": 40,
+						"name": "Parking Issues",
+						"catg": []
+					}, {
+						"id": 41,
+						"name": "Parks General Issue",
+						"catg": []
+					}, {
+						"id": 42,
+						"name": "Photos for DAM",
+						"catg": []
+					}, {
+						"id": 43,
+						"name": "Plants / Trees Danger",
+						"catg": []
+					}, {
+						"id": 44,
+						"name": "Plants / Trees Diseased",
+						"catg": []
+					}, {
+						"id": 45,
+						"name": "Plants / Trees Dying",
+						"catg": []
+					}, {
+						"id": 46,
+						"name": "Plants / Trees Overgrown",
+						"catg": []
+					}, {
+						"id": 47,
+						"name": "Plants / Trees Trimming",
+						"catg": []
+					}, {
+						"id": 48,
+						"name": "Plants / Yard Clippings",
+						"catg": []
+					}, {
+						"id": 49,
+						"name": "Plants & Trees",
+						"catg": []
+					}, {
+						"id": 50,
+						"name": "Potholes",
+						"catg": ["Streets"]
+					}, {
+						"id": 51,
+						"name": "Roadway Degradation (Pothole, etc.)",
+						"catg": ["Streets"]
+					}, {
+						"id": 52,
+						"name": "Sidewalk Cracked",
+						"catg": ["Streets"]
+					}, {
+						"id": 53,
+						"name": "Sidewalk Raised",
+						"catg": ["Streets"]
+					}, {
+						"id": 54,
+						"name": "Sidewalks",
+						"catg": ["Streets"]
+					}, {
+						"id": 55,
+						"name": "SJ13-1458",
+						"catg": []
+					}, {
+						"id": 56,
+						"name": "Street Light",
+						"catg": ["Streets"]
+					}, {
+						"id": 57,
+						"name": "Streetlight Out/Broken",
+						"catg": ["Streets"]
+					}, {
+						"id": 58,
+						"name": "Streets & Roads",
+						"catg": ["Streets"]
+					}, {
+						"id": 59,
+						"name": "Traffic Violation (Speeding, etc.)",
+						"catg": []
+					}, {
+						"id": 60,
+						"name": "Trash / Waste / Dumping",
+						"catg": ["Trash"]
+					}, {
+						"id": 61,
+						"name": "Trash, Waste & Dumping",
+						"catg": ["Trash"]
+					}, {
+						"id": 62,
+						"name": "Vehicle Issue",
+						"catg": []
+					}, {
+						"id": 63,
+						"name": "Water Waste",
+						"catg": []
+					}, {
+						"id": 64,
+						"name": "Yard Waste Removal",
+						"catg": []
+					}]
+				}
+			}
+		}
+	}
+}
