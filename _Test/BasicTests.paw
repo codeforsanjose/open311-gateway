@@ -5,7 +5,7 @@
     <databaseInfo>
         <version>134481920</version>
         <UUID>79FF009B-1429-4490-9897-02371F4E78B2</UUID>
-        <nextObjectID>150</nextObjectID>
+        <nextObjectID>152</nextObjectID>
         <metadata>
             <plist version="1.0">
                 <dict>
@@ -538,7 +538,7 @@
         <attribute name="order" type="int64">0</attribute>
         <attribute name="name" type="string">ServiceList</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z147 z150"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z147 z151 z150"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -580,7 +580,7 @@
     </object>
     <object type="LMREQUEST" id="z150">
         <attribute name="uuid" type="string">90A1C326-155F-4516-AEE1-DDB3CC16D9E7</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/services?addr=17200 Quail Ct., Morgan Hill, CA</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/services?address=100 First St.\u2600city=San Jose\u2600state=CA</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -592,5 +592,30 @@
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z146"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z149"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z151">
+        <attribute name="uuid" type="string">0D8CC5E4-58B8-4428-AA47-BD7DF3F6FEC4</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/services?address=1000 Hill St.\u2600city=Morgan Hill\u2600state=CA</attribute>
+        <attribute name="storecookies" type="bool">1</attribute>
+        <attribute name="sendcookies" type="bool">1</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">GET</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="order" type="int64">2</attribute>
+        <attribute name="name" type="string">ERROR: Get Service / Address Duplicate</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z146"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z152"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z152">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z151"></relationship>
     </object>
 </database>

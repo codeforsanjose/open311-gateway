@@ -1,6 +1,6 @@
 ## To Do.todo
 
-* Implement Services API endpoint.
+* Implement Services API endpoint. @done(2015-12-18)
 	* Bring Google Maps API over. @done(2015-12-18)
 * Modify CitySourced simulator to return the Request ID and Document ID. @done(2015-12-12)
 * Outline the Displatch system. @done(2015-12-14)
@@ -17,7 +17,9 @@
 * Added a GetCity() func in the "geo" package.  This takes a latitude and longitude, and returns the City.
 * Test OK.
 * Saved to GIT.
-* 
+* "/services" endpoint working - returning the list of services for San Jose.  Returns 500 for city: "Morgan Hill", with error: The city "Morgan Hill" is not serviced by this Gateway.
+* Test OK.
+* Saved to GIT.
 
 
 [2015.12.17 - Thu]

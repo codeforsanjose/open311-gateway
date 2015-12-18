@@ -22,8 +22,11 @@ func TestReadConfig(t *testing.T) {
 		fmt.Printf("%2d  %s\n", i, v.Name)
 	}
 
-	s := GetServices(city)
-	fmt.Printf("\n==================== SERVICES ===========================\nFor: %s\n", city)
+	id, s, e := GetServices(city)
+	fmt.Printf("\n==================== SERVICES ===========================\nFor: %s (%v)\n", city, id)
+	if e != nil {
+		t.Errorf("GetServices failed: %s", e)
+	}
 	for i, v := range s {
 		fmt.Printf("%2d:%v\n", i+1, v)
 	}

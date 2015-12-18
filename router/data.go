@@ -14,10 +14,14 @@ var (
 )
 
 // GetServices returns a list of all services available for the specified City.
-func GetServices(city string) []*Service {
-	fmt.Printf("   GetServices for: %s...\n", city)
-	fmt.Printf("      data length: %d\n", len(routeData.cityServices[strings.ToLower(city)]))
-	return routeData.cityServices[strings.ToLower(city)]
+func GetServices(city string) (int, []*Service, error) {
+	lcity := strings.ToLower(city)
+	if !routeData.isValidCity(lcity) {
+		return 0, nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
+	}
+	fmt.Printf("   GetServices for: %s...\n", lcity)
+	fmt.Printf("      data length: %d\n", len(routeData.cityServices[lcity]))
+	return routeData.Areas[lcity].ID, routeData.cityServices[lcity], nil
 }
 
 // GetServiceProviders returns a list of all Service Providers for the specified City.
@@ -41,7 +45,7 @@ func init() {
 	routeData.serviceID = map[int]*Service{}
 	routeData.cityServices = map[string][]*Service{}
 	routeData.providerService = map[int]*Provider{}
-	if err := readConfig("config.json"); err != nil {
+	if err := readConfig("router/config.json"); err != nil {
 		fmt.Printf("Error %v occurred when reading the config - ReadConfig()", err)
 	}
 }
@@ -86,6 +90,11 @@ type RouteData struct {
 	serviceID       map[int]*Service
 	cityServices    map[string][]*Service
 	providerService map[int]*Provider
+}
+
+func (rd *RouteData) isValidCity(city string) bool {
+	_, ok := rd.Areas[strings.ToLower(city)]
+	return ok
 }
 
 // String returns the represeentation of the RouteData custom type.
@@ -156,6 +165,7 @@ func (rd *RouteData) indexID() error {
 			rd.providerID[provider.ID] = provider
 			// fmt.Println("*** BUILDING SERVICES")
 			for _, service := range provider.Services {
+				service.ProviderID = provider.ID
 				rd.cityServices[areaKey] = append(rd.cityServices[areaKey], service)
 				// fmt.Printf("   %s ===> %+v\n", serviceName, service)
 				rd.serviceID[service.ID] = service
@@ -212,11 +222,12 @@ func (p Provider) String() string {
 // Service is a map of the
 type Service struct {
 	ID         int      `json:"id"`
+	ProviderID int      `json:"providerId"`
 	Name       string   `json:"name"`
 	Categories []string `json:"catg"`
 }
 
 func (s Service) String() string {
-	r := fmt.Sprintf("   %4d  %-40s  %v", s.ID, s.Name, s.Categories)
+	r := fmt.Sprintf("   %4d %4d  %-40s  %v", s.ID, s.ProviderID, s.Name, s.Categories)
 	return r
 }
