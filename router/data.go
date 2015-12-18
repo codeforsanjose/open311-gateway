@@ -40,6 +40,7 @@ func init() {
 	routeData.providerID = map[int]*Provider{}
 	routeData.serviceID = map[int]*Service{}
 	routeData.cityServices = map[string][]*Service{}
+	routeData.providerService = map[int]*Provider{}
 	if err := readConfig("config.json"); err != nil {
 		fmt.Printf("Error %v occurred when reading the config - ReadConfig()", err)
 	}
@@ -77,13 +78,14 @@ func readConfig(filePath string) error {
 
 // RouteData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* city name.
 type RouteData struct {
-	Loaded       bool
-	Categories   []string         `json:"serviceCategories"`
-	Areas        map[string]*Area `json:"serviceAreas"`
-	areaID       map[int]*Area
-	providerID   map[int]*Provider
-	serviceID    map[int]*Service
-	cityServices map[string][]*Service
+	Loaded          bool
+	Categories      []string         `json:"serviceCategories"`
+	Areas           map[string]*Area `json:"serviceAreas"`
+	areaID          map[int]*Area
+	providerID      map[int]*Provider
+	serviceID       map[int]*Service
+	cityServices    map[string][]*Service
+	providerService map[int]*Provider
 }
 
 // String returns the represeentation of the RouteData custom type.
@@ -109,6 +111,10 @@ func (rd RouteData) String() string {
 		for _, sv := range v {
 			ls.AddF("      %s\n", sv)
 		}
+	}
+	ls.AddS("INDEX: Provider Service\n")
+	for k, v := range rd.providerService {
+		ls.AddF("   %-4d %-50.50s  %-40s\n", rd.serviceID[k].ID, rd.serviceID[k].Name, v.Name)
 	}
 	ls.AddS("Categories\n")
 	for i, v := range rd.Categories {
@@ -153,6 +159,7 @@ func (rd *RouteData) indexID() error {
 				rd.cityServices[areaKey] = append(rd.cityServices[areaKey], service)
 				// fmt.Printf("   %s ===> %+v\n", serviceName, service)
 				rd.serviceID[service.ID] = service
+				rd.providerService[service.ID] = provider
 			}
 		}
 	}
@@ -202,7 +209,7 @@ func (p Provider) String() string {
 
 // ------------------------------- Service -------------------------------
 
-// Services is a map of the
+// Service is a map of the
 type Service struct {
 	ID         int      `json:"id"`
 	Name       string   `json:"name"`

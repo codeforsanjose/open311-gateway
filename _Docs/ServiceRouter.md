@@ -37,7 +37,12 @@ __Services by Location__
 
 __Service Providers by Location__  
 1. Get City from Geolocation.
-2. Look up Service Providers for that city (`map[city][service providers]`). _Data returned includes: provider name, 
+2. Look up Service Providers for that city (`map[city][service providers]`). _Data returned includes: provider name.
+
+__Service Provider by Service ID__  
+When a report is created, it will contain the Service ID.  We need to quickly get the Service Provider data from the ServiceID.
+1. Look up Service Provider from the ServiceID (map[serviceID]*Provider).
+
 
 __Service Provider Config__
 Get the configuration for a Service Provider using their ID.

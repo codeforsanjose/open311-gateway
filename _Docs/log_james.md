@@ -10,6 +10,10 @@
 * Router data and indices are working.
 * Test OK.
 * Saved to GIT.
+* Split the test data into two Service Providers for San Jose to test multiple providers.  
+* Added providerService to the RouteData struct.  This implements a map of the ServiceID back to the Service Provider.  This provides a fast lookup of the appropriate provider for a New Report, based on the ServiceID.
+* Test OK.
+* Saved to GIT.
 
 [2015.12.16 - Wed]
 

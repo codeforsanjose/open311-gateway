@@ -157,7 +157,15 @@
 						"id": 35,
 						"name": "Illegally Parked in Driveway",
 						"catg": []
-					}, {
+					}]
+				},
+        "citysourced2": {
+					"id": 2,
+					"name": "CitySourced2 - SJ",
+					"interfaceType": "CitySourced",
+					"url": "http://localhost:5050/api/",
+					"key": "a01234567890z",
+					"services": [{
 						"id": 36,
 						"name": "Information Only (Please Describe)",
 						"catg": []
