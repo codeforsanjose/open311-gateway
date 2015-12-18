@@ -30,6 +30,8 @@ func main() {
 		rest.Post("/:jid/requests", request.Create),
 		rest.Put("/:jid/requests/:id", rpt.Update),
 		rest.Delete("/:jid/requests/:id", rpt.Delete),
+
+		rest.Get("/services", request.Services),
 	)
 	if err != nil {
 		log.Fatal(err)

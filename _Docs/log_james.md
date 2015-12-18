@@ -1,9 +1,21 @@
 ## To Do.todo
 
-* Modify CitySourced simulator to return the Request ID and Document ID.
-* Outline the Displatch system.
+* Implement Services API endpoint.
+	* Bring Google Maps API over. @done(2015-12-18)
+* Modify CitySourced simulator to return the Request ID and Document ID. @done(2015-12-12)
+* Outline the Displatch system. @done(2015-12-14)
+
 
 ## Log
+
+[2015.12.18 - Fri]
+
+* Brought "geo" package over from CitySourced.
+* Added "getCity()" function to mygeocode.go.  This scans through the Google response and retrieves the city.  We will need this for quickly mapping the Mobile Apps geoloc -> city -> Service Providers -> list of Services.
+* Test OK.
+* Saved to GIT.
+* 
+
 
 [2015.12.17 - Thu]
 

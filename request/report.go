@@ -6,10 +6,22 @@ import (
 
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
+
+// Services looks up the service providers and services for the specified location.
+func Services(w rest.ResponseWriter, r *rest.Request) {
+	m, _ := url.ParseQuery(r.URL.RawQuery)
+	for k, v := range m {
+		fmt.Printf("%s: %#v\n", k, v)
+	}
+	response := "OK!"
+
+	w.WriteJson(&response)
+}
 
 // todo: this is a to do item.
 // Create creates a new Report and adds it to Reports.
