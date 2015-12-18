@@ -31,7 +31,6 @@ func GetAddress(lat, lng float64) (string, error) {
 	}
 	resp, err := req.Lookup(nil)
 	fmt.Printf(">>>Found: %s\n", resp.Found)
-	fmt.Printf(">>>City: %s\n", getCity(resp))
 	fmt.Printf(">>>Response:\n%s\n", spew.Sdump(resp))
 	fmt.Printf("+++Response:\n%#v\n", resp.GoogleResponse.Results[0].AddressParts)
 	fmt.Println("---------------------------- Address Parts -------------------")
@@ -45,13 +44,21 @@ func GetAddress(lat, lng float64) (string, error) {
 	return resp.Found, nil
 }
 
-func getCity(resp *Response) string {
+// GetCity queries Google for the geolocation of the input latitude and longitude.
+// It returns the city, and
+func GetCity(lat, lng float64) (string, error) {
+	loc := Point{lat, lng}
+	req := &Request{
+		Location: &loc,
+		Provider: GOOGLE,
+	}
+	resp, _ := req.Lookup(nil)
 	for _, v := range resp.GoogleResponse.Results[0].AddressParts {
 		if contains(v.Types, "political") && contains(v.Types, "locality") {
-			return v.Name
+			return v.Name, nil
 		}
 	}
-	return ""
+	return "", fmt.Errorf("Unable to find the city for this location")
 }
 
 func contains(s []string, e string) bool {

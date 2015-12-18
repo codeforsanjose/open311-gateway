@@ -187,8 +187,8 @@ func TestGetLatLng(t *testing.T) {
 func TestGetAddress(t *testing.T) {
 	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestGetAddress <<<<<<<<<<<<<<<<<<<<<<<<<<")
 	var (
-		lat float64 = 37.151181
-		lng float64 = -121.602626
+		lat = 37.151181
+		lng = -121.602626
 	)
 
 	addr, err := GetAddress(lat, lng)
@@ -200,4 +200,22 @@ func TestGetAddress(t *testing.T) {
 		t.Errorf("Address == %q, want %q", addr, expected)
 	}
 	fmt.Printf("Address: %s\n", addr)
+}
+
+func TestGetCity(t *testing.T) {
+	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestGetCity <<<<<<<<<<<<<<<<<<<<<<<<<<")
+	var (
+		lat = 37.151181
+		lng = -121.602626
+	)
+
+	city, err := GetCity(lat, lng)
+	if err != nil {
+		t.Fatalf("Lookup error: %v", err)
+	}
+	expected := "Morgan Hill"
+	if city != expected {
+		t.Errorf("Address == %q, want %q", city, expected)
+	}
+	fmt.Printf("Address: %s\n", city)
 }

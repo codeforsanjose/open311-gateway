@@ -14,6 +14,9 @@
 * Added "getCity()" function to mygeocode.go.  This scans through the Google response and retrieves the city.  We will need this for quickly mapping the Mobile Apps geoloc -> city -> Service Providers -> list of Services.
 * Test OK.
 * Saved to GIT.
+* Added a GetCity() func in the "geo" package.  This takes a latitude and longitude, and returns the City.
+* Test OK.
+* Saved to GIT.
 * 
 
 
