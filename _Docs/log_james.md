@@ -1,5 +1,13 @@
 ## To Do.todo
 
+* Implement Gingko BDD tests. @done(2015-12-18)
+* Modify report.Create() to use ServiceID and JID.
+* Update RAML file with JSON specs for input and output payloads.
+* Implement report searches:
+	* Single ID
+	* DeviceID
+	* LatLng
+	* Address
 * Implement Services API endpoint. @done(2015-12-18)
 	* Bring Google Maps API over. @done(2015-12-18)
 * Modify CitySourced simulator to return the Request ID and Document ID. @done(2015-12-12)
@@ -18,6 +26,12 @@
 * Test OK.
 * Saved to GIT.
 * "/services" endpoint working - returning the list of services for San Jose.  Returns 500 for city: "Morgan Hill", with error: The city "Morgan Hill" is not serviced by this Gateway.
+* Test OK.
+* Saved to GIT.
+* Added Gingko test suite.
+* Revised router/data.go:
+	* Moved GetServices() and GetServiceProviders() to be methods of RouteData.
+	* GetServiceProviders() now returns the Provider list, and an error.
 * Test OK.
 * Saved to GIT.
 

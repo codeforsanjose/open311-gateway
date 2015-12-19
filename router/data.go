@@ -15,24 +15,12 @@ var (
 
 // GetServices returns a list of all services available for the specified City.
 func GetServices(city string) (int, []*Service, error) {
-	lcity := strings.ToLower(city)
-	if !routeData.isValidCity(lcity) {
-		return 0, nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
-	}
-	fmt.Printf("   GetServices for: %s...\n", lcity)
-	fmt.Printf("      data length: %d\n", len(routeData.cityServices[lcity]))
-	return routeData.Areas[lcity].ID, routeData.cityServices[lcity], nil
+	return routeData.GetServices(city)
 }
 
 // GetServiceProviders returns a list of all Service Providers for the specified City.
-func GetServiceProviders(city string) []*Provider {
-	fmt.Printf("   GetServiceProviders...\n")
-	var p []*Provider
-	for _, v := range routeData.Areas[strings.ToLower(city)].Providers {
-		p = append(p, v)
-	}
-	fmt.Printf("[getServiceProviders] returning %d records.\n", len(p))
-	return p
+func GetServiceProviders(city string) ([]*Provider, error) {
+	return routeData.GetServiceProviders(city)
 }
 
 // ==============================================================================================================================
@@ -40,19 +28,14 @@ func GetServiceProviders(city string) []*Provider {
 // ==============================================================================================================================
 
 func init() {
-	routeData.areaID = map[int]*Area{}
-	routeData.providerID = map[int]*Provider{}
-	routeData.serviceID = map[int]*Service{}
-	routeData.cityServices = map[string][]*Service{}
-	routeData.providerService = map[int]*Provider{}
-	if err := readConfig("router/config.json"); err != nil {
+	if err := readConfig("/Users/james/Dropbox/Development/go/src/Gateway311/router/config.json"); err != nil {
 		fmt.Printf("Error %v occurred when reading the config - ReadConfig()", err)
 	}
 }
 
 func readConfig(filePath string) error {
 	if routeData.Loaded {
-		msg := "Duplicate calls to routeData Config!"
+		msg := "Route Data is already loaded"
 		fmt.Println(msg)
 		return errors.New(msg)
 	}
@@ -64,16 +47,7 @@ func readConfig(filePath string) error {
 		return errors.New(msg)
 	}
 
-	err = json.Unmarshal([]byte(file), &routeData)
-	if err != nil {
-		msg := fmt.Sprintf("Invalid JSON in the routeData Config file - specified at: %q.\nError: %v", filePath, err)
-		fmt.Println(msg)
-		return errors.New(msg)
-	}
-
-	routeData.index()
-	routeData.Loaded = true
-	return nil
+	return routeData.Load(file)
 }
 
 // ==============================================================================================================================
@@ -90,6 +64,55 @@ type RouteData struct {
 	serviceID       map[int]*Service
 	cityServices    map[string][]*Service
 	providerService map[int]*Provider
+}
+
+// GetServices returns a list of all services available for the specified City.
+func (rd *RouteData) GetServices(city string) (int, []*Service, error) {
+	lcity := strings.ToLower(city)
+	fmt.Printf("   GetServices for: %s...\n", lcity)
+	if !rd.isValidCity(lcity) {
+		return 0, nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
+	}
+	fmt.Printf("      data length: %d\n", len(rd.cityServices[lcity]))
+	return rd.Areas[lcity].ID, rd.cityServices[lcity], nil
+}
+
+// GetServiceProviders returns a list of all Service Providers for the specified City.
+func (rd *RouteData) GetServiceProviders(city string) ([]*Provider, error) {
+	lcity := strings.ToLower(city)
+	fmt.Printf("   GetServiceProviders for: %q\n", lcity)
+	if !rd.isValidCity(lcity) {
+		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
+	}
+	var p []*Provider
+	for _, v := range rd.Areas[strings.ToLower(city)].Providers {
+		p = append(p, v)
+	}
+	fmt.Printf("[getServiceProviders] returning %d records.\n", len(p))
+	return p, nil
+}
+
+// Load loads the specified byte slice into the RouteData structures.
+func (rd *RouteData) Load(file []byte) error {
+	rd.init()
+	err := json.Unmarshal(file, rd)
+	if err != nil {
+		msg := fmt.Sprintf("Unable to parse JSON Route Data.\nError: %v", err)
+		fmt.Println(msg)
+		return errors.New(msg)
+	}
+
+	rd.index()
+	rd.Loaded = true
+	return nil
+}
+
+func (rd *RouteData) init() {
+	rd.areaID = map[int]*Area{}
+	rd.providerID = map[int]*Provider{}
+	rd.serviceID = map[int]*Service{}
+	rd.cityServices = map[string][]*Service{}
+	rd.providerService = map[int]*Provider{}
 }
 
 func (rd *RouteData) isValidCity(city string) bool {
