@@ -127,9 +127,9 @@
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z110"></relationship>
     </object>
     <object type="LMREQUEST" id="z110">
-        <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Graffiti\\",\\"typeId\\":\\"78\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":37.339244,\\"longitude\\":-121.883638,\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":true,\\"description\\":\\"[\\\\\\"[FROM: Gateway!] This is a test.  It is only a test.\\\\\\"]\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Graffiti\\",\\"typeId\\":\\"18\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":37.339244,\\"longitude\\":-121.883638,\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":true,\\"description\\":\\"Gang signs spray painted on the building.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">9F586AAD-0085-4432-AFE0-2E436700D825</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/11/requests</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/1/requests</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -137,7 +137,7 @@
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">Create Request 1 (jid 11)</attribute>
+        <attribute name="name" type="string">Create Request 1 (jid 1)</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z124"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z109"></relationship>
@@ -154,16 +154,16 @@
     </object>
     <object type="LMREQUEST" id="z112">
         <attribute name="uuid" type="string">471167B0-183F-486B-B80C-FB029B1B167E</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/11/requests</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/1/requests</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Graffiti\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":37.151198,\\"longitude\\":-121.602594,\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":true,\\"notes\\":\\"This is a test.  It is only a test.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Illegal Dumping \\\\\\/ Trash\\",\\"typeID\\":\\"22\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":37.151198,\\"longitude\\":-121.602594,\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":true,\\"description\\":\\"There's an old sofa on the sidewalk.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="order" type="int64">1</attribute>
-        <attribute name="name" type="string">Create Request 2 (jid 11)</attribute>
+        <attribute name="name" type="string">Create Request 2 (jid 1)</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z124"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z111"></relationship>
@@ -270,7 +270,7 @@
     </object>
     <object type="LMREQUEST" id="z121">
         <attribute name="uuid" type="string">9F47B16A-327D-43E6-A1C5-7118E1B09CF7</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/12/requests</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/2/requests</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -279,7 +279,7 @@
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Graffiti\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":37.151198,\\"longitude\\":-121.602594,\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":true,\\"notes\\":\\"This is a test.  It is only a test.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="order" type="int64">2</attribute>
-        <attribute name="name" type="string">Create Request 3 (jid 12)</attribute>
+        <attribute name="name" type="string">Create Request 3 (jid 2)</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z124"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z122"></relationship>

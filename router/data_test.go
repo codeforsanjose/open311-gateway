@@ -57,32 +57,44 @@ var _ = Describe("Data", func() {
 		})
 
 		It("should have 3 services for San Jose", func() {
-			id, services, err := rd.GetServices("San Jose")
+			id, services, err := rd.Services("San Jose")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(id).To(Equal(1))
 			Expect(services).To(HaveLen(3))
 		})
 
 		It("should have 1 Service Provider for San Jose", func() {
-			providers, err := rd.GetServiceProviders("San Jose")
+			providers, err := rd.ServiceProviders("San Jose")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(providers).To(HaveLen(1))
 			Expect(providers[0].Name).To(Equal("CitySourced - SJ"))
 		})
 
 		It("should have 0 services for Morgan Hill", func() {
-			id, services, err := rd.GetServices("Morgan Hill")
+			id, services, err := rd.Services("Morgan Hill")
 			Expect(err).To(HaveOccurred())
 			Expect(id).To(Equal(0))
 			Expect(services).To(HaveLen(0))
 		})
 
 		It("should have 0 Service Providers for Morgan Hill", func() {
-			providers, err := rd.GetServiceProviders("Morgan Hill")
+			providers, err := rd.ServiceProviders("Morgan Hill")
 			Expect(err).To(HaveOccurred())
 			Expect(providers).To(HaveLen(0))
 		})
 
+		It("should have have CitySourced provider for Service 2", func() {
+			provider, err := rd.ServiceProvider(2)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(provider.ID).To(Equal(1))
+			Expect(provider.Name).To(Equal("CitySourced - SJ"))
+		})
+
+		It("should have have CitySourced provider interface type for Service 2", func() {
+			itype, err := rd.ServiceProviderInterface(2)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(itype).To(Equal("CitySourced"))
+		})
 	})
 
 	Context("Valid JSON / 2 Providers / 8 Services / San Jose", func() {
@@ -161,14 +173,14 @@ var _ = Describe("Data", func() {
 		})
 
 		It("should have 8 services for San Jose", func() {
-			id, services, err := rd.GetServices("San Jose")
+			id, services, err := rd.Services("San Jose")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(id).To(Equal(1))
 			Expect(services).To(HaveLen(8))
 		})
 
 		It("should have 2 Service Provider for San Jose", func() {
-			providers, err := rd.GetServiceProviders("San Jose")
+			providers, err := rd.ServiceProviders("San Jose")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(providers).To(HaveLen(2))
 			Expect(providers[0].Name).To(Equal("CitySourced - SJ"))
@@ -278,14 +290,14 @@ var _ = Describe("Data", func() {
 		})
 
 		It("should have 8 services for San Jose", func() {
-			id, services, err := rd.GetServices("San Jose")
+			id, services, err := rd.Services("San Jose")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(id).To(Equal(1))
 			Expect(services).To(HaveLen(8))
 		})
 
 		It("should have 2 Service Provider for San Jose", func() {
-			providers, err := rd.GetServiceProviders("San Jose")
+			providers, err := rd.ServiceProviders("San Jose")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(providers).To(HaveLen(2))
 			Expect(providers[0].Name).To(Equal("CitySourced - SJ"))
@@ -293,14 +305,14 @@ var _ = Describe("Data", func() {
 		})
 
 		It("should have 3 services for Morgan Hill", func() {
-			id, services, err := rd.GetServices("Morgan Hill")
+			id, services, err := rd.Services("Morgan Hill")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(id).To(Equal(2))
 			Expect(services).To(HaveLen(3))
 		})
 
 		It("should have 1 Service Provider for Morgan Hill", func() {
-			providers, err := rd.GetServiceProviders("Morgan Hill")
+			providers, err := rd.ServiceProviders("Morgan Hill")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(providers).To(HaveLen(1))
 			Expect(providers[0].Name).To(Equal("CitySourced - MH"))

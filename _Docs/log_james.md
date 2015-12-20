@@ -16,6 +16,15 @@
 
 ## Log
 
+[2015.12.19 - Sat]
+
+* In router/data.go:
+	* Dropped "Getxxx" from the ServiceXXX() methods.
+	* Added ServiceProviderInterface() go get the Service Provider interface type (currently on CitySourced).  
+* in request/report.go, added a map lookup (beCreate) on the Create functions.  We will have a set of these maps to quickly route an incoming request (create, lookup, etc), to the correct backend interface.
+* Test OK.
+* Saved to GIT.
+
 [2015.12.18 - Fri]
 
 * Brought "geo" package over from CitySourced.
@@ -30,8 +39,8 @@
 * Saved to GIT.
 * Added Gingko test suite.
 * Revised router/data.go:
-	* Moved GetServices() and GetServiceProviders() to be methods of RouteData.
-	* GetServiceProviders() now returns the Provider list, and an error.
+	* Moved Services() and ServiceProviders() to be methods of RouteData.
+	* ServiceProviders() now returns the Provider list, and an error.
 * Test OK.
 * Saved to GIT.
 

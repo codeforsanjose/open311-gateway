@@ -13,14 +13,24 @@ var (
 	routeData RouteData
 )
 
-// GetServices returns a list of all services available for the specified City.
-func GetServices(city string) (int, []*Service, error) {
-	return routeData.GetServices(city)
+// Services returns a list of all services available for the specified City.
+func Services(city string) (int, []*Service, error) {
+	return routeData.Services(city)
 }
 
-// GetServiceProviders returns a list of all Service Providers for the specified City.
-func GetServiceProviders(city string) ([]*Provider, error) {
-	return routeData.GetServiceProviders(city)
+// ServiceProviders returns a list of all Service Providers for the specified City.
+func ServiceProviders(city string) ([]*Provider, error) {
+	return routeData.ServiceProviders(city)
+}
+
+// ServiceProvider returns a list of all Service Providers for the specified City.
+func ServiceProvider(sid int) (*Provider, error) {
+	return routeData.ServiceProvider(sid)
+}
+
+// ServiceProvider returns a list of all Service Providers for the specified City.
+func ServiceProviderInterface() (string, error) {
+	return routeData.ServiceProviderInterface(sid)
 }
 
 // ==============================================================================================================================
@@ -66,10 +76,10 @@ type RouteData struct {
 	providerService map[int]*Provider
 }
 
-// GetServices returns a list of all services available for the specified City.
-func (rd *RouteData) GetServices(city string) (int, []*Service, error) {
+// Services returns a list of all services available for the specified City.
+func (rd *RouteData) Services(city string) (int, []*Service, error) {
 	lcity := strings.ToLower(city)
-	fmt.Printf("   GetServices for: %s...\n", lcity)
+	fmt.Printf("   Services for: %s...\n", lcity)
 	if !rd.isValidCity(lcity) {
 		return 0, nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
 	}
@@ -77,10 +87,10 @@ func (rd *RouteData) GetServices(city string) (int, []*Service, error) {
 	return rd.Areas[lcity].ID, rd.cityServices[lcity], nil
 }
 
-// GetServiceProviders returns a list of all Service Providers for the specified City.
-func (rd *RouteData) GetServiceProviders(city string) ([]*Provider, error) {
+// ServiceProviders returns a list of all Service Providers for the specified City.
+func (rd *RouteData) ServiceProviders(city string) ([]*Provider, error) {
 	lcity := strings.ToLower(city)
-	fmt.Printf("   GetServiceProviders for: %q\n", lcity)
+	fmt.Printf("   ServiceProviders for: %q\n", lcity)
 	if !rd.isValidCity(lcity) {
 		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
 	}
@@ -90,6 +100,26 @@ func (rd *RouteData) GetServiceProviders(city string) ([]*Provider, error) {
 	}
 	fmt.Printf("[getServiceProviders] returning %d records.\n", len(p))
 	return p, nil
+}
+
+// ServiceProvider returns a list of all Service Providers for the specified City.
+func (rd *RouteData) ServiceProvider(id int) (*Provider, error) {
+	p, ok := rd.providerService[id]
+	if !ok {
+		return nil, fmt.Errorf("Invalid Service ID")
+	}
+	fmt.Printf("[getServiceProvider] returning %#v\n", *p)
+	return p, nil
+}
+
+// ServiceProviderInterface returns a list of all Service Providers for the specified City.
+func (rd *RouteData) ServiceProviderInterface(id int) (string, error) {
+	p, ok := rd.providerService[id]
+	if !ok {
+		return "", fmt.Errorf("Invalid Service ID")
+	}
+	fmt.Printf("[ServiceProviderInterface] returning %#v\n", p.InterfaceType)
+	return p.InterfaceType, nil
 }
 
 // Load loads the specified byte slice into the RouteData structures.

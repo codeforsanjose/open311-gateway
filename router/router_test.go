@@ -16,16 +16,16 @@ func TestReadConfig(t *testing.T) {
 	}
 
 	city := "San Jose"
-	p, _ := GetServiceProviders(city)
+	p, _ := ServiceProviders(city)
 	fmt.Printf("\n==================== SERVICE PROVIDERS ==================\nFor: %s\n%#v\n", city, p)
 	for i, v := range p {
 		fmt.Printf("%2d  %s\n", i, v.Name)
 	}
 
-	id, s, e := GetServices(city)
+	id, s, e := Services(city)
 	fmt.Printf("\n==================== SERVICES ===========================\nFor: %s (%v)\n", city, id)
 	if e != nil {
-		t.Errorf("GetServices failed: %s", e)
+		t.Errorf("Services failed: %s", e)
 	}
 	for i, v := range s {
 		fmt.Printf("%2d:%v\n", i+1, v)

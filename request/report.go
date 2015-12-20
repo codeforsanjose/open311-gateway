@@ -16,6 +16,13 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
+// Backends
+var beCreate map[string]func(src *CreateReport) (interface{}, error)
+
+func init() {
+	beCreate["CitySourced"] = processCS
+}
+
 // Services looks up the service providers and services for the specified location.
 func Services(w rest.ResponseWriter, r *rest.Request) {
 	response := "Error!"
@@ -42,7 +49,7 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 			return
 		}
 		r := RespServices{}
-		r.JID, r.Services, err = router.GetServices(city)
+		r.JID, r.Services, err = router.Services(city)
 		if err != nil {
 			log.Printf("%s", err)
 			rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -56,7 +63,7 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 		city := m["city"][0]
 		log.Printf("   QueryParms: Address - city: %s\n", city)
 		r := RespServices{}
-		r.JID, r.Services, err = router.GetServices(city)
+		r.JID, r.Services, err = router.Services(city)
 		if err != nil {
 			log.Printf("%s", err)
 			rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -66,6 +73,7 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 
+	// ToDo: build correct response
 	response = "OK!"
 	w.WriteJson(&response)
 }
@@ -83,7 +91,17 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response, err := processCS(&report)
+	itype, err := router.ServiceProviderInterface(report.typeID)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	f, ok := beCreate[itype]
+	if !ok {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	response, err := f(&report)
 	if err != nil {
 		fmt.Println("!! PrepOut failed.")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -114,6 +132,7 @@ type CreateReport struct {
 	ID          string  `json:"id" xml:"id"`
 	Type        string  `json:"type" xml:"type"`
 	TypeID      string  `json:"typeId" xml:"typeId"`
+	typeID      int     //
 	DeviceType  string  `json:"deviceType" xml:"deviceType"`
 	DeviceModel string  `json:"deviceModel" xml:"deviceModel"`
 	DeviceID    string  `json:"deviceID" xml:"deviceID"`
@@ -144,6 +163,12 @@ func (u *CreateReport) GetAll(w rest.ResponseWriter, r *rest.Request) {
 		AuthorID: "99999",
 	}
 	w.WriteJson(&response)
+}
+
+func (u *CreateReport) validate() error {
+	id, err := strconv.ParseInt(u.TypeID, 10, 64)
+	u.typeID = int(id)
+	return err
 }
 
 // Get retrieves a single report specified by it's ID.
