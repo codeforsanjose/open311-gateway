@@ -135,7 +135,7 @@ var _ = Describe("Data", func() {
 		        		"citysourced2": {
 							"id": 2,
 							"name": "CitySourced2 - SJ",
-							"interfaceType": "CitySourced",
+							"interfaceType": "SeeClickFix",
 							"url": "http://localhost:5050/api/",
 							"key": "a01234567890z",
 							"services": [{
@@ -186,6 +186,23 @@ var _ = Describe("Data", func() {
 			Expect(providers[0].Name).To(Equal("CitySourced - SJ"))
 			Expect(providers[1].Name).To(Equal("CitySourced2 - SJ"))
 		})
+
+		It("should have have CitySourced provider interface type for Service 2", func() {
+			itype, err := rd.ServiceProviderInterface(2)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(itype).To(Equal("CitySourced"))
+		})
+		It("should have have SeeClickFix provider interface type for Service 37", func() {
+			itype, err := rd.ServiceProviderInterface(37)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(itype).To(Equal("SeeClickFix"))
+		})
+		It("should have have unknow provider interface type for Service 10", func() {
+			itype, err := rd.ServiceProviderInterface(10)
+			Expect(err).To(HaveOccurred())
+			Expect(itype).To(Equal(""))
+		})
+
 	})
 
 	Context("Valid JSON / 2 Areas / 3 Providers / 8 Services in San Jose, 3 Services in Morgan Hil", func() {

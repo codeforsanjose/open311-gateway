@@ -13,8 +13,32 @@
 * Modify CitySourced simulator to return the Request ID and Document ID. @done(2015-12-12)
 * Outline the Displatch system. @done(2015-12-14)
 
-
 ## Log
+
+[2015.12.28 - Mon]
+
+* Greatly reorganized request processing to Create a report (in the "request" package):
+	* Renamed:
+		* CreateReport type -> CreateReq
+		* CreateReportResp type -> CreateResp
+	* Moved all Create functionality under the CreateReq type - current methods:
+		1. validate
+		2. init
+		3. parseQP
+		4. run
+		5. ProcessCS (processes against CitySourced backend)
+		6. String
+		7. toCS (converts CreateReq struct to citysourced.CSReport type)
+	* Moved all of the above Create types into the new file: "request/create.go".
+	* Added "apiVersion" to config.json in the Provider section, and also added to the Provider type in "router/data.go".
+	* Test OK
+	* Saved to GIT.
+
+[2015.12.23 - Wed]
+
+* Cleaned up router.ServiceProviderInterface().  Added test cases in data_test.go.
+* Test OK.
+* 
 
 [2015.12.19 - Sat]
 

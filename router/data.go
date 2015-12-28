@@ -23,14 +23,14 @@ func ServiceProviders(city string) ([]*Provider, error) {
 	return routeData.ServiceProviders(city)
 }
 
-// ServiceProvider returns a list of all Service Providers for the specified City.
+// ServiceProvider returns a pointer to the Provider for the specified Provider ID.
 func ServiceProvider(sid int) (*Provider, error) {
 	return routeData.ServiceProvider(sid)
 }
 
-// ServiceProvider returns a list of all Service Providers for the specified City.
-func ServiceProviderInterface() (string, error) {
-	return routeData.ServiceProviderInterface(sid)
+// ServiceProviderInterface returns a list of all Service Providers for the specified City.
+func ServiceProviderInterface(id int) (string, error) {
+	return routeData.ServiceProviderInterface(id)
 }
 
 // ==============================================================================================================================
@@ -98,17 +98,17 @@ func (rd *RouteData) ServiceProviders(city string) ([]*Provider, error) {
 	for _, v := range rd.Areas[strings.ToLower(city)].Providers {
 		p = append(p, v)
 	}
-	fmt.Printf("[getServiceProviders] returning %d records.\n", len(p))
+	fmt.Printf("[ServiceProviders] returning %d records.\n", len(p))
 	return p, nil
 }
 
-// ServiceProvider returns a list of all Service Providers for the specified City.
+// ServiceProvider returns a pointer to the Provider for the specified Provider ID.
 func (rd *RouteData) ServiceProvider(id int) (*Provider, error) {
 	p, ok := rd.providerService[id]
 	if !ok {
 		return nil, fmt.Errorf("Invalid Service ID")
 	}
-	fmt.Printf("[getServiceProvider] returning %#v\n", *p)
+	// fmt.Printf("[ServiceProvider] returning %#v\n", *p)
 	return p, nil
 }
 
@@ -118,7 +118,7 @@ func (rd *RouteData) ServiceProviderInterface(id int) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("Invalid Service ID")
 	}
-	fmt.Printf("[ServiceProviderInterface] returning %#v\n", p.InterfaceType)
+	// fmt.Printf("[ServiceProviderInterface] returning %#v\n", p.InterfaceType)
 	return p.InterfaceType, nil
 }
 
@@ -255,6 +255,7 @@ type Provider struct {
 	Name          string     `json:"name"`
 	InterfaceType string     `json:"interfaceType"`
 	URL           string     `json:"url"`
+	APIVersion    string     `json:"apiVersion"`
 	Key           string     `json:"key"`
 	Services      []*Service `json:"services"`
 }
@@ -262,7 +263,7 @@ type Provider struct {
 func (p Provider) String() string {
 	ls := new(common.LogString)
 	ls.AddF("%s (ID: %d)\n", p.Name, p.ID)
-	ls.AddF("InterfaceType: %s  URL: %s  Key: %s\n", p.InterfaceType, p.URL, p.Key)
+	ls.AddF("InterfaceType: %s  URL: %s  ver: %s  Key: %s\n", p.InterfaceType, p.APIVersion, p.URL, p.Key)
 	ls.AddS("---SERVICES:\n")
 	for _, v := range p.Services {
 		ls.AddF("   %s\n", v)

@@ -59,7 +59,7 @@ type CSReport struct {
 	DeviceModel       string   `json:"DeviceModel" xml:"DeviceModel"`
 	DeviceID          string   `json:"DeviceId" xml:"DeviceId"`
 	RequestType       string   `json:"RequestType" xml:"RequestType"`
-	RequestTypeID     int64    `json:"RequestTypeId" xml:"RequestTypeId"`
+	RequestTypeID     int      `json:"RequestTypeId" xml:"RequestTypeId"`
 	ImageURL          string   `json:"ImageUrl" xml:"ImageUrl"`
 	ImageURLXl        string   `json:"ImageUrlXl" xml:"ImageUrlXl"`
 	ImageURLLg        string   `json:"ImageUrlLg" xml:"ImageUrlLg"`
@@ -79,8 +79,8 @@ type CSReport struct {
 	URLShortened      string   `json:"UrlShortened" xml:"UrlShortened"`
 }
 
-// Process executes the request to create a new report.
-func (r *CSReport) Process(jid int64) (*CSReportResp, error) {
+// ProcessOld executes the request to create a new report.
+func (r *CSReport) ProcessOld(jid int64) (*CSReportResp, error) {
 	fmt.Printf("[BECreate] jid: %d\n", jid)
 	response := CSReportResp{
 		Message:  "Failed",
@@ -102,29 +102,41 @@ func (r *CSReport) Process(jid int64) (*CSReportResp, error) {
 	}
 	fmt.Printf("   Body unmarshaled: %#v\n", response)
 
-	// result := CSReportResp{}
-	// var reply bytes.Buffer
-	// err := errors.New("Unknown error from Backend.")
-	// fmt.Printf("   payload type: %T size: %d\n", payload, payload.Len())
-	// request := napping.Request{
-	// 	Url:                 "http://localhost:5050/api/",
-	// 	Method:              "POST",
-	// 	Payload:             payload,
-	// 	RawPayload:          true,
-	// 	Result:              &result,
-	// 	CaptureResponseBody: true,
-	// 	ResponseBody:        &reply,
-	// 	Error:               &err,
-	// }
-	//
-	// resp, err := napping.Send(&request)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// if resp.Status() == 200 {
-	// 	fmt.Printf("  SUCCESS - response: %#v\n", resp)
-	// }
-	// fmt.Printf("  response body: %v\n", reply.String())
+	return &response, nil
+}
+
+// Process executes the request to create a new report.
+func (r *CSReport) Process(jid int) (*CSReportResp, error) {
+	// log.Printf("[BECreate] jid: %d\n", jid)
+	// log.Printf("%s\n", r)
+	fail := func(err error) (*CSReportResp, error) {
+		response := CSReportResp{
+			Message:  "Failed",
+			ID:       "",
+			AuthorID: "",
+		}
+		return &response, err
+	}
+
+	var payload = new(bytes.Buffer)
+	{
+		enc := xml.NewEncoder(payload)
+		enc.Indent("  ", "    ")
+		enc.Encode(r)
+	}
+	// log.Printf("Payload:\n%v\n", payload.String())
+
+	url := "http://localhost:5050/api/"
+	resp, err := http.Post(url, "application/xml", payload)
+	if err != nil {
+		return fail(err)
+	}
+
+	var response CSReportResp
+	err = xml.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return fail(err)
+	}
 
 	return &response, nil
 }

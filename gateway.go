@@ -13,7 +13,7 @@ func main() {
 	testrequests := request.TestReports{
 		Store: map[string]*request.TestReport{},
 	}
-	rpt := request.CreateReport{}
+	// rpt := request.CreateReq{}
 
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
@@ -25,11 +25,11 @@ func main() {
 		rest.Put("/:jid/testrequests/:id", testrequests.PutTestReport),
 		rest.Delete("/:jid/testrequests/:id", testrequests.DeleteRequest),
 
-		rest.Get("/:jid/requests", rpt.GetAll),
-		rest.Get("/:jid/requests/:id", rpt.Get),
+		// rest.Get("/:jid/requests", rpt.GetAll),
+		// rest.Get("/:jid/requests/:id", rpt.Get),
 		rest.Post("/:jid/requests", request.Create),
-		rest.Put("/:jid/requests/:id", rpt.Update),
-		rest.Delete("/:jid/requests/:id", rpt.Delete),
+		// rest.Put("/:jid/requests/:id", rpt.Update),
+		// rest.Delete("/:jid/requests/:id", rpt.Delete),
 
 		rest.Get("/services", request.Services),
 	)

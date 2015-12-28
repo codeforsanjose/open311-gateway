@@ -127,7 +127,7 @@
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z110"></relationship>
     </object>
     <object type="LMREQUEST" id="z110">
-        <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Graffiti\\",\\"typeId\\":\\"18\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":37.339244,\\"longitude\\":-121.883638,\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":true,\\"description\\":\\"Gang signs spray painted on the building.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Graffiti\\",\\"typeId\\":\\"18\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":\\"37.339244\\",\\"longitude\\":\\"-121.883638\\",\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":\\"true\\",\\"description\\":\\"Gang signs spray painted on the building.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">9F586AAD-0085-4432-AFE0-2E436700D825</attribute>
         <attribute name="url" type="string">http://127.0.0.1:8080/1/requests</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
@@ -161,7 +161,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Illegal Dumping \\\\\\/ Trash\\",\\"typeID\\":\\"22\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":37.151198,\\"longitude\\":-121.602594,\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":true,\\"description\\":\\"There's an old sofa on the sidewalk.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Illegal Dumping \\\\\\/ Trash\\",\\"typeID\\":\\"22\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":\\"37.151198\\",\\"longitude\\":\\"-121.602594\\",\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":\\"\\",\\"description\\":\\"There's an old sofa on the sidewalk.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="order" type="int64">1</attribute>
         <attribute name="name" type="string">Create Request 2 (jid 1)</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z124"></relationship>

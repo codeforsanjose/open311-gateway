@@ -16,6 +16,7 @@
 					"name": "CitySourced - SJ",
 					"interfaceType": "CitySourced",
 					"url": "http://localhost:5050/api/",
+					"apiVersion": "1",
 					"key": "a01234567890z",
 					"services": [{
 						"id": 1,
@@ -164,6 +165,7 @@
 					"name": "CitySourced2 - SJ",
 					"interfaceType": "CitySourced",
 					"url": "http://localhost:5050/api/",
+					"apiVersion": "1",
 					"key": "a01234567890z",
 					"services": [{
 						"id": 36,
