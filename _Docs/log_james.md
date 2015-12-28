@@ -31,6 +31,7 @@
 		7. toCS (converts CreateReq struct to citysourced.CSReport type)
 	* Moved all of the above Create types into the new file: "request/create.go".
 	* Added "apiVersion" to config.json in the Provider section, and also added to the Provider type in "router/data.go".
+	* Saved to GIT.
 	* Test OK
 	* Saved to GIT.
 
