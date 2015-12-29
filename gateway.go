@@ -27,7 +27,7 @@ func main() {
 
 		// rest.Get("/:jid/requests", rpt.GetAll),
 		// rest.Get("/:jid/requests/:id", rpt.Get),
-		rest.Post("/:jid/requests", request.Create),
+		rest.Post("/requests", request.Create),
 		// rest.Put("/:jid/requests/:id", rpt.Update),
 		// rest.Delete("/:jid/requests/:id", rpt.Delete),
 

@@ -129,7 +129,7 @@
     <object type="LMREQUEST" id="z110">
         <attribute name="body" type="string">[{"data":{"json":"{\\"type\\":\\"Graffiti\\",\\"typeId\\":\\"18\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":\\"37.339244\\",\\"longitude\\":\\"-121.883638\\",\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":\\"true\\",\\"description\\":\\"Gang signs spray painted on the building.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">9F586AAD-0085-4432-AFE0-2E436700D825</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/1/requests</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/requests</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -154,7 +154,7 @@
     </object>
     <object type="LMREQUEST" id="z112">
         <attribute name="uuid" type="string">471167B0-183F-486B-B80C-FB029B1B167E</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/1/requests</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/requests</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>

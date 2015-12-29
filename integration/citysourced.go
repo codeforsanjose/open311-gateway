@@ -79,35 +79,8 @@ type CSReport struct {
 	URLShortened      string   `json:"UrlShortened" xml:"UrlShortened"`
 }
 
-// ProcessOld executes the request to create a new report.
-func (r *CSReport) ProcessOld(jid int64) (*CSReportResp, error) {
-	fmt.Printf("[BECreate] jid: %d\n", jid)
-	response := CSReportResp{
-		Message:  "Failed",
-		ID:       "",
-		AuthorID: "",
-	}
-	xmlPayload, err := xml.MarshalIndent(r, "  ", "    ")
-	if err != nil {
-		return &response, err
-	}
-	body, err := runCS(xmlPayload)
-	if err != nil {
-		return &response, err
-	}
-
-	err = xml.Unmarshal(body, &response)
-	if err != nil {
-		return &response, err
-	}
-	fmt.Printf("   Body unmarshaled: %#v\n", response)
-
-	return &response, nil
-}
-
 // Process executes the request to create a new report.
-func (r *CSReport) Process(jid int) (*CSReportResp, error) {
-	// log.Printf("[BECreate] jid: %d\n", jid)
+func (r *CSReport) Process() (*CSReportResp, error) {
 	// log.Printf("%s\n", r)
 	fail := func(err error) (*CSReportResp, error) {
 		response := CSReportResp{

@@ -1,7 +1,8 @@
 ## To Do.todo
 
 * Implement Gingko BDD tests. @done(2015-12-18)
-* Modify report.Create() to use ServiceID and JID.
+* Modify report.Create() to use ServiceID and JID. @done(2015-12-28)
+* Consolidate all Create functionality within the request.CreateReq type. @done(2015-12-28)
 * Update RAML file with JSON specs for input and output payloads.
 * Implement report searches:
 	* Single ID
@@ -34,6 +35,23 @@
 	* Saved to GIT.
 	* Test OK
 	* Saved to GIT.
+	* Removed JID from Create URL.  Also removed from use in Create struct, etc.
+	* Moved the common code (cType and cIFace) from request/report.go to new file request/common.go.
+	* In request/common.go, discontinued use of the "inputBody" and "inputQP" fields.  In cType.init(), will always attempt to decode payload, and parse query parms.  Simplifies the code.
+	* Test OK.
+	* Saved to GIT.
+
+Thoughts on using the JID for most/all requests:
+
+* The JID identifies the City ("Jurisdiction").  _This may become more finely grained using some type of non-overlapping jurisdictional map areas that do not necessarily match city boundaries._
+* Requsts that return the Jurisdiction ID:
+	* Service List
+* Requests that would use the current Jurisdiction ID:
+	* Create _(this can use Service ID to get the Jurisdiction ID)_
+	* Search by DeviceID _(if the App cannot provide a list of previous Jurisdiction ID's)_
+* Requests that would not necessarily use the current Jurisdiction:
+	* Search by Current Location _(we need the exact lat/lng)_
+	* Search for an Address
 
 [2015.12.23 - Wed]
 

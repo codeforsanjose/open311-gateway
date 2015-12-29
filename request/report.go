@@ -86,44 +86,6 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 }
 
 // ==============================================================================================================================
-//                                      COMMON
-// ==============================================================================================================================
-type cType struct {
-	self      cIface
-	inputBody bool
-	inputQP   bool
-}
-
-func (cx *cType) init(p cIface, r *rest.Request) error {
-	cx.self = p
-	jid, err := strconv.ParseInt(r.PathParam("jid"), 10, 64)
-	if err != nil {
-		return fmt.Errorf("Invalid or missing jid")
-	}
-	log.Printf("[Create] - jid: (%T)%d\n", jid, jid)
-
-	if cx.inputBody {
-		if err := r.DecodeJsonPayload(cx.self); err != nil {
-			return fmt.Errorf("Unable to process request: %s", err)
-		}
-	}
-	if cx.inputQP {
-		if err := cx.self.parseQP(r); err != nil {
-			return fmt.Errorf("Unable to process request: %s", err)
-		}
-	}
-
-	cx.self.validate()
-
-	return nil
-}
-
-type cIface interface {
-	parseQP(r *rest.Request) error
-	validate()
-}
-
-// ==============================================================================================================================
 //                                      SERVICES
 // ==============================================================================================================================
 

@@ -13,7 +13,7 @@ The Service Provider ID will be returned to the App in the response JSON data.  
 ## Search
 
 ### Device ID
-If the user wishes to review all of their issues, then we need a list of Service Provider ID's for all of their previously created issues.  This will be passed in the Search request GET at the "/requests" endpoint.  The Gateway will send appropriate search requests to each Service Provider for the specified DeviceID, consolidate the returned data, and send it back in the GET response.  If the list of previous Service Providers is not provided, then the current City will be 
+If the user wishes to review all of their issues, then we need a list of Service Provider ID's for all of their previously created issues.  This will be passed in the Search request GET at the "/requests" endpoint.  The Gateway will send appropriate search requests to each Service Provider for the specified DeviceID, consolidate the returned data, and send it back in the GET response.  If the list of previous Service Providers is not provided, the search will be limited to the current City.
 
 
 ### Location

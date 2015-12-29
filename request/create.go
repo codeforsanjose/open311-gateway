@@ -18,7 +18,7 @@ import (
 //                                      Request
 // =======================================================================================
 func processCreate(r *rest.Request) (interface{}, error) {
-	report := CreateReq{cType: cType{inputBody: true}}
+	report := CreateReq{}
 	if err := report.init(r); err != nil {
 		return nil, err
 	}
@@ -27,10 +27,10 @@ func processCreate(r *rest.Request) (interface{}, error) {
 
 // CreateReq is used to create a report.
 type CreateReq struct {
-	cType         //
-	cIface        //
-	JID    int    `json:"jid" xml:"jid"`
-	bkend  string //
+	cType  //
+	cIface //
+	// JID    int    `json:"jid" xml:"jid"`
+	bkend string //
 
 	ID          string  `json:"id" xml:"id"`
 	Type        string  `json:"type" xml:"type"`
@@ -101,7 +101,7 @@ func (c *CreateReq) run() (interface{}, error) {
 func (c *CreateReq) processCS() (interface{}, error) {
 	log.Printf("[processCS] src: %s", spew.Sdump(c))
 	rqst, _ := c.toCreateCS()
-	resp, _ := rqst.Process(c.JID)
+	resp, _ := rqst.Process()
 	ourResp, _ := fromCreateCS(resp)
 
 	return ourResp, nil
@@ -111,7 +111,7 @@ func (c *CreateReq) processCS() (interface{}, error) {
 func (c CreateReq) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Report\n")
-	ls.AddF("Parse - body: %t  qp: %t  bkend: %s\n", c.inputBody, c.inputQP, c.bkend)
+	ls.AddF("Bkend: %s\n", c.bkend)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
 	ls.AddF("Request - type: %q  id: %q\n", c.Type, c.TypeID)
 	if math.Abs(c.latitude) > 1 {
