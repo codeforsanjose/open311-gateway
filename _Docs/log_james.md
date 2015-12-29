@@ -3,6 +3,7 @@
 * Implement Gingko BDD tests. @done(2015-12-18)
 * Modify report.Create() to use ServiceID and JID. @done(2015-12-28)
 * Consolidate all Create functionality within the request.CreateReq type. @done(2015-12-28)
+* Change request/common.go: error check validate()... do not error check body or query parm conversion.
 * Update RAML file with JSON specs for input and output payloads.
 * Implement report searches:
 	* Single ID
@@ -16,7 +17,7 @@
 
 ## Log
 
-[2015.12.28 - Mon]
+### 2015.12.28 - Mon
 
 * Greatly reorganized request processing to Create a report (in the "request" package):
 	* Renamed:
@@ -41,6 +42,7 @@
 	* Test OK.
 	* Saved to GIT.
 
+---
 Thoughts on using the JID for most/all requests:
 
 * The JID identifies the City ("Jurisdiction").  _This may become more finely grained using some type of non-overlapping jurisdictional map areas that do not necessarily match city boundaries._
@@ -52,14 +54,28 @@ Thoughts on using the JID for most/all requests:
 * Requests that would not necessarily use the current Jurisdiction:
 	* Search by Current Location _(we need the exact lat/lng)_
 	* Search for an Address
+---
 
-[2015.12.23 - Wed]
+* Reorganized the Services request (get a list of available services for the specified location):
+	* Created request/services.go.
+	* Used Create as a template.
+	* Created ServicesReq and ServicesResp types.
+	* Encapsulated all services retrieval functionality inside the ServicesReq type.
+* Modified request/common.go:
+	* Changed init() to load().  This will remove the conflict with the parent init().
+	* Test for error: "JSON payload is empty".  TODO: This needs to be cleaned up... all checking should fall on the validate() function, and the body and query parm parsing errors should be ignored.
+* Renamed request/report.go to request.go, as this is the primary file in the request package.
+* Test OK.
+* Saved to GIT.
+		
+
+### 2015.12.23 - Wed
 
 * Cleaned up router.ServiceProviderInterface().  Added test cases in data_test.go.
 * Test OK.
 * 
 
-[2015.12.19 - Sat]
+### 2015.12.19 - Sat
 
 * In router/data.go:
 	* Dropped "Getxxx" from the ServiceXXX() methods.
@@ -68,7 +84,7 @@ Thoughts on using the JID for most/all requests:
 * Test OK.
 * Saved to GIT.
 
-[2015.12.18 - Fri]
+### 2015.12.18 - Fri
 
 * Brought "geo" package over from CitySourced.
 * Added "getCity()" function to mygeocode.go.  This scans through the Google response and retrieves the city.  We will need this for quickly mapping the Mobile Apps geoloc -> city -> Service Providers -> list of Services.
@@ -88,7 +104,7 @@ Thoughts on using the JID for most/all requests:
 * Saved to GIT.
 
 
-[2015.12.17 - Thu]
+### 2015.12.17 - Thu
 
 * Router data and indices are working.
 * Test OK.
@@ -98,21 +114,21 @@ Thoughts on using the JID for most/all requests:
 * Test OK.
 * Saved to GIT.
 
-[2015.12.16 - Wed]
+### 2015.12.16 - Wed
 
 * Completely reformatted JSON file... made Services a direct child of Service Provider, and Service Provider is a child element of Service Areas.  Go will load this as a series of maps, which will automatically give us some fast indexing into the data.
 
-[2015.12.15 - Tue]
+### 2015.12.15 - Tue
 
 * Updated ServiceRouter.md documentation.
 * Created 
 
-[2015.12.14 - Mon]
+### 2015.12.14 - Mon
 
 * Added design documentation for the Service Router capabilities.  
 * Saved to GIT.
 
-[2015.12.10 - Thu]
+### 2015.12.10 - Thu
 
 * Doing other things for a few days.  Coursework, etc.  Back on the case now!
 * Current status: "Create" is working for CitySourced API. 
@@ -120,29 +136,29 @@ Thoughts on using the JID for most/all requests:
 		* github.com/ant0ine/go-json-rest/rest - this is working well for the front-end, but does not support XML, and so will not work for the backend.
 	* No routing/dispatching is in place yet...  This is probably the next task.
 
-[2015.12.04 - Fri]
+### 2015.12.04 - Fri
 
 * Implemented "napping" REST client.  Not working due to XML.  Starting over using just the HTTP lib.
 * Saved to GIT.
 * 
 
-[2015.12.01 - Tue]
+### 2015.12.01 - Tue
 
 * 
 
-[2015.11.30 - Mon]
+### 2015.11.30 - Mon
 
 * Wrote up 311 Gateway Proposal.
 
-[2015.10.27 - Fri]
+### 2015.10.27 - Fri
 
 * Reviewed RAML spec with Hassan.  Discussed the Gateway idea.
 
-[2015.10.24 - Tue]
+### 2015.10.24 - Tue
 
 * Revised RAML spec.
 
-[2015.10.23 - Mon]
+### 2015.10.23 - Mon
 
 * First draft of RAML spec.
 * Posted to Slack.

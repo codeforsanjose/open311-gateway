@@ -2,6 +2,7 @@ package request
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -13,12 +14,15 @@ type cType struct {
 	self cIface
 }
 
-func (cx *cType) init(p cIface, r *rest.Request) error {
+func (cx *cType) load(p cIface, r *rest.Request) error {
 	cx.self = p
 
 	if err := r.DecodeJsonPayload(cx.self); err != nil {
-		return fmt.Errorf("Unable to process request: %s", err)
+		if err.Error() != "JSON payload is empty" {
+			return fmt.Errorf("Unable to process request: %s", err)
+		}
 	}
+	log.Printf("--> parseQP\n")
 	if err := cx.self.parseQP(r); err != nil {
 		return fmt.Errorf("Unable to process request: %s", err)
 	}

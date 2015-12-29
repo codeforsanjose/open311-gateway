@@ -18,11 +18,11 @@ import (
 //                                      Request
 // =======================================================================================
 func processCreate(r *rest.Request) (interface{}, error) {
-	report := CreateReq{}
-	if err := report.init(r); err != nil {
+	op := CreateReq{}
+	if err := op.init(r); err != nil {
 		return nil, err
 	}
-	return report.run()
+	return op.run()
 }
 
 // CreateReq is used to create a report.
@@ -60,15 +60,12 @@ func (c *CreateReq) validate() {
 	if x, err := strconv.ParseInt(c.TypeID, 10, 64); err == nil {
 		c.typeID = int(x)
 	}
-
 	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
 		c.latitude = x
 	}
-
 	if x, err := strconv.ParseFloat(c.Longitude, 64); err == nil {
 		c.longitude = x
 	}
-
 	if x, err := strconv.ParseBool(c.IsAnonymous); err == nil {
 		c.isAnonymous = x
 	}
@@ -80,7 +77,7 @@ func (c *CreateReq) parseQP(r *rest.Request) error {
 }
 
 func (c *CreateReq) init(r *rest.Request) error {
-	c.cType.init(c, r)
+	c.load(c, r)
 	itype, err := router.ServiceProviderInterface(c.typeID)
 	if err != nil {
 		return fmt.Errorf("Cannot determine Service Provider Interface for type: %v", c.typeID)
