@@ -29,7 +29,38 @@ To provide the best user experience, applications should also:
 
 ## Implementation
 
-### Queries
+### Search by Location
+There are two searches by location:
+1. Search by lat/lng.
+2. Search by address.
+
+**Recipe**  
+1. Get the City.
+2. Get the list of service Providers for the City.
+3. Send a "search by location" to each Provider.
+4. Merge the results.
+5. Return results.
+
+
+### Search by Device ID
+
+We have two scenarios:  
+1. The user's app has kept a list of Provider IDs for all previously created reports.  This Provider ID list is submitted with the search request.
+2. The above list is not provided.
+
+**Recipe - Previous Provider List**
+1. Send a "search by Device ID" to each Provider.
+2. Merge the results.
+3. Return the results.
+
+**Recipe - Unknown Previous Providers**
+1. Get the City for the current location (or their "home" location if something like that exists [future]).
+2. Get the list of service Providers for the City.
+3. Send a "search by location" to each Provider.
+4. Merge the results.
+5. Return results.
+
+### Helper Functions
 
 __Services by Location__  
 1. Get City from Geolocation.

@@ -68,9 +68,8 @@ func (c *ServicesReq) run() (interface{}, error) {
 	}
 
 	switch {
-
 	case c.latitude > 24.0 && c.longitude >= -180.0 && c.longitude <= -66.0:
-		c.City, err = geo.GetCity(c.latitude, c.longitude)
+		c.City, err = geo.CityForLatLng(c.latitude, c.longitude)
 		if err != nil {
 			return fail(fmt.Sprintf("Cannot find city for %v:%v - %s", c.Latitude, c.Longitude, err.Error()))
 		}

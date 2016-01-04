@@ -170,28 +170,28 @@ func TestLookupWithRegion(t *testing.T) {
 // 	fmt.Printf("NE: %v | %v   SW: %v | %v\n", ne.Lat, ne.Lng, sw.Lat, sw.Lng)
 // }
 
-func TestGetLatLng(t *testing.T) {
+func TestLatLngForAddr(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestLookupWithRegion <<<<<<<<<<<<<<<<<<<<<<<<<<")
-	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestGetLatLng <<<<<<<<<<<<<<<<<<<<<<<<<<")
+	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestLatLngForAddr <<<<<<<<<<<<<<<<<<<<<<<<<<")
 	addr := "17200 Quail Ct., Morgan Hill, CA"
-	lat, lng, err := GetLatLng(addr)
+	lat, lng, err := LatLngForAddr(addr)
 	if err != nil {
 		t.Fatalf("Lookup error: %v", err)
 	}
 	fmt.Printf("Coordinates: %v | %v\n", lat, lng)
 }
 
-func TestGetAddress(t *testing.T) {
-	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestGetAddress <<<<<<<<<<<<<<<<<<<<<<<<<<")
+func TestAddrForLatLng(t *testing.T) {
+	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestAddrForLatLng <<<<<<<<<<<<<<<<<<<<<<<<<<")
 	var (
 		lat = 37.151181
 		lng = -121.602626
 	)
 
-	addr, err := GetAddress(lat, lng)
+	addr, err := AddrForLatLng(lat, lng)
 	if err != nil {
 		t.Fatalf("Lookup error: %v", err)
 	}
@@ -202,14 +202,14 @@ func TestGetAddress(t *testing.T) {
 	fmt.Printf("Address: %s\n", addr)
 }
 
-func TestGetCity(t *testing.T) {
-	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestGetCity <<<<<<<<<<<<<<<<<<<<<<<<<<")
+func TestCityForLatLng(t *testing.T) {
+	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestCityForLatLng <<<<<<<<<<<<<<<<<<<<<<<<<<")
 	var (
 		lat = 37.151181
 		lng = -121.602626
 	)
 
-	city, err := GetCity(lat, lng)
+	city, err := CityForLatLng(lat, lng)
 	if err != nil {
 		t.Fatalf("Lookup error: %v", err)
 	}

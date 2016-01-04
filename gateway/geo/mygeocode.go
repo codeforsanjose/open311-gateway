@@ -6,9 +6,9 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
-// GetLatLng queries Google for the geolocation of an address.  It returns the lat, lng, and
+// LatLngForAddr queries Google for the geolocation of an address.  It returns the lat, lng, and
 // an error.
-func GetLatLng(addr string) (float64, float64, error) {
+func LatLngForAddr(addr string) (float64, float64, error) {
 	req := &Request{
 		Address:  addr,
 		Provider: GOOGLE,
@@ -21,9 +21,9 @@ func GetLatLng(addr string) (float64, float64, error) {
 	return p.Lat, p.Lng, nil
 }
 
-// GetAddress queries Google for the geolocation of the input latitude and longitude.
+// AddrForLatLng queries Google for the geolocation of the input latitude and longitude.
 // It returns the full address and an error.
-func GetAddress(lat, lng float64) (string, error) {
+func AddrForLatLng(lat, lng float64) (string, error) {
 	loc := Point{lat, lng}
 	req := &Request{
 		Location: &loc,
@@ -44,9 +44,9 @@ func GetAddress(lat, lng float64) (string, error) {
 	return resp.Found, nil
 }
 
-// GetCity queries Google for the geolocation of the input latitude and longitude.
+// CityForLatLng queries Google for the geolocation of the input latitude and longitude.
 // It returns the city, and
-func GetCity(lat, lng float64) (string, error) {
+func CityForLatLng(lat, lng float64) (string, error) {
 	loc := Point{lat, lng}
 	req := &Request{
 		Location: &loc,

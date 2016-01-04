@@ -1,21 +1,60 @@
 ## To Do.todo
 
-* Implement Gingko BDD tests. @done(2015-12-18)
-* Modify report.Create() to use ServiceID and JID. @done(2015-12-28)
-* Consolidate all Create functionality within the request.CreateReq type. @done(2015-12-28)
+* Restructure App to separate back-end interfaces as separate apps, using go-rpc calls.
 * Change request/common.go: error check validate()... do not error check body or query parm conversion.
-* Update RAML file with JSON specs for input and output payloads.
 * Implement report searches:
 	* Single ID
 	* DeviceID
 	* LatLng
 	* Address
+* Update RAML file with JSON specs for input and output payloads.
+* Implement Gingko BDD tests. @done(2015-12-18)
+* Modify report.Create() to use ServiceID and JID. @done(2015-12-28)
+* Consolidate all Create functionality within the request.CreateReq type. @done(2015-12-28)
 * Implement Services API endpoint. @done(2015-12-18)
 	* Bring Google Maps API over. @done(2015-12-18)
 * Modify CitySourced simulator to return the Request ID and Document ID. @done(2015-12-12)
 * Outline the Displatch system. @done(2015-12-14)
 
 ## Log
+
+### 2015.12.30 - Wed
+
+* Renamed geo functions:
+	* LatLngForAddr() -> LatLngForAddr()
+	* AddrForLatLng() -> AddrForLatLng()
+	* CityForLatLng() -> cityForLatLng()
+	
+
+### 2015.12.29 - Tue
+
+* In integration/citysourced.go, created Search structs:
+	* CSSearchLLReq - search by Lat/Lng
+	* CSSearchDIDReq - search by Device ID
+	* CSSearchZipReq - search by a Zip Code
+* Created request/search.go:
+
+
+---
+#### How to Handle Dispatching Searches
+
+**Search by LatLng**
+
+* For now, find the city for the Lat/Lng coordinates, and send a search to all service providers for that city, with the specified coordinates and radius.
+* *Limit the radius - 100m?*
+* __Recipe__
+	* Get City
+
+**Search by Device ID**
+
+* If the request includes a list of previous Service Provider ID's, then use it.
+* Use the current location (or specified address), and query all Service Providers for that City for the Device ID.
+
+**Search by Zip**
+
+* Easy with CitySourced...
+
+---
 
 ### 2015.12.28 - Mon
 
@@ -90,7 +129,7 @@ Thoughts on using the JID for most/all requests:
 * Added "getCity()" function to mygeocode.go.  This scans through the Google response and retrieves the city.  We will need this for quickly mapping the Mobile Apps geoloc -> city -> Service Providers -> list of Services.
 * Test OK.
 * Saved to GIT.
-* Added a GetCity() func in the "geo" package.  This takes a latitude and longitude, and returns the City.
+* Added a CityForLatLng() func in the "geo" package.  This takes a latitude and longitude, and returns the City.
 * Test OK.
 * Saved to GIT.
 * "/services" endpoint working - returning the list of services for San Jose.  Returns 500 for city: "Morgan Hill", with error: The city "Morgan Hill" is not serviced by this Gateway.

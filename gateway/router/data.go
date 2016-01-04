@@ -1,7 +1,7 @@
 package router
 
 import (
-	"Gateway311/common"
+	"Gateway311/gateway/common"
 	"encoding/json"
 	"errors"
 	"fmt"
