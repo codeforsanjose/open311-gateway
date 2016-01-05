@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"log"
 	"net/rpc"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func main() {
@@ -63,8 +65,13 @@ func main() {
 	}
 	fmt.Printf("%+v\n", creq)
 	var cresp NCreateResponse
-	err = client.Call("Create.Run", &creq, &cresp)
-	fmt.Printf("Message: %s\n%v\n", cresp.Message, cresp)
+	replyCall := client.Go("Create.Run", &creq, &cresp, nil)
+	answer := <-replyCall.Done
+	fmt.Println(spew.Sdump(replyCall))
+	if replyCall.Error != nil {
+		log.Fatal("[Create] error: ", err)
+	}
+	fmt.Printf("Message: %s\n%v\n", answer.Reply.(*NCreateResponse).Message, answer.Reply.(*NCreateResponse))
 }
 
 type Args struct {

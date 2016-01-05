@@ -23,6 +23,9 @@
 ### 2016.01.05 - Tue
 
 * Wrote up "EngineAndAdapters.md" file outlining design of the Engine / Adapter system.
+* Saved to GIT.
+* Changed _Test/CSclient.go to use asynchronous API calls.  Working OK.
+* Saved to GIT.
 * 
 
 ### 2016.01.04 - Mon
