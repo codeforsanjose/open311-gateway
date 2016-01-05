@@ -1,6 +1,8 @@
 ## To Do.todo
 
-* Restructure App to separate back-end interfaces as separate apps, using go-rpc calls.
+* CitySourced Adapter - load config.json data file.
+* Get Create working again.
+* Separate back-end interfaces as separate apps, using go-rpc calls. @done(2016-01-05)
 * Change request/common.go: error check validate()... do not error check body or query parm conversion.
 * Implement report searches:
 	* Single ID
@@ -17,6 +19,20 @@
 * Outline the Displatch system. @done(2015-12-14)
 
 ## Log
+
+### 2016.01.05 - Tue
+
+* Wrote up "EngineAndAdapters.md" file outlining design of the Engine / Adapter system.
+* 
+
+### 2016.01.04 - Mon
+
+* Created separate directories for the Engine and Adapters, and separated the existing source code.
+* Saved to GIT.
+* Worked on design of Engine/Adapter RPC system - responsibilities, design.
+* Got the CitySourced client rudimentarily working.  
+* Put all "Native" structs into a the request/structs.go file.
+* 
 
 ### 2015.12.30 - Wed
 

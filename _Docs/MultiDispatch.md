@@ -31,9 +31,6 @@ Idea: processXX() function sends a func() back on the "resp" channel.  This func
 
 OR: send an interface{} back on the channel (pointer to a result struct), and use type assertion to determine the type of struct.  Or maybe send an interface type having the appropriate methods to convert / merge back?
 
-
-
-
 ---
 ## Search
 ### Search by Location

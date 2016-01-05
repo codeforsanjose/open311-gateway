@@ -1,9 +1,9 @@
 package request
 
 import (
-	"Gateway311/common"
-	"Gateway311/geo"
-	"Gateway311/router"
+	"Gateway311/gateway/common"
+	"Gateway311/gateway/geo"
+	"Gateway311/gateway/router"
 	"fmt"
 	"log"
 	"strconv"
