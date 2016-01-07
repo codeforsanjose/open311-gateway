@@ -1,6 +1,7 @@
 ## To Do.todo
 
-* CitySourced Adapter - load config.json data file.
+* Custom Type for ServiceID.
+* CitySourced Adapter - load config.json data file. @done(2016-01-05)
 * Get Create working again.
 * Separate back-end interfaces as separate apps, using go-rpc calls. @done(2016-01-05)
 * Change request/common.go: error check validate()... do not error check body or query parm conversion.
@@ -20,13 +21,19 @@
 
 ## Log
 
+### 2016.01.06 - Wed
+
+* Worked out JSON marshalling for the Service ID custom type.
+* Need to rearrange the citysourced/data/config.json file again... need to expand the Area (City) section.
+* Saved to GIT.
+* 
+
 ### 2016.01.05 - Tue
 
 * Wrote up "EngineAndAdapters.md" file outlining design of the Engine / Adapter system.
 * Saved to GIT.
 * Changed _Test/CSclient.go to use asynchronous API calls.  Working OK.
 * Saved to GIT.
-* 
 
 ### 2016.01.04 - Mon
 

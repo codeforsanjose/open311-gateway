@@ -61,7 +61,7 @@ func main() {
 		Email:       "jameskhaskell@gmail.com",
 		Phone:       "4445556666",
 		IsAnonymous: false,
-		Description: "There's an old zebra on the top of the  building.",
+		Description: "There's an tattered zebra stuck on the side of the  building.",
 	}
 	fmt.Printf("%+v\n", creq)
 	var cresp NCreateResponse

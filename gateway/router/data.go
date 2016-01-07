@@ -192,25 +192,12 @@ func (rd RouteData) String() string {
 // Index() builds all required map indexes: Services by City,
 func (rd *RouteData) index() error {
 	fmt.Printf("[RouteData] building all indexes:\n")
-	rd.indexServicesByLoc()
-	rd.indexServiceProviderByID()
 	rd.indexID()
 	return nil
 }
 
-func (rd *RouteData) indexServicesByLoc() error {
-	fmt.Printf("    building ServicesByLoc index...\n")
-
-	return nil
-}
-
-func (rd *RouteData) indexServiceProviderByID() error {
-	fmt.Printf("    building ServiceProviderByID index...\n")
-	return nil
-}
-
 func (rd *RouteData) indexID() error {
-	fmt.Printf("    building areaID index...\n")
+	fmt.Printf("    building indexes...\n")
 	for areaKey, area := range rd.Areas {
 		rd.areaID[area.ID] = area
 		rd.cityServices[areaKey] = make([]*Service, 0)

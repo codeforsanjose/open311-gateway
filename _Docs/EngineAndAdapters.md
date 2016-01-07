@@ -24,6 +24,25 @@ The Engine's Router needs to know some information about the Providers, and henc
 	* For each returned result, merge into a master Native struct.
 	* Marshal the Native structs into the reply, and respond.
 
+### Adapter
+
+#### Data
+
+Structure:
+
+* serviceAreas
+	* {city}
+		* id
+		* name
+		* url
+		* apiVersion
+		* accessKey
+		* services[]
+			* id
+			* name
+			* catg[]
+
+
 
 ### ToDo.todo
 
