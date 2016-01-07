@@ -31,16 +31,19 @@ The Engine's Router needs to know some information about the Providers, and henc
 Structure:
 
 * serviceAreas
-	* {city}
+	* map[lower case city name]
 		* id
 		* name
-		* url
-		* apiVersion
-		* accessKey
-		* services[]
+		* providers[]
 			* id
 			* name
-			* catg[]
+			* url
+			* apiVersion
+			* accessKey
+			* services[]
+				* id
+				* name
+				* catg[]
 
 
 

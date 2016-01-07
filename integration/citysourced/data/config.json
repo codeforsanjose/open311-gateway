@@ -8,8 +8,11 @@
 	],
 	"serviceAreas": {
 		"san jose": {
-			"citysourced": {
+			"id": 1,
+			"name": "San Jose",
+			"providers": [{
 				"id": 1,
+				"ids": "san jose",
 				"name": "CitySourced - SJ",
 				"url": "http://localhost:5050/api/",
 				"apiVersion": "1",
@@ -155,9 +158,9 @@
 					"name": "Illegally Parked in Driveway",
 					"catg": []
 				}]
-			},
-      "citysourced2": {
+			}, {
 				"id": 2,
+				"ids": "san jose",
 				"name": "CitySourced2 - SJ",
 				"interfaceType": "CitySourced",
 				"url": "http://localhost:5050/api/",
@@ -280,7 +283,7 @@
 					"name": "Yard Waste Removal",
 					"catg": []
 				}]
-			}
+			}]
 		}
 	}
 }

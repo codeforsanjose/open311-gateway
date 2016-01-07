@@ -26,7 +26,7 @@
 * Worked out JSON marshalling for the Service ID custom type.
 * Need to rearrange the citysourced/data/config.json file again... need to expand the Area (City) section.
 * Saved to GIT.
-* 
+* Rearranged citysourced/data/config.json.   
 
 ### 2016.01.05 - Tue
 
