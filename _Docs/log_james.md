@@ -21,6 +21,14 @@
 
 ## Log
 
+### 2016.01.07 - Thu
+
+* Tried an alternative layout using the ID's as keys in the Adapter/config.json file.  This (theoretically) would have been convenient, but the JSON decoder doesn't support anything but strings for the "keys".  Not working well.   
+* Revised config.json again... switched back to mostly lists.
+* integration/citysourced/data/data.go working.  Data being loaded successfully.  Service list is of the NService type, so it will be very efficient to look up and return to the Engine.
+* Test OK, for what it is.
+* Saved to GIT.
+
 ### 2016.01.06 - Wed
 
 * Worked out JSON marshalling for the Service ID custom type.

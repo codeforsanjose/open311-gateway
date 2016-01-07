@@ -1,12 +1,15 @@
 package request
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // ================================================================================================
 //                                      SERVICES
 // ================================================================================================
 
-// Services is the RPC container struct for the Services service.  This service
+// Service is the RPC container struct for the Services service.  This service
 // providers a directory of services (i.e. report categories) available for each
 // CitySourced city.
 type Service struct{}
@@ -21,5 +24,25 @@ func (c *Service) Run(rqst *NServiceRequest, resp *NServices) error {
 	// r, err := irqst.Process()
 	// r.makeN(resp)
 	fmt.Printf("  --> resp: %p\n%s\n", resp, *resp)
+	return nil
+}
+
+// ------------------------------- SID -------------------------------
+
+// UnmarshalJSON implements the conversion from the JSON "ID" to the ServiceID struct.
+func (srv *NService) UnmarshalJSON(value []byte) error {
+	type T struct {
+		ID         int
+		Name       string
+		Categories []string `json:"catg"`
+	}
+	var t T
+	err := json.Unmarshal(value, &t)
+	if err != nil {
+		return err
+	}
+	srv.ID = t.ID
+	srv.Name = t.Name
+	srv.Categories = t.Categories
 	return nil
 }

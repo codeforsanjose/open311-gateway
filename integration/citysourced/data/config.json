@@ -7,12 +7,10 @@
 		"Trash"
 	],
 	"serviceAreas": {
-		"san jose": {
-			"id": 1,
+		"SJ": {
 			"name": "San Jose",
 			"providers": [{
 				"id": 1,
-				"ids": "san jose",
 				"name": "CitySourced - SJ",
 				"url": "http://localhost:5050/api/",
 				"apiVersion": "1",
@@ -160,7 +158,6 @@
 				}]
 			}, {
 				"id": 2,
-				"ids": "san jose",
 				"name": "CitySourced2 - SJ",
 				"interfaceType": "CitySourced",
 				"url": "http://localhost:5050/api/",

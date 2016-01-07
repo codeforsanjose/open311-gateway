@@ -8,11 +8,12 @@ import (
 	"strings"
 
 	"Gateway311/gateway/common"
+	"Gateway311/integration/citysourced/request"
 
 	"github.com/davecgh/go-spew/spew"
 )
 
-const beIface = "CS"
+const iFID = "CS"
 
 var (
 	providerData ProviderData
@@ -24,18 +25,14 @@ func ShowProviderData() string {
 }
 
 // Services returns a list of all services available for the specified City.
-func Services(city string) ([]*Service, error) {
+func Services(city string) ([]*request.NService, error) {
 	return providerData.Services(city)
 }
 
-// func Services(city string) ([]*request.NService, error) {
-// 	return providerData.Services(city)
+// // ServiceProviders returns a list of all Service Providers for the specified City.
+// func ServiceProviders(city string) ([]*Provider, error) {
+// 	return providerData.ServiceProviders(city)
 // }
-
-// ServiceProviders returns a list of all Service Providers for the specified City.
-func ServiceProviders(city string) ([]*Provider, error) {
-	return providerData.ServiceProviders(city)
-}
 
 // ServiceProvider returns a pointer to the Provider for the specified Provider ID.
 func ServiceProvider(sid int) (*Provider, error) {
@@ -76,19 +73,17 @@ func readConfig(filePath string) error {
 // ProviderData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* city name.
 type ProviderData struct {
 	Loaded     bool
-	Categories []string                        `json:"serviceCategories"`
-	Areas      map[string]map[string]*Provider `json:"serviceAreas"`
+	Categories []string         `json:"serviceCategories"`
+	Areas      map[string]*Area `json:"serviceAreas"`
 
-	providerID   map[int]*Provider
-	serviceID    map[int]*Service
-	cityServices map[string][]*Service
-	// serviceID       map[int]*request.NService
-	// cityServices    map[string][]*request.NService
-	serviceProvider map[int]*Provider
+	providerID      map[int]*Provider              // Provider ID -> Provider
+	serviceID       map[int]*request.NService      // Service ID -> Service
+	cityServices    map[string][]*request.NService // City Name (lowercase) -> List of Services
+	serviceProvider map[int]*Provider              // Service ID -> Provider
 }
 
 // Services returns a list of all services available for the specified City.
-func (rd *ProviderData) Services(city string) ([]*Service, error) {
+func (rd *ProviderData) Services(city string) ([]*request.NService, error) {
 	lcity := strings.ToLower(city)
 	fmt.Printf("   Services for: %s...\n", lcity)
 	if !rd.isValidCity(lcity) {
@@ -98,30 +93,20 @@ func (rd *ProviderData) Services(city string) ([]*Service, error) {
 	return rd.cityServices[lcity], nil
 }
 
-// func (rd *ProviderData) Services(city string) ([]*request.NService, error) {
+// // ServiceProviders returns a list of all Service Providers for the specified City.
+// func (rd *ProviderData) ServiceProviders(city string) ([]*Provider, error) {
 // 	lcity := strings.ToLower(city)
-// 	fmt.Printf("   Services for: %s...\n", lcity)
+// 	fmt.Printf("   ServiceProviders for: %q\n", lcity)
 // 	if !rd.isValidCity(lcity) {
 // 		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
 // 	}
-// 	fmt.Printf("      data length: %d\n", len(rd.cityServices[lcity]))
-// 	return rd.cityServices[lcity], nil
+// 	var p []*Provider
+// 	for _, v := range rd.Areas[strings.ToLower(city)] {
+// 		p = append(p, v)
+// 	}
+// 	fmt.Printf("[ServiceProviders] returning %d records.\n", len(p))
+// 	return p, nil
 // }
-
-// ServiceProviders returns a list of all Service Providers for the specified City.
-func (rd *ProviderData) ServiceProviders(city string) ([]*Provider, error) {
-	lcity := strings.ToLower(city)
-	fmt.Printf("   ServiceProviders for: %q\n", lcity)
-	if !rd.isValidCity(lcity) {
-		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
-	}
-	var p []*Provider
-	for _, v := range rd.Areas[strings.ToLower(city)] {
-		p = append(p, v)
-	}
-	fmt.Printf("[ServiceProviders] returning %d records.\n", len(p))
-	return p, nil
-}
 
 // ServiceProvider returns a pointer to the Provider for the specified Provider ID.
 func (rd *ProviderData) ServiceProvider(id int) (*Provider, error) {
@@ -156,19 +141,24 @@ func (rd *ProviderData) index() error {
 }
 
 func (rd *ProviderData) indexID() error {
+	// cnvInt := func(s string) int {
+	// 	x, _ := strconv.ParseInt(s, 10, 64)
+	// 	return int(x)
+	// }
 	fmt.Printf("    building indexes...\n")
 	for areaKey, area := range rd.Areas {
-		rd.cityServices[areaKey] = make([]*Service, 0)
-		// rd.cityServices[areaKey] = make([]*request.NService, 0)
-		for _, provider := range area {
+		rd.cityServices[areaKey] = make([]*request.NService, 0)
+		for _, provider := range area.Providers {
 			rd.providerID[provider.ID] = provider
 			// fmt.Println("*** BUILDING SERVICES")
 			for _, service := range provider.Services {
-				service.ProviderID = provider.ID
 				rd.cityServices[areaKey] = append(rd.cityServices[areaKey], service)
-				// fmt.Printf("   %s ===> %+v\n", serviceName, service)
+				// fmt.Printf("   %s ===> %+v\n", service.Name, service)
 				rd.serviceID[service.ID] = service
 				rd.serviceProvider[service.ID] = provider
+				service.IFID = iFID
+				service.AreaID = areaKey
+				service.ProviderID = provider.ID
 			}
 		}
 	}
@@ -177,10 +167,8 @@ func (rd *ProviderData) indexID() error {
 
 func (rd *ProviderData) init() {
 	rd.providerID = map[int]*Provider{}
-	rd.serviceID = map[int]*Service{}
-	rd.cityServices = map[string][]*Service{}
-	// rd.serviceID = map[int]*request.NService{}
-	// rd.cityServices = map[string][]*request.NService{}
+	rd.serviceID = map[int]*request.NService{}
+	rd.cityServices = map[string][]*request.NService{}
 	rd.serviceProvider = map[int]*Provider{}
 }
 
@@ -195,7 +183,7 @@ func (rd ProviderData) String() string {
 	}
 	ls.AddS("INDEX: serviceID\n")
 	for k, v := range rd.serviceID {
-		ls.AddF("   %-4d (%t)  %s\n", k, k == v.ID, v.Name)
+		ls.AddF("   %-4d %s\n", k, v.Name)
 	}
 	ls.AddS("INDEX: cityServices\n")
 	for k, v := range rd.cityServices {
@@ -206,7 +194,7 @@ func (rd ProviderData) String() string {
 	}
 	ls.AddS("INDEX: serviceProvider\n")
 	for k, v := range rd.serviceProvider {
-		ls.AddF("   %-4d %-50.50s  %-40s\n", rd.serviceID[k].ID, rd.serviceID[k].Name, v.Name)
+		ls.AddF("   %4d  %-50.50s  %-40s\n", k, rd.serviceID[k].Name, v.Name)
 	}
 	ls.AddS("\n--- CATEGORIES ---\n")
 	for i, v := range rd.Categories {
@@ -214,8 +202,8 @@ func (rd ProviderData) String() string {
 	}
 	ls.AddS("\n---AREAS ---\n")
 	for _, v := range rd.Areas {
-		for k2, v2 := range v {
-			ls.AddF("[%s]\n%s\n", k2, v2)
+		for _, v2 := range v.Providers {
+			ls.AddF("%s\n", v2)
 		}
 	}
 	return ls.Box(90)
@@ -226,16 +214,33 @@ func (rd *ProviderData) isValidCity(city string) bool {
 	return ok
 }
 
+// ------------------------------- Area -------------------------------
+
+// Area is a Service Area.  It contains an index list of all of the Service Providers for this Area.
+type Area struct {
+	Name      string      `json:"name"`
+	Providers []*Provider `json:"providers"`
+}
+
+func (a Area) String() string {
+	ls := new(common.LogString)
+	ls.AddF("%s\n", a.Name)
+	for _, v := range a.Providers {
+		ls.AddF("%s\n", v)
+	}
+	return ls.Box(85)
+}
+
 // ------------------------------- Provider -------------------------------
 
 // Provider is the data for each Service Provider.  It contains an index list of all of the Services provided by this Provider.
 type Provider struct {
-	ID         int        `json:"id"`
-	Name       string     `json:"name"`
-	URL        string     `json:"url"`
-	APIVersion string     `json:"apiVersion"`
-	Key        string     `json:"key"`
-	Services   []*Service `json:"services"`
+	ID         int                 //
+	Name       string              `json:"name"`
+	URL        string              `json:"url"`
+	APIVersion string              `json:"apiVersion"`
+	Key        string              `json:"key"`
+	Services   []*request.NService `json:"services"`
 	// Services   []*request.NService `json:"services"`
 }
 
@@ -248,19 +253,4 @@ func (p Provider) String() string {
 		ls.AddF("   %s\n", v)
 	}
 	return ls.Box(80)
-}
-
-// ------------------------------- Service -------------------------------
-
-// Service is a map of the
-type Service struct {
-	ID         int      `json:"id"`
-	ProviderID int      `json:"providerId"`
-	Name       string   `json:"name"`
-	Categories []string `json:"catg"`
-}
-
-func (s Service) String() string {
-	r := fmt.Sprintf("   %4d %4d  %-40s  %v", s.ID, s.ProviderID, s.Name, s.Categories)
-	return r
 }

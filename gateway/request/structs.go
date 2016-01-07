@@ -3,8 +3,6 @@ package request
 import (
 	"Gateway311/gateway/common"
 	"fmt"
-	"strconv"
-	"strings"
 )
 
 // =======================================================================================
@@ -54,7 +52,7 @@ func (c NServices) String() string {
 
 // ------------------------------- Service -------------------------------
 
-// NService represents a Service.  The ID is a combination of the BackEnd Type (BEIface),
+// NService represents a Service.  The ID is a combination of the BackEnd Type (IFID),
 // the AreaID (i.e. the City id), ProviderID (in case the provider has multiple interfaces),
 // and the Service ID.
 type NService struct {
@@ -64,7 +62,7 @@ type NService struct {
 }
 
 func (s NService) String() string {
-	r := fmt.Sprintf("   %3s %4d %4d %4d  %-40s  %v", s.BEIface, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
+	r := fmt.Sprintf("   %s-%s-%d-%d  %-40s  %v", s.IFID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
 	return r
 }
 
@@ -73,30 +71,15 @@ func (s NService) String() string {
 // ServiceID provides the JSON marshalling conversion between the JSON "ID" and
 // the Backend Interface Type, AreaID (City id), ProviderID, and Service ID.
 type ServiceID struct {
-	BEIface    string
-	AreaID     int
+	IFID       string
+	AreaID     string
 	ProviderID int
 	ID         int
 }
 
-// UnmarshalJSON implements the conversion from the JSON "ID" to the ServiceID struct.
-func (s *ServiceID) UnmarshalJSON(value []byte) error {
-	cnvInt := func(x string) int {
-		y, _ := strconv.ParseInt(x, 10, 64)
-		return int(y)
-	}
-	parts := strings.Split(strings.Trim(string(value), "\" "), "-")
-	s.BEIface = parts[0]
-	s.AreaID = cnvInt(parts[1])
-	s.ProviderID = cnvInt(parts[2])
-	s.ID = cnvInt(parts[3])
-	return nil
-}
-
-// MarshalJSON implements the conversion from the ServiceID struct to the JSON "ID".
-func (s ServiceID) MarshalJSON() ([]byte, error) {
-	fmt.Printf("  Marshaling s: %#v\n", s)
-	return []byte(fmt.Sprintf("\"%s-%d-%d-%d\"", s.BEIface, s.AreaID, s.ProviderID, s.ID)), nil
+// MID creates the string
+func (s ServiceID) MID() string {
+	return fmt.Sprintf("\"%s-%s-%d-%d\"", s.IFID, s.AreaID, s.ProviderID, s.ID)
 }
 
 // =======================================================================================
