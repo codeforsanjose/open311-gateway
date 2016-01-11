@@ -1,7 +1,9 @@
 package request
 
 import (
-	"encoding/json"
+	"Gateway311/integration/citysourced/data"
+	"Gateway311/integration/citysourced/structs"
+	"_sketches/spew"
 	"fmt"
 )
 
@@ -14,35 +16,18 @@ import (
 // CitySourced city.
 type Service struct{}
 
-// Run mashals and sends the Service request to the proper back-end, and returns
-// the response in Native format.
-func (c *Service) Run(rqst *NServiceRequest, resp *NServices) error {
+// ServicesForCity fills resp with a list of services for the specifed city.
+func (c *Service) ServicesForCity(rqst *structs.NServiceRequest, resp structs.NServices) error {
 	fmt.Printf("resp: %p\n", resp)
 	fmt.Println(rqst)
 
-	// irqst, err := c.makeI(rqst)
-	// r, err := irqst.Process()
-	// r.makeN(resp)
-	fmt.Printf("  --> resp: %p\n%s\n", resp, *resp)
-	return nil
-}
-
-// ------------------------------- SID -------------------------------
-
-// UnmarshalJSON implements the conversion from the JSON "ID" to the ServiceID struct.
-func (srv *NService) UnmarshalJSON(value []byte) error {
-	type T struct {
-		ID         int
-		Name       string
-		Categories []string `json:"catg"`
+	x, err := data.ServicesForCity(rqst.City)
+	if err == nil {
+		resp = x
+		fmt.Printf("  --> resp: %p\n", &resp)
+		fmt.Printf("      %s\n", spew.Sdump(resp))
+	} else {
+		fmt.Printf("[ServicesForCity]: error: %s\n", err)
 	}
-	var t T
-	err := json.Unmarshal(value, &t)
-	if err != nil {
-		return err
-	}
-	srv.ID = t.ID
-	srv.Name = t.Name
-	srv.Categories = t.Categories
-	return nil
+	return err
 }

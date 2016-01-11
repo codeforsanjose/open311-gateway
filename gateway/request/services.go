@@ -128,5 +128,5 @@ func (s *ServiceID) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements the conversion from the ServiceID struct to the JSON "ID".
 func (s ServiceID) MarshalJSON() ([]byte, error) {
 	fmt.Printf("  Marshaling s: %#v\n", s)
-	return []byte(s.MID()), nil
+	return []byte(fmt.Sprintf("\"%s\"", s.MID())), nil
 }

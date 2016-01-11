@@ -1,4 +1,4 @@
-package request
+package structs
 
 import (
 	"Gateway311/gateway/common"
@@ -43,9 +43,8 @@ type NServices []NService
 func (c NServices) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services Response\n")
-	ls.AddS(" IFace Area Prov  ID  Desc                                             Categories\n")
 	for _, s := range c {
-		ls.AddS(s.String())
+		ls.AddF("%s\n", s)
 	}
 	return ls.Box(80)
 }
@@ -79,7 +78,7 @@ type ServiceID struct {
 
 // MID creates the string
 func (s ServiceID) MID() string {
-	return fmt.Sprintf("\"%s-%s-%d-%d\"", s.IFID, s.AreaID, s.ProviderID, s.ID)
+	return fmt.Sprintf("%s-%s-%d-%d", s.IFID, s.AreaID, s.ProviderID, s.ID)
 }
 
 // =======================================================================================

@@ -2,6 +2,7 @@ package request
 
 import (
 	"Gateway311/gateway/common"
+	"Gateway311/integration/citysourced/structs"
 	"bytes"
 	"encoding/xml"
 	"fmt"
@@ -18,7 +19,7 @@ type Create struct{}
 
 // Run mashals and sends the Create request to the proper back-end, and returns
 // the response in Native format.
-func (c *Create) Run(rqst *NCreateRequest, resp *NCreateResponse) error {
+func (c *Create) Run(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
 	fmt.Printf("resp: %p\n", resp)
 	fmt.Println(rqst)
 	irqst, err := c.makeI(rqst)
@@ -28,7 +29,7 @@ func (c *Create) Run(rqst *NCreateRequest, resp *NCreateResponse) error {
 	return err
 }
 
-func (c *Create) makeI(rqst *NCreateRequest) (*ICreateReq, error) {
+func (c *Create) makeI(rqst *structs.NCreateRequest) (*ICreateReq, error) {
 	// sp, err := router.ServiceProvider(c.TypeIDV)
 	// if err != nil {
 	// 	return nil, fmt.Errorf("Unable to retrieve Service Provider for Service Type: %v", c.TypeIDV)
@@ -146,8 +147,8 @@ type ICreateReqResp struct {
 }
 
 // makeN converts the CitySourced data response for a Create request into
-// the Native NCreateResponse format.
-func (u ICreateReqResp) makeN(resp *NCreateResponse) {
+// the Native structs.NCreateResponse format.
+func (u ICreateReqResp) makeN(resp *structs.NCreateResponse) {
 	resp.Message = u.Message
 	resp.ID = u.ID
 	resp.AuthorID = u.AuthorID

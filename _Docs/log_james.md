@@ -21,6 +21,15 @@
 
 ## Log
 
+### 2016.01.11 - Mon
+
+* In integration/citysourced/data/data.go;
+	* All indexes working now.
+	* Deleted the "serviceProvider" index... it is no longer needed with the new Master Service IDs.
+	* Added a Santa Clara section of test data in config.json.
+* Moved the structs.go file into it's own package: integration/citysourced/structs/structs.go.  Had a circular import issue.
+* Saved to GIT.
+	
 ### 2016.01.07 - Thu
 
 * Tried an alternative layout using the ID's as keys in the Adapter/config.json file.  This (theoretically) would have been convenient, but the JSON decoder doesn't support anything but strings for the "keys".  Not working well.   
