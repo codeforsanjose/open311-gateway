@@ -1,6 +1,9 @@
 ## To Do.todo
 
-* Custom Type for ServiceID.
+* Implement Services cache on Engine.
+	* Quickly lookup location -> city -> Service list.
+	* 
+* Custom Type for ServiceID. @done(2016-01-11)
 * CitySourced Adapter - load config.json data file. @done(2016-01-05)
 * Get Create working again.
 * Separate back-end interfaces as separate apps, using go-rpc calls. @done(2016-01-05)
@@ -30,6 +33,8 @@
 * Moved the structs.go file into it's own package: integration/citysourced/structs/structs.go.  Had a circular import issue.
 * Saved to GIT.
 * RPC test working OK with Services API.
+* Saved to GIT.
+* Added second CitySourced integration for testing purpose.
 * Saved to GIT.
 	
 ### 2016.01.07 - Thu
