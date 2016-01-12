@@ -21,7 +21,7 @@ func LatLngForAddr(addr string) (float64, float64, error) {
 	return p.Lat, p.Lng, nil
 }
 
-// AddrForLatLng queries Google for the geolocation of the input latitude and longitude.
+// AddrForLatLng queries Google for the geolocation of the input LatitudeV and LongitudeV.
 // It returns the full address and an error.
 func AddrForLatLng(lat, lng float64) (string, error) {
 	loc := Point{lat, lng}
@@ -44,7 +44,7 @@ func AddrForLatLng(lat, lng float64) (string, error) {
 	return resp.Found, nil
 }
 
-// CityForLatLng queries Google for the geolocation of the input latitude and longitude.
+// CityForLatLng queries Google for the geolocation of the input LatitudeV and LongitudeV.
 // It returns the city, and
 func CityForLatLng(lat, lng float64) (string, error) {
 	loc := Point{lat, lng}

@@ -3,6 +3,7 @@ package request
 import (
 	"Gateway311/gateway/common"
 	"Gateway311/gateway/router"
+	"Gateway311/gateway/structs"
 	"_sketches/spew"
 	"math"
 
@@ -26,7 +27,7 @@ func processCreate(r *rest.Request) (interface{}, error) {
 
 // CreateReq is used to create a report.
 type CreateReqBase struct {
-	API
+	structs.API
 	ID          string  `json:"id" xml:"id"`
 	Type        string  `json:"type" xml:"type"`
 	TypeID      string  `json:"typeId" xml:"typeId"`
@@ -34,10 +35,10 @@ type CreateReqBase struct {
 	DeviceType  string  `json:"deviceType" xml:"deviceType"`
 	DeviceModel string  `json:"deviceModel" xml:"deviceModel"`
 	DeviceID    string  `json:"deviceID" xml:"deviceID"`
-	Latitude    string  `json:"latitude" xml:"latitude"`
-	latitude    float64 //
-	Longitude   string  `json:"longitude" xml:"longitude"`
-	longitude   float64 //
+	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
+	LatitudeV    float64 //
+	Longitude   string  `json:"LongitudeV" xml:"LongitudeV"`
+	LongitudeV   float64 //
 	Address     string  `json:"address" xml:"address"`
 	City        string  `json:"city" xml:"city"`
 	State       string  `json:"state" xml:"state"`
@@ -57,10 +58,10 @@ func (c CreateReqBase) String() string {
 	ls.AddS("Report - Create\n")
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
 	ls.AddF("Request - type: %q  id: %q(%v)\n", c.Type, c.TypeID, c.TypeIDV)
-	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.latitude, c.Latitude, c.longitude, c.Longitude)
+	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
 	ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
-	if math.Abs(c.latitude) > 1 {
-		ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.latitude, c.Latitude, c.longitude, c.Longitude)
+	if math.Abs(c.LatitudeV) > 1 {
+		ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
 	}
 	if len(c.City) > 1 {
 		ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
@@ -83,10 +84,10 @@ func (c *CreateReq) validate() {
 		c.TypeIDV = int(x)
 	}
 	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
-		c.latitude = x
+		c.LatitudeV = x
 	}
 	if x, err := strconv.ParseFloat(c.Longitude, 64); err == nil {
-		c.longitude = x
+		c.LongitudeV = x
 	}
 	if x, err := strconv.ParseBool(c.IsAnonymous); err == nil {
 		c.isAnonymous = x
@@ -143,8 +144,8 @@ func (c *CreateReq) toCreateCS() (*integration.CSReport, error) {
 		DeviceID:          c.DeviceID,
 		RequestType:       c.Type,
 		RequestTypeID:     c.TypeIDV,
-		Latitude:          c.latitude,
-		Longitude:         c.longitude,
+		Latitude:          c.LatitudeV,
+		Longitude:         c.LongitudeV,
 		Description:       c.Description,
 		AuthorNameFirst:   c.FirstName,
 		AuthorNameLast:    c.LastName,

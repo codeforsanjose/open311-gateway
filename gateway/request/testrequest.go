@@ -17,8 +17,8 @@ type TestReport struct {
 	DeviceType  string  `json:"deviceType" xml:"deviceType"`
 	DeviceModel string  `json:"deviceModel" xml:"deviceModel"`
 	DeviceID    string  `json:"deviceID" xml:"deviceID"`
-	Latitude    float64 `json:"latitude" xml:"latitude"`
-	Longitude   float64 `json:"longitude" xml:"longitude"`
+	Latitude    float64 `json:"LatitudeV" xml:"LatitudeV"`
+	Longitude   float64 `json:"LongitudeV" xml:"LongitudeV"`
 	Address     string  `json:"address" xml:"address"`
 	City        string  `json:"city" xml:"city"`
 	State       string  `json:"state" xml:"state"`

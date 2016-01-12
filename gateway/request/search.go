@@ -3,6 +3,7 @@ package request
 import (
 	"Gateway311/gateway/common"
 	"Gateway311/gateway/geo"
+	"Gateway311/gateway/structs"
 	"_sketches/spew"
 
 	"fmt"
@@ -35,28 +36,28 @@ type SearchReq struct {
 	cIface //
 	// JID    int    `json:"jid" xml:"jid"`
 	bkend string //
-	SearchReqBase
+	structs.SearchReqBase
 }
 
 func (c *SearchReq) validate() {
 	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
-		c.latitude = x
+		c.LatitudeV = x
 	}
 	if x, err := strconv.ParseFloat(c.Longitude, 64); err == nil {
-		c.longitude = x
+		c.LongitudeV = x
 	}
 	if x, err := strconv.ParseInt(c.Radius, 10, 64); err == nil {
 		switch {
 		case int(x) < searchRadiusMin:
-			c.radius = searchRadiusMin
+			c.RadiusV = searchRadiusMin
 		case int(x) > searchRadiusMax:
-			c.radius = searchRadiusMax
+			c.RadiusV = searchRadiusMax
 		default:
-			c.radius = int(x)
+			c.RadiusV = int(x)
 		}
 	}
 	if x, err := strconv.ParseInt(c.MaxResults, 0, 64); err == nil {
-		c.maxResults = int(x)
+		c.MaxResultsV = int(x)
 	}
 	return
 }
@@ -71,9 +72,9 @@ func (c *SearchReq) init(r *rest.Request) error {
 }
 
 func (c *SearchReq) run() (interface{}, error) {
-	city, err := geo.CityForLatLng(c.latitude, c.longitude)
+	city, err := geo.CityForLatLng(c.LatitudeV, c.LongitudeV)
 	if err != nil {
-		return nil, fmt.Errorf("The lat/lng: %v:%v is not in a city", c.latitude, c.longitude)
+		return nil, fmt.Errorf("The lat/lng: %v:%v is not in a city", c.LatitudeV, c.LongitudeV)
 	}
 	fmt.Printf("[toCSSearchLL] city: %q\n", city)
 
@@ -102,8 +103,8 @@ func (c SearchReq) String() string {
 	ls.AddF("Bkend: %s\n", c.bkend)
 	ls.AddF("Device ID: %s\n", c.DeviceID)
 	ls.AddF("Location\n")
-	if math.Abs(c.latitude) > 1 {
-		ls.AddF("   lat: %v  lon: %v\n", c.latitude, c.longitude)
+	if math.Abs(c.LatitudeV) > 1 {
+		ls.AddF("   lat: %v  lon: %v\n", c.LatitudeV, c.LongitudeV)
 	}
 	if len(c.City) > 1 {
 		ls.AddF("   \n", c.Address)
@@ -126,8 +127,8 @@ func (c SearchReq) String() string {
 // 	// DeviceID:          c.DeviceID,
 // 	// RequestType:       c.Type,
 // 	// RequestTypeID:     c.TypeIDV,
-// 	// Latitude:          c.latitude,
-// 	// Longitude:         c.longitude,
+// 	// Latitude:          c.LatitudeV,
+// 	// Longitude:         c.LongitudeV,
 // 	// Description:       c.Description,
 // 	// AuthorNameFirst:   c.FirstName,
 // 	// AuthorNameLast:    c.LastName,

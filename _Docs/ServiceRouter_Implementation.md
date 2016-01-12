@@ -1,35 +1,6 @@
-# Service Router
-The Service Router subsystem is responsible for:  
+# Implementation
 
-* Maintaining the list of Service Providers and their Services.
-* Retrieving the Services list for the user's location.
-* Routing user Requests and Queries to the appropriate Service Provider.
-
-## New Report
-The user application should identify the appropriate location as soon as possible, and relay this to the Gateway.  For a mobile app, the current geolocation will typically be used, but the user could also specify a different address.  The  location is submitted to the Gateway using the "/services" endpoint.  The list of Services available for the current location will be returned.  The Services list will contain an ID and a description.  It may also contain our own tags (TODO).  
-The user will select the appropriate Service, and define the issue.  The issue, with the ServiceID, is submitted using a POST to the "/requests" endpoint. The ServiceID will be used to route the new request to the appropriate Service Provider (i.e. Jurisdiction or Authority).
-The Service Provider ID will be returned to the App in the response JSON data.  The Service Provider ID should be persisted in a list of unique Service Provide ID's (see "Search / Device ID" below).
-
-## Search
-
-### Device ID
-If the user wishes to review all of their issues, then we need a list of Service Provider ID's for all of their previously created issues.  This will be passed in the Search request GET at the "/requests" endpoint.  The Gateway will send appropriate search requests to each Service Provider for the specified DeviceID, consolidate the returned data, and send it back in the GET response.  If the list of previous Service Providers is not provided, the search will be limited to the current City.
-
-
-### Location
-A search by location will build a list of all Service Providers for the specified location, send search requests to each, consolidate the results, and return that in the GET response.
-
-
-## App Requirements
-Applications using the Gateway must:  
-1. Provide access credentials for each request to the Gateway.
-
-To provide the best user experience, applications should also:
-1. Persist a list of unique Service Provider ID's belonging to  any created issues.  _This will be used in the "Search by DeviceID" discussed above._
-
-## Implementation
-
-### Search by Location
+## Search by Location
 There are two searches by location:
 1. Search by lat/lng.
 2. Search by address.
@@ -42,7 +13,7 @@ There are two searches by location:
 5. Return results.
 
 
-### Search by Device ID
+## Search by Device ID
 
 We have two scenarios:  
 1. The user's app has kept a list of Provider IDs for all previously created reports.  This Provider ID list is submitted with the search request.
@@ -60,7 +31,7 @@ We have two scenarios:
 4. Merge the results.
 5. Return results.
 
-### Helper Functions
+## Helper Functions
 
 __Services by Location__  
 1. Get City from Geolocation.
@@ -81,9 +52,61 @@ Get the configuration for a Service Provider using their ID.
 2. Access Credentials
 
 
-### Data
+## Data
 
-__NOTE:__ The Service endpoint and credentials define a "Service Provider".  That is, if CitySourced was servicing both San Jose and Cupertino, but through a different URL, then we would have 2 Service Provider records.  It is expected that, in general, a Service Provider would be unique to Service Area.
+* The Service endpoint and credentials define a "Service Provider".  That is, if CitySourced was servicing both San Jose and Cupertino, but through a different URL, then we would have 2 Service Provider records.  It is expected that, in general, a Service Provider would be unique to Service Area.
+* Most of the detail information below will be on the Adapters. 
+
+---
+### Engine
+The Engine has the following capabilities:
+
+1. Provide a list of Services available for the specified location.  _Consolidated list queried from all Adapters and cached._
+2. Route a Create, Comment or UpVote request to the appropriate Adapter based on the Service MID.
+3. Route Search requests:
+	1. Search by DeviceID, with IFID/Area list.
+     2. Search by DeviceID, using current location.
+     3. Search by Current Location.
+
+#### Data
+
+##### City List
+|Name|Type|Description|
+|----|----|-----------|
+|City Code|string|City Code|
+|City|string|City name|
+|AdapterList|[]string|List of RPC destinations|
+
+_The above supports aliases._
+
+__Indexes__
+`map[CityCode]CityList`
+`map[lower(City)]CityList`
+
+##### Services
+|Name|Type|Description|
+|----|----|-----------|
+|MID|string|Service MID|
+|CityCode|string|CityCode|
+|Name|string|Description of the Service|
+|Categories|[]string|List of categories|
+
+__Indexes__
+`map[CityCode][]Services`
+
+##### Request Routing
+
+|Operation|Key|Routing|
+|---------|----|-------|
+|Services|CityCode|Retrieve cached list of Services for the specified City|
+|Create|Service MID|Route to Adapter using IFID in ServiceMID|
+|Search DeviceID with previous list|IFID & AreaID from previous Service MIDs|Route to Adapter using IFID; submit DeviceID search to each Adapter and consolidate results.
+|
+|Search DeviceID / current location|Lookup City from lat/lng|Use the CityList.City index to get the AdapterList; submit DeviceID search to each Adapter and consolidate results.|
+|Search by Location|Lookup City from lat/lng|Use the CityList.City index to get the AdapterList; submit Location search to each Adapter and consolidate results.|
+
+---
+### Adapters 
 
 #### Service Areas
 |Name|Type|Description|
@@ -120,7 +143,7 @@ Used to place the Services into more manageable, user friendly major groups.  __
 |Street|Streets, sidewalks, lighting, etc.|
 |Eyesore|Dilapidated or foreclosed homes, illegal signage, etc.|
 
-### Notes
+## Notes
 
 * Initially use a JSON config file.  The file will have the above information in hierarchical order.  Once the system is up and running, and if there is sufficient interest, we can transition to perhaps Postgres or MongoDB.  Postgres has good GeoLoc capabilities baked in.
 * Use maps with pointers to structs (`*struct`) to create the "indexes" we need for fast lookups.

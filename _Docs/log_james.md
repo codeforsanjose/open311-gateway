@@ -24,6 +24,13 @@
 
 ## Log
 
+### 2016.01.12 - Tue
+
+* In integrations/citysourced/request/services.go:
+	* Change Service.ServicesForCity() to City().
+	* Added Service.All() - returns a list of ALL services.
+* 
+
 ### 2016.01.11 - Mon
 
 * In integration/citysourced/data/data.go;
@@ -36,6 +43,11 @@
 * Saved to GIT.
 * Added second CitySourced integration for testing purpose.
 * Saved to GIT.
+* Changed gateway/request/*.go:
+	* All fields need to be exported in the Create structs, so change "longitude", "latitude", etc. to "LongitudeV", "LatitudeV", etc.
+* Moved gateway/request/structs.go to gateway/structs/structs.go
+	* Added gateway/structs/methods.go.  
+* 
 	
 ### 2016.01.07 - Thu
 

@@ -3,8 +3,9 @@ package request
 import (
 	"Gateway311/integration/citysourced/data"
 	"Gateway311/integration/citysourced/structs"
-	"_sketches/spew"
 	"fmt"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 // ================================================================================================
@@ -16,11 +17,11 @@ import (
 // CitySourced city.
 type Service struct{}
 
-// ServicesForCity fills resp with a list of services for the specifed city.
-func (c *Service) ServicesForCity(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
+// City returns a list of services for the specifed city.
+func (c *Service) City(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
 	fmt.Println(rqst)
 
-	x, err := data.ServicesForCity(rqst.City)
+	x, err := data.City(rqst.City)
 	if err == nil {
 		fmt.Printf("  resp: %p", resp)
 		resp.Message = "OK"
@@ -28,7 +29,24 @@ func (c *Service) ServicesForCity(rqst *structs.NServiceRequest, resp *structs.N
 		fmt.Printf(" --> %p\n", resp)
 		fmt.Printf("      %s\n", spew.Sdump(resp))
 	} else {
-		fmt.Printf("[ServicesForCity]: error: %s\n", err)
+		fmt.Printf("[City]: error: %s\n", err)
+	}
+	return err
+}
+
+// All fills resp with a list of services for the specifed city.
+func (c *Service) All(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
+	fmt.Println(rqst)
+
+	x, err := data.All()
+	if err == nil {
+		fmt.Printf("  resp: %p", resp)
+		resp.Message = "OK"
+		resp.Services = *x
+		fmt.Printf(" --> %p\n", resp)
+		fmt.Printf("      %s\n", spew.Sdump(resp))
+	} else {
+		fmt.Printf("[All]: error: %s\n", err)
 	}
 	return err
 }

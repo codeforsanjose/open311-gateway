@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -25,14 +24,14 @@ func processServices(r *rest.Request) (interface{}, error) {
 
 // ServicesReq is used to create a report.
 type ServicesReq struct {
-	cType             //
-	cIface            //
-	JID       int     `json:"jid" xml:"jid"`
-	Latitude  string  `json:"latitude" xml:"latitude"`
-	latitude  float64 //
-	Longitude string  `json:"longitude" xml:"longitude"`
-	longitude float64 //
-	City      string  `json:"city" xml:"city"`
+	cType              //
+	cIface             //
+	JID        int     `json:"jid" xml:"jid"`
+	Latitude   string  `json:"LatitudeV" xml:"LatitudeV"`
+	LatitudeV  float64 //
+	Longitude  string  `json:"LongitudeV" xml:"LongitudeV"`
+	LongitudeV float64 //
+	City       string  `json:"city" xml:"city"`
 
 	bkend string //
 
@@ -40,10 +39,10 @@ type ServicesReq struct {
 
 func (c *ServicesReq) validate() {
 	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
-		c.latitude = x
+		c.LatitudeV = x
 	}
 	if x, err := strconv.ParseFloat(c.Longitude, 64); err == nil {
-		c.longitude = x
+		c.LongitudeV = x
 	}
 	log.Printf("%s\n", c)
 	return
@@ -69,8 +68,8 @@ func (c *ServicesReq) run() (interface{}, error) {
 	}
 
 	switch {
-	case c.latitude > 24.0 && c.longitude >= -180.0 && c.longitude <= -66.0:
-		c.City, err = geo.CityForLatLng(c.latitude, c.longitude)
+	case c.LatitudeV > 24.0 && c.LongitudeV >= -180.0 && c.LongitudeV <= -66.0:
+		c.City, err = geo.CityForLatLng(c.LatitudeV, c.LongitudeV)
 		if err != nil {
 			return fail(fmt.Sprintf("Cannot find city for %v:%v - %s", c.Latitude, c.Longitude, err.Error()))
 		}
@@ -92,7 +91,7 @@ func (c ServicesReq) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services\n")
 	ls.AddF("JID: %v\n", c.JID)
-	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", c.latitude, c.longitude, c.City)
+	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", c.LatitudeV, c.LongitudeV, c.City)
 	return ls.Box(80)
 }
 
@@ -105,28 +104,4 @@ type ServicesResp struct {
 	Message  string            `json:"Message" xml:"Message"`
 	JID      int               `json:"jid" xml:"jid"`
 	Services []*router.Service `json:"services" xml:"services"`
-}
-
-// ==============================================================================================================================
-//                                      Service ID
-// ==============================================================================================================================
-
-// UnmarshalJSON implements the conversion from the JSON "ID" to the ServiceID struct.
-func (s *ServiceID) UnmarshalJSON(value []byte) error {
-	cnvInt := func(x string) int {
-		y, _ := strconv.ParseInt(x, 10, 64)
-		return int(y)
-	}
-	parts := strings.Split(strings.Trim(string(value), "\" "), "-")
-	s.IFID = parts[0]
-	s.AreaID = parts[1]
-	s.ProviderID = cnvInt(parts[2])
-	s.ID = cnvInt(parts[3])
-	return nil
-}
-
-// MarshalJSON implements the conversion from the ServiceID struct to the JSON "ID".
-func (s ServiceID) MarshalJSON() ([]byte, error) {
-	fmt.Printf("  Marshaling s: %#v\n", s)
-	return []byte(fmt.Sprintf("\"%s\"", s.MID())), nil
 }

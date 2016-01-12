@@ -164,9 +164,9 @@ func TestLookupWithRegion(t *testing.T) {
 // func TestGetBounds(t *testing.T) {
 // 	fmt.Println("\n>>>>>>>>>>>>>>>>>>> TestGetBounds <<<<<<<<<<<<<<<<<<<<<<<<<<")
 // 	center := Point{37.138698, -121.615391}
-// 	var radius float64 = 500
+// 	var RadiusV float64 = 500
 
-// 	ne, sw, _ := GetBounds(&center, radius)
+// 	ne, sw, _ := GetBounds(&center, RadiusV)
 // 	fmt.Printf("NE: %v | %v   SW: %v | %v\n", ne.Lat, ne.Lng, sw.Lat, sw.Lng)
 // }
 

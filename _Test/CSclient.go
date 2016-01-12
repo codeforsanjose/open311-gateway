@@ -66,7 +66,7 @@ func main() {
 		}
 		fmt.Printf("%+v\n", creq)
 		var cresp NServicesResponse
-		replyCall := client.Go("Service.ServicesForCity", &creq, &cresp, nil)
+		replyCall := client.Go("Service.City", &creq, &cresp, nil)
 		answer := <-replyCall.Done
 		if replyCall.Error != nil {
 			log.Print("[Create] error: ", err)
@@ -81,11 +81,11 @@ func main() {
 
 	{
 		creq := NServiceRequest{
-			City: "San Mateo",
+			City: "all",
 		}
 		fmt.Printf("%+v\n", creq)
 		var cresp NServicesResponse
-		replyCall := client.Go("Service.ServicesForCity", &creq, &cresp, nil)
+		replyCall := client.Go("Service.All", &creq, &cresp, nil)
 		answer := <-replyCall.Done
 		if replyCall.Error != nil {
 			log.Print("[Create] error: ", err)

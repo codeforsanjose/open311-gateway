@@ -131,8 +131,8 @@ func (c NCreateRequest) String() string {
 	ls.AddF("Request - type: (%v) %q\n", c.TypeID, c.Type)
 	ls.AddF("Location - lat: %v lon: %v\n", c.Latitude, c.Longitude)
 	ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
-	// if math.Abs(c.latitude) > 1 {
-	// 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.latitude, c.Latitude, c.longitude, c.Longitude)
+	// if math.Abs(c.LatitudeV) > 1 {
+	// 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
 	// }
 	// if len(c.City) > 1 {
 	// 	ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
@@ -165,21 +165,21 @@ func (c NCreateResponse) String() string {
 // SearchReqBase is used to create a report.
 type SearchReqBase struct {
 	API
-	DeviceType string  `json:"deviceType" xml:"deviceType"`
-	DeviceID   string  `json:"deviceId" xml:"deviceId"`
-	Latitude   string  `json:"latitude" xml:"latitude"`
-	latitude   float64 //
-	Longitude  string  `json:"longitude" xml:"longitude"`
-	longitude  float64 //
-	Radius     string  `json:"radius" xml:"radius"`
-	radius     int     // in meters
-	Address    string  `json:"address" xml:"address"`
-	City       string  `json:"city" xml:"city"`
-	State      string  `json:"state" xml:"state"`
-	Zip        string  `json:"zip" xml:"zip"`
-	MaxResults string  `json:"maxResults" xml:"maxResults"`
-	maxResults int     //
-	SearchType string  //
+	DeviceType  string  `json:"deviceType" xml:"deviceType"`
+	DeviceID    string  `json:"deviceId" xml:"deviceId"`
+	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
+	LatitudeV   float64 //
+	Longitude   string  `json:"LongitudeV" xml:"LongitudeV"`
+	LongitudeV  float64 //
+	Radius      string  `json:"RadiusV" xml:"RadiusV"`
+	RadiusV     int     // in meters
+	Address     string  `json:"address" xml:"address"`
+	City        string  `json:"city" xml:"city"`
+	State       string  `json:"state" xml:"state"`
+	Zip         string  `json:"zip" xml:"zip"`
+	MaxResults  string  `json:"MaxResultsV" xml:"MaxResultsV"`
+	MaxResultsV int     //
+	SearchType  string  //
 }
 
 // SearchResp is the response to creating or updating a report.

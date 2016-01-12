@@ -25,8 +25,8 @@ func ShowProviderData() string {
 	return spew.Sdump(providerData)
 }
 
-// ServicesForCity returns a list of all services available for the specified City.
-func ServicesForCity(city string) (*structs.NServices, error) {
+// City returns a list of all services available for the specified City.
+func City(city string) (*structs.NServices, error) {
 	lcity := strings.ToLower(city)
 	fmt.Printf("   Services for: %s...\n", lcity)
 	ccode, ok := providerData.isValidCity(lcity)
@@ -41,6 +41,15 @@ func ServicesForCity(city string) (*structs.NServices, error) {
 		return nil, fmt.Errorf("Unable to find requested city")
 	}
 	return &services, nil
+}
+
+// All returns a list of ALL services.
+func All() (*structs.NServices, error) {
+	resp := make(structs.NServices, 0)
+	for _, v := range providerData.cityServices {
+		resp = append(resp, v...)
+	}
+	return &resp, nil
 }
 
 // // ServiceProviders returns a list of all Service Providers for the specified City.
@@ -103,8 +112,8 @@ type dataIndex struct {
 	service  *structs.NService
 }
 
-// // ServicesForCity returns a list of all services available for the specified City.
-// func (pd *ProviderData) ServicesForCity(city string) (structs.NServices, error) {
+// // City returns a list of all services available for the specified City.
+// func (pd *ProviderData) City(city string) (structs.NServices, error) {
 // 	lcity := strings.ToLower(city)
 // 	fmt.Printf("   Services for: %s...\n", lcity)
 // 	ccode, ok := pd.isValidCity(lcity)
