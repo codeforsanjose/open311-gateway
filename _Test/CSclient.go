@@ -50,21 +50,52 @@ func main() {
 	}
 	fmt.Printf("Arith: %d/%d=%v rmd: %v\n", args.A, args.B, quo.Quo, quo.Rem)
 
-	creq := NServiceRequest{
-		City: "San Jose",
+	// creq := NServiceRequest{
+	// 	City: "San Jose",
+	// }
+	// fmt.Printf("%+v\n", creq)
+	// var cresp NServicesResponse
+	// err = client.Call("Service.ServicesForCity", &creq, &cresp)
+	// if err != nil {
+	// 	log.Print("[Services] error: ", err)
+	// }
+	// fmt.Println(spew.Sdump(cresp))
+	{
+		creq := NServiceRequest{
+			City: "San Jose",
+		}
+		fmt.Printf("%+v\n", creq)
+		var cresp NServicesResponse
+		replyCall := client.Go("Service.ServicesForCity", &creq, &cresp, nil)
+		answer := <-replyCall.Done
+		if replyCall.Error != nil {
+			log.Print("[Create] error: ", err)
+		}
+		fmt.Println(spew.Sdump(answer))
+		if answer.Error != nil {
+			fmt.Printf("Error on API request: %s\n", answer.Error)
+		} else {
+			fmt.Printf("Return: %v\n", answer.Reply.(*NServicesResponse))
+		}
 	}
-	fmt.Printf("%+v\n", creq)
-	var cresp NServices
-	replyCall := client.Go("Service.ServicesForCity", &creq, &cresp, nil)
-	answer := <-replyCall.Done
-	if replyCall.Error != nil {
-		log.Print("[Create] error: ", err)
-	}
-	fmt.Println(spew.Sdump(answer))
-	if answer.Error != nil {
-		fmt.Printf("Error on API request: %s\n", answer.Error)
-	} else {
-		fmt.Printf("Return: %v\n", answer.Reply.(*NServices))
+
+	{
+		creq := NServiceRequest{
+			City: "San Mateo",
+		}
+		fmt.Printf("%+v\n", creq)
+		var cresp NServicesResponse
+		replyCall := client.Go("Service.ServicesForCity", &creq, &cresp, nil)
+		answer := <-replyCall.Done
+		if replyCall.Error != nil {
+			log.Print("[Create] error: ", err)
+		}
+		fmt.Println(spew.Sdump(answer))
+		if answer.Error != nil {
+			fmt.Printf("Error on API request: %s\n", answer.Error)
+		} else {
+			fmt.Printf("Return: %v\n", answer.Reply.(*NServicesResponse))
+		}
 	}
 
 	// creq := NCreateRequest{
@@ -149,6 +180,12 @@ func (c NServiceRequest) String() string {
 
 // ------------------------------- Services -------------------------------
 
+// NServicesResponse is the returned struct for a Services request.
+type NServicesResponse struct {
+	Message  string
+	Services NServices
+}
+
 // NServices contains a list of Services.
 type NServices []NService
 
@@ -156,9 +193,8 @@ type NServices []NService
 func (c NServices) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services Response\n")
-	ls.AddS(" IFace Area Prov  ID  Desc                                             Categories\n")
 	for _, s := range c {
-		ls.AddS(s.String())
+		ls.AddF("%s\n", s)
 	}
 	return ls.Box(80)
 }
@@ -193,56 +229,4 @@ type ServiceID struct {
 // MID creates the string
 func (s ServiceID) MID() string {
 	return fmt.Sprintf("%s-%s-%d-%d", s.IFID, s.AreaID, s.ProviderID, s.ID)
-}
-
-// NCreateRequest is used to create a new Report.  It is the "native" format of the
-// data, and is used by the Engine and all backend Adapters.
-type NCreateRequest struct {
-	API
-	TypeID      int
-	Type        string
-	DeviceType  string
-	DeviceModel string
-	DeviceID    string
-	Latitude    float64
-	Longitude   float64
-	Address     string
-	City        string
-	State       string
-	Zip         string
-	FirstName   string
-	LastName    string
-	Email       string
-	Phone       string
-	IsAnonymous bool
-	Description string
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (c NCreateRequest) String() string {
-	ls := new(common.LogString)
-	ls.AddS("Report - Create\n")
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
-	ls.AddF("Request - type: (%v) %q\n", c.TypeID, c.Type)
-	ls.AddF("Location - lat: %v lon: %v\n", c.Latitude, c.Longitude)
-	ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
-	ls.AddF("Description: %q\n", c.Description)
-	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", c.IsAnonymous, c.FirstName, c.LastName, c.Email, c.Phone)
-	return ls.Box(80)
-}
-
-// NCreateResponse is the response to creating or updating a report.
-type NCreateResponse struct {
-	Message  string
-	ID       string
-	AuthorID string
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (c NCreateResponse) String() string {
-	ls := new(common.LogString)
-	ls.AddS("Report - Resp\n")
-	ls.AddF("Message: %s\n", c.Message)
-	ls.AddF("ID: %v  AuthorID: %v\n", c.ID, c.AuthorID)
-	return ls.Box(80)
 }

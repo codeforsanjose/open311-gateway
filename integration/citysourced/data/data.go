@@ -26,8 +26,21 @@ func ShowProviderData() string {
 }
 
 // ServicesForCity returns a list of all services available for the specified City.
-func ServicesForCity(city string) (structs.NServices, error) {
-	return providerData.ServicesForCity(city)
+func ServicesForCity(city string) (*structs.NServices, error) {
+	lcity := strings.ToLower(city)
+	fmt.Printf("   Services for: %s...\n", lcity)
+	ccode, ok := providerData.isValidCity(lcity)
+	if !ok {
+		fmt.Printf("The city: %q is not serviced by this Gateway", city)
+		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
+	}
+	fmt.Printf("      data length: %d\n", len(providerData.cityServices[ccode]))
+	services, ok := providerData.cityServices[ccode]
+	if !ok {
+		fmt.Printf("  NO MATCH!\n")
+		return nil, fmt.Errorf("Unable to find requested city")
+	}
+	return &services, nil
 }
 
 // // ServiceProviders returns a list of all Service Providers for the specified City.
@@ -90,23 +103,23 @@ type dataIndex struct {
 	service  *structs.NService
 }
 
-// ServicesForCity returns a list of all services available for the specified City.
-func (pd *ProviderData) ServicesForCity(city string) (structs.NServices, error) {
-	lcity := strings.ToLower(city)
-	fmt.Printf("   Services for: %s...\n", lcity)
-	ccode, ok := pd.isValidCity(lcity)
-	if !ok {
-		fmt.Printf("The city: %q is not serviced by this Gateway", city)
-		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
-	}
-	fmt.Printf("      data length: %d\n", len(pd.cityServices[ccode]))
-	services, ok := pd.cityServices[ccode]
-	if !ok {
-		fmt.Printf("  NO MATCH!\n")
-		return nil, fmt.Errorf("Unable to find requested city")
-	}
-	return services, nil
-}
+// // ServicesForCity returns a list of all services available for the specified City.
+// func (pd *ProviderData) ServicesForCity(city string) (structs.NServices, error) {
+// 	lcity := strings.ToLower(city)
+// 	fmt.Printf("   Services for: %s...\n", lcity)
+// 	ccode, ok := pd.isValidCity(lcity)
+// 	if !ok {
+// 		fmt.Printf("The city: %q is not serviced by this Gateway", city)
+// 		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
+// 	}
+// 	fmt.Printf("      data length: %d\n", len(pd.cityServices[ccode]))
+// 	services, ok := pd.cityServices[ccode]
+// 	if !ok {
+// 		fmt.Printf("  NO MATCH!\n")
+// 		return nil, fmt.Errorf("Unable to find requested city")
+// 	}
+// 	return services, nil
+// }
 
 // // ServiceProviders returns a list of all Service Providers for the specified City.
 // func (rd *ProviderData) ServiceProviders(city string) ([]*Provider, error) {

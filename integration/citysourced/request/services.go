@@ -17,14 +17,15 @@ import (
 type Service struct{}
 
 // ServicesForCity fills resp with a list of services for the specifed city.
-func (c *Service) ServicesForCity(rqst *structs.NServiceRequest, resp structs.NServices) error {
-	fmt.Printf("resp: %p\n", resp)
+func (c *Service) ServicesForCity(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
 	fmt.Println(rqst)
 
 	x, err := data.ServicesForCity(rqst.City)
 	if err == nil {
-		resp = x
-		fmt.Printf("  --> resp: %p\n", &resp)
+		fmt.Printf("  resp: %p", resp)
+		resp.Message = "OK"
+		resp.Services = *x
+		fmt.Printf(" --> %p\n", resp)
 		fmt.Printf("      %s\n", spew.Sdump(resp))
 	} else {
 		fmt.Printf("[ServicesForCity]: error: %s\n", err)

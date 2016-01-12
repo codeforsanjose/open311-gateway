@@ -29,6 +29,8 @@
 	* Added a Santa Clara section of test data in config.json.
 * Moved the structs.go file into it's own package: integration/citysourced/structs/structs.go.  Had a circular import issue.
 * Saved to GIT.
+* RPC test working OK with Services API.
+* Saved to GIT.
 	
 ### 2016.01.07 - Thu
 

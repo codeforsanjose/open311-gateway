@@ -36,13 +36,27 @@ func (c NServiceRequest) String() string {
 
 // ------------------------------- Services -------------------------------
 
+// NServicesResponse is the returned struct for a Services request.
+type NServicesResponse struct {
+	Message  string
+	Services NServices
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (c NServicesResponse) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Services Response\n")
+	ls.AddF("Message: %q%s", c.Message, c.Services)
+	return ls.Box(90)
+}
+
 // NServices contains a list of Services.
 type NServices []NService
 
 // Displays the contents of the Spec_Type custom type.
 func (c NServices) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Services Response\n")
+	ls.AddS("NServices\n")
 	for _, s := range c {
 		ls.AddF("%s\n", s)
 	}
@@ -61,7 +75,8 @@ type NService struct {
 }
 
 func (s NService) String() string {
-	r := fmt.Sprintf("   %s-%s-%d-%d  %-40s  %v", s.IFID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
+	// r := fmt.Sprintf("  %s-%s-%d-%d  %-40s  %v", s.IFID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
+	r := fmt.Sprintf("  %-20s  %-40s  %v", s.MID(), s.Name, s.Categories)
 	return r
 }
 
@@ -76,7 +91,7 @@ type ServiceID struct {
 	ID         int
 }
 
-// MID creates the string
+// MID creates the Master ID string for the Service.
 func (s ServiceID) MID() string {
 	return fmt.Sprintf("%s-%s-%d-%d", s.IFID, s.AreaID, s.ProviderID, s.ID)
 }
