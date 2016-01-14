@@ -1,9 +1,9 @@
 package request
 
 import (
-	"Gateway311/gateway/common"
-	"Gateway311/gateway/geo"
-	"Gateway311/gateway/router"
+	"Gateway311/engine/common"
+	"Gateway311/engine/geo"
+	"Gateway311/engine/router"
 	"fmt"
 	"log"
 	"strconv"
@@ -22,16 +22,18 @@ func processServices(r *rest.Request) (interface{}, error) {
 	return op.run()
 }
 
-// ServicesReq is used to create a report.
+// ServicesReq represents a request to .
 type ServicesReq struct {
-	cType              //
-	cIface             //
-	JID        int     `json:"jid" xml:"jid"`
-	Latitude   string  `json:"LatitudeV" xml:"LatitudeV"`
-	LatitudeV  float64 //
-	Longitude  string  `json:"LongitudeV" xml:"LongitudeV"`
-	LongitudeV float64 //
-	City       string  `json:"city" xml:"city"`
+	cType               //
+	cIface              //
+	JID         int     `json:"jid" xml:"jid"`
+	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
+	LatitudeV   float64 //
+	Longitude   string  `json:"LongitudeV" xml:"LongitudeV"`
+	LongitudeV  float64 //
+	validLatLng bool    //
+	City        string  `json:"city" xml:"city"`
+	validCity   bool    //
 
 	bkend string //
 
@@ -105,3 +107,7 @@ type ServicesResp struct {
 	JID      int               `json:"jid" xml:"jid"`
 	Services []*router.Service `json:"services" xml:"services"`
 }
+
+// ==============================================================================================================================
+//                                      Data
+// ==============================================================================================================================

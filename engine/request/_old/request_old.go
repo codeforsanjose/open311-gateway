@@ -2,6 +2,7 @@ package request
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/rpc"
 
@@ -54,12 +55,19 @@ if answer.Error != nil {
 }
 */
 
-var adapters map[string]struct{name string, port int}{
-	"CS": struct{name string, port int}{"rpc1", 5001},
-	"CS2": struct{name string, port int}{"rpc2", 5002},
+type adapterData struct {
+	name string
+	port int
 }
 
+var adapters map[string]adapterData
+
 func init() {
+	adapters = map[string]adapterData{
+		"CS":  adapterData{name: "rpc1", port: 5001},
+		"CS2": adapterData{name: "rpc2", port: 5002},
+	}
+
 	client, err := rpc.DialHTTP("tcp", ":1234")
 	if err != nil {
 		log.Print("dialing:", err)

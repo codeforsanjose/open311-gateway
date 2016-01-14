@@ -1,7 +1,7 @@
 package structs
 
 import (
-	"Gateway311/gateway/common"
+	"Gateway311/engine/common"
 	"fmt"
 )
 

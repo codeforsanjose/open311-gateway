@@ -17,25 +17,25 @@ import (
 const iFID = "CS"
 
 var (
-	providerData ProviderData
+	configData ConfigData
 )
 
-// ShowProviderData dumps providerData using spew.
-func ShowProviderData() string {
-	return spew.Sdump(providerData)
+// ShowConfigData dumps configData using spew.
+func ShowConfigData() string {
+	return spew.Sdump(configData)
 }
 
-// ServicesForCity returns a list of all services available for the specified City.
-func ServicesForCity(city string) (*structs.NServices, error) {
+// City returns a list of all services available for the specified City.
+func City(city string) (*structs.NServices, error) {
 	lcity := strings.ToLower(city)
 	fmt.Printf("   Services for: %s...\n", lcity)
-	ccode, ok := providerData.isValidCity(lcity)
+	ccode, ok := configData.isValidCity(lcity)
 	if !ok {
 		fmt.Printf("The city: %q is not serviced by this Gateway", city)
 		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
 	}
-	fmt.Printf("      data length: %d\n", len(providerData.cityServices[ccode]))
-	services, ok := providerData.cityServices[ccode]
+	fmt.Printf("      data length: %d\n", len(configData.cityServices[ccode]))
+	services, ok := configData.cityServices[ccode]
 	if !ok {
 		fmt.Printf("  NO MATCH!\n")
 		return nil, fmt.Errorf("Unable to find requested city")
@@ -43,14 +43,28 @@ func ServicesForCity(city string) (*structs.NServices, error) {
 	return &services, nil
 }
 
+// All returns a list of ALL services.
+func All() (*structs.NServices, error) {
+	resp := make(structs.NServices, 0)
+	for _, v := range configData.cityServices {
+		resp = append(resp, v...)
+	}
+	return &resp, nil
+}
+
+// Adapter returns the adapter configuration.
+func Adapter() (name, atype, address string) {
+	return configData.Adapter.Name, configData.Adapter.Type, configData.Adapter.Address
+}
+
 // // ServiceProviders returns a list of all Service Providers for the specified City.
 // func ServiceProviders(city string) ([]*Provider, error) {
-// 	return providerData.ServiceProviders(city)
+// 	return configData.ServiceProviders(city)
 // }
 
 // // ServiceProvider returns a pointer to the Provider for the specified Provider ID.
 // func ServiceProvider(sid int) (*Provider, error) {
-// 	return providerData.ServiceProvider(sid)
+// 	return configData.ServiceProvider(sid)
 // }
 
 // ==============================================================================================================================
@@ -58,13 +72,13 @@ func ServicesForCity(city string) (*structs.NServices, error) {
 // ==============================================================================================================================
 
 func init() {
-	if err := readConfig("/Users/james/Dropbox/Development/go/src/Gateway311/integration/citysourced/data/config.json"); err != nil {
+	if err := readConfig("data/config.json"); err != nil {
 		fmt.Printf("Error %v occurred when reading the config - ReadConfig()", err)
 	}
 }
 
 func readConfig(filePath string) error {
-	if providerData.Loaded {
+	if configData.Loaded {
 		msg := "Route Data is already loaded"
 		fmt.Println(msg)
 		return errors.New(msg)
@@ -72,21 +86,29 @@ func readConfig(filePath string) error {
 
 	file, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		msg := fmt.Sprintf("Unable to access the providerData Config file - specified at: %q.\nError: %v", filePath, err)
+		msg := fmt.Sprintf("Unable to access the configData Config file - specified at: %q.\nError: %v", filePath, err)
 		fmt.Println(msg)
 		return errors.New(msg)
 	}
 
-	return providerData.Load(file)
+	return configData.Load(file)
 }
 
 // ==============================================================================================================================
 //                                      ROUTE DATA
 // ==============================================================================================================================
 
-// ProviderData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* city name.
-type ProviderData struct {
-	Loaded     bool
+type AdapterData struct {
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Address string `json:"address"`
+}
+
+// ConfigData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* city name.
+type ConfigData struct {
+	Loaded  bool
+	Adapter AdapterData `json:"adapter"`
+
 	Categories []string         `json:"serviceCategories"`
 	Areas      map[string]*Area `json:"serviceAreas"`
 
@@ -103,8 +125,8 @@ type dataIndex struct {
 	service  *structs.NService
 }
 
-// // ServicesForCity returns a list of all services available for the specified City.
-// func (pd *ProviderData) ServicesForCity(city string) (structs.NServices, error) {
+// // City returns a list of all services available for the specified City.
+// func (pd *ConfigData) City(city string) (structs.NServices, error) {
 // 	lcity := strings.ToLower(city)
 // 	fmt.Printf("   Services for: %s...\n", lcity)
 // 	ccode, ok := pd.isValidCity(lcity)
@@ -122,7 +144,7 @@ type dataIndex struct {
 // }
 
 // // ServiceProviders returns a list of all Service Providers for the specified City.
-// func (rd *ProviderData) ServiceProviders(city string) ([]*Provider, error) {
+// func (rd *ConfigData) ServiceProviders(city string) ([]*Provider, error) {
 // 	lcity := strings.ToLower(city)
 // 	fmt.Printf("   ServiceProviders for: %q\n", lcity)
 // 	if !pd.isValidCity(lcity) {
@@ -137,7 +159,7 @@ type dataIndex struct {
 // }
 
 // // ServiceProvider returns a pointer to the Provider for the specified Provider ID.
-// func (pd *ProviderData) ServiceProvider(id string) (*Provider, error) {
+// func (pd *ConfigData) ServiceProvider(id string) (*Provider, error) {
 //
 // 	p, ok := pd.serviceProvider[id]
 // 	if !ok {
@@ -147,8 +169,8 @@ type dataIndex struct {
 // 	return p, nil
 // }
 
-// Load loads the specified byte slice into the ProviderData structures.
-func (pd *ProviderData) Load(file []byte) error {
+// Load loads the specified byte slice into the ConfigData structures.
+func (pd *ConfigData) Load(file []byte) error {
 	err := json.Unmarshal(file, pd)
 	if err != nil {
 		msg := fmt.Sprintf("Unable to parse JSON Route Data.\nError: %v", err)
@@ -163,7 +185,7 @@ func (pd *ProviderData) Load(file []byte) error {
 }
 
 // Index() builds all required map indexes: Services by City,
-func (pd *ProviderData) settle() error {
+func (pd *ConfigData) settle() error {
 	fmt.Printf("    settling data...\n")
 	for areaKey, area := range pd.Areas {
 		for _, provider := range area.Providers {
@@ -178,8 +200,8 @@ func (pd *ProviderData) settle() error {
 }
 
 // Index() builds all required map indexes: Services by City,
-func (pd *ProviderData) index() error {
-	fmt.Printf("[ProviderData] building indexes:\n")
+func (pd *ConfigData) index() error {
+	fmt.Printf("[ConfigData] building indexes:\n")
 	pd.indexServiceMID()
 	pd.indexServiceID()
 	pd.indexProviderID()
@@ -189,7 +211,7 @@ func (pd *ProviderData) index() error {
 	return nil
 }
 
-func (pd *ProviderData) indexServiceMID() error {
+func (pd *ConfigData) indexServiceMID() error {
 	fmt.Printf("    ServiceID...\n")
 	pd.serviceMID = make(map[string]dataIndex)
 	for _, area := range pd.Areas {
@@ -202,7 +224,7 @@ func (pd *ProviderData) indexServiceMID() error {
 	return nil
 }
 
-func (pd *ProviderData) indexServiceID() error {
+func (pd *ConfigData) indexServiceID() error {
 	fmt.Printf("    ServiceID...\n")
 	pd.serviceID = make(map[int]*structs.NService)
 	for _, area := range pd.Areas {
@@ -215,7 +237,7 @@ func (pd *ProviderData) indexServiceID() error {
 	return nil
 }
 
-func (pd *ProviderData) indexProviderID() error {
+func (pd *ConfigData) indexProviderID() error {
 	fmt.Printf("    ProviderID...\n")
 	pd.providerID = make(map[int]*Provider)
 	for _, area := range pd.Areas {
@@ -226,7 +248,7 @@ func (pd *ProviderData) indexProviderID() error {
 	return nil
 }
 
-func (pd *ProviderData) indexCityCode() error {
+func (pd *ConfigData) indexCityCode() error {
 	fmt.Printf("    CityCode...\n")
 	pd.cityCode = make(map[string]string)
 	for areaKey, area := range pd.Areas {
@@ -235,7 +257,7 @@ func (pd *ProviderData) indexCityCode() error {
 	return nil
 }
 
-func (pd *ProviderData) indexCityServices() error {
+func (pd *ConfigData) indexCityServices() error {
 	fmt.Printf("    CityServices...\n")
 	pd.cityServices = make(map[string]structs.NServices)
 	for areaKey, area := range pd.Areas {
@@ -249,7 +271,7 @@ func (pd *ProviderData) indexCityServices() error {
 	return nil
 }
 
-// func (pd *ProviderData) indexCityServices() error {
+// func (pd *ConfigData) indexCityServices() error {
 // 	fmt.Printf("    CityServices...\n")
 // 	pd.cityServices = make(map[string]*structs.NServices)
 // 	var nSvcs structs.NServices
@@ -271,11 +293,12 @@ func (pd *ProviderData) indexCityServices() error {
 // 	return nil
 // }
 
-// String returns the represeentation of the ProviderData custom type.
-func (pd ProviderData) String() string {
+// String returns the represeentation of the ConfigData custom type.
+func (pd ConfigData) String() string {
 	ls := new(common.LogString)
-	ls.AddS("ProviderData\n")
+	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
+	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
 	ls.AddS("\n-----------INDEX: serviceID-----------\n")
 	for k, v := range pd.serviceID {
 		ls.AddF("   %-4d %s\n", k, v.Name)
@@ -313,7 +336,7 @@ func (pd ProviderData) String() string {
 	return ls.Box(90)
 }
 
-func (pd *ProviderData) isValidCity(city string) (string, bool) {
+func (pd *ConfigData) isValidCity(city string) (string, bool) {
 	code, ok := pd.cityCode[strings.ToLower(city)]
 	return code, ok
 
@@ -363,11 +386,11 @@ func (p Provider) String() string {
 func SplitMID(mid string) (*Area, *Provider, error) {
 	parts := strings.Split(mid, "-")
 	fmt.Printf("MID: %+v\n", parts)
-	area := providerData.Areas[parts[1]]
+	area := configData.Areas[parts[1]]
 	v, err := strconv.ParseInt(parts[2], 10, 64)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Invalid MID: %s", mid)
 	}
-	provider := providerData.providerID[int(v)]
+	provider := configData.providerID[int(v)]
 	return area, provider, nil
 }

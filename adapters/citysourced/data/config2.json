@@ -1,4 +1,9 @@
 {
+	"adapter": {
+		"name": "CS2",
+		"type": "CitySourced",
+		"address": ":5002"
+	},
 	"serviceCategories": [
 		"Abandoned",
 		"Eyesore",

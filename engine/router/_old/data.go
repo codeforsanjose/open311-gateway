@@ -269,6 +269,5 @@ type Service struct {
 }
 
 func (s Service) String() string {
-	r := fmt.Sprintf("   %4d %4d  %-40s  %v", s.ID, s.ProviderID, s.Name, s.Categories)
-	return r
+	return fmt.Sprintf("   %4d %4d  %-40s  %v", s.ID, s.ProviderID, s.Name, s.Categories)
 }

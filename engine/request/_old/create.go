@@ -1,9 +1,9 @@
 package request
 
 import (
-	"Gateway311/gateway/common"
-	"Gateway311/gateway/router"
-	"Gateway311/gateway/structs"
+	"Gateway311/engine/common"
+	"Gateway311/engine/router"
+	"Gateway311/engine/structs"
 	"_sketches/spew"
 	"math"
 
@@ -36,9 +36,9 @@ type CreateReqBase struct {
 	DeviceModel string  `json:"deviceModel" xml:"deviceModel"`
 	DeviceID    string  `json:"deviceID" xml:"deviceID"`
 	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
-	LatitudeV    float64 //
+	LatitudeV   float64 //
 	Longitude   string  `json:"LongitudeV" xml:"LongitudeV"`
-	LongitudeV   float64 //
+	LongitudeV  float64 //
 	Address     string  `json:"address" xml:"address"`
 	City        string  `json:"city" xml:"city"`
 	State       string  `json:"state" xml:"state"`

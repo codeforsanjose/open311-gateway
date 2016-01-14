@@ -1,4 +1,9 @@
 {
+	"adapter": {
+		"name": "CS1",
+		"type": "CitySourced",
+		"address": ":5001"
+	},
 	"serviceCategories": [
 		"Abandoned",
 		"Eyesore",

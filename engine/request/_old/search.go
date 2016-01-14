@@ -1,9 +1,9 @@
 package request
 
 import (
-	"Gateway311/gateway/common"
-	"Gateway311/gateway/geo"
-	"Gateway311/gateway/structs"
+	"Gateway311/engine/common"
+	"Gateway311/engine/geo"
+	"Gateway311/engine/structs"
 	"_sketches/spew"
 
 	"fmt"

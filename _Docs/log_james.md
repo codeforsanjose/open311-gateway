@@ -24,12 +24,21 @@
 
 ## Log
 
+### 2016.01.13 - Wed
+
+* Renamed directories:
+	* gateway -> engine
+	* integration -> adapters
+* Started rebuilding the Engine.
+* Saved to GIT.
+* 
+
+
 ### 2016.01.12 - Tue
 
 * In integrations/citysourced/request/services.go:
 	* Change Service.ServicesForCity() to City().
 	* Added Service.All() - returns a list of ALL services.
-* 
 
 ### 2016.01.11 - Mon
 

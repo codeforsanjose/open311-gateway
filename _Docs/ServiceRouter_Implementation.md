@@ -74,7 +74,7 @@ The Engine has the following capabilities:
 |Name|Type|Description|
 |----|----|-----------|
 |City Code|string|City Code|
-|City|string|City name|
+|City|[]string|City name|
 |AdapterList|[]string|List of RPC destinations|
 
 _The above supports aliases._

@@ -1,7 +1,8 @@
 package main
 
 import (
-	"Gateway311/gateway/request"
+	"Gateway311/engine/request"
+	"Gateway311/engine/router"
 	"log"
 	"net/http"
 
@@ -14,6 +15,7 @@ func main() {
 		Store: map[string]*request.TestReport{},
 	}
 	// rpt := request.CreateReq{}
+	router.Init()
 
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
@@ -31,7 +33,7 @@ func main() {
 		// rest.Put("/:jid/requests/:id", rpt.Update),
 		// rest.Delete("/:jid/requests/:id", rpt.Delete),
 
-		rest.Get("/services", request.Services),
+		// rest.Get("/services", request.Services),
 	)
 	if err != nil {
 		log.Fatal(err)

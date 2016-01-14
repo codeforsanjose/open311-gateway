@@ -18,7 +18,7 @@ import (
 
 func main() {
 
-	fmt.Println(data.ShowProviderData())
+	fmt.Println(data.ShowConfigData())
 
 	rpc.Register(&request.Create{})
 
@@ -30,7 +30,9 @@ func main() {
 	rpc.Register(arith)
 
 	rpc.HandleHTTP()
-	l, e := net.Listen("tcp", ":1234")
+	_, _, addr := data.Adapter()
+	fmt.Printf("Listening at: %s\n", addr)
+	l, e := net.Listen("tcp", addr)
 	if e != nil {
 		log.Fatal("listen error:", e)
 	}
