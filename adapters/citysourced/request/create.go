@@ -1,8 +1,8 @@
 package request
 
 import (
-	"Gateway311/gateway/common"
-	"Gateway311/integration/citysourced/structs"
+	"Gateway311/adapters/citysourced/structs"
+	"Gateway311/engine/common"
 	"bytes"
 	"encoding/xml"
 	"fmt"

@@ -24,6 +24,15 @@
 
 ## Log
 
+### 2016.01.14 - Thu
+
+* Implemented go-logging in adapters/citysourced.
+	* Converted all fmt.Print statements to log statements.
+* Command line options working now.
+* Signal handler working.
+* Saved to GIT.
+
+
 ### 2016.01.13 - Wed
 
 * Renamed directories:

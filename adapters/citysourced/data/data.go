@@ -8,8 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"Gateway311/gateway/common"
-	"Gateway311/integration/citysourced/structs"
+	"Gateway311/adapters/citysourced/logs"
+	"Gateway311/adapters/citysourced/structs"
+	"Gateway311/engine/common"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -18,6 +19,7 @@ const iFID = "CS"
 
 var (
 	configData ConfigData
+	log        = logs.Log
 )
 
 // ShowConfigData dumps configData using spew.
@@ -28,17 +30,19 @@ func ShowConfigData() string {
 // City returns a list of all services available for the specified City.
 func City(city string) (*structs.NServices, error) {
 	lcity := strings.ToLower(city)
-	fmt.Printf("   Services for: %s...\n", lcity)
+	log.Debug("   Services for: %s...\n", lcity)
 	ccode, ok := configData.isValidCity(lcity)
 	if !ok {
-		fmt.Printf("The city: %q is not serviced by this Gateway", city)
-		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
+		msg := fmt.Sprintf("The city: %q is not serviced by this Gateway", city)
+		log.Error(msg)
+		return nil, errors.New(msg)
 	}
-	fmt.Printf("      data length: %d\n", len(configData.cityServices[ccode]))
+	log.Debug("      data length: %d\n", len(configData.cityServices[ccode]))
 	services, ok := configData.cityServices[ccode]
 	if !ok {
-		fmt.Printf("  NO MATCH!\n")
-		return nil, fmt.Errorf("Unable to find requested city")
+		msg := fmt.Sprintf("Unable to find requested city: %q", city)
+		log.Warning(msg)
+		return nil, errors.New(msg)
 	}
 	return &services, nil
 }
@@ -71,10 +75,12 @@ func Adapter() (name, atype, address string) {
 //                                      INIT
 // ==============================================================================================================================
 
-func init() {
-	if err := readConfig("data/config.json"); err != nil {
-		fmt.Printf("Error %v occurred when reading the config - ReadConfig()", err)
+// Init loads the config files.
+func Init(configFile string) error {
+	if err := readConfig(configFile); err != nil {
+		return err
 	}
+	return nil
 }
 
 func readConfig(filePath string) error {
@@ -86,8 +92,8 @@ func readConfig(filePath string) error {
 
 	file, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		msg := fmt.Sprintf("Unable to access the configData Config file - specified at: %q.\nError: %v", filePath, err)
-		fmt.Println(msg)
+		msg := fmt.Sprintf("Unable to access the config file - %v.", err)
+		log.Error(msg)
 		return errors.New(msg)
 	}
 
@@ -98,7 +104,9 @@ func readConfig(filePath string) error {
 //                                      ROUTE DATA
 // ==============================================================================================================================
 
+// AdapterData contains all of the config data.
 type AdapterData struct {
+	Debug   bool   `json:"debug"`
 	Name    string `json:"name"`
 	Type    string `json:"type"`
 	Address string `json:"address"`
@@ -177,16 +185,17 @@ func (pd *ConfigData) Load(file []byte) error {
 		fmt.Println(msg)
 		return errors.New(msg)
 	}
-
+	log.Info("Initializing data...")
 	pd.settle()
 	pd.index()
 	pd.Loaded = true
+	log.Debug(ShowConfigData())
 	return nil
 }
 
 // Index() builds all required map indexes: Services by City,
 func (pd *ConfigData) settle() error {
-	fmt.Printf("    settling data...\n")
+	log.Info("   Denormalizing service keys...\n")
 	for areaKey, area := range pd.Areas {
 		for _, provider := range area.Providers {
 			for _, service := range provider.Services {
@@ -201,7 +210,7 @@ func (pd *ConfigData) settle() error {
 
 // Index() builds all required map indexes: Services by City,
 func (pd *ConfigData) index() error {
-	fmt.Printf("[ConfigData] building indexes:\n")
+	log.Info("   Building indexes:\n")
 	pd.indexServiceMID()
 	pd.indexServiceID()
 	pd.indexProviderID()
@@ -212,7 +221,7 @@ func (pd *ConfigData) index() error {
 }
 
 func (pd *ConfigData) indexServiceMID() error {
-	fmt.Printf("    ServiceID...\n")
+	log.Info("       Indexing ServiceID...\n")
 	pd.serviceMID = make(map[string]dataIndex)
 	for _, area := range pd.Areas {
 		for _, provider := range area.Providers {
@@ -225,7 +234,7 @@ func (pd *ConfigData) indexServiceMID() error {
 }
 
 func (pd *ConfigData) indexServiceID() error {
-	fmt.Printf("    ServiceID...\n")
+	log.Info("       Indexing ServiceID...\n")
 	pd.serviceID = make(map[int]*structs.NService)
 	for _, area := range pd.Areas {
 		for _, provider := range area.Providers {
@@ -238,7 +247,7 @@ func (pd *ConfigData) indexServiceID() error {
 }
 
 func (pd *ConfigData) indexProviderID() error {
-	fmt.Printf("    ProviderID...\n")
+	log.Info("       Indexing ProviderID...\n")
 	pd.providerID = make(map[int]*Provider)
 	for _, area := range pd.Areas {
 		for _, provider := range area.Providers {
@@ -249,7 +258,7 @@ func (pd *ConfigData) indexProviderID() error {
 }
 
 func (pd *ConfigData) indexCityCode() error {
-	fmt.Printf("    CityCode...\n")
+	log.Info("       Indexing CityCode...\n")
 	pd.cityCode = make(map[string]string)
 	for areaKey, area := range pd.Areas {
 		pd.cityCode[strings.ToLower(area.Name)] = areaKey
@@ -258,7 +267,7 @@ func (pd *ConfigData) indexCityCode() error {
 }
 
 func (pd *ConfigData) indexCityServices() error {
-	fmt.Printf("    CityServices...\n")
+	log.Info("       Indexing CityServices...\n")
 	pd.cityServices = make(map[string]structs.NServices)
 	for areaKey, area := range pd.Areas {
 		pd.cityServices[areaKey] = make(structs.NServices, 0)
@@ -385,7 +394,7 @@ func (p Provider) String() string {
 // SplitMID breaks down an MID, and returns pointers to the Area and Provider.
 func SplitMID(mid string) (*Area, *Provider, error) {
 	parts := strings.Split(mid, "-")
-	fmt.Printf("MID: %+v\n", parts)
+	log.Debug("MID: %+v\n", parts)
 	area := configData.Areas[parts[1]]
 	v, err := strconv.ParseInt(parts[2], 10, 64)
 	if err != nil {

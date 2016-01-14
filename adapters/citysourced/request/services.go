@@ -1,8 +1,8 @@
 package request
 
 import (
-	"Gateway311/integration/citysourced/data"
-	"Gateway311/integration/citysourced/structs"
+	"Gateway311/adapters/citysourced/data"
+	"Gateway311/adapters/citysourced/structs"
 	"fmt"
 
 	"github.com/davecgh/go-spew/spew"

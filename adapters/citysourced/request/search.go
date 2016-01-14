@@ -2,7 +2,7 @@ package request
 
 import (
 	"CitySourcedAPI/logs"
-	"Gateway311/gateway/common"
+	"Gateway311/engine/common"
 	"bytes"
 	"encoding/xml"
 	"net/http"
