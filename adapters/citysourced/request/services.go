@@ -21,7 +21,7 @@ type Service struct{}
 func (c *Service) City(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
 	fmt.Println(rqst)
 
-	x, err := data.City(rqst.City)
+	x, err := data.ServicesCity(rqst.City)
 	if err == nil {
 		fmt.Printf("  resp: %p", resp)
 		resp.Message = "OK"
@@ -38,7 +38,7 @@ func (c *Service) City(rqst *structs.NServiceRequest, resp *structs.NServicesRes
 func (c *Service) All(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
 	fmt.Println(rqst)
 
-	x, err := data.All()
+	x, err := data.ServicesAll()
 	if err == nil {
 		fmt.Printf("  resp: %p", resp)
 		resp.Message = "OK"

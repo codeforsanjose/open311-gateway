@@ -1,7 +1,4 @@
 {
-	"instrumentation": {
-		"debug": true
-	},
 	"adapter": {
 		"name": "CS1",
 		"type": "CitySourced",

@@ -27,8 +27,8 @@ func ShowConfigData() string {
 	return spew.Sdump(configData)
 }
 
-// City returns a list of all services available for the specified City.
-func City(city string) (*structs.NServices, error) {
+// ServicesCity returns a list of all services available for the specified City.
+func ServicesCity(city string) (*structs.NServices, error) {
 	lcity := strings.ToLower(city)
 	log.Debug("   Services for: %s...\n", lcity)
 	ccode, ok := configData.isValidCity(lcity)
@@ -47,8 +47,8 @@ func City(city string) (*structs.NServices, error) {
 	return &services, nil
 }
 
-// All returns a list of ALL services.
-func All() (*structs.NServices, error) {
+// ServicesAll returns a list of ALL services.
+func ServicesAll() (*structs.NServices, error) {
 	resp := make(structs.NServices, 0)
 	for _, v := range configData.cityServices {
 		resp = append(resp, v...)
@@ -106,7 +106,6 @@ func readConfig(filePath string) error {
 
 // AdapterData contains all of the config data.
 type AdapterData struct {
-	Debug   bool   `json:"debug"`
 	Name    string `json:"name"`
 	Type    string `json:"type"`
 	Address string `json:"address"`

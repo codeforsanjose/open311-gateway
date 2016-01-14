@@ -31,6 +31,11 @@
 * Command line options working now.
 * Signal handler working.
 * Saved to GIT.
+* Renamed functions in adapters/citysourced/data.go to show they are about Services:
+	* City() -> ServicesCity()
+	* All() -> ServicesAll()
+* Removed debug from config file.  It's redundant and unnecessary.
+* Saved to GIT.
 
 
 ### 2016.01.13 - Wed
