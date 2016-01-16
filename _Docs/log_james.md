@@ -24,6 +24,16 @@
 
 ## Log
 
+### 2016.01.15 - Fri
+
+* Services List working from Engine and Adapter (Citysourced)!.
+* Set up 2 Adapters (CS1 and CS2) for testing.
+	* CS1 = San Jose
+	* CS2 = Santa Clara
+* Removed the LogString (for boxed struct printing) from logs.  It was already in common.  Updated the code in common with comments, and removed the LogPrinter stuff (not used).
+* Added command line args (flags) to the Engine, as well as SignalHandlers.
+* Saved to GIT.
+
 ### 2016.01.14 - Thu
 
 * Implemented go-logging in adapters/citysourced.

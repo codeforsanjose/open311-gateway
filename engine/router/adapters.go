@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/rpc"
 	"time"
 )
@@ -30,8 +29,8 @@ func (adps *Adapters) load(file []byte) error {
 	// adps.init()
 	err := json.Unmarshal(file, adps)
 	if err != nil {
-		msg := fmt.Sprintf("Unable to parse JSON Config Data.\nError: %v", err)
-		fmt.Println(msg)
+		msg := fmt.Sprintf("Unable to unmarshal config data file.\nError: %v", err)
+		log.Error(msg)
 		return errors.New(msg)
 	}
 
@@ -76,10 +75,10 @@ type Adapter struct {
 func (adp *Adapter) connect() error {
 	client, err := rpc.DialHTTP("tcp", adp.Address)
 	if err != nil {
-		log.Printf("Connection to: %s failed: %s", adp.Name, err)
+		log.Errorf("Connection to: %s failed: %s", adp.Name, err)
 		return err
 	}
-	log.Printf("Connection to: %q OK!\n", adp.Name)
+	log.Info("Connection to: %q OK!\n", adp.Name)
 	adp.Client = client
 	adp.Connected = true
 	return nil

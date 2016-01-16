@@ -4,6 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+
+	"Gateway311/engine/logs"
+)
+
+var (
+	log = logs.Log
 )
 
 // map: city -> list of Services (MID)
@@ -18,12 +24,18 @@ import (
 //                                      INIT
 // ==============================================================================================================================
 
-// Init loads the config file, and connects to all Adapters.
-func Init() error {
-	err := readConfig("/Users/james/Dropbox/Development/go/src/Gateway311/engine/router/config.json")
-	if err != nil {
-		return fmt.Errorf("Error %v occurred when reading the config - ReadConfig()", err)
+// Init loads the config files.
+func Init(configFile string) error {
+	if err := readConfig(configFile); err != nil {
+		return err
 	}
+	err := adapters.connect()
+	if err != nil {
+		return err
+	}
+	log.Debug(adapters.String())
+
+	servicesData.Refresh()
 	return nil
 }
 
@@ -31,8 +43,8 @@ func readConfig(filePath string) error {
 
 	file, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		msg := fmt.Sprintf("Unable to access the adapters Config file - specified at: %q.\nError: %v", filePath, err)
-		fmt.Println(msg)
+		msg := fmt.Sprintf("Unable to access the config file - %v.", err)
+		log.Error(msg)
 		return errors.New(msg)
 	}
 
@@ -41,9 +53,6 @@ func readConfig(filePath string) error {
 		return err
 	}
 
-	err = adapters.connect()
-	if err != nil {
-		return err
-	}
+	log.Debug(adapters.String())
 	return nil
 }

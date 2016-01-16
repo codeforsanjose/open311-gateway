@@ -61,6 +61,11 @@ func Adapter() (name, atype, address string) {
 	return configData.Adapter.Name, configData.Adapter.Type, configData.Adapter.Address
 }
 
+// Adapter returns the adapter configuration.
+func AdapterName() string {
+	return configData.Adapter.Name
+}
+
 // // ServiceProviders returns a list of all Service Providers for the specified City.
 // func ServiceProviders(city string) ([]*Provider, error) {
 // 	return configData.ServiceProviders(city)
@@ -198,7 +203,7 @@ func (pd *ConfigData) settle() error {
 	for areaKey, area := range pd.Areas {
 		for _, provider := range area.Providers {
 			for _, service := range provider.Services {
-				service.IFID = iFID
+				service.IFID = pd.Adapter.Name
 				service.AreaID = areaKey
 				service.ProviderID = provider.ID
 			}

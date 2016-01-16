@@ -24,10 +24,10 @@ func (c *Service) City(rqst *structs.NServiceRequest, resp *structs.NServicesRes
 	x, err := data.ServicesCity(rqst.City)
 	if err == nil {
 		fmt.Printf("  resp: %p", resp)
+		resp.IFID = data.AdapterName()
 		resp.Message = "OK"
 		resp.Services = *x
-		fmt.Printf(" --> %p\n", resp)
-		fmt.Printf("      %s\n", spew.Sdump(resp))
+		fmt.Printf("%s\n", spew.Sdump(resp))
 	} else {
 		fmt.Printf("[City]: error: %s\n", err)
 	}
@@ -41,10 +41,11 @@ func (c *Service) All(rqst *structs.NServiceRequest, resp *structs.NServicesResp
 	x, err := data.ServicesAll()
 	if err == nil {
 		fmt.Printf("  resp: %p", resp)
+		resp.IFID = data.AdapterName()
 		resp.Message = "OK"
 		resp.Services = *x
-		fmt.Printf(" --> %p\n", resp)
-		fmt.Printf("      %s\n", spew.Sdump(resp))
+		// time.Sleep(time.Second * 4)
+		fmt.Printf("%s\n", spew.Sdump(resp))
 	} else {
 		fmt.Printf("[All]: error: %s\n", err)
 	}

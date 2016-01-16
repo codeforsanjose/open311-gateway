@@ -1,8 +1,9 @@
 package structs
 
 import (
-	"Gateway311/engine/common"
 	"fmt"
+
+	"Gateway311/engine/common"
 )
 
 // =======================================================================================
@@ -38,6 +39,7 @@ func (c NServiceRequest) String() string {
 
 // NServicesResponse is the returned struct for a Services request.
 type NServicesResponse struct {
+	IFID     string
 	Message  string
 	Services NServices
 }
