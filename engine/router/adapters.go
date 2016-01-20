@@ -22,6 +22,8 @@ type Adapters struct {
 	loaded   bool
 	loadedAt time.Time
 	Adapters []*Adapter `json:"adapters"`
+
+	areaAdapters map[string][]*Adapter
 }
 
 // Load loads the specified byte slice into the adapters structures.

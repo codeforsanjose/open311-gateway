@@ -35,7 +35,7 @@ func Init(configFile string) error {
 	}
 	log.Debug(adapters.String())
 
-	servicesData.Refresh()
+	// servicesData.Refresh()
 	return nil
 }
 

@@ -24,6 +24,12 @@
 
 ## Log
 
+### 2016.01.19 - Tue
+
+* Changed all variables and types name "city" to "area".  For now, "areas" correspond to cities, but there is a good chance that will change in the future.  
+* Got Humpty Dumpty put back together.  RPC dispatch system is now working.
+* Saved to GIT.
+
 ### 2016.01.15 - Fri
 
 * Services List working from Engine and Adapter (Citysourced)!.

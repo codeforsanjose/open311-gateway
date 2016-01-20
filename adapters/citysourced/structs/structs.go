@@ -24,14 +24,14 @@ type API struct {
 
 // NServiceRequest is used to get list of services available to the user.
 type NServiceRequest struct {
-	City string
+	Area string
 }
 
 // Displays the contents of the Spec_Type custom type.
 func (c NServiceRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services Request\n")
-	ls.AddF("Location - city: %v\n", c.City)
+	ls.AddF("Location - area: %v\n", c.Area)
 	return ls.Box(80)
 }
 
@@ -68,7 +68,7 @@ func (c NServices) String() string {
 // ------------------------------- Service -------------------------------
 
 // NService represents a Service.  The ID is a combination of the BackEnd Type (IFID),
-// the AreaID (i.e. the City id), ProviderID (in case the provider has multiple interfaces),
+// the AreaID (i.e. the Area id), ProviderID (in case the provider has multiple interfaces),
 // and the Service ID.
 type NService struct {
 	ServiceID  `json:"id"`
@@ -85,7 +85,7 @@ func (s NService) String() string {
 // ------------------------------- ServiceID -------------------------------
 
 // ServiceID provides the JSON marshalling conversion between the JSON "ID" and
-// the Backend Interface Type, AreaID (City id), ProviderID, and Service ID.
+// the Backend Interface Type, AreaID (Area id), ProviderID, and Service ID.
 type ServiceID struct {
 	IFID       string
 	AreaID     string
@@ -114,7 +114,7 @@ type NCreateRequest struct {
 	Latitude    float64
 	Longitude   float64
 	Address     string
-	City        string
+	Area        string
 	State       string
 	Zip         string
 	FirstName   string
@@ -132,12 +132,12 @@ func (c NCreateRequest) String() string {
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
 	ls.AddF("Request - type: (%v) %q\n", c.TypeID, c.Type)
 	ls.AddF("Location - lat: %v lon: %v\n", c.Latitude, c.Longitude)
-	ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
+	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
 	// if math.Abs(c.LatitudeV) > 1 {
 	// 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
 	// }
-	// if len(c.City) > 1 {
-	// 	ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
+	// if len(c.Area) > 1 {
+	// 	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
 	// }
 	ls.AddF("Description: %q\n", c.Description)
 	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", c.IsAnonymous, c.FirstName, c.LastName, c.Email, c.Phone)
@@ -176,7 +176,7 @@ type SearchReqBase struct {
 	Radius      string  `json:"RadiusV" xml:"RadiusV"`
 	RadiusV     int     // in meters
 	Address     string  `json:"address" xml:"address"`
-	City        string  `json:"city" xml:"city"`
+	Area        string  `json:"area" xml:"area"`
 	State       string  `json:"state" xml:"state"`
 	Zip         string  `json:"zip" xml:"zip"`
 	MaxResults  string  `json:"MaxResultsV" xml:"MaxResultsV"`
@@ -190,3 +190,7 @@ type SearchResp struct {
 	ID       string `json:"ReportId" xml:"ReportId"`
 	AuthorID string `json:"AuthorId" xml:"AuthorId"`
 }
+
+// =======================================================================================
+//                                      MISC
+// =======================================================================================

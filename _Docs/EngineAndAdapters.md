@@ -9,6 +9,21 @@ Each supported backend has it's own Adapter.  The Adapter is a separate Go progr
 |Create|NCreateRequest|NCreateResponse|
 |Search|NSearchRequest|NSearchResponse|
 
+### RPC Service List
+
+|Service|Method|Name|Notes|
+|-------|------|----|-------|
+|Service|All|"Service.All"|Retrieves all Services|
+|Service|City|"Service.Area"|Retrieves Services for the specified Area|
+|Create|Report|"Create.Report"|Creates a new report|
+|Search|DeviceID|"Search.DeviceID"|Search for the specified DeviceID|
+|Search|Location|"Search.Location"|Search for reports near the specifed geoloc|
+|Report|Comment|"Report.Comment"|Add a comment to the specified report|
+|Report|Upvote|"Report.Upvote"|Add an upvote to the specified report|
+
+
+
+
 ## Implementation
 
 The Engine's Router needs to know some information about the Providers, and hence about the Adapters:
@@ -23,6 +38,8 @@ The Engine's Router needs to know some information about the Providers, and henc
 	* Wait a limited time (5 seconds?) for all channels to return. _Use a "select"._
 	* For each returned result, merge into a master Native struct.
 	* Marshal the Native structs into the reply, and respond.
+
+
 
 ### Adapter
 

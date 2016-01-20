@@ -27,20 +27,20 @@ func ShowConfigData() string {
 	return spew.Sdump(configData)
 }
 
-// ServicesCity returns a list of all services available for the specified City.
-func ServicesCity(city string) (*structs.NServices, error) {
-	lcity := strings.ToLower(city)
-	log.Debug("   Services for: %s...\n", lcity)
-	ccode, ok := configData.isValidCity(lcity)
+// ServicesArea returns a list of all services available for the specified Area.
+func ServicesArea(area string) (*structs.NServices, error) {
+	larea := strings.ToLower(area)
+	log.Debug("   Services for: %s...\n", larea)
+	ccode, ok := configData.isValidCity(larea)
 	if !ok {
-		msg := fmt.Sprintf("The city: %q is not serviced by this Gateway", city)
+		msg := fmt.Sprintf("The area: %q is not serviced by this Gateway", area)
 		log.Error(msg)
 		return nil, errors.New(msg)
 	}
-	log.Debug("      data length: %d\n", len(configData.cityServices[ccode]))
-	services, ok := configData.cityServices[ccode]
+	log.Debug("      data length: %d\n", len(configData.areaServices[ccode]))
+	services, ok := configData.areaServices[ccode]
 	if !ok {
-		msg := fmt.Sprintf("Unable to find requested city: %q", city)
+		msg := fmt.Sprintf("Unable to find requested area: %q", area)
 		log.Warning(msg)
 		return nil, errors.New(msg)
 	}
@@ -50,7 +50,7 @@ func ServicesCity(city string) (*structs.NServices, error) {
 // ServicesAll returns a list of ALL services.
 func ServicesAll() (*structs.NServices, error) {
 	resp := make(structs.NServices, 0)
-	for _, v := range configData.cityServices {
+	for _, v := range configData.areaServices {
 		resp = append(resp, v...)
 	}
 	return &resp, nil
@@ -61,14 +61,14 @@ func Adapter() (name, atype, address string) {
 	return configData.Adapter.Name, configData.Adapter.Type, configData.Adapter.Address
 }
 
-// Adapter returns the adapter configuration.
+// AdapterName returns the adapter name.
 func AdapterName() string {
 	return configData.Adapter.Name
 }
 
 // // ServiceProviders returns a list of all Service Providers for the specified City.
-// func ServiceProviders(city string) ([]*Provider, error) {
-// 	return configData.ServiceProviders(city)
+// func ServiceProviders(area string) ([]*Provider, error) {
+// 	return configData.ServiceProviders(area)
 // }
 
 // // ServiceProvider returns a pointer to the Provider for the specified Provider ID.
@@ -116,7 +116,7 @@ type AdapterData struct {
 	Address string `json:"address"`
 }
 
-// ConfigData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* city name.
+// ConfigData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* area name.
 type ConfigData struct {
 	Loaded  bool
 	Adapter AdapterData `json:"adapter"`
@@ -127,8 +127,8 @@ type ConfigData struct {
 	serviceMID   map[string]dataIndex         // Service MID -> Service
 	serviceID    map[int]*structs.NService    // Service ID -> Service
 	providerID   map[int]*Provider            // Provider ID -> Provider
-	cityCode     map[string]string            // City name to City Code
-	cityServices map[string]structs.NServices // City Code (lowercase) -> List of Services
+	areaCode     map[string]string            // City name to City Code
+	areaServices map[string]structs.NServices // City Code (lowercase) -> List of Services
 }
 
 type dataIndex struct {
@@ -138,32 +138,32 @@ type dataIndex struct {
 }
 
 // // City returns a list of all services available for the specified City.
-// func (pd *ConfigData) City(city string) (structs.NServices, error) {
-// 	lcity := strings.ToLower(city)
-// 	fmt.Printf("   Services for: %s...\n", lcity)
-// 	ccode, ok := pd.isValidCity(lcity)
+// func (pd *ConfigData) City(area string) (structs.NServices, error) {
+// 	larea := strings.ToLower(area)
+// 	fmt.Printf("   Services for: %s...\n", larea)
+// 	ccode, ok := pd.isValidCity(larea)
 // 	if !ok {
-// 		fmt.Printf("The city: %q is not serviced by this Gateway", city)
-// 		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
+// 		fmt.Printf("The area: %q is not serviced by this Gateway", area)
+// 		return nil, fmt.Errorf("The area: %q is not serviced by this Gateway", area)
 // 	}
-// 	fmt.Printf("      data length: %d\n", len(pd.cityServices[ccode]))
-// 	services, ok := pd.cityServices[ccode]
+// 	fmt.Printf("      data length: %d\n", len(pd.areaServices[ccode]))
+// 	services, ok := pd.areaServices[ccode]
 // 	if !ok {
 // 		fmt.Printf("  NO MATCH!\n")
-// 		return nil, fmt.Errorf("Unable to find requested city")
+// 		return nil, fmt.Errorf("Unable to find requested area")
 // 	}
 // 	return services, nil
 // }
 
 // // ServiceProviders returns a list of all Service Providers for the specified City.
-// func (rd *ConfigData) ServiceProviders(city string) ([]*Provider, error) {
-// 	lcity := strings.ToLower(city)
-// 	fmt.Printf("   ServiceProviders for: %q\n", lcity)
-// 	if !pd.isValidCity(lcity) {
-// 		return nil, fmt.Errorf("The city: %q is not serviced by this Gateway", city)
+// func (rd *ConfigData) ServiceProviders(area string) ([]*Provider, error) {
+// 	larea := strings.ToLower(area)
+// 	fmt.Printf("   ServiceProviders for: %q\n", larea)
+// 	if !pd.isValidCity(larea) {
+// 		return nil, fmt.Errorf("The area: %q is not serviced by this Gateway", area)
 // 	}
 // 	var p []*Provider
-// 	for _, v := range pd.Areas[strings.ToLower(city)] {
+// 	for _, v := range pd.Areas[strings.ToLower(area)] {
 // 		p = append(p, v)
 // 	}
 // 	fmt.Printf("[ServiceProviders] returning %d records.\n", len(p))
@@ -263,21 +263,21 @@ func (pd *ConfigData) indexProviderID() error {
 
 func (pd *ConfigData) indexCityCode() error {
 	log.Info("       Indexing CityCode...\n")
-	pd.cityCode = make(map[string]string)
+	pd.areaCode = make(map[string]string)
 	for areaKey, area := range pd.Areas {
-		pd.cityCode[strings.ToLower(area.Name)] = areaKey
+		pd.areaCode[strings.ToLower(area.Name)] = areaKey
 	}
 	return nil
 }
 
 func (pd *ConfigData) indexCityServices() error {
 	log.Info("       Indexing CityServices...\n")
-	pd.cityServices = make(map[string]structs.NServices)
+	pd.areaServices = make(map[string]structs.NServices)
 	for areaKey, area := range pd.Areas {
-		pd.cityServices[areaKey] = make(structs.NServices, 0)
+		pd.areaServices[areaKey] = make(structs.NServices, 0)
 		for _, provider := range area.Providers {
 			for _, service := range provider.Services {
-				pd.cityServices[areaKey] = append(pd.cityServices[areaKey], *service)
+				pd.areaServices[areaKey] = append(pd.areaServices[areaKey], *service)
 			}
 		}
 	}
@@ -286,7 +286,7 @@ func (pd *ConfigData) indexCityServices() error {
 
 // func (pd *ConfigData) indexCityServices() error {
 // 	fmt.Printf("    CityServices...\n")
-// 	pd.cityServices = make(map[string]*structs.NServices)
+// 	pd.areaServices = make(map[string]*structs.NServices)
 // 	var nSvcs structs.NServices
 // 	for areaKey, area := range pd.Areas {
 // 		nSvcs = make(structs.NServices, 0)
@@ -297,11 +297,11 @@ func (pd *ConfigData) indexCityServices() error {
 // 		}
 // 		fmt.Printf("=============>>>> CityServices <<<<<==============\nArea: %q\n", areaKey)
 // 		fmt.Printf(spew.Sdump(&nSvcs))
-// 		pd.cityServices[areaKey] = &nSvcs
-// 		fmt.Printf(spew.Sdump(pd.cityServices[areaKey]))
+// 		pd.areaServices[areaKey] = &nSvcs
+// 		fmt.Printf(spew.Sdump(pd.areaServices[areaKey]))
 // 	}
 // 	for areaKey := range pd.Areas {
-// 		fmt.Printf(spew.Sdump(pd.cityServices[areaKey]))
+// 		fmt.Printf(spew.Sdump(pd.areaServices[areaKey]))
 // 	}
 // 	return nil
 // }
@@ -325,12 +325,12 @@ func (pd ConfigData) String() string {
 	for k, v := range pd.providerID {
 		ls.AddF("   %-4d  %-40s %s\n", k, v.Name, v.URL)
 	}
-	ls.AddS("\n-----------INDEX: cityCode-----------\n")
-	for k, v := range pd.cityCode {
+	ls.AddS("\n-----------INDEX: areaCode-----------\n")
+	for k, v := range pd.areaCode {
 		ls.AddF("   %-20s %s\n", k, v)
 	}
-	ls.AddS("\n-----------INDEX: cityServices-----------\n")
-	for k, v := range pd.cityServices {
+	ls.AddS("\n-----------INDEX: areaServices-----------\n")
+	for k, v := range pd.areaServices {
 		ls.AddF("   [[%s]]\n", k)
 		for _, sv := range v {
 			ls.AddF("      %s\n", sv)
@@ -349,8 +349,8 @@ func (pd ConfigData) String() string {
 	return ls.Box(90)
 }
 
-func (pd *ConfigData) isValidCity(city string) (string, bool) {
-	code, ok := pd.cityCode[strings.ToLower(city)]
+func (pd *ConfigData) isValidCity(area string) (string, bool) {
+	code, ok := pd.areaCode[strings.ToLower(area)]
 	return code, ok
 
 }

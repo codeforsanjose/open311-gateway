@@ -1,12 +1,9 @@
 package router
 
 import (
-	"errors"
 	"fmt"
-	"net/rpc"
 	"strings"
 	"sync"
-	"time"
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
@@ -14,11 +11,6 @@ import (
 
 var (
 	servicesData ServicesData
-)
-
-const (
-	rpcChanSize = 50
-	rpcTimeout  = time.Second * 3 // 3 seconds
 )
 
 // ==============================================================================================================================
@@ -45,8 +37,9 @@ func (sd ServicesData) String() string {
 	return ls.Box(90)
 }
 
-func (sd *ServicesData) merge(data *structs.NServices) error {
-	for _, ns := range *data {
+func (sd *ServicesData) merge(ndata interface{}) error {
+	data := (ndata.(*structs.NServicesResponse)).Services
+	for _, ns := range data {
 		if _, ok := sd.list[ns.AreaID]; !ok {
 			log.Debug("Created City: %q", ns.AreaID)
 			sd.list[ns.AreaID] = make(structs.NServices, 0)
@@ -57,17 +50,13 @@ func (sd *ServicesData) merge(data *structs.NServices) error {
 	return nil
 }
 
-type rpcStatus struct {
-	sent    bool
-	replied bool
-}
-
+/*
 // Refresh updates the Services cache by requesting fresh data from all connected Adapters.
 func (sd *ServicesData) Refresh() error {
 	serviceCall := "Service.All"
 	log.Info("Refreshing Services List...")
 	creq := structs.NServiceRequest{
-		City: "",
+		Area: "",
 	}
 	// log.Debug("%+v\n", creq)
 
@@ -128,18 +117,18 @@ func (sd *ServicesData) Refresh() error {
 // callRPCs sends an API request to all connected Adapters. It returns a response
 // channel of type *rpc.Call, then number of RPC calls to expect to return, and
 // any immediate errors encountered with the call to rpc.Client.Go().
-func callRPCs(serviceMethod string, request interface{}, reply []interface{}) (chan *rpc.Call, map[string]*rpcStatus, int, error) {
+func callRPCs(serviceMethod string, request interface{}, reply []interface{}) (chan *rpc.Call, map[string]*rpcCall, int, error) {
 	var (
 		done      chan *rpc.Call
 		errs      string
 		processes int
 	)
 	done = make(chan *rpc.Call, rpcChanSize)
-	listIF := make(map[string]*rpcStatus)
+	listIF := make(map[string]*rpcCall)
 
 	for i, a := range adapters.Adapters {
 		if a.Connected {
-			listIF[a.Name] = &rpcStatus{true, false}
+			listIF[a.Name] = &rpcCall{true, false}
 			replyCall := a.Client.Go(serviceMethod, request, reply[i], done)
 			processes++
 			if replyCall.Error != nil {
@@ -154,6 +143,11 @@ func callRPCs(serviceMethod string, request interface{}, reply []interface{}) (c
 	}
 	return done, listIF, processes, nil
 }
+*/
+
+// ==============================================================================================================================
+//                                      MISC
+// ==============================================================================================================================
 
 // SplitMID breaks down an MID, and returns the IFID and AreaID.
 func SplitMID(mid string) (string, string, error) {
