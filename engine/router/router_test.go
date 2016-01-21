@@ -29,12 +29,13 @@ func TestReadConfig(t *testing.T) {
 
 func TestServiceDataRefresh(t *testing.T) {
 	f := func(run int) {
-		fmt.Printf("\n\n\n\n============================= [TestServiceDataRefresh%d] =============================", run)
-		servicesData.refresh()
+		fmt.Printf("\n\n\n\n============================= [TestServiceDataRefresh%d] =============================\n\n", run)
+		RefreshServicesList()
 		time.Sleep(2 * time.Second)
 		fmt.Println(servicesData)
 	}
 
+	time.Sleep(time.Second * 5)
 	for i := 1; i <= 4; i++ {
 		f(i)
 	}

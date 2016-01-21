@@ -5,26 +5,29 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
+)
+
+const (
+	startupDelay = time.Second * 5
 )
 
 var (
 	servicesData ServicesData
 )
 
+func RefreshServicesList() {
+	servicesData.Refresh()
+}
+
 // func ServiceList(areaID string)
 
 // ==============================================================================================================================
 //                                      SERVICE CACHE
 // ==============================================================================================================================
-
-// serviceList is a service item, with the last update cycle.
-type serviceList struct {
-	data map[string]structs.NServices // Index: AreaID
-	sync.RWMutex
-}
 
 // ServicesData is the cache for services data.  The "list" is the active list.  The
 // active list is a simple copy of either list0 or list1 (i.e. it's effectively a
@@ -33,6 +36,7 @@ type serviceList struct {
 type ServicesData struct {
 	list       [2]map[string]structs.NServices // Index: AreaID
 	activeList int
+	update     chan bool // Update request queue
 	sync.RWMutex
 }
 
@@ -41,24 +45,54 @@ func (sd *ServicesData) init() {
 	defer sd.Unlock()
 	sd.list[0] = make(map[string]structs.NServices)
 	sd.list[1] = make(map[string]structs.NServices)
+	sd.update = make(chan bool, 1)
 	sd.activeList = 0
+
+	go func() {
+		for {
+			_, ok := <-sd.update
+			if !ok {
+				break
+			} else {
+				log.Debug("Running refresh...")
+				sd.refresh()
+			}
+		}
+	}()
+
+	go func() {
+		// Pause a few seconds to make sure everything else is up and running.
+		time.Sleep(startupDelay)
+		sd.Refresh()
+	}()
+}
+
+// Shutdown should be called at system shutdown.  It will terminate the update channel, and
+// permform any other necessary cleanup.
+func (sd *ServicesData) Shutdown() {
+	close(sd.update)
+}
+
+// Refresh initiates a service list update - that is, it requests the current service lists
+// from all Adapters, merges the data back into the standby service list cache, and makes
+// the freshly loaded cache the active cache.
+func (sd *ServicesData) Refresh() {
+	sd.update <- true
 }
 
 func (sd *ServicesData) refresh() {
-	go func() {
-		rqst := &structs.NServiceRequest{"all"}
-		r, err := newRPCCall("Service.All", "all", rqst, servicesData.merge)
-		if err != nil {
-			log.Error(err.Error())
-			return
-		}
-		r.run()
-		if err != nil {
-			log.Error(err.Error())
-			return
-		}
-		sd.switchList()
-	}()
+	rqst := &structs.NServiceRequest{"all"}
+	r, err := newRPCCall("Service.All", "all", rqst, servicesData.merge)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	r.run()
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	sd.switchList()
 }
 
 func (sd *ServicesData) switchList() {

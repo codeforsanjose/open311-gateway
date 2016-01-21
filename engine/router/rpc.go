@@ -131,13 +131,13 @@ func (r *rpcCalls) statusList(areaID string) error {
 	var al []*Adapter
 	if strings.ToLower(areaID) == "all" {
 		al = adapters.Adapters
-		log.Debug("using all")
+		log.Debug("Using ALL adapters")
 	} else {
 		if len(adapters.areaAdapters) == 0 {
 			return fmt.Errorf("Area %q is not supported on this Gateway", areaID)
 		}
 		al = adapters.areaAdapters[areaID]
-		log.Debug("using list for: %s", areaID)
+		log.Debug("Using only adapters for areaID: %s", areaID)
 	}
 	for _, adp := range al {
 		rs, err := newAdapterStatus(adp, r.service)

@@ -25,6 +25,12 @@
 
 ## Log
 
+### 2016.01.21 - Thu
+
+* Modified ServicesList refresh to go through a channel, so that only one update can possibly be running simultaneously.  To start a refresh, call router.RefreshServicesList().
+* Saved to GIT.
+
+
 ### 2016.01.20 - Wed
 
 * Service List update working better.  Needs better locking... multiple accesses are possible now.
