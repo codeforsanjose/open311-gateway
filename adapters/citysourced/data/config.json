@@ -286,6 +286,57 @@
 					"catg": []
 				}]
 			}]
+		},
+		"SC": {
+			"name": "Santa Clara",
+			"providers": [{
+				"id": 1,
+				"name": "CitySourced - SJ",
+				"url": "http://localhost:5050/api/",
+				"apiVersion": "1",
+				"key": "a01234567890z",
+				"services": [{
+					"id": 1,
+					"name": "Abandoned Bicycle",
+					"catg": ["Abandoned"]
+				}, {
+					"id": 2,
+					"name": "Abandoned Car",
+					"catg": ["Abandoned"]
+				}, {
+					"id": 3,
+					"name": "Abandoned Home",
+					"catg": ["Abandoned"]
+				}, {
+					"id": 4,
+					"name": "Abandoned Shopping Cart",
+					"catg": ["Abandoned"]
+				}, {
+					"id": 5,
+					"name": "Abandoned Vehicle",
+					"catg": ["Abandoned"]
+				}, {
+					"id": 6,
+					"name": "Animal Services (Not Permitted)",
+					"catg": []
+				}, {
+					"id": 7,
+					"name": "Crosswalk Re-Striping",
+					"catg": ["Streets"]
+				}, {
+					"id": 8,
+					"name": "Dangerous Intersection",
+					"catg": ["Streets"]
+				}, {
+					"id": 9,
+					"name": "Dark Mill Smoke",
+					"catg": []
+				}, {
+					"id": 10,
+					"name": "Dilapidated Home",
+					"catg": ["Eyesore"]
+				}]
+			}]
 		}
 	}
 }

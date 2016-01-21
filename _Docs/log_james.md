@@ -1,8 +1,9 @@
 ## To Do.todo
 
-* Implement Services cache on Engine.
+* Update Services cache on Engine.
+	* Be able to safely and easily refresh the services list.
 	* Quickly lookup location -> city -> Service list.
-	* 
+* Implement RPC Dispatch System @done(2016-01-19)
 * Custom Type for ServiceID. @done(2016-01-11)
 * CitySourced Adapter - load config.json data file. @done(2016-01-05)
 * Get Create working again.
@@ -24,10 +25,15 @@
 
 ## Log
 
+### 2016.01.20 - Wed
+
+* Service List update working better.  Needs better locking... multiple accesses are possible now.
+
 ### 2016.01.19 - Tue
 
 * Changed all variables and types name "city" to "area".  For now, "areas" correspond to cities, but there is a good chance that will change in the future.  
 * Got Humpty Dumpty put back together.  RPC dispatch system is now working.
+* RPC Dispatch System is in new file engine/router/rpc.go.
 * Saved to GIT.
 
 ### 2016.01.15 - Fri

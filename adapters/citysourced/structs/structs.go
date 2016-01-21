@@ -27,16 +27,6 @@ type NServiceRequest struct {
 	Area string
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (c NServiceRequest) String() string {
-	ls := new(common.LogString)
-	ls.AddS("Services Request\n")
-	ls.AddF("Location - area: %v\n", c.Area)
-	return ls.Box(80)
-}
-
-// ------------------------------- Services -------------------------------
-
 // NServicesResponse is the returned struct for a Services request.
 type NServicesResponse struct {
 	IFID     string
@@ -44,26 +34,10 @@ type NServicesResponse struct {
 	Services NServices
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (c NServicesResponse) String() string {
-	ls := new(common.LogString)
-	ls.AddS("Services Response\n")
-	ls.AddF("Message: %q%s", c.Message, c.Services)
-	return ls.Box(90)
-}
+// ------------------------------- Services -------------------------------
 
 // NServices contains a list of Services.
 type NServices []NService
-
-// Displays the contents of the Spec_Type custom type.
-func (c NServices) String() string {
-	ls := new(common.LogString)
-	ls.AddS("NServices\n")
-	for _, s := range c {
-		ls.AddF("%s\n", s)
-	}
-	return ls.Box(80)
-}
 
 // ------------------------------- Service -------------------------------
 
@@ -76,12 +50,6 @@ type NService struct {
 	Categories []string `json:"catg"`
 }
 
-func (s NService) String() string {
-	// r := fmt.Sprintf("  %s-%s-%d-%d  %-40s  %v", s.IFID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
-	r := fmt.Sprintf("  %-20s  %-40s  %v", s.MID(), s.Name, s.Categories)
-	return r
-}
-
 // ------------------------------- ServiceID -------------------------------
 
 // ServiceID provides the JSON marshalling conversion between the JSON "ID" and
@@ -91,11 +59,6 @@ type ServiceID struct {
 	AreaID     string
 	ProviderID int
 	ID         int
-}
-
-// MID creates the Master ID string for the Service.
-func (s ServiceID) MID() string {
-	return fmt.Sprintf("%s-%s-%d-%d", s.IFID, s.AreaID, s.ProviderID, s.ID)
 }
 
 // =======================================================================================
@@ -125,39 +88,11 @@ type NCreateRequest struct {
 	Description string
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (c NCreateRequest) String() string {
-	ls := new(common.LogString)
-	ls.AddS("Report - Create\n")
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
-	ls.AddF("Request - type: (%v) %q\n", c.TypeID, c.Type)
-	ls.AddF("Location - lat: %v lon: %v\n", c.Latitude, c.Longitude)
-	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
-	// if math.Abs(c.LatitudeV) > 1 {
-	// 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
-	// }
-	// if len(c.Area) > 1 {
-	// 	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
-	// }
-	ls.AddF("Description: %q\n", c.Description)
-	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", c.IsAnonymous, c.FirstName, c.LastName, c.Email, c.Phone)
-	return ls.Box(80)
-}
-
 // NCreateResponse is the response to creating or updating a report.
 type NCreateResponse struct {
 	Message  string `json:"Message" xml:"Message"`
 	ID       string `json:"ReportId" xml:"ReportId"`
 	AuthorID string `json:"AuthorId" xml:"AuthorId"`
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (c NCreateResponse) String() string {
-	ls := new(common.LogString)
-	ls.AddS("Report - Resp\n")
-	ls.AddF("Message: %s\n", c.Message)
-	ls.AddF("ID: %v  AuthorID: %v\n", c.ID, c.AuthorID)
-	return ls.Box(80)
 }
 
 // =======================================================================================
@@ -192,5 +127,70 @@ type SearchResp struct {
 }
 
 // =======================================================================================
-//                                      MISC
+//                                      STRINGS
 // =======================================================================================
+
+// Displays the contents of the Spec_Type custom type.
+func (c NServiceRequest) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Services Request\n")
+	ls.AddF("Location - area: %v\n", c.Area)
+	return ls.Box(80)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (c NServicesResponse) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Services Response\n")
+	ls.AddF("Message: %q%s", c.Message, c.Services)
+	return ls.Box(90)
+}
+
+func (s NService) String() string {
+	// r := fmt.Sprintf("  %s-%s-%d-%d  %-40s  %v", s.IFID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
+	r := fmt.Sprintf("  %-20s  %-40s  %v", s.MID(), s.Name, s.Categories)
+	return r
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (c NServices) String() string {
+	ls := new(common.LogString)
+	ls.AddS("NServices\n")
+	for _, s := range c {
+		ls.AddF("%s\n", s)
+	}
+	return ls.Box(80)
+}
+
+// MID creates the Master ID string for the Service.
+func (s ServiceID) MID() string {
+	return fmt.Sprintf("%s-%s-%d-%d", s.IFID, s.AreaID, s.ProviderID, s.ID)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (c NCreateRequest) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Report - Create\n")
+	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
+	ls.AddF("Request - type: (%v) %q\n", c.TypeID, c.Type)
+	ls.AddF("Location - lat: %v lon: %v\n", c.Latitude, c.Longitude)
+	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
+	// if math.Abs(c.LatitudeV) > 1 {
+	// 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
+	// }
+	// if len(c.Area) > 1 {
+	// 	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
+	// }
+	ls.AddF("Description: %q\n", c.Description)
+	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", c.IsAnonymous, c.FirstName, c.LastName, c.Email, c.Phone)
+	return ls.Box(80)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (c NCreateResponse) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Report - Resp\n")
+	ls.AddF("Message: %s\n", c.Message)
+	ls.AddF("ID: %v  AuthorID: %v\n", c.ID, c.AuthorID)
+	return ls.Box(80)
+}

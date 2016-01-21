@@ -16,6 +16,10 @@ const (
 	rpcTimeout  = time.Second * 3 // 3 seconds
 )
 
+var (
+	showRunTimes = true
+)
+
 // =======================================================================================
 //                                      RPC
 // =======================================================================================
@@ -52,6 +56,10 @@ type rpcCalls struct {
 
 func (r *rpcCalls) run() error {
 	// Send all the RPC calls in go routines.
+	var startTime time.Time
+	if showRunTimes {
+		startTime = time.Now()
+	}
 	err := r.start()
 	if err != nil {
 		msg := fmt.Sprintf("Error starting RPC calls.")
@@ -91,7 +99,9 @@ func (r *rpcCalls) run() error {
 			}
 		}
 	}
-
+	if showRunTimes {
+		log.Info("RPC Call: %q took: %s", r.service, time.Since(startTime))
+	}
 	return nil
 }
 

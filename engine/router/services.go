@@ -1,6 +1,7 @@
 package router
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -13,137 +14,106 @@ var (
 	servicesData ServicesData
 )
 
+// func ServiceList(areaID string)
+
 // ==============================================================================================================================
 //                                      SERVICE CACHE
 // ==============================================================================================================================
 
-// ServicesData is the cache for services data
-type ServicesData struct {
-	list map[string]structs.NServices
+// serviceList is a service item, with the last update cycle.
+type serviceList struct {
+	data map[string]structs.NServices // Index: AreaID
 	sync.RWMutex
 }
 
-func (sd *ServicesData) clearMap() {
-	servicesData.list = make(map[string]structs.NServices)
+// ServicesData is the cache for services data.  The "list" is the active list.  The
+// active list is a simple copy of either list0 or list1 (i.e. it's effectively a
+// pointer to the underlying data in list0 or list1).  If the activeList is 0, then list1
+// is cleared and is available for loading.  Vice versa for activeList1.
+type ServicesData struct {
+	list       [2]map[string]structs.NServices // Index: AreaID
+	activeList int
+	sync.RWMutex
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (sd ServicesData) String() string {
-	ls := new(common.LogString)
-	ls.AddS("ServicesData\n")
-	for k, v := range sd.list {
-		ls.AddF("<<<<<City: %s >>>>>\ns", k, v)
+func (sd *ServicesData) init() {
+	sd.Lock()
+	defer sd.Unlock()
+	sd.list[0] = make(map[string]structs.NServices)
+	sd.list[1] = make(map[string]structs.NServices)
+	sd.activeList = 0
+}
+
+func (sd *ServicesData) refresh() {
+	go func() {
+		rqst := &structs.NServiceRequest{"all"}
+		r, err := newRPCCall("Service.All", "all", rqst, servicesData.merge)
+		if err != nil {
+			log.Error(err.Error())
+			return
+		}
+		r.run()
+		if err != nil {
+			log.Error(err.Error())
+			return
+		}
+		sd.switchList()
+	}()
+}
+
+func (sd *ServicesData) switchList() {
+	sd.Lock()
+	defer sd.Unlock()
+	if sd.activeList == 0 {
+		log.Debug("Switched from list 0 to 1")
+		sd.activeList = 1
+		sd.list[0] = make(map[string]structs.NServices)
+	} else {
+		log.Debug("Switched from list 1 to 0")
+		sd.activeList = 0
+		sd.list[1] = make(map[string]structs.NServices)
 	}
-	return ls.Box(90)
 }
 
 func (sd *ServicesData) merge(ndata interface{}) error {
 	data := (ndata.(*structs.NServicesResponse)).Services
+	sd.Lock()
+	defer sd.Unlock()
+	var loadList int
+	switch sd.activeList {
+	case 0:
+		loadList = 1
+	case 1:
+		loadList = 0
+	default:
+		msg := fmt.Sprintf("Invalid ServiceData activeList: %v", sd.activeList)
+		log.Fatal(msg)
+		return errors.New(msg)
+	}
 	for _, ns := range data {
-		if _, ok := sd.list[ns.AreaID]; !ok {
+		if _, ok := sd.list[loadList][ns.AreaID]; !ok {
 			log.Debug("Created City: %q", ns.AreaID)
-			sd.list[ns.AreaID] = make(structs.NServices, 0)
+			sd.list[loadList][ns.AreaID] = make(structs.NServices, 0)
 		}
-		sd.list[ns.AreaID] = append(sd.list[ns.AreaID], ns)
+		sd.list[loadList][ns.AreaID] = append(sd.list[loadList][ns.AreaID], ns)
 		// log.Debug("   Appending: %s - %s", ns.MID(), ns.Name)
 	}
 	return nil
 }
 
-/*
-// Refresh updates the Services cache by requesting fresh data from all connected Adapters.
-func (sd *ServicesData) Refresh() error {
-	serviceCall := "Service.All"
-	log.Info("Refreshing Services List...")
-	creq := structs.NServiceRequest{
-		Area: "",
+// ==============================================================================================================================
+//                                      STRINGS
+// ==============================================================================================================================
+
+// Displays the contents of the Spec_Type custom type.
+func (sd ServicesData) String() string {
+	ls := new(common.LogString)
+	ls.AddF("ServicesData [%d]\n", sd.activeList)
+	for k, v := range sd.list[sd.activeList] {
+		ls.AddF("<<<<<City: %s >>>>>%s", k, v)
 	}
-	// log.Debug("%+v\n", creq)
-
-	var responses []interface{}
-	for range adapters.Adapters {
-		responses = append(responses, &structs.NServicesResponse{})
-	}
-
-	done, listIF, processes, _ := callRPCs(serviceCall, &creq, responses)
-	log.Debug("  Processes: %d", processes)
-
-	if processes > 0 {
-		sd.Lock()
-		defer sd.Unlock()
-		timeout := common.TimeoutChan(rpcTimeout)
-
-		timedout := false
-		for !timedout {
-			select {
-			case answer := <-done:
-				processes--
-				if answer.Error != nil {
-					log.Errorf("RPC call %q failed: %s\n", serviceCall, answer.Error)
-					break
-				}
-				r := answer.Reply.(*structs.NServicesResponse)
-				listIF[r.IFID].replied = true
-				log.Debug("\tMerging Services list for %q", r.IFID)
-				sd.merge(&r.Services)
-			case timedout = <-timeout:
-			}
-
-			if processes <= 0 {
-				break
-			}
-		}
-		failed := false
-		for k, v := range listIF {
-			switch {
-			case v.sent && !v.replied:
-				log.Errorf("RPC call %q to: %s timed out.", serviceCall, k)
-				failed = true
-			case !v.sent:
-				log.Errorf("Engine and Adapter configs are out of synch - received reply from: %s", k)
-				failed = true
-			}
-		}
-		if failed {
-			log.Error("Service List refresh FAILED!")
-		} else {
-			log.Info("Service List refresh complete...")
-		}
-	}
-	// log.Debug(spew.Sdump(sd))
-	return nil
+	return ls.Box(90)
 }
-
-// callRPCs sends an API request to all connected Adapters. It returns a response
-// channel of type *rpc.Call, then number of RPC calls to expect to return, and
-// any immediate errors encountered with the call to rpc.Client.Go().
-func callRPCs(serviceMethod string, request interface{}, reply []interface{}) (chan *rpc.Call, map[string]*rpcCall, int, error) {
-	var (
-		done      chan *rpc.Call
-		errs      string
-		processes int
-	)
-	done = make(chan *rpc.Call, rpcChanSize)
-	listIF := make(map[string]*rpcCall)
-
-	for i, a := range adapters.Adapters {
-		if a.Connected {
-			listIF[a.Name] = &rpcCall{true, false}
-			replyCall := a.Client.Go(serviceMethod, request, reply[i], done)
-			processes++
-			if replyCall.Error != nil {
-				msg := fmt.Sprintf("Error calling adapter: %s: %s\n", a.Name, replyCall.Error)
-				log.Error(msg)
-				errs = errs + msg
-			}
-		}
-	}
-	if len(errs) > 0 {
-		return done, listIF, processes, errors.New(errs)
-	}
-	return done, listIF, processes, nil
-}
-*/
 
 // ==============================================================================================================================
 //                                      MISC
@@ -164,5 +134,5 @@ func SplitMID(mid string) (string, string, error) {
 // ==============================================================================================================================
 
 func init() {
-	servicesData.clearMap()
+	servicesData.init()
 }
