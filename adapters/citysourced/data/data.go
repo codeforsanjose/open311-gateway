@@ -109,13 +109,6 @@ func readConfig(filePath string) error {
 //                                      ROUTE DATA
 // ==============================================================================================================================
 
-// AdapterData contains all of the config data.
-type AdapterData struct {
-	Name    string `json:"name"`
-	Type    string `json:"type"`
-	Address string `json:"address"`
-}
-
 // ConfigData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* area name.
 type ConfigData struct {
 	Loaded  bool
@@ -129,6 +122,13 @@ type ConfigData struct {
 	providerID   map[int]*Provider            // Provider ID -> Provider
 	areaCode     map[string]string            // City name to City Code
 	areaServices map[string]structs.NServices // City Code (lowercase) -> List of Services
+}
+
+// AdapterData contains all of the config data.
+type AdapterData struct {
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Address string `json:"address"`
 }
 
 type dataIndex struct {

@@ -77,11 +77,11 @@ func (r *RPCCall) Run() error {
 		for !timedout {
 			select {
 			case answer := <-r.results:
-				r.listIF[answer.adapter.Name] = answer
+				r.listIF[answer.adapter.ID] = answer
 				r.processes--
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)
-					log.Errorf("RPC call to: %q failed - %s", answer.adapter.Name, answer.err)
+					log.Errorf("RPC call to: %q failed - %s", answer.adapter.ID, answer.err)
 					break
 				}
 				log.Debug("Answer: %s", answer.response)
@@ -121,7 +121,7 @@ func (r *RPCCall) start() error {
 				r.results <- pas
 			}(pAdpStat)
 		} else {
-			log.Info("Skipping: %s - not connected!", v.adapter.Name)
+			log.Info("Skipping: %s - not connected!", v.adapter.ID)
 		}
 	}
 
@@ -133,21 +133,24 @@ func (r *RPCCall) start() error {
 func (r *RPCCall) statusList(areaID string) error {
 	var al []*Adapter
 	if strings.ToLower(areaID) == "all" {
-		al = adapters.Adapters
 		log.Debug("Using ALL adapters")
+		for _, v := range adapters.Adapters {
+			al = append(al, v)
+		}
 	} else {
-		if len(adapters.areaAdapters) == 0 {
+		log.Debug("Using only adapters for areaID: %s", areaID)
+		var ok bool
+		al, ok = adapters.areaAdapters[areaID]
+		if !ok {
 			return fmt.Errorf("Area %q is not supported on this Gateway", areaID)
 		}
-		al = adapters.areaAdapters[areaID]
-		log.Debug("Using only adapters for areaID: %s", areaID)
 	}
 	for _, adp := range al {
 		rs, err := newAdapterStatus(adp, r.service)
 		if err != nil {
 			return fmt.Errorf("Error creating Adapter list - %s", err)
 		}
-		r.listIF[adp.Name] = rs
+		r.listIF[adp.ID] = rs
 	}
 	return nil
 }
@@ -207,7 +210,7 @@ func (r RPCCall) String() string {
 }
 
 func (r rpcAdapterStatus) String() string {
-	s := fmt.Sprintf("%-30s     %5t %5t   (%s)%p", fmt.Sprintf("%s (%s @%s)", r.adapter.Name, r.adapter.Type, r.adapter.Address), r.sent, r.replied, reflect.TypeOf(r.response), r.response)
+	s := fmt.Sprintf("%-30s     %5t %5t   (%s)%p", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, reflect.TypeOf(r.response), r.response)
 	// s += spew.Sdump(r.response) + "\n"
 	return s
 }

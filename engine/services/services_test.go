@@ -2,6 +2,7 @@ package services
 
 import (
 	"CitySourcedAPI/logs"
+	"_sketches/spew"
 	"fmt"
 	"testing"
 	"time"
@@ -31,11 +32,11 @@ func TestServiceDataRefresh(t *testing.T) {
 	f := func(run int) {
 		fmt.Printf("\n\n\n\n============================= [TestServiceDataRefresh%d] =============================\n\n", run)
 		Refresh()
-		time.Sleep(2 * time.Second)
+		time.Sleep(300 * time.Millisecond)
 		fmt.Println(servicesData)
 	}
 
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 2)
 	for i := 1; i <= 4; i++ {
 		f(i)
 	}
@@ -53,7 +54,6 @@ func TestRetrieve(t *testing.T) {
 		{"XX", true},
 	}
 
-	time.Sleep(time.Second * 1)
 	for _, c := range cases {
 		fmt.Printf(">>>>>>>>>>>> Retrieving data for: %q\n", c.in)
 		l, err := GetArea(c.in)
@@ -62,6 +62,15 @@ func TestRetrieve(t *testing.T) {
 		}
 		fmt.Println(l)
 	}
+}
+
+func TestAreaAdapters(t *testing.T) {
+	fmt.Printf("\n\n\n\n============================= [TestAreaAdapters] =============================\n\n")
+	fmt.Printf("---------- San Jose -----------\n%s\n", spew.Sdump(router.GetAreaAdapters("SJ")))
+	fmt.Printf("---------- Santa Clara --------\n%s\n", spew.Sdump(router.GetAreaAdapters("SC")))
+	fmt.Printf("---------- XX -----------------\n%s\n", spew.Sdump(router.GetAreaAdapters("SJ")))
+	fmt.Println(spew.Sdump(router.GetAreaAdapters("SJ")))
+	fmt.Println(spew.Sdump(router.GetAreaAdapters("XX")))
 }
 
 func TestShutdown(t *testing.T) {

@@ -25,6 +25,16 @@
 
 ## Log
 
+### 2016.01.22 - Fri
+
+* Modified services/services.go to create a map of AdapterIDs by AreaID, and send it back to router/adapters.go for updating.
+* See new doc: "channels.md" for details.
+* The adapters are frequently referenced by AdapterID, so I changed engine/data/config.json to use objects for each Area, rather than a list.
+* Changed Adapters.Name to Adapters.ID in router/adapters.go, to match the current usage and docs.
+* Test OK.
+* Saved to GIT.
+
+
 ### 2016.01.21 - Thu
 
 * Modified ServicesList refresh to go through a channel, so that only one update can possibly be running simultaneously.  To start a refresh, call router.RefreshServicesList().
