@@ -2,7 +2,6 @@ package request
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -22,7 +21,7 @@ func (cx *cType) load(p cIface, r *rest.Request) error {
 			return fmt.Errorf("Unable to process request: %s", err)
 		}
 	}
-	log.Printf("--> parseQP\n")
+	log.Debug("--> parseQP\n")
 	if err := cx.self.parseQP(r); err != nil {
 		return fmt.Errorf("Unable to process request: %s", err)
 	}

@@ -29,6 +29,15 @@
 
 * Modified ServicesList refresh to go through a channel, so that only one update can possibly be running simultaneously.  To start a refresh, call router.RefreshServicesList().
 * Saved to GIT.
+* Moved services.go from the engine/router package into it's own, new package "services".  All code related to the ServiceList cache system will be in this package.
+* The services package needs access to the RPC call system, so revised engine/router/rpc.go - made the following exported:
+	* newRPCCall -> NewRPCCall
+	* rpcCalls -> RPCCall
+	* rpcCalls.run() -> RPCCall.Run()
+* Restored engine/request/services.go, and updated to match all the changes in the Engine.
+* Test OK.
+* Saved to GIT.
+* 
 
 
 ### 2016.01.20 - Wed

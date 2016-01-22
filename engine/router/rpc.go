@@ -24,10 +24,10 @@ var (
 //                                      RPC
 // =======================================================================================
 
-// newRPCCall creates a new rpcCalls.  rpcCalls holds all information about an RPC call,
+// NewRPCCall creates a new RPCCall.  RPCCall holds all information about an RPC call,
 // including which Adapters are called, request, response status, etc.
-func newRPCCall(service, areaID string, request interface{}, process func(interface{}) error) (*rpcCalls, error) {
-	r := rpcCalls{
+func NewRPCCall(service, areaID string, request interface{}, process func(interface{}) error) (*RPCCall, error) {
+	r := RPCCall{
 		service: service,
 		request: request,
 		results: make(chan *rpcAdapterStatus, rpcChanSize),
@@ -44,7 +44,8 @@ type ResponseProcesser interface {
 	Process(interface{}) error
 }
 
-type rpcCalls struct {
+// RPCCall represents an RPC call.  This may be calls to multiple Adapters.
+type RPCCall struct {
 	service   string
 	request   interface{}
 	results   chan *rpcAdapterStatus
@@ -54,7 +55,9 @@ type rpcCalls struct {
 	errs      []error
 }
 
-func (r *rpcCalls) run() error {
+// Run executes the RPC call(s).  It is synchronous - it will wait for all requestrs
+// to return or timeout.
+func (r *RPCCall) Run() error {
 	// Send all the RPC calls in go routines.
 	var startTime time.Time
 	if showRunTimes {
@@ -105,7 +108,7 @@ func (r *rpcCalls) run() error {
 	return nil
 }
 
-func (r *rpcCalls) start() error {
+func (r *RPCCall) start() error {
 	for k, v := range r.listIF {
 		if v.adapter.Connected {
 			// Give the pointer to the AdapterStatus to the go routine.
@@ -122,12 +125,12 @@ func (r *rpcCalls) start() error {
 		}
 	}
 
-	fmt.Printf("After run():\n%s\n", r)
+	fmt.Printf("After Run():\n%s\n", r)
 	return nil
 }
 
 //
-func (r *rpcCalls) statusList(areaID string) error {
+func (r *RPCCall) statusList(areaID string) error {
 	var al []*Adapter
 	if strings.ToLower(areaID) == "all" {
 		al = adapters.Adapters
@@ -177,7 +180,7 @@ func newAdapterStatus(adp *Adapter, service string) (*rpcAdapterStatus, error) {
 //                                      STRINGS
 // ==============================================================================================================================
 
-func (r rpcCalls) String() string {
+func (r RPCCall) String() string {
 	ls := new(common.LogString)
 	ls.AddS("RPC Call\n")
 	ls.AddF("Service: %s\n", r.service)

@@ -544,6 +544,7 @@
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
     </object>
     <object type="LMREQUEST" id="z147">
+        <attribute name="body" type="string">[{"data":{"json":"{}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">509699AE-F7CB-4C2C-BF71-B73603D68650</attribute>
         <attribute name="url" type="string">http://127.0.0.1:8080/services?lat=37.339244\u2600lng=-121.883638</attribute>
         <attribute name="storecookies" type="bool">1</attribute>

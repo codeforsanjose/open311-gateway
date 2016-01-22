@@ -4,7 +4,6 @@ import (
 	"CitySourcedAPI/logs"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -25,18 +24,4 @@ func TestReadConfig(t *testing.T) {
 
 	fmt.Println(spew.Sdump(adapters))
 
-}
-
-func TestServiceDataRefresh(t *testing.T) {
-	f := func(run int) {
-		fmt.Printf("\n\n\n\n============================= [TestServiceDataRefresh%d] =============================\n\n", run)
-		RefreshServicesList()
-		time.Sleep(2 * time.Second)
-		fmt.Println(servicesData)
-	}
-
-	time.Sleep(time.Second * 5)
-	for i := 1; i <= 4; i++ {
-		f(i)
-	}
 }

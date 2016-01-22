@@ -1,10 +1,7 @@
 package request
 
 import (
-	"_sketches/spew"
-	"fmt"
 	"net/http"
-	"net/rpc"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -23,9 +20,4 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 	w.WriteJson(&response)
-}
-
-func CallAdapter(apiCall string, request, response interface{}) *rpc.Call {
-	fmt.Println(spew.Sdump(request))
-	return client.Go(apiCall, request, response, nil)
 }

@@ -1,6 +1,7 @@
-package router
+package services
 
 import (
+	"CitySourcedAPI/logs"
 	"errors"
 	"fmt"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"Gateway311/engine/common"
+	"Gateway311/engine/router"
 	"Gateway311/engine/structs"
 )
 
@@ -17,13 +19,24 @@ const (
 
 var (
 	servicesData ServicesData
+	log          = logs.Log
 )
 
-func RefreshServicesList() {
-	servicesData.Refresh()
+// GetArea initiates a refresh of the Services List Cache.
+func GetArea(areaID string) (structs.NServices, error) {
+	return servicesData.getArea(areaID)
 }
 
-// func ServiceList(areaID string)
+// Refresh initiates a refresh of the Services List Cache.
+func Refresh() {
+	servicesData.refresh()
+}
+
+// Shutdown should be called at system shutdown.  It will terminate the update channel, and
+// permform any other necessary cleanup.
+func Shutdown() {
+	servicesData.shutdown()
+}
 
 // ==============================================================================================================================
 //                                      SERVICE CACHE
@@ -40,54 +53,32 @@ type ServicesData struct {
 	sync.RWMutex
 }
 
-func (sd *ServicesData) init() {
-	sd.Lock()
-	defer sd.Unlock()
-	sd.list[0] = make(map[string]structs.NServices)
-	sd.list[1] = make(map[string]structs.NServices)
-	sd.update = make(chan bool, 1)
-	sd.activeList = 0
-
-	go func() {
-		for {
-			_, ok := <-sd.update
-			if !ok {
-				break
-			} else {
-				log.Debug("Running refresh...")
-				sd.refresh()
-			}
-		}
-	}()
-
-	go func() {
-		// Pause a few seconds to make sure everything else is up and running.
-		time.Sleep(startupDelay)
-		sd.Refresh()
-	}()
+// getArea retrieves the ServiceList for the specified area.
+func (sd *ServicesData) getArea(areaID string) (structs.NServices, error) {
+	sd.RLock()
+	defer sd.RUnlock()
+	l, ok := sd.list[sd.activeList][areaID]
+	if !ok {
+		return nil, fmt.Errorf("The requested AreaID: %q is not serviced by this gateway.", areaID)
+	}
+	return l, nil
 }
 
-// Shutdown should be called at system shutdown.  It will terminate the update channel, and
-// permform any other necessary cleanup.
-func (sd *ServicesData) Shutdown() {
-	close(sd.update)
-}
-
-// Refresh initiates a service list update - that is, it requests the current service lists
+// refresh initiates a service list update - that is, it requests the current service lists
 // from all Adapters, merges the data back into the standby service list cache, and makes
 // the freshly loaded cache the active cache.
-func (sd *ServicesData) Refresh() {
+func (sd *ServicesData) refresh() {
 	sd.update <- true
 }
 
-func (sd *ServicesData) refresh() {
+func (sd *ServicesData) processRefresh() {
 	rqst := &structs.NServiceRequest{"all"}
-	r, err := newRPCCall("Service.All", "all", rqst, servicesData.merge)
+	r, err := router.NewRPCCall("Service.All", "all", rqst, servicesData.merge)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
-	r.run()
+	err = r.Run()
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -133,6 +124,34 @@ func (sd *ServicesData) merge(ndata interface{}) error {
 		// log.Debug("   Appending: %s - %s", ns.MID(), ns.Name)
 	}
 	return nil
+}
+
+func (sd *ServicesData) init() {
+	sd.Lock()
+	defer sd.Unlock()
+	sd.list[0] = make(map[string]structs.NServices)
+	sd.list[1] = make(map[string]structs.NServices)
+	sd.update = make(chan bool, 1)
+	sd.activeList = 0
+
+	go func() {
+		for {
+			_, ok := <-sd.update
+			if !ok {
+				log.Info("Terminating ServicesData refresh queue...")
+				break
+			} else {
+				log.Debug("Running refresh...")
+				sd.processRefresh()
+			}
+		}
+	}()
+}
+
+// Shutdown should be called at system shutdown.  It will terminate the update channel, and
+// permform any other necessary cleanup.
+func (sd *ServicesData) shutdown() {
+	close(sd.update)
 }
 
 // ==============================================================================================================================

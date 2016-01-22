@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"Gateway311/engine/logs"
 	"Gateway311/engine/request"
 	"Gateway311/engine/router"
+	"Gateway311/engine/services"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -43,7 +45,7 @@ func main() {
 		// rest.Put("/:jid/requests/:id", rpt.Update),
 		// rest.Delete("/:jid/requests/:id", rpt.Delete),
 
-		// rest.Get("/services", request.Services),
+		rest.Get("/services", request.Services),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -66,6 +68,9 @@ func init() {
 
 	go signalHandler(make(chan os.Signal, 1))
 	fmt.Println("Press Ctrl-C to shutdown...")
+
+	time.Sleep(time.Second * 2)
+	services.Refresh()
 }
 
 func signalHandler(c chan os.Signal) {
