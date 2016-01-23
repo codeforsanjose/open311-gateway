@@ -3,10 +3,12 @@ package request
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/geo"
 	"Gateway311/engine/logs"
+	"Gateway311/engine/router"
 	"Gateway311/engine/services"
 	"Gateway311/engine/structs"
 
@@ -84,11 +86,16 @@ func (c *ServicesReq) run() (interface{}, error) {
 		fallthrough
 
 	case len(c.City) > 2:
-		r := ServicesResp{}
-		r.Services, err = services.GetArea(c.City)
+		areaID, err := router.GetAreaID(c.City)
+		fmt.Printf("AreaID: %q\n", areaID)
 		if err != nil {
 			return fail(fmt.Sprintf("Cannot find services for %v - %s", c.City, err.Error()))
 		}
+		services, err := services.GetArea(areaID)
+		if err != nil {
+			return fail(fmt.Sprintf("Cannot find services for %v - %s", c.City, err.Error()))
+		}
+		r, err := newServiceResp("OK", services)
 		return &r, nil
 	}
 	return nil, fmt.Errorf("Invalid location - lat: %v lng: %v  city: %v", c.Latitude, c.Longitude, c.City)
@@ -98,11 +105,32 @@ func (c *ServicesReq) run() (interface{}, error) {
 //                                      Response
 // =======================================================================================
 
+// newServiceResp translates structs.NServices to ServicesResp and ServicesRespS.
+func newServiceResp(msg string, ns structs.NServices) (ServicesResp, error) {
+	newSR := ServicesResp{
+		Message:  msg,
+		Services: make(map[string]ServicesRespS),
+	}
+
+	for _, v := range ns {
+		newSR.Services[v.ServiceID.MID()] = ServicesRespS{
+			Name:       v.Name,
+			Categories: v.Categories,
+		}
+	}
+
+	return newSR, nil
+}
+
 // ServicesResp is used to return a service list.
 type ServicesResp struct {
-	Message string `json:"Message" xml:"Message"`
-	// JID      int               `json:"jid" xml:"jid"`
-	Services structs.NServices `json:"services" xml:"services"`
+	Message  string                   `json:"message" xml:"Message"`
+	Services map[string]ServicesRespS `json:"services" xml:"Services"`
+}
+
+type ServicesRespS struct {
+	Name       string   `json:"name"`
+	Categories []string `json:"catg"`
 }
 
 // =======================================================================================
@@ -115,5 +143,17 @@ func (c ServicesReq) String() string {
 	ls.AddS("Services\n")
 	ls.AddF("JID: %v\n", c.JID)
 	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", c.LatitudeV, c.LongitudeV, c.City)
+	return ls.Box(80)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (r ServicesResp) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Services Response\n")
+	ls.AddF("Message: %v\n", r.Message)
+	for k, v := range r.Services {
+		ls.AddF("%-18s %-30s [%s]\n", k, v.Name, strings.Join(v.Categories, ", "))
+	}
+
 	return ls.Box(80)
 }

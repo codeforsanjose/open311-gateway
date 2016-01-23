@@ -1,6 +1,7 @@
 package router
 
 import (
+	"_sketches/spew"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -27,6 +28,11 @@ func GetAreaAdapters(areaID string) ([]*Adapter, error) {
 	return adapters.getAreaAdapters(areaID)
 }
 
+// GetAreaID returns the AreaID for a city name, using the aliases in the config.json file.
+func GetAreaID(alias string) (string, error) {
+	return adapters.areaID(alias)
+}
+
 // ==============================================================================================================================
 //                                      ADAPTERS
 // ==============================================================================================================================
@@ -42,6 +48,16 @@ type Adapters struct {
 	areaAlias    map[string]*Area      // Index: an alias for an area
 	areaAdapters map[string][]*Adapter // Index: AreaID
 	sync.RWMutex
+}
+
+func (adps *Adapters) areaID(alias string) (string, error) {
+	adps.RLock()
+	defer adps.RUnlock()
+	area, ok := adps.areaAlias[strings.ToLower(alias)]
+	if !ok {
+		return "", fmt.Errorf("Cannot find area: %q", alias)
+	}
+	return area.ID, nil
 }
 
 // getArea retrieves the ServiceList for the specified area.
@@ -76,9 +92,13 @@ func (adps *Adapters) load(file []byte) error {
 		v.ID = k
 	}
 
-	// adps.index()
+	adps.indexAreaAlias()
+
 	adps.loaded = true
 	adps.loadedAt = time.Now()
+
+	fmt.Printf("=================== Adapters ===============\n%s\n\n\n", spew.Sdump(*adps))
+	fmt.Printf("")
 	return nil
 }
 
@@ -107,6 +127,8 @@ func (adps *Adapters) updateAreaAdapters(input map[string][]string) error {
 			adps.areaAdapters[areaID] = append(adps.areaAdapters[areaID], adps.Adapters[adpID])
 		}
 	}
+
+	log.Debug("%s\n", adps)
 
 	return nil
 }
@@ -154,7 +176,7 @@ func (adp *Adapter) connect() error {
 type Area struct {
 	ID      string   //
 	Name    string   `json:"name"`
-	Aliases []string `json:"alias"`
+	Aliases []string `json:"aliases"`
 }
 
 // ==============================================================================================================================
@@ -184,9 +206,26 @@ func init() {
 // String returns a formatted representation of Adapters.
 func (adps Adapters) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Adapters")
+	ls.AddS("Adapters\n")
 	for _, v := range adps.Adapters {
 		ls.AddS(v.String())
+	}
+	ls.AddS("\n-------Areas---------------\n")
+	for _, v := range adps.Areas {
+		// ls.AddS("   %5s %-7s  %-25s  [%s]\n", k, fmt.Sprintf("(%s)", v.ID), v.Name, fmt.Sprintf("\"%s\"", strings.Join(v.Aliases, "\", \"")))
+		ls.AddF("%s\n", v)
+	}
+	ls.AddS("\n-------AreaAlias-----------\n")
+	for k, v := range adps.areaAlias {
+		ls.AddF("   %-20s  %s\n", k, v.ID)
+	}
+	ls.AddS("\n-------AreaAdapters--------\n")
+	for k, v := range adps.areaAdapters {
+		var s []string
+		for _, a := range v {
+			s = append(s, a.ID)
+		}
+		ls.AddF("   %-5s  %s\n", k, strings.Join(s, ", "))
 	}
 	return ls.Box(90)
 }

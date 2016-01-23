@@ -2,7 +2,8 @@
 
 * Update Services cache on Engine.
 	* Be able to safely and easily refresh the services list.
-	* Quickly lookup location -> city -> Service list.
+	* Quickly lookup location -> AreaID -> Service list.
+	* Quickly lookup location -> AreaID -> Adapter list.
 * Implement RPC Dispatch System @done(2016-01-19)
 * Custom Type for ServiceID. @done(2016-01-11)
 * CitySourced Adapter - load config.json data file. @done(2016-01-05)
@@ -46,6 +47,10 @@
 	* rpcCalls.run() -> RPCCall.Run()
 * Restored engine/request/services.go, and updated to match all the changes in the Engine.
 * Test OK.
+* Saved to GIT.
+* Renamed engine/router/adapters.go -> data.go.  There is more in the config.json file than just adapter data.
+* Fixed Services response.
+* Test OK from Paw client, with location in San Jose.
 * Saved to GIT.
 * 
 
