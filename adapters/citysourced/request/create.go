@@ -1,6 +1,7 @@
 package request
 
 import (
+	"Gateway311/adapters/citysourced/data"
 	"Gateway311/adapters/citysourced/structs"
 	"Gateway311/engine/common"
 	"bytes"
@@ -23,6 +24,7 @@ func (c *Create) Run(rqst *structs.NCreateRequest, resp *structs.NCreateResponse
 	fmt.Printf("resp: %p\n", resp)
 	fmt.Println(rqst)
 	irqst, err := c.makeI(rqst)
+	fmt.Printf("rqst: %s\n", *irqst)
 	r, err := irqst.Process()
 	r.makeN(resp)
 	fmt.Printf("resp: %p\n%s\n", resp, *resp)
@@ -34,16 +36,20 @@ func (c *Create) makeI(rqst *structs.NCreateRequest) (*ICreateReq, error) {
 	// if err != nil {
 	// 	return nil, fmt.Errorf("Unable to retrieve Service Provider for Service Type: %v", c.TypeIDV)
 	// }
-	//
+
+	provider, err := data.MIDProvider(rqst.MID)
+	if err != nil {
+		return nil, err
+	}
 	irqst := ICreateReq{
-		APIAuthKey:        rqst.APIAuthKey,
+		APIAuthKey:        provider.Key,
 		APIRequestType:    "CreateThreeOneOne",
-		APIRequestVersion: rqst.APIRequestVersion,
+		APIRequestVersion: provider.APIVersion,
 		DeviceType:        rqst.DeviceType,
 		DeviceModel:       rqst.DeviceModel,
 		DeviceID:          rqst.DeviceID,
 		RequestType:       rqst.Type,
-		RequestTypeID:     rqst.TypeID,
+		RequestTypeID:     rqst.MID.ID,
 		Latitude:          rqst.Latitude,
 		Longitude:         rqst.Longitude,
 		Description:       rqst.Description,
@@ -129,6 +135,7 @@ func (r *ICreateReq) Process() (*ICreateReqResp, error) {
 func (r ICreateReq) String() string {
 	ls := new(common.LogString)
 	ls.AddS("City Sourced - Create\n")
+	ls.AddF("API - auth: %q  RequestType: %q  Version: %q\n", r.APIAuthKey, r.APIRequestType, r.APIRequestVersion)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - type: %q  id: %d\n", r.RequestType, r.RequestTypeID)
 	ls.AddF("Location - lat: %v  lon: %v\n", r.Latitude, r.Longitude)

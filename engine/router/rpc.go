@@ -26,7 +26,13 @@ var (
 
 // NewRPCCall creates a new RPCCall.  RPCCall holds all information about an RPC call,
 // including which Adapters are called, request, response status, etc.
-func NewRPCCall(service, areaID string, request interface{}, process func(interface{}) error) (*RPCCall, error) {
+//
+// This call will set up an RPC call for a specific Adapter, or for any Adapter servicing
+// the specified Area. Only one of the following should be used - the other parameter
+// should be set to an empty string.
+// adpID: adapter ID
+// areaID: Area ID
+func NewRPCCall(service, adpID string, areaID string, request interface{}, process func(interface{}) error) (*RPCCall, error) {
 	r := RPCCall{
 		service: service,
 		request: request,
@@ -35,7 +41,13 @@ func NewRPCCall(service, areaID string, request interface{}, process func(interf
 		process: process,
 		errs:    make([]error, 0),
 	}
-	r.statusList(areaID)
+
+	if len(adpID) > 1 {
+		r.adapter(adpID)
+	} else {
+		r.statusList(areaID)
+	}
+	log.Debug("RPCCall: %s", r)
 	return &r, nil
 }
 
@@ -50,7 +62,7 @@ type RPCCall struct {
 	request   interface{}
 	results   chan *rpcAdapterStatus
 	processes int
-	listIF    map[string]*rpcAdapterStatus
+	listIF    map[string]*rpcAdapterStatus // Key: AdapterID
 	process   func(interface{}) error
 	errs      []error
 }
@@ -129,7 +141,21 @@ func (r *RPCCall) start() error {
 	return nil
 }
 
-//
+func (r *RPCCall) adapter(adpID string) error {
+	adp, err := GetAdapter(adpID)
+	log.Debug("adp: %s", adp)
+	rs, err := newAdapterStatus(adp, r.service)
+	log.Debug("rs: %s", rs)
+	if err != nil {
+		return fmt.Errorf("Error creating Adapter list - %s", err)
+	}
+	r.listIF[adp.ID] = rs
+	log.Debug("RPCCall: %s", r)
+	return err
+}
+
+// statusList populates r.listIF with pointers to Adapters that service the specified
+// Area.
 func (r *RPCCall) statusList(areaID string) error {
 	var al []*Adapter
 	if strings.ToLower(areaID) == "all" {
@@ -173,10 +199,29 @@ func newAdapterStatus(adp *Adapter, service string) (*rpcAdapterStatus, error) {
 
 	rs, err := makeResponseStruct(service)
 	if err != nil {
+		log.Errorf("Cannot create AdapterStatus - %s", err)
 		return nil, fmt.Errorf("Cannot create AdapterStatus - %s", err)
 	}
 	aStat.response = rs
+	log.Debug("aStat: %s", aStat)
 	return aStat, nil
+}
+
+// ==============================================================================================================================
+//                                      MISC
+// ==============================================================================================================================
+
+func makeResponseStruct(service string) (interface{}, error) {
+	switch service {
+	case "Service.All", "Service.Area":
+		return new(structs.NServicesResponse), nil
+	case "Create.Run":
+		return new(structs.NCreateResponse), nil
+	case "Search.DeviceID", "Search.Location":
+		return new(structs.SearchResp), nil
+	default:
+		return nil, fmt.Errorf("Invalid request type: %q", service)
+	}
 }
 
 // ==============================================================================================================================
@@ -187,8 +232,8 @@ func (r RPCCall) String() string {
 	ls := new(common.LogString)
 	ls.AddS("RPC Call\n")
 	ls.AddF("Service: %s\n", r.service)
-	ls.AddF("Request: (%p)  results chan: (%p)\n", r.request, r.results)
-	ls.AddF("Request: (%p):\n%[1]s\n", r.request)
+	ls.AddF("Request: (%p)  results chan: (%p)\n", &r.request, r.results)
+	ls.AddF("%s\n", r.request)
 	ls2 := new(common.LogString)
 	ls2.AddS("Adapters\n")
 	ls2.AddF("         Name/Type/Address                 Sent  Repl     Response\n")
@@ -213,21 +258,4 @@ func (r rpcAdapterStatus) String() string {
 	s := fmt.Sprintf("%-30s     %5t %5t   (%s)%p", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, reflect.TypeOf(r.response), r.response)
 	// s += spew.Sdump(r.response) + "\n"
 	return s
-}
-
-// ==============================================================================================================================
-//                                      MISC
-// ==============================================================================================================================
-
-func makeResponseStruct(service string) (interface{}, error) {
-	switch service {
-	case "Service.All", "Service.Area":
-		return new(structs.NServicesResponse), nil
-	case "Create.Report":
-		return new(structs.NCreateResponse), nil
-	case "Search.DeviceID", "Search.Location":
-		return new(structs.SearchResp), nil
-	default:
-		return nil, fmt.Errorf("Invalid request type: %q", service)
-	}
 }

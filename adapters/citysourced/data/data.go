@@ -66,6 +66,17 @@ func AdapterName() string {
 	return configData.Adapter.Name
 }
 
+// MIDProvider returns the Provider data for the specified Area and Provider.
+func MIDProvider(MID structs.ServiceID) (Provider, error) {
+	log.Debug("MID: %s", MID.MID())
+	p, ok := configData.areaProvider[areaProvider{MID.AreaID, MID.ProviderID}]
+	log.Debug("Provider (%t): %s", ok, *p)
+	if !ok {
+		return Provider{}, fmt.Errorf("Unable to find Provider for MID: %q", MID.MID())
+	}
+	return *p, nil
+}
+
 // // ServiceProviders returns a list of all Service Providers for the specified City.
 // func ServiceProviders(area string) ([]*Provider, error) {
 // 	return configData.ServiceProviders(area)
@@ -109,6 +120,11 @@ func readConfig(filePath string) error {
 //                                      ROUTE DATA
 // ==============================================================================================================================
 
+type areaProvider struct {
+	areaID     string
+	providerID int
+}
+
 // ConfigData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* area name.
 type ConfigData struct {
 	Loaded  bool
@@ -117,10 +133,12 @@ type ConfigData struct {
 	Categories []string         `json:"serviceCategories"`
 	Areas      map[string]*Area `json:"serviceAreas"`
 
-	serviceMID   map[string]dataIndex         // Service MID -> Service
-	serviceID    map[int]*structs.NService    // Service ID -> Service
-	providerID   map[int]*Provider            // Provider ID -> Provider
-	areaCode     map[string]string            // City name to City Code
+	serviceMID   map[string]dataIndex      // Service MID -> Service
+	serviceID    map[int]*structs.NService // Service ID -> Service
+	providerID   map[int]*Provider         // Provider ID -> Provider
+	areaProvider map[areaProvider]*Provider
+	areaCode     map[string]string // City name to City Code
+
 	areaServices map[string]structs.NServices // City Code (lowercase) -> List of Services
 }
 
@@ -201,6 +219,7 @@ func (pd *ConfigData) Load(file []byte) error {
 func (pd *ConfigData) settle() error {
 	log.Info("   Denormalizing service keys...\n")
 	for areaKey, area := range pd.Areas {
+		area.ID = areaKey
 		for _, provider := range area.Providers {
 			for _, service := range provider.Services {
 				service.IFID = pd.Adapter.Name
@@ -219,6 +238,7 @@ func (pd *ConfigData) index() error {
 	pd.indexServiceID()
 	pd.indexProviderID()
 	pd.indexCityCode()
+	pd.indexAreaProvider()
 	// Run indexCityCode() last.
 	pd.indexCityServices()
 	return nil
@@ -266,6 +286,17 @@ func (pd *ConfigData) indexCityCode() error {
 	pd.areaCode = make(map[string]string)
 	for areaKey, area := range pd.Areas {
 		pd.areaCode[strings.ToLower(area.Name)] = areaKey
+	}
+	return nil
+}
+
+func (pd *ConfigData) indexAreaProvider() error {
+	log.Info("       Indexing AreaProvider...\n")
+	pd.areaProvider = make(map[areaProvider]*Provider)
+	for _, area := range pd.Areas {
+		for _, provider := range area.Providers {
+			pd.areaProvider[areaProvider{area.ID, provider.ID}] = provider
+		}
 	}
 	return nil
 }
@@ -329,6 +360,10 @@ func (pd ConfigData) String() string {
 	for k, v := range pd.areaCode {
 		ls.AddF("   %-20s %s\n", k, v)
 	}
+	ls.AddS("\n-----------INDEX: areaProvider-----------\n")
+	for k, v := range pd.areaProvider {
+		ls.AddF("   %-20s  %-40s %s\n", fmt.Sprintf("%s-%d", k.areaID, k.providerID), v.Name, v.URL)
+	}
 	ls.AddS("\n-----------INDEX: areaServices-----------\n")
 	for k, v := range pd.areaServices {
 		ls.AddF("   [[%s]]\n", k)
@@ -342,9 +377,7 @@ func (pd ConfigData) String() string {
 	}
 	ls.AddS("\n---AREAS ---\n")
 	for _, v := range pd.Areas {
-		for _, v2 := range v.Providers {
-			ls.AddF("%s\n", v2)
-		}
+		ls.AddF("%s\n", v)
 	}
 	return ls.Box(90)
 }
@@ -359,13 +392,14 @@ func (pd *ConfigData) isValidCity(area string) (string, bool) {
 
 // Area is a Service Area.  It contains an index list of all of the Service Providers for this Area.
 type Area struct {
+	ID        string
 	Name      string      `json:"name"`
 	Providers []*Provider `json:"providers"`
 }
 
 func (a Area) String() string {
 	ls := new(common.LogString)
-	ls.AddF("%s\n", a.Name)
+	ls.AddF("%s (%s)\n", a.Name, a.ID)
 	for _, v := range a.Providers {
 		ls.AddF("%s\n", v)
 	}

@@ -29,9 +29,7 @@ func main() {
 
 	rpc.Register(&request.Create{})
 
-	// rpc.Register(&request.Service{})
-	service := new(request.Service)
-	rpc.Register(service)
+	rpc.Register(&request.Service{})
 
 	arith := new(Arith)
 	rpc.Register(arith)

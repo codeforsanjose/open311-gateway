@@ -2,6 +2,8 @@ package structs
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"Gateway311/engine/common"
 )
@@ -69,7 +71,7 @@ type ServiceID struct {
 // data, and is used by the Engine and all backend Adapters.
 type NCreateRequest struct {
 	API
-	TypeID      int
+	MID         ServiceID
 	Type        string
 	DeviceType  string
 	DeviceModel string
@@ -127,6 +129,85 @@ type SearchResp struct {
 }
 
 // =======================================================================================
+//                                      MISC
+// =======================================================================================
+
+// SplitMID breaks down an MID, and returns all subfields.
+func SplitMID(mid string) (string, string, int, int, error) {
+	fail := func() (string, string, int, int, error) {
+		return "", "", 0, 0, fmt.Errorf("Invalid MID: %s", mid)
+	}
+	parts := strings.Split(mid, "-")
+	fmt.Printf("MID: %+v\n", parts)
+	if len(parts) != 4 {
+		fail()
+	}
+	pid, err := strconv.ParseInt(parts[2], 10, 64)
+	if err != nil {
+		fail()
+	}
+	id, err := strconv.ParseInt(parts[2], 10, 64)
+	if err != nil {
+		fail()
+	}
+	return parts[0], parts[1], int(pid), int(id), nil
+}
+
+// MidIFID breaks down a MID, and returns the IFID.
+func MidIFID(mid string) (string, error) {
+	parts := strings.Split(mid, "-")
+	fmt.Printf("MID: %+v\n", parts)
+	if len(parts) != 4 {
+		return "", fmt.Errorf("Invalid MID: %s", mid)
+	}
+	return parts[0], nil
+}
+
+// MidAreaID breaks down a MID, and returns the AreaID.
+func MidAreaID(mid string) (string, error) {
+	parts := strings.Split(mid, "-")
+	fmt.Printf("MID: %+v\n", parts)
+	if len(parts) != 4 {
+		return "", fmt.Errorf("Invalid MID: %s", mid)
+	}
+	return parts[1], nil
+}
+
+// MidProviderID breaks down an MID, and returns the ProviderID.
+func MidProviderID(mid string) (int, error) {
+	fail := func() (int, error) {
+		return 0, fmt.Errorf("Invalid MID: %s", mid)
+	}
+	parts := strings.Split(mid, "-")
+	fmt.Printf("MID: %+v\n", parts)
+	if len(parts) != 4 {
+		return 0, fmt.Errorf("Invalid MID: %s", mid)
+	}
+	pid, err := strconv.ParseInt(parts[2], 10, 64)
+	if err != nil {
+		fail()
+	}
+	return int(pid), nil
+}
+
+// MidID breaks down an MID, and returns the Service ID.
+func MidID(mid string) (int, error) {
+	fail := func() (int, error) {
+		return 0, fmt.Errorf("Invalid MID: %s", mid)
+	}
+	parts := strings.Split(mid, "-")
+	fmt.Printf("MID: %+v\n", parts)
+	if len(parts) != 4 {
+		return 0, fmt.Errorf("Invalid MID: %s", mid)
+	}
+	id, err := strconv.ParseInt(parts[3], 10, 64)
+	if err != nil {
+		fail()
+	}
+	return int(id), nil
+}
+
+// =======================================================================================
 //                                      STRINGS
 // =======================================================================================
 
@@ -170,9 +251,9 @@ func (s ServiceID) MID() string {
 // Displays the contents of the Spec_Type custom type.
 func (c NCreateRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Report - Create\n")
+	ls.AddS("Report - NCreateReq\n")
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
-	ls.AddF("Request - type: (%v) %q\n", c.TypeID, c.Type)
+	ls.AddF("Request - %s:  %s\n", c.MID.MID(), c.Type)
 	ls.AddF("Location - lat: %v lon: %v\n", c.Latitude, c.Longitude)
 	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
 	// if math.Abs(c.LatitudeV) > 1 {

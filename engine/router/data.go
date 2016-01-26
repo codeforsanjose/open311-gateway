@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"Gateway311/engine/common"
+	"Gateway311/engine/structs"
 )
 
 var (
@@ -31,6 +32,16 @@ func GetAreaAdapters(areaID string) ([]*Adapter, error) {
 // GetAreaID returns the AreaID for a city name, using the aliases in the config.json file.
 func GetAreaID(alias string) (string, error) {
 	return adapters.areaID(alias)
+}
+
+// GetAdapterID retrieves the AdapterID from a MID.
+func GetAdapterID(MID string) (string, error) {
+	return adapters.getAdapterID(MID)
+}
+
+// GetAdapter retrieves a pointer to the Adapter from a ID.
+func GetAdapter(id string) (*Adapter, error) {
+	return adapters.getAdapter(id)
 }
 
 // ==============================================================================================================================
@@ -69,6 +80,34 @@ func (adps *Adapters) getAreaAdapters(areaID string) ([]*Adapter, error) {
 		return nil, fmt.Errorf("The requested AreaID: %q is not serviced by this gateway.", areaID)
 	}
 	return l, nil
+}
+
+// getAdapterid retrieves the Adapterid from a Mid.
+func (adps *Adapters) getAdapter(id string) (*Adapter, error) {
+	adps.RLock()
+	defer adps.RUnlock()
+	a, ok := adps.Adapters[id]
+	log.Debug("a: %s-%s  ok: %t\n", a.ID, a.Type, ok)
+	if !ok {
+		return nil, fmt.Errorf("Adapter: %q was not found.", id)
+	}
+	return a, nil
+}
+
+// getAdapterID retrieves the AdapterID from a MID.
+func (adps *Adapters) getAdapterID(MID string) (string, error) {
+	adps.RLock()
+	defer adps.RUnlock()
+	iFID, _, _, _, err := structs.SplitMID(MID)
+	if err != nil {
+		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
+	}
+	a, ok := adps.Adapters[iFID]
+	log.Debug("IFID: %q  a: %s-%s  ok: %t\n", iFID, a.ID, a.Type, ok)
+	if !ok {
+		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
+	}
+	return iFID, nil
 }
 
 // Load loads the specified byte slice into the adapters structures.
@@ -198,6 +237,10 @@ func init() {
 		}
 	}()
 }
+
+// ==============================================================================================================================
+//                                      MISC
+// ==============================================================================================================================
 
 // ==============================================================================================================================
 //                                      string

@@ -3,7 +3,13 @@ package request
 import (
 	"net/http"
 
+	"Gateway311/engine/logs"
+
 	"github.com/ant0ine/go-json-rest/rest"
+)
+
+var (
+	log = logs.Log
 )
 
 // Services looks up the service providers and services for the specified location.
@@ -15,6 +21,16 @@ import (
 //  http;//xyz.com/api/services?city=san+jose
 func Services(w rest.ResponseWriter, r *rest.Request) {
 	response, err := processServices(r)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(&response)
+}
+
+// Create creates a new report.
+func Create(w rest.ResponseWriter, r *rest.Request) {
+	response, err := processCreate(r)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return

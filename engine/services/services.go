@@ -4,7 +4,6 @@ import (
 	"CitySourcedAPI/logs"
 	"errors"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -106,7 +105,7 @@ func (sd *cache) refresh() {
 
 func (sd *cache) processRefresh() {
 	rqst := &structs.NServiceRequest{"all"}
-	r, err := router.NewRPCCall("Service.All", "all", rqst, servicesData.merge)
+	r, err := router.NewRPCCall("Service.All", "", "all", rqst, servicesData.merge)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -205,16 +204,6 @@ func (sd cache) String() string {
 // ==============================================================================================================================
 //                                      MISC
 // ==============================================================================================================================
-
-// SplitMID breaks down an MID, and returns the IFID and AreaID.
-func SplitMID(mid string) (string, string, error) {
-	parts := strings.Split(mid, "-")
-	log.Debug("MID: %+v\n", parts)
-	if len(parts) != 4 {
-		return "", "", fmt.Errorf("Invalid MID: %s", mid)
-	}
-	return parts[0], parts[1], nil
-}
 
 // ==============================================================================================================================
 //                                      INIT

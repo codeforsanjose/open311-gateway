@@ -17,10 +17,12 @@ func (s *ServiceID) UnmarshalJSON(value []byte) error {
 		return int(y)
 	}
 	parts := strings.Split(strings.Trim(string(value), "\" "), "-")
+	fmt.Printf("[UnmarshalJSON] parts: %+v\n", parts)
 	s.IFID = parts[0]
 	s.AreaID = parts[1]
 	s.ProviderID = cnvInt(parts[2])
 	s.ID = cnvInt(parts[3])
+	fmt.Printf("[UnmarshalJSON] IFID: %#v  AreaID: %#v  ProviderID: %#v  ID: %#v\n", s.IFID, s.AreaID, s.ProviderID, s.ID)
 	return nil
 }
 

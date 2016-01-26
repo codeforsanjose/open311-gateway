@@ -1,14 +1,7 @@
 ## To Do.todo
 
-* Update Services cache on Engine.
-	* Be able to safely and easily refresh the services list.
-	* Quickly lookup location -> AreaID -> Service list.
-	* Quickly lookup location -> AreaID -> Adapter list.
-* Implement RPC Dispatch System @done(2016-01-19)
-* Custom Type for ServiceID. @done(2016-01-11)
-* CitySourced Adapter - load config.json data file. @done(2016-01-05)
-* Get Create working again.
-* Separate back-end interfaces as separate apps, using go-rpc calls. @done(2016-01-05)
+* Get Create working again. @done(2016-01-25)
+* Add structs.API to Services request.
 * Change request/common.go: error check validate()... do not error check body or query parm conversion.
 * Implement report searches:
 	* Single ID
@@ -16,6 +9,14 @@
 	* LatLng
 	* Address
 * Update RAML file with JSON specs for input and output payloads.
+* Update Services cache on Engine. @done(2016-01-22)
+	* Be able to safely and easily refresh the services list. @done(2016-01-22)
+	* Quickly lookup location -> AreaID -> Service list. @done(2016-01-22)
+	* Quickly lookup location -> AreaID -> Adapter list. @done(2016-01-22)
+* Implement RPC Dispatch System @done(2016-01-19)
+* Custom Type for ServiceID. @done(2016-01-11)
+* CitySourced Adapter - load config.json data file. @done(2016-01-05)
+* Separate back-end interfaces as separate apps, using go-rpc calls. @done(2016-01-05)
 * Implement Gingko BDD tests. @done(2015-12-18)
 * Modify report.Create() to use ServiceID and JID. @done(2015-12-28)
 * Consolidate all Create functionality within the request.CreateReq type. @done(2015-12-28)
@@ -24,7 +25,14 @@
 * Modify CitySourced simulator to return the Request ID and Document ID. @done(2015-12-12)
 * Outline the Displatch system. @done(2015-12-14)
 
+___ 
+
 ## Log
+
+### 2016.01.25 - Mon
+
+* Create is working.
+* Saved to GIT.
 
 ### 2016.01.22 - Fri
 

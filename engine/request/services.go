@@ -7,16 +7,11 @@ import (
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/geo"
-	"Gateway311/engine/logs"
 	"Gateway311/engine/router"
 	"Gateway311/engine/services"
 	"Gateway311/engine/structs"
 
 	"github.com/ant0ine/go-json-rest/rest"
-)
-
-var (
-	log = logs.Log
 )
 
 // =======================================================================================
@@ -32,12 +27,12 @@ func processServices(r *rest.Request) (interface{}, error) {
 
 // ServicesReq represents a request to .
 type ServicesReq struct {
-	cType               //
-	cIface              //
-	JID         int     `json:"jid" xml:"jid"`
-	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
+	cType  //
+	cIface //
+	// JID         int     `json:"jid" xml:"jid"`
+	Latitude    string  `json:"Latitude" xml:"Latitude"`
 	LatitudeV   float64 //
-	Longitude   string  `json:"LongitudeV" xml:"LongitudeV"`
+	Longitude   string  `json:"Longitude" xml:"Longitude"`
 	LongitudeV  float64 //
 	validLatLng bool    //
 	City        string  `json:"city" xml:"city"`
@@ -122,12 +117,13 @@ func newServiceResp(msg string, ns structs.NServices) (ServicesResp, error) {
 	return newSR, nil
 }
 
-// ServicesResp is used to return a service list.
+// ServicesResp represents a list of services.
 type ServicesResp struct {
 	Message  string                   `json:"message" xml:"Message"`
 	Services map[string]ServicesRespS `json:"services" xml:"Services"`
 }
 
+// ServicesRespS represents a service in a service list.
 type ServicesRespS struct {
 	Name       string   `json:"name"`
 	Categories []string `json:"catg"`
@@ -141,7 +137,7 @@ type ServicesRespS struct {
 func (c ServicesReq) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services\n")
-	ls.AddF("JID: %v\n", c.JID)
+	// ls.AddF("JID: %v\n", c.JID)
 	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", c.LatitudeV, c.LongitudeV, c.City)
 	return ls.Box(80)
 }
