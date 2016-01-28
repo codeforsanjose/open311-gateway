@@ -130,7 +130,7 @@ func (c *CreateReq) run() (interface{}, error) {
 		log.Error(err.Error())
 		return nil, err
 	}
-	r, err := router.NewRPCCall("Report.Create", c.bkend, "", rqst, c.adapterReply)
+	r, err := router.NewRPCCall("Report.Create", rqst, c.adapterReply)
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err

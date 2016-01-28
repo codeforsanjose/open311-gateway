@@ -14,13 +14,13 @@ import (
 //                                      CREATE
 // ================================================================================================
 
-// Create is the RPC container struct for the Create service.  This service creates
+// Report is the RPC container struct for the Report.Create service.  This service creates
 // a new 311 report.
-type Create struct{}
+type Report struct{}
 
-// Run mashals and sends the Create request to the proper back-end, and returns
+// Create mashals and sends the Create Report request to the proper back-end, and returns
 // the response in Native format.
-func (c *Create) Run(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
+func (c *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
 	fmt.Printf("resp: %p\n", resp)
 	fmt.Println(rqst)
 	irqst, err := c.makeI(rqst)
@@ -31,7 +31,7 @@ func (c *Create) Run(rqst *structs.NCreateRequest, resp *structs.NCreateResponse
 	return err
 }
 
-func (c *Create) makeI(rqst *structs.NCreateRequest) (*ICreateReq, error) {
+func (c *Report) makeI(rqst *structs.NCreateRequest) (*ICreateReq, error) {
 	// sp, err := router.ServiceProvider(c.TypeIDV)
 	// if err != nil {
 	// 	return nil, fmt.Errorf("Unable to retrieve Service Provider for Service Type: %v", c.TypeIDV)

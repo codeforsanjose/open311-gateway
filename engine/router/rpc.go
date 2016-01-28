@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strings"
 	"time"
 
 	"Gateway311/engine/common"
@@ -33,7 +32,7 @@ var (
 // should be set to an empty string.
 // adpID: adapter ID
 // areaID: Area ID
-func NewRPCCall(service, adpID string, areaID string, request interface{}, process func(interface{}) error) (*RPCCall, error) {
+func NewRPCCall(service string, request interface{}, process func(interface{}) error) (*RPCCall, error) {
 	r := RPCCall{
 		service: service,
 		request: request,
@@ -61,11 +60,6 @@ func NewRPCCall(service, adpID string, areaID string, request interface{}, proce
 
 	r.listIF = listIF
 
-	// if len(adpID) > 1 {
-	// 	r.adapter(adpID)
-	// } else {
-	// 	r.statusList(areaID)
-	// }
 	log.Debug("RPCCall: %s", r)
 	return &r, nil
 }
@@ -158,7 +152,7 @@ func (r *RPCCall) send() error {
 				r.results <- pas
 			}(pAdpStat)
 		} else {
-			log.Info("Skipping: %s - not connected!", v.adapter.ID)
+			log.Warning("Skipping: %s - not connected!", v.adapter.ID)
 		}
 	}
 
@@ -166,6 +160,7 @@ func (r *RPCCall) send() error {
 	return nil
 }
 
+/*
 func (r *RPCCall) adapter(adpID string) error {
 	adp, err := GetAdapter(adpID)
 	log.Debug("adp: %s", adp)
@@ -205,6 +200,7 @@ func (r *RPCCall) statusList(areaID string) error {
 	}
 	return nil
 }
+*/
 
 // --------------------------------- rpcAdapterStatus -----------------------------------
 type rpcAdapterStatus struct {

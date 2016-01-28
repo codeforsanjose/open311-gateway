@@ -8,61 +8,51 @@ import (
 	"Gateway311/engine/structs"
 )
 
-var (
-	routeMap routeMapType
-)
-
-func init() {
-	routeMap.init()
-	fmt.Printf("---------- routeMap -------------\n%s\n", spew.Sdump(routeMap))
-}
-
 // =======================================================================================
 //                                      RPC ROUTE MAP
 // =======================================================================================
+
+var (
+	routeMap map[string]*routeMapMethods
+)
+
 type routeMapType map[string]*routeMapMethods
 
-func (rm routeMapType) init() error {
-	rm = make(map[string]*routeMapMethods)
+func init() {
+	routeMap = make(map[string]*routeMapMethods)
 
-	rm["Services.All"] = &routeMapMethods{}
-	rm["Services.Area"] = &routeMapMethods{}
-	rm["Report.Create"] = &routeMapMethods{}
-	rm["Report.SearchDeviceID"] = &routeMapMethods{}
-	rm["Report.SearchLocation"] = &routeMapMethods{}
+	routeMap["Services.All"] = &routeMapMethods{}
+	routeMap["Services.Area"] = &routeMapMethods{}
+	routeMap["Report.Create"] = &routeMapMethods{}
+	routeMap["Report.SearchDeviceID"] = &routeMapMethods{}
+	routeMap["Report.SearchLocation"] = &routeMapMethods{}
 
-	if err := rm.initResponseStructs(); err != nil {
-		return err
+	if err := initResponseStructs(); err != nil {
+		log.Fatalf("Unable to initialize the routeMap - %s", err)
+		return
 	}
 
-	if err := rm.initRPCList(); err != nil {
-		return err
+	if err := initRPCList(); err != nil {
+		log.Fatalf("Unable to initialize the routeMap - %s", err)
+		return
 	}
+
+	fmt.Printf("---------- routeMap -------------\n%s\n", spew.Sdump(routeMap))
+	return
+}
+
+func initResponseStructs() error {
+
+	routeMap["Services.All"].newResponse = func() interface{} { return new(structs.NServicesResponse) }
+	routeMap["Services.Area"].newResponse = func() interface{} { return new(structs.NServicesResponse) }
+	routeMap["Report.Create"].newResponse = func() interface{} { return new(structs.NCreateResponse) }
+	routeMap["Report.SearchDeviceID"].newResponse = func() interface{} { return new(structs.SearchResp) }
+	routeMap["Report.SearchLocation"].newResponse = func() interface{} { return new(structs.SearchResp) }
 
 	return nil
 }
 
-func (rm routeMapType) initResponseStructs() error {
-	for service, methods := range rm {
-		switch service {
-		case "Services.All":
-			methods.newResponse = func() interface{} { return new(structs.NServicesResponse) }
-		case "Services.Area":
-			methods.newResponse = func() interface{} { return new(structs.NServicesResponse) }
-		case "Report.Create":
-			methods.newResponse = func() interface{} { return new(structs.NCreateResponse) }
-		case "Report.SearchDeviceID":
-			methods.newResponse = func() interface{} { return new(structs.SearchResp) }
-		case "Report.SearchLocation":
-			methods.newResponse = func() interface{} { return new(structs.SearchResp) }
-		default:
-			return fmt.Errorf("Unknown request: %q - unable to initialize Route Map", service)
-		}
-	}
-	return nil
-}
-
-func (rm routeMapType) initRPCList() error {
+func initRPCList() error {
 	adapter := func(rt structs.NRouter, service string) (map[string]*rpcAdapterStatus, error) {
 		m := make(map[string]*rpcAdapterStatus)
 		adp, err := GetAdapter(rt.Route().IFID)
@@ -107,31 +97,20 @@ func (rm routeMapType) initRPCList() error {
 		return m, nil
 	}
 
-	for service, methods := range rm {
-		switch service {
-		case "Services.All":
-			methods.buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
-				return area(r, service)
-			}
-		case "Services.Area":
-			methods.buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
-				return area(r, service)
-			}
-		case "Report.Create":
-			methods.buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
-				return adapter(r, service)
-			}
-		case "Report.SearchDeviceID":
-			methods.buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
-				return area(r, service)
-			}
-		case "Report.SearchLocation":
-			methods.buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
-				return area(r, service)
-			}
-		default:
-			return fmt.Errorf("Unknown request: %q - unable to initialize Route Map", service)
-		}
+	routeMap["Services.All"].buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
+		return area(r, "Services.All")
+	}
+	routeMap["Services.Area"].buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
+		return area(r, "Services.Area")
+	}
+	routeMap["Report.Create"].buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
+		return adapter(r, "Report.Create")
+	}
+	routeMap["Report.SearchDeviceID"].buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
+		return area(r, "Report.SearchDeviceID")
+	}
+	routeMap["Report.SearchLocation"].buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
+		return area(r, "Report.SearchLocation")
 	}
 	return nil
 }

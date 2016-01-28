@@ -29,6 +29,12 @@ ___
 
 ## Log
 
+### 2016.01.27 - Wed
+
+* Revised RPC management in engine/router.  The router is much more self contained, and will properly route requests to the proper Adapter based solely on information within the RPCCall struct.  
+* Test OK.
+* Saved to GIT.
+
 ### 2016.01.25 - Mon
 
 * Create is working.

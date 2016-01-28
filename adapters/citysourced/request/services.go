@@ -12,13 +12,13 @@ import (
 //                                      SERVICES
 // ================================================================================================
 
-// Service is the RPC container struct for the Services service.  This service
+// Services is the RPC container struct for the Services service.  This service
 // providers a directory of services (i.e. report categories) available for each
 // AreaSourced city.
-type Service struct{}
+type Services struct{}
 
 // Area returns a list of services for the specifed city.
-func (c *Service) Area(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
+func (c *Services) Area(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
 	fmt.Println(rqst)
 
 	x, err := data.ServicesArea(rqst.Area)
@@ -35,7 +35,7 @@ func (c *Service) Area(rqst *structs.NServiceRequest, resp *structs.NServicesRes
 }
 
 // All fills resp with a list of services for the specifed city.
-func (c *Service) All(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
+func (c *Services) All(rqst *structs.NServiceRequest, resp *structs.NServicesResponse) error {
 	fmt.Println(rqst)
 
 	x, err := data.ServicesAll()

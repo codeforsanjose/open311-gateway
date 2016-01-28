@@ -27,9 +27,9 @@ var (
 
 func main() {
 
-	rpc.Register(&request.Create{})
+	rpc.Register(&request.Report{})
 
-	rpc.Register(&request.Service{})
+	rpc.Register(&request.Services{})
 
 	arith := new(Arith)
 	rpc.Register(arith)
