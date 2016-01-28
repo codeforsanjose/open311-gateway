@@ -18,6 +18,7 @@ const (
 
 var (
 	showRunTimes = true
+	// routeMap     map[string]routeMapMethods
 )
 
 // =======================================================================================
@@ -42,11 +43,29 @@ func NewRPCCall(service, adpID string, areaID string, request interface{}, proce
 		errs:    make([]error, 0),
 	}
 
-	if len(adpID) > 1 {
-		r.adapter(adpID)
-	} else {
-		r.statusList(areaID)
+	log.Debug("%+v", r)
+	router, ok := request.(structs.NRouter)
+	log.Debug("%+v  ok: %t", router, ok)
+	if !ok {
+		return nil, fmt.Errorf("The request (type: %s) does not implement structs.Router", reflect.TypeOf(request))
 	}
+	log.Debug("Building listIF...")
+	routeMethods, ok := routeMap[service]
+	if !ok {
+		return nil, fmt.Errorf("RouteMap does not exist for service: %s", service)
+	}
+	listIF, err := routeMethods.buildAdapterList(router)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to prep RPCCall for request: %s - %s", reflect.TypeOf(request), err)
+	}
+
+	r.listIF = listIF
+
+	// if len(adpID) > 1 {
+	// 	r.adapter(adpID)
+	// } else {
+	// 	r.statusList(areaID)
+	// }
 	log.Debug("RPCCall: %s", r)
 	return &r, nil
 }
@@ -71,11 +90,11 @@ type RPCCall struct {
 // to return or timeout.
 func (r *RPCCall) Run() error {
 	// Send all the RPC calls in go routines.
-	var startTime time.Time
+	var sendTime time.Time
 	if showRunTimes {
-		startTime = time.Now()
+		sendTime = time.Now()
 	}
-	err := r.start()
+	err := r.send()
 	if err != nil {
 		msg := fmt.Sprintf("Error starting RPC calls.")
 		log.Error(msg)
@@ -115,12 +134,18 @@ func (r *RPCCall) Run() error {
 		}
 	}
 	if showRunTimes {
-		log.Info("RPC Call: %q took: %s", r.service, time.Since(startTime))
+		log.Info("RPC Call: %q took: %s", r.service, time.Since(sendTime))
 	}
 	return nil
 }
 
-func (r *RPCCall) start() error {
+// setAdapters builds the list of Adapters that will be called with the Request.
+func (r *RPCCall) setAdapters() error {
+
+	return nil
+}
+
+func (r *RPCCall) send() error {
 	for k, v := range r.listIF {
 		if v.adapter.Connected {
 			// Give the pointer to the AdapterStatus to the go routine.
@@ -197,32 +222,24 @@ func newAdapterStatus(adp *Adapter, service string) (*rpcAdapterStatus, error) {
 		replied: false,
 	}
 
-	rs, err := makeResponseStruct(service)
-	if err != nil {
-		log.Errorf("Cannot create AdapterStatus - %s", err)
-		return nil, fmt.Errorf("Cannot create AdapterStatus - %s", err)
-	}
+	rs := routeMap[service].newResponse()
 	aStat.response = rs
 	log.Debug("aStat: %s", aStat)
 	return aStat, nil
 }
 
-// ==============================================================================================================================
-//                                      MISC
-// ==============================================================================================================================
-
-func makeResponseStruct(service string) (interface{}, error) {
-	switch service {
-	case "Service.All", "Service.Area":
-		return new(structs.NServicesResponse), nil
-	case "Create.Run":
-		return new(structs.NCreateResponse), nil
-	case "Search.DeviceID", "Search.Location":
-		return new(structs.SearchResp), nil
-	default:
-		return nil, fmt.Errorf("Invalid request type: %q", service)
-	}
-}
+// func makeResponse(service string) (interface{}, error) {
+// 	switch service {
+// 	case "Service.All", "Service.Area":
+// 		return new(structs.NServicesResponse), nil
+// 	case "Create.Run":
+// 		return new(structs.NCreateResponse), nil
+// 	case "Search.DeviceID", "Search.Location":
+// 		return new(structs.SearchResp), nil
+// 	default:
+// 		return nil, fmt.Errorf("Invalid request type: %q", service)
+// 	}
+// }
 
 // ==============================================================================================================================
 //                                      STRINGS

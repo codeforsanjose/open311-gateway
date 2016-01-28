@@ -21,12 +21,35 @@ type API struct {
 }
 
 // =======================================================================================
+//                                      ROUTE
+// =======================================================================================
+
+// NRouter is the interface to retrieve the routing data (IFID, AreaID) from
+// any N*Request.
+type NRouter interface {
+	Route() NRoute
+}
+
+// NRoute represents the data needed to route requests to Adapters.
+type NRoute struct {
+	IFID       string
+	AreaID     string
+	ProviderID int
+}
+
+// =======================================================================================
 //                                      SERVICES
 // =======================================================================================
 
 // NServiceRequest is used to get list of services available to the user.
 type NServiceRequest struct {
+	NRouter
 	Area string
+}
+
+// Route returns the routing data.
+func (n NServiceRequest) Route() NRoute {
+	return NRoute{"", n.Area, 0}
 }
 
 // NServicesResponse is the returned struct for a Services request.
@@ -70,6 +93,7 @@ type ServiceID struct {
 // NCreateRequest is used to create a new Report.  It is the "native" format of the
 // data, and is used by the Engine and all backend Adapters.
 type NCreateRequest struct {
+	NRouter
 	API
 	MID         ServiceID
 	Type        string
@@ -90,6 +114,11 @@ type NCreateRequest struct {
 	Description string
 }
 
+// Route returns the routing data.
+func (ncr NCreateRequest) Route() NRoute {
+	return NRoute{ncr.MID.IFID, ncr.MID.AreaID, ncr.MID.ProviderID}
+}
+
 // NCreateResponse is the response to creating or updating a report.
 type NCreateResponse struct {
 	Message  string `json:"Message" xml:"Message"`
@@ -103,6 +132,7 @@ type NCreateResponse struct {
 
 // SearchReqBase is used to create a report.
 type SearchReqBase struct {
+	NRouter
 	API
 	DeviceType  string  `json:"deviceType" xml:"deviceType"`
 	DeviceID    string  `json:"deviceId" xml:"deviceId"`
@@ -212,10 +242,10 @@ func MidID(mid string) (int, error) {
 // =======================================================================================
 
 // Displays the contents of the Spec_Type custom type.
-func (c NServiceRequest) String() string {
+func (n NServiceRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services Request\n")
-	ls.AddF("Location - area: %v\n", c.Area)
+	ls.AddF("Location - area: %v\n", n.Area)
 	return ls.Box(80)
 }
 
@@ -249,21 +279,21 @@ func (s ServiceID) MID() string {
 }
 
 // Displays the contents of the Spec_Type custom type.
-func (c NCreateRequest) String() string {
+func (ncr NCreateRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Report - NCreateReq\n")
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
-	ls.AddF("Request - %s:  %s\n", c.MID.MID(), c.Type)
-	ls.AddF("Location - lat: %v lon: %v\n", c.Latitude, c.Longitude)
-	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
-	// if math.Abs(c.LatitudeV) > 1 {
-	// 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
+	ls.AddF("Device - type %s  model: %s  ID: %s\n", ncr.DeviceType, ncr.DeviceModel, ncr.DeviceID)
+	ls.AddF("Request - %s:  %s\n", ncr.MID.MID(), ncr.Type)
+	ls.AddF("Location - lat: %v lon: %v\n", ncr.Latitude, ncr.Longitude)
+	ls.AddF("          %s, %s   %s\n", ncr.Area, ncr.State, ncr.Zip)
+	// if math.Abs(ncr.LatitudeV) > 1 {
+	// 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", ncr.LatitudeV, ncr.Latitude, ncr.LongitudeV, ncr.Longitude)
 	// }
-	// if len(c.Area) > 1 {
-	// 	ls.AddF("          %s, %s   %s\n", c.Area, c.State, c.Zip)
+	// if len(ncr.Area) > 1 {
+	// 	ls.AddF("          %s, %s   %s\n", ncr.Area, ncr.State, ncr.Zip)
 	// }
-	ls.AddF("Description: %q\n", c.Description)
-	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", c.IsAnonymous, c.FirstName, c.LastName, c.Email, c.Phone)
+	ls.AddF("Description: %q\n", ncr.Description)
+	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", ncr.IsAnonymous, ncr.FirstName, ncr.LastName, ncr.Email, ncr.Phone)
 	return ls.Box(80)
 }
 

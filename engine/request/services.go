@@ -27,9 +27,8 @@ func processServices(r *rest.Request) (interface{}, error) {
 
 // ServicesReq represents a request to .
 type ServicesReq struct {
-	cType  //
-	cIface //
-	// JID         int     `json:"jid" xml:"jid"`
+	cType               //
+	cIface              //
 	Latitude    string  `json:"Latitude" xml:"Latitude"`
 	LatitudeV   float64 //
 	Longitude   string  `json:"Longitude" xml:"Longitude"`
@@ -42,7 +41,7 @@ type ServicesReq struct {
 
 }
 
-func (c *ServicesReq) validate() {
+func (c *ServicesReq) validate() error {
 	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
 		c.LatitudeV = x
 	}
@@ -50,7 +49,7 @@ func (c *ServicesReq) validate() {
 		c.LongitudeV = x
 	}
 	log.Debug("%s\n", c)
-	return
+	return nil
 }
 
 func (c *ServicesReq) parseQP(r *rest.Request) error {
@@ -137,7 +136,6 @@ type ServicesRespS struct {
 func (c ServicesReq) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services\n")
-	// ls.AddF("JID: %v\n", c.JID)
 	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", c.LatitudeV, c.LongitudeV, c.City)
 	return ls.Box(80)
 }

@@ -104,8 +104,10 @@ func (sd *cache) refresh() {
 }
 
 func (sd *cache) processRefresh() {
-	rqst := &structs.NServiceRequest{"all"}
-	r, err := router.NewRPCCall("Service.All", "", "all", rqst, servicesData.merge)
+	rqst := &structs.NServiceRequest{
+		Area: "all",
+	}
+	r, err := router.NewRPCCall("Services.All", "", "all", rqst, servicesData.merge)
 	if err != nil {
 		log.Error(err.Error())
 		return

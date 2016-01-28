@@ -2,7 +2,6 @@ package request
 
 import (
 	"math"
-	"reflect"
 	"strconv"
 
 	"Gateway311/engine/common"
@@ -27,12 +26,12 @@ func processCreate(r *rest.Request) (interface{}, error) {
 	return op.run()
 }
 
-// CreateReqBase is used to create a report.  It is an anonymous field in the CreateReq
+// CreateReqBase represents a new report.  It is an anonymous field in the CreateReq
 // struct.
 type CreateReqBase struct {
 	structs.API
 	MID         structs.ServiceID `json:"srvId" xml:"srvId"`
-	SrvName     string            `json:"srvName" xml:"srvName"`
+	ServiceName string            `json:"srvName" xml:"srvName"`
 	DeviceType  string            `json:"deviceType" xml:"deviceType"`
 	DeviceModel string            `json:"deviceModel" xml:"deviceModel"`
 	DeviceID    string            `json:"deviceID" xml:"deviceID"`
@@ -54,19 +53,23 @@ type CreateReqBase struct {
 	response    *structs.NCreateResponse
 }
 
-// CreateReq creates a new Report.
+// CreateReq represents a new Report.  The struct is composed of three anonymous structs:
+//
+// CreateReqBase - represents a new report.  Contains all fields to unmarshal a
+// a request to create a new report.
+// cType - defined in common.go, responsible for unmarshaling and parsing the request.
+// cIFace - defined in common.go, an interface type for parseQP() and validate() methods.
 type CreateReq struct {
-	cType  //
-	cIface //
-	// JID    int    `json:"jid" xml:"jid"`
-	bkend string //
+	cType         //
+	cIface        //
+	bkend  string //
 	CreateReqBase
 }
 
 func (c *CreateReq) newNCreate() (structs.NCreateRequest, error) {
 	n := structs.NCreateRequest{
 		MID:         c.MID,
-		Type:        c.SrvName,
+		Type:        c.ServiceName,
 		DeviceType:  c.DeviceType,
 		DeviceModel: c.DeviceModel,
 		DeviceID:    c.DeviceID,
@@ -86,7 +89,8 @@ func (c *CreateReq) newNCreate() (structs.NCreateRequest, error) {
 
 }
 
-func (c *CreateReq) validate() {
+// validate the unmarshaled data.
+func (c *CreateReq) validate() error {
 	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
 		c.LatitudeV = x
 	}
@@ -96,13 +100,18 @@ func (c *CreateReq) validate() {
 	if x, err := strconv.ParseBool(c.IsAnonymous); err == nil {
 		c.isAnonymous = x
 	}
-	return
+	return nil
 }
 
+// parseQP unloads any query parms in the request.
 func (c *CreateReq) parseQP(r *rest.Request) error {
 	return nil
 }
 
+// init is called to load and initialize the CreateReq.  It calls cType.load():
+// 1. Decodes the input payload.
+// 2. Calls parseQP to parse and load any query parms into the struct.
+// 3. Calls validate() to check all inputs.
 func (c *CreateReq) init(r *rest.Request) error {
 	c.load(c, r)
 	adp, err := router.GetAdapter(c.MID.IFID)
@@ -114,13 +123,14 @@ func (c *CreateReq) init(r *rest.Request) error {
 	return nil
 }
 
+// run sends the request to the appropriate Adapter, and waits for a reponse.
 func (c *CreateReq) run() (interface{}, error) {
 	rqst, err := c.newNCreate()
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
-	r, err := router.NewRPCCall("Create.Run", c.bkend, "", rqst, c.rpcReply)
+	r, err := router.NewRPCCall("Report.Create", c.bkend, "", rqst, c.adapterReply)
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
@@ -134,14 +144,15 @@ func (c *CreateReq) run() (interface{}, error) {
 	return c.response, err
 }
 
-func (c *CreateReq) rpcReply(ndata interface{}) error {
-	log.Debug("ndata type: %s", reflect.TypeOf(ndata))
+// adapterReply processes the reply returned from the RPC call, by placing a
+// pointer to the response in CreateReq.response.
+func (c *CreateReq) adapterReply(ndata interface{}) error {
 	c.response = ndata.(*structs.NCreateResponse)
 	return nil
 }
 
 // =======================================================================================
-//                                      REQUEST
+//                                      STRINGS
 // =======================================================================================
 
 // String displays the contents of the CreateReqBase type.
@@ -149,7 +160,7 @@ func (c CreateReqBase) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Report - CreateReqBase\n")
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
-	ls.AddF("Request - id: %q  name: %q\n", c.MID.MID(), c.SrvName)
+	ls.AddF("Request - id: %q  name: %q\n", c.MID.MID(), c.ServiceName)
 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
 	ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
 	if math.Abs(c.LatitudeV) > 1 {

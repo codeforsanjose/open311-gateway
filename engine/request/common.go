@@ -26,12 +26,14 @@ func (cx *cType) load(p cIface, r *rest.Request) error {
 		return fmt.Errorf("Unable to process request: %s", err)
 	}
 
-	cx.self.validate()
+	if err := cx.self.validate(); err != nil {
+		return fmt.Errorf("Unable to process request: %s", err)
+	}
 
 	return nil
 }
 
 type cIface interface {
 	parseQP(r *rest.Request) error
-	validate()
+	validate() error
 }
