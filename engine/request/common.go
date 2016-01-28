@@ -21,7 +21,6 @@ func (cx *cType) load(p cIface, r *rest.Request) error {
 			return fmt.Errorf("Unable to process request: %s", err)
 		}
 	}
-	log.Debug("--> parseQP\n")
 	if err := cx.self.parseQP(r); err != nil {
 		return fmt.Errorf("Unable to process request: %s", err)
 	}

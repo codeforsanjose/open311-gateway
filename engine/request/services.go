@@ -48,7 +48,6 @@ func (c *ServicesReq) validate() error {
 	if x, err := strconv.ParseFloat(c.Longitude, 64); err == nil {
 		c.LongitudeV = x
 	}
-	log.Debug("%s\n", c)
 	return nil
 }
 
@@ -81,7 +80,6 @@ func (c *ServicesReq) run() (interface{}, error) {
 
 	case len(c.City) > 2:
 		areaID, err := router.GetAreaID(c.City)
-		fmt.Printf("AreaID: %q\n", areaID)
 		if err != nil {
 			return fail(fmt.Sprintf("Cannot find services for %v - %s", c.City, err.Error()))
 		}

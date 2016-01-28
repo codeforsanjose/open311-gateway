@@ -114,9 +114,9 @@ func (c *CreateReq) parseQP(r *rest.Request) error {
 // 3. Calls validate() to check all inputs.
 func (c *CreateReq) init(r *rest.Request) error {
 	c.load(c, r)
-	adp, err := router.GetAdapter(c.MID.IFID)
+	adp, err := router.GetAdapter(c.MID.AdpID)
 	if err != nil {
-		log.Warning("Unable to get adapter for id: %s", c.MID.IFID)
+		log.Warning("Unable to get adapter for id: %s", c.MID.AdpID)
 		return err
 	}
 	c.bkend = adp.ID

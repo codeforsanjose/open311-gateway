@@ -79,7 +79,7 @@ func (sd *cache) indexAreaAdapters(ll int) error {
 	m := make(map[mk]bool)
 	for _, sl := range sd.list[ll] { // NServices
 		for _, s := range sl { // NService
-			m[mk{s.AreaID, s.IFID}] = true
+			m[mk{s.AreaID, s.AdpID}] = true
 		}
 	}
 

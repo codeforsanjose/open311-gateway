@@ -98,16 +98,16 @@ func (adps *Adapters) getAdapter(id string) (*Adapter, error) {
 func (adps *Adapters) getAdapterID(MID string) (string, error) {
 	adps.RLock()
 	defer adps.RUnlock()
-	iFID, _, _, _, err := structs.SplitMID(MID)
+	AdpID, _, _, _, err := structs.SplitMID(MID)
 	if err != nil {
 		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
 	}
-	a, ok := adps.Adapters[iFID]
-	log.Debug("IFID: %q  a: %s-%s  ok: %t\n", iFID, a.ID, a.Type, ok)
+	a, ok := adps.Adapters[AdpID]
+	log.Debug("AdpID: %q  a: %s-%s  ok: %t\n", AdpID, a.ID, a.Type, ok)
 	if !ok {
 		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
 	}
-	return iFID, nil
+	return AdpID, nil
 }
 
 // Load loads the specified byte slice into the adapters structures.

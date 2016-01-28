@@ -15,8 +15,6 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
-const iFID = "CS"
-
 var (
 	configData ConfigData
 	log        = logs.Log
@@ -222,7 +220,7 @@ func (pd *ConfigData) settle() error {
 		area.ID = areaKey
 		for _, provider := range area.Providers {
 			for _, service := range provider.Services {
-				service.IFID = pd.Adapter.Name
+				service.AdpID = pd.Adapter.Name
 				service.AreaID = areaKey
 				service.ProviderID = provider.ID
 			}

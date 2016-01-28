@@ -160,48 +160,6 @@ func (r *RPCCall) send() error {
 	return nil
 }
 
-/*
-func (r *RPCCall) adapter(adpID string) error {
-	adp, err := GetAdapter(adpID)
-	log.Debug("adp: %s", adp)
-	rs, err := newAdapterStatus(adp, r.service)
-	log.Debug("rs: %s", rs)
-	if err != nil {
-		return fmt.Errorf("Error creating Adapter list - %s", err)
-	}
-	r.listIF[adp.ID] = rs
-	log.Debug("RPCCall: %s", r)
-	return err
-}
-
-// statusList populates r.listIF with pointers to Adapters that service the specified
-// Area.
-func (r *RPCCall) statusList(areaID string) error {
-	var al []*Adapter
-	if strings.ToLower(areaID) == "all" {
-		log.Debug("Using ALL adapters")
-		for _, v := range adapters.Adapters {
-			al = append(al, v)
-		}
-	} else {
-		log.Debug("Using only adapters for areaID: %s", areaID)
-		var ok bool
-		al, ok = adapters.areaAdapters[areaID]
-		if !ok {
-			return fmt.Errorf("Area %q is not supported on this Gateway", areaID)
-		}
-	}
-	for _, adp := range al {
-		rs, err := newAdapterStatus(adp, r.service)
-		if err != nil {
-			return fmt.Errorf("Error creating Adapter list - %s", err)
-		}
-		r.listIF[adp.ID] = rs
-	}
-	return nil
-}
-*/
-
 // --------------------------------- rpcAdapterStatus -----------------------------------
 type rpcAdapterStatus struct {
 	adapter  *Adapter
@@ -223,19 +181,6 @@ func newAdapterStatus(adp *Adapter, service string) (*rpcAdapterStatus, error) {
 	log.Debug("aStat: %s", aStat)
 	return aStat, nil
 }
-
-// func makeResponse(service string) (interface{}, error) {
-// 	switch service {
-// 	case "Service.All", "Service.Area":
-// 		return new(structs.NServicesResponse), nil
-// 	case "Create.Run":
-// 		return new(structs.NCreateResponse), nil
-// 	case "Search.DeviceID", "Search.Location":
-// 		return new(structs.SearchResp), nil
-// 	default:
-// 		return nil, fmt.Errorf("Invalid request type: %q", service)
-// 	}
-// }
 
 // ==============================================================================================================================
 //                                      STRINGS

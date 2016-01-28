@@ -55,7 +55,7 @@ func initResponseStructs() error {
 func initRPCList() error {
 	adapter := func(rt structs.NRouter, service string) (map[string]*rpcAdapterStatus, error) {
 		m := make(map[string]*rpcAdapterStatus)
-		adp, err := GetAdapter(rt.Route().IFID)
+		adp, err := GetAdapter(rt.Route().AdpID)
 		log.Debug("adp: %s", adp)
 		rs, err := newAdapterStatus(adp, service)
 		log.Debug("rs: %s", rs)

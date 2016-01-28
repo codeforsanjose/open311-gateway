@@ -34,6 +34,13 @@ ___
 * Revised RPC management in engine/router.  The router is much more self contained, and will properly route requests to the proper Adapter based solely on information within the RPCCall struct.  
 * Test OK.
 * Saved to GIT.
+* Changed IFID to AdpID everywhere for clarity.
+* Deleted unused, commented code.
+* Removed some Debug logs.
+* Test OK.
+* Saved to GIT.
+* 
+
 
 ### 2016.01.25 - Mon
 

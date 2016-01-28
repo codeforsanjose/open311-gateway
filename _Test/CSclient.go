@@ -201,7 +201,7 @@ func (c NServices) String() string {
 
 // ------------------------------- Service -------------------------------
 
-// NService represents a Service.  The ID is a combination of the BackEnd Type (IFID),
+// NService represents a Service.  The ID is a combination of the BackEnd Type (AdpID),
 // the AreaID (i.e. the City id), ProviderID (in case the provider has multiple interfaces),
 // and the Service ID.
 type NService struct {
@@ -211,7 +211,7 @@ type NService struct {
 }
 
 func (s NService) String() string {
-	r := fmt.Sprintf("   %s-%s-%d-%d  %-40s  %v", s.IFID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
+	r := fmt.Sprintf("   %s-%s-%d-%d  %-40s  %v", s.AdpID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
 	return r
 }
 
@@ -220,7 +220,7 @@ func (s NService) String() string {
 // ServiceID provides the JSON marshalling conversion between the JSON "ID" and
 // the Backend Interface Type, AreaID (City id), ProviderID, and Service ID.
 type ServiceID struct {
-	IFID       string
+	AdpID      string
 	AreaID     string
 	ProviderID int
 	ID         int
@@ -228,5 +228,5 @@ type ServiceID struct {
 
 // MID creates the string
 func (s ServiceID) MID() string {
-	return fmt.Sprintf("%s-%s-%d-%d", s.IFID, s.AreaID, s.ProviderID, s.ID)
+	return fmt.Sprintf("%s-%s-%d-%d", s.AdpID, s.AreaID, s.ProviderID, s.ID)
 }

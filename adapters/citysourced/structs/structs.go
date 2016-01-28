@@ -24,7 +24,7 @@ type API struct {
 //                                      ROUTE
 // =======================================================================================
 
-// NRouter is the interface to retrieve the routing data (IFID, AreaID) from
+// NRouter is the interface to retrieve the routing data (AdpID, AreaID) from
 // any N*Request.
 type NRouter interface {
 	Route() NRoute
@@ -32,7 +32,7 @@ type NRouter interface {
 
 // NRoute represents the data needed to route requests to Adapters.
 type NRoute struct {
-	IFID       string
+	AdpID      string
 	AreaID     string
 	ProviderID int
 }
@@ -54,7 +54,7 @@ func (n NServiceRequest) Route() NRoute {
 
 // NServicesResponse is the returned struct for a Services request.
 type NServicesResponse struct {
-	IFID     string
+	AdpID    string
 	Message  string
 	Services NServices
 }
@@ -66,7 +66,7 @@ type NServices []NService
 
 // ------------------------------- Service -------------------------------
 
-// NService represents a Service.  The ID is a combination of the BackEnd Type (IFID),
+// NService represents a Service.  The ID is a combination of the BackEnd Type (AdpID),
 // the AreaID (i.e. the Area id), ProviderID (in case the provider has multiple interfaces),
 // and the Service ID.
 type NService struct {
@@ -80,7 +80,7 @@ type NService struct {
 // ServiceID provides the JSON marshalling conversion between the JSON "ID" and
 // the Backend Interface Type, AreaID (Area id), ProviderID, and Service ID.
 type ServiceID struct {
-	IFID       string
+	AdpID      string
 	AreaID     string
 	ProviderID int
 	ID         int
@@ -116,7 +116,7 @@ type NCreateRequest struct {
 
 // Route returns the routing data.
 func (ncr NCreateRequest) Route() NRoute {
-	return NRoute{ncr.MID.IFID, ncr.MID.AreaID, ncr.MID.ProviderID}
+	return NRoute{ncr.MID.AdpID, ncr.MID.AreaID, ncr.MID.ProviderID}
 }
 
 // NCreateResponse is the response to creating or updating a report.
@@ -183,8 +183,8 @@ func SplitMID(mid string) (string, string, int, int, error) {
 	return parts[0], parts[1], int(pid), int(id), nil
 }
 
-// MidIFID breaks down a MID, and returns the IFID.
-func MidIFID(mid string) (string, error) {
+// MidAdpID breaks down a MID, and returns the AdpID.
+func MidAdpID(mid string) (string, error) {
 	parts := strings.Split(mid, "-")
 	fmt.Printf("MID: %+v\n", parts)
 	if len(parts) != 4 {
@@ -258,7 +258,7 @@ func (c NServicesResponse) String() string {
 }
 
 func (s NService) String() string {
-	// r := fmt.Sprintf("  %s-%s-%d-%d  %-40s  %v", s.IFID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
+	// r := fmt.Sprintf("  %s-%s-%d-%d  %-40s  %v", s.AdpID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
 	r := fmt.Sprintf("  %-20s  %-40s  %v", s.MID(), s.Name, s.Categories)
 	return r
 }
@@ -275,7 +275,7 @@ func (c NServices) String() string {
 
 // MID creates the Master ID string for the Service.
 func (s ServiceID) MID() string {
-	return fmt.Sprintf("%s-%s-%d-%d", s.IFID, s.AreaID, s.ProviderID, s.ID)
+	return fmt.Sprintf("%s-%s-%d-%d", s.AdpID, s.AreaID, s.ProviderID, s.ID)
 }
 
 // Displays the contents of the Spec_Type custom type.
