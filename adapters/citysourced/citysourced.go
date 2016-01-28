@@ -3,7 +3,6 @@ package main
 // considered harmful
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"net"
@@ -31,9 +30,6 @@ func main() {
 
 	rpc.Register(&request.Services{})
 
-	arith := new(Arith)
-	rpc.Register(arith)
-
 	rpc.HandleHTTP()
 	_, _, addr := data.Adapter()
 	log.Info("Listening at: %s\n", addr)
@@ -42,35 +38,6 @@ func main() {
 		log.Fatal("listen error:", e)
 	}
 	http.Serve(l, nil)
-}
-
-// Args ...
-type Args struct {
-	A, B int
-}
-
-// Quotient ...
-type Quotient struct {
-	Quo, Rem int
-}
-
-// Arith ...
-type Arith int
-
-// Multiply ...
-func (t *Arith) Multiply(args *Args, reply *int) error {
-	*reply = args.A * args.B
-	return nil
-}
-
-// Divide ...
-func (t *Arith) Divide(args *Args, quo *Quotient) error {
-	if args.B == 0 {
-		return errors.New("divide by zero")
-	}
-	quo.Quo = args.A / args.B
-	quo.Rem = args.A % args.B
-	return nil
 }
 
 func init() {

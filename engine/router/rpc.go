@@ -37,30 +37,30 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 		service: service,
 		request: request,
 		results: make(chan *rpcAdapterStatus, rpcChanSize),
-		listIF:  make(map[string]*rpcAdapterStatus),
+		adpList: make(map[string]*rpcAdapterStatus),
 		process: process,
 		errs:    make([]error, 0),
 	}
 
-	log.Debug("%+v", r)
+	// log.Debug("%+v", r)
 	router, ok := request.(structs.NRouter)
-	log.Debug("%+v  ok: %t", router, ok)
+	// log.Debug("%+v  ok: %t", router, ok)
 	if !ok {
 		return nil, fmt.Errorf("The request (type: %s) does not implement structs.Router", reflect.TypeOf(request))
 	}
-	log.Debug("Building listIF...")
+	// log.Debug("Building adpList...")
 	routeMethods, ok := routeMap[service]
 	if !ok {
 		return nil, fmt.Errorf("RouteMap does not exist for service: %s", service)
 	}
-	listIF, err := routeMethods.buildAdapterList(router)
+	adpList, err := routeMethods.buildAdapterList(router)
 	if err != nil {
 		return nil, fmt.Errorf("Unable to prep RPCCall for request: %s - %s", reflect.TypeOf(request), err)
 	}
 
-	r.listIF = listIF
+	r.adpList = adpList
 
-	log.Debug("RPCCall: %s", r)
+	// log.Debug("RPCCall: %s", r)
 	return &r, nil
 }
 
@@ -75,7 +75,7 @@ type RPCCall struct {
 	request   interface{}
 	results   chan *rpcAdapterStatus
 	processes int
-	listIF    map[string]*rpcAdapterStatus // Key: AdapterID
+	adpList   map[string]*rpcAdapterStatus // Key: AdapterID
 	process   func(interface{}) error
 	errs      []error
 }
@@ -102,14 +102,14 @@ func (r *RPCCall) Run() error {
 		for !timedout {
 			select {
 			case answer := <-r.results:
-				r.listIF[answer.adapter.ID] = answer
+				r.adpList[answer.adapter.ID] = answer
 				r.processes--
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)
 					log.Errorf("RPC call to: %q failed - %s", answer.adapter.ID, answer.err)
 					break
 				}
-				log.Debug("Answer: %s", answer.response)
+				// log.Debug("Answer: %s", answer.response)
 				r.process(answer.response)
 
 			case timedout = <-timeout:
@@ -120,7 +120,7 @@ func (r *RPCCall) Run() error {
 			}
 		}
 		if timedout {
-			for k, v := range r.listIF {
+			for k, v := range r.adpList {
 				if v == nil {
 					log.Errorf("Adapter: %q timed out", k)
 				}
@@ -140,11 +140,11 @@ func (r *RPCCall) setAdapters() error {
 }
 
 func (r *RPCCall) send() error {
-	for k, v := range r.listIF {
+	for k, v := range r.adpList {
 		if v.adapter.Connected {
 			// Give the pointer to the AdapterStatus to the go routine.
 			var pAdpStat *rpcAdapterStatus
-			pAdpStat, r.listIF[k] = v, nil
+			pAdpStat, r.adpList[k] = v, nil
 			r.processes++
 			go func(pas *rpcAdapterStatus) {
 				// fmt.Printf("Inside go routine:\n%s\n%s\n", pas, r)
@@ -156,7 +156,7 @@ func (r *RPCCall) send() error {
 		}
 	}
 
-	fmt.Printf("After Run():\n%s\n", r)
+	// log.Debug("After Run():\n%s\n", r)
 	return nil
 }
 
@@ -178,7 +178,7 @@ func newAdapterStatus(adp *Adapter, service string) (*rpcAdapterStatus, error) {
 
 	rs := routeMap[service].newResponse()
 	aStat.response = rs
-	log.Debug("aStat: %s", aStat)
+	// log.Debug("aStat: %s", aStat)
 	return aStat, nil
 }
 
@@ -195,7 +195,7 @@ func (r RPCCall) String() string {
 	ls2 := new(common.LogString)
 	ls2.AddS("Adapters\n")
 	ls2.AddF("         Name/Type/Address                 Sent  Repl     Response\n")
-	for k, v := range r.listIF {
+	for k, v := range r.adpList {
 		ls2.AddF("  %4s: %s\n", k, v)
 	}
 	ls.AddF("%s", ls2.Box(80))

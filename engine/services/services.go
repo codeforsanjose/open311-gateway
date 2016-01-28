@@ -1,13 +1,13 @@
 package services
 
 import (
-	"CitySourcedAPI/logs"
 	"errors"
 	"fmt"
 	"sync"
 	"time"
 
 	"Gateway311/engine/common"
+	"Gateway311/engine/logs"
 	"Gateway311/engine/router"
 	"Gateway311/engine/structs"
 )
@@ -152,7 +152,7 @@ func (sd *cache) merge(ndata interface{}) error {
 	}
 	for _, ns := range data {
 		if _, ok := sd.list[loadList][ns.AreaID]; !ok {
-			log.Debug("Created City: %q", ns.AreaID)
+			log.Info("Created Area: %q", ns.AreaID)
 			sd.list[loadList][ns.AreaID] = make(structs.NServices, 0)
 		}
 		sd.list[loadList][ns.AreaID] = append(sd.list[loadList][ns.AreaID], ns)
@@ -176,7 +176,7 @@ func (sd *cache) init() {
 				log.Info("Terminating cache refresh queue...")
 				break
 			} else {
-				log.Debug("Running refresh...")
+				log.Debug("Running Services refresh...")
 				sd.processRefresh()
 			}
 		}
@@ -198,7 +198,7 @@ func (sd cache) String() string {
 	ls := new(common.LogString)
 	ls.AddF("cache [%d]\n", sd.activeList)
 	for k, v := range sd.list[sd.activeList] {
-		ls.AddF("<<<<<City: %s >>>>>%s", k, v)
+		ls.AddF("<<<<<Area: %s >>>>>%s", k, v)
 	}
 	return ls.Box(90)
 }

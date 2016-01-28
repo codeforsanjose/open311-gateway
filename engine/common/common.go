@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fatih/color"
+
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -13,10 +15,22 @@ import (
 //                                      CONSOLE
 // ==============================================================================================================================
 
+// NewLogString creates a new LogString, and initializes color printing.
+func NewLogString() *LogString {
+	ls := new(LogString)
+	ls.color = make(map[string]func(...interface{}) string)
+	ls.color["red"] = color.New(color.FgRed).SprintFunc()
+	ls.color["green"] = color.New(color.FgGreen).SprintFunc()
+	ls.color["blue"] = color.New(color.FgBlue).SprintFunc()
+	ls.color["yellow"] = color.New(color.FgYellow).SprintFunc()
+	return ls
+}
+
 // LogString is used to "box" object representations.
 type LogString struct {
-	raw string
-	fmt string
+	raw   string
+	fmt   string
+	color map[string]func(...interface{}) string
 }
 
 // AddF adds a formated line of text, like Printf().
@@ -32,6 +46,24 @@ func (l *LogString) AddS(s string) {
 // AddSR adds a single line of text (with line return), like Println().
 func (l *LogString) AddSR(s string) {
 	l.raw = l.raw + s + "\n"
+}
+
+// Color applies the specified color to the string.
+func (l *LogString) Color(s, color string) string {
+	f, ok := l.color[color]
+	if !ok {
+		return s
+	}
+	return f(s)
+}
+
+// Color applies the specified color to the string.
+func (l *LogString) ColorBool(v bool, strue, sfalse, ctrue, cfalse string) string {
+	if v {
+		return l.Color(strue, ctrue)
+	} else {
+		return l.Color(sfalse, cfalse)
+	}
 }
 
 // Box draws a box around the LogString with the specified line width, with a leading line return.
@@ -66,48 +98,6 @@ func (l *LogString) box(w int, lr bool) string {
 	l.fmt = out
 	return l.fmt
 }
-
-/*
-// Raw retrieves the unprocessed LogString.  This is all of the strings to be printerd,
-// separated by "\n".
-func (l *LogString) Raw() string {
-	return l.raw
-}
-
-// BCon sends a LogString to the log printer queue (see l.Con() and l.run() below).
-func (l *LogString) BCon(w int) {
-	LogPrinter.con(l.Box(w))
-}
-
-// logPrinter is a string channel that LogStrings can be sent to using the logPrinter.con() method.
-// The LogPrinter go routine will receive the strings and print them.
-type logPrinter struct {
-	todo chan string
-}
-
-// newLogPrinter creates a new logPrinter and the associated job channel.  If a queued
-// log print is to be used, this must be called to create the logPrinter, followed by
-// a call to logPrinter.run() to start the printing go routine.
-func newLogPrinter() *logPrinter {
-	// Log.Debug("newLogPrinter()... ")
-	l := new(logPrinter)
-	l.todo = make(chan string, 100)
-	return l
-}
-
-// con sends a string to the logPrinter.
-func (l *logPrinter) con(s string) {
-	l.todo <- s
-}
-
-// run must be called
-func (l *logPrinter) run() {
-	// Log.Debug("logPrinter.run()... ")
-	for msg := range l.todo {
-		fmt.Println(msg)
-	}
-}
-*/
 
 // ==============================================================================================================================
 //                                      TIMING

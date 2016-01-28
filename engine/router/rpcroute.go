@@ -1,11 +1,12 @@
 package router
 
 import (
-	"_sketches/spew"
 	"fmt"
 	"strings"
 
 	"Gateway311/engine/structs"
+
+	// "github.com/davecgh/go-spew/spew"
 )
 
 // =======================================================================================
@@ -28,16 +29,16 @@ func init() {
 	routeMap["Report.SearchLocation"] = &routeMapMethods{}
 
 	if err := initResponseStructs(); err != nil {
-		log.Fatalf("Unable to initialize the routeMap - %s", err)
+		log.Critical("Unable to initialize the routeMap - %s", err)
 		return
 	}
 
 	if err := initRPCList(); err != nil {
-		log.Fatalf("Unable to initialize the routeMap - %s", err)
+		log.Critical("Unable to initialize the routeMap - %s", err)
 		return
 	}
 
-	fmt.Printf("---------- routeMap -------------\n%s\n", spew.Sdump(routeMap))
+	// log.Debug("---------- routeMap -------------\n%s\n", spew.Sdump(routeMap))
 	return
 }
 
@@ -56,18 +57,18 @@ func initRPCList() error {
 	adapter := func(rt structs.NRouter, service string) (map[string]*rpcAdapterStatus, error) {
 		m := make(map[string]*rpcAdapterStatus)
 		adp, err := GetAdapter(rt.Route().AdpID)
-		log.Debug("adp: %s", adp)
+		// log.Debug("adp: %s", adp)
 		rs, err := newAdapterStatus(adp, service)
-		log.Debug("rs: %s", rs)
+		// log.Debug("rs: %s", rs)
 		if err != nil {
 			return nil, fmt.Errorf("Error creating Adapter list - %s", err)
 		}
 		m[adp.ID] = rs
-		log.Debug("adapters: %s", m)
+		// log.Debug("adapters: %s", m)
 		return m, err
 	}
 
-	// statusList populates r.listIF with pointers to Adapters that service the specified
+	// statusList populates r.adpList with pointers to Adapters that service the specified
 	// Area.
 	// area := func(areaID, service string) (map[string]*rpcAdapterStatus, error) {
 	area := func(rt structs.NRouter, service string) (map[string]*rpcAdapterStatus, error) {
@@ -75,12 +76,12 @@ func initRPCList() error {
 		m := make(map[string]*rpcAdapterStatus)
 		areaID := rt.Route().AreaID
 		if strings.ToLower(areaID) == "all" {
-			log.Debug("Using ALL adapters")
+			// log.Debug("Using ALL adapters")
 			for _, v := range adapters.Adapters {
 				al = append(al, v)
 			}
 		} else {
-			log.Debug("Using only adapters for areaID: %s", areaID)
+			// log.Debug("Using only adapters for areaID: %s", areaID)
 			var ok bool
 			al, ok = adapters.areaAdapters[areaID]
 			if !ok {

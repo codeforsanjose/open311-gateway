@@ -39,7 +39,15 @@ ___
 * Removed some Debug logs.
 * Test OK.
 * Saved to GIT.
-* 
+* More debug print cleanup.
+* Saved to GIT.
+* More cleanup:
+	* Removed "arith" sample code from Adapter code.
+	* Cleaned up all import statements.
+	* In engine/router/rpc.go, renamed RPCCall.listIF to RPCCall.adpList.  This is in line with the terminology and naming elsewhere in the project.
+* Added color coding capability to common.LogString and log.LogString.
+* Test OK
+* Saved to GIT.
 
 
 ### 2016.01.25 - Mon

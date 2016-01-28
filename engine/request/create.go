@@ -16,14 +16,13 @@ import (
 //                                      REQUEST
 // =======================================================================================
 func processCreate(r *rest.Request) (interface{}, error) {
-	op := CreateReq{}
-	if err := op.init(r); err != nil {
-		log.Debug("op failed: %s", spew.Sdump(op))
-		log.Debug("Error: %s", err)
+	creq := CreateReq{}
+	if err := creq.init(r); err != nil {
+		log.Errorf("processCreate failed - %s", err)
+		log.Errorf("CreateReq: %s", spew.Sdump(creq))
 		return nil, err
 	}
-	log.Debug("op: %s", spew.Sdump(op))
-	return op.run()
+	return creq.run()
 }
 
 // CreateReqBase represents a new report.  It is an anonymous field in the CreateReq
@@ -140,7 +139,6 @@ func (c *CreateReq) run() (interface{}, error) {
 		log.Error(err.Error())
 		return nil, err
 	}
-	log.Debug("After run - r: %s", r)
 	return c.response, err
 }
 

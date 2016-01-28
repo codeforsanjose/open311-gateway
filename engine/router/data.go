@@ -1,7 +1,6 @@
 package router
 
 import (
-	"_sketches/spew"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -29,7 +28,7 @@ func GetAreaAdapters(areaID string) ([]*Adapter, error) {
 	return adapters.getAreaAdapters(areaID)
 }
 
-// GetAreaID returns the AreaID for a city name, using the aliases in the config.json file.
+// GetAreaID returns the AreaID for a Area (City) name, using the aliases in the config.json file.
 func GetAreaID(alias string) (string, error) {
 	return adapters.areaID(alias)
 }
@@ -87,7 +86,7 @@ func (adps *Adapters) getAdapter(id string) (*Adapter, error) {
 	adps.RLock()
 	defer adps.RUnlock()
 	a, ok := adps.Adapters[id]
-	log.Debug("a: %s-%s  ok: %t\n", a.ID, a.Type, ok)
+	// log.Debug("a: %s-%s  ok: %t\n", a.ID, a.Type, ok)
 	if !ok {
 		return nil, fmt.Errorf("Adapter: %q was not found.", id)
 	}
@@ -102,8 +101,9 @@ func (adps *Adapters) getAdapterID(MID string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
 	}
-	a, ok := adps.Adapters[AdpID]
-	log.Debug("AdpID: %q  a: %s-%s  ok: %t\n", AdpID, a.ID, a.Type, ok)
+	// a, ok := adps.Adapters[AdpID]
+	// log.Debug("AdpID: %q  a: %s-%s  ok: %t\n", AdpID, a.ID, a.Type, ok)
+	_, ok := adps.Adapters[AdpID]
 	if !ok {
 		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
 	}
@@ -136,8 +136,8 @@ func (adps *Adapters) load(file []byte) error {
 	adps.loaded = true
 	adps.loadedAt = time.Now()
 
-	fmt.Printf("=================== Adapters ===============\n%s\n\n\n", spew.Sdump(*adps))
-	fmt.Printf("")
+	// log.Debug("=================== Adapters ===============\n%s\n\n\n", spew.Sdump(*adps))
+	// log.Debug("")
 	return nil
 }
 
@@ -159,7 +159,7 @@ func (adps *Adapters) updateAreaAdapters(input map[string][]string) error {
 
 	for areaID, adpList := range input {
 		for _, adpID := range adpList {
-			log.Debug("AreaID: %q  AdapterID: %q", areaID, adpID)
+			// log.Debug("AreaID: %q  AdapterID: %q", areaID, adpID)
 			if _, ok := adps.areaAdapters[areaID]; !ok {
 				adps.areaAdapters[areaID] = make([]*Adapter, 0)
 			}
@@ -167,7 +167,7 @@ func (adps *Adapters) updateAreaAdapters(input map[string][]string) error {
 		}
 	}
 
-	log.Debug("%s\n", adps)
+	log.Debug("After updateAreaAdapters...\n%s\n", adps)
 
 	return nil
 }
@@ -271,9 +271,10 @@ func (adps Adapters) String() string {
 
 // String returns a formatted representation of Adapter.
 func (adp Adapter) String() string {
-	ls := new(common.LogString)
+	// ls := new(common.LogString)
+	ls := common.NewLogString()
 	ls.AddF("%s\n", adp.ID)
-	ls.AddF("Connected: %t Type: %s  Address: %s\n", adp.Connected, adp.Type, adp.Address)
+	ls.AddF("%-17s   Type: %s  Address: %s\n", ls.ColorBool(adp.Connected, "CONNECTED  ", "UNCONNECTED", "green", "red"), adp.Type, adp.Address)
 	ls.AddF("File: %s\n", adp.File)
 	ls.AddF("Config: %s\n", adp.Config)
 	return ls.Box(80)

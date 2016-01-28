@@ -12,14 +12,6 @@ var (
 	log = logs.Log
 )
 
-// map: city -> list of Services (MID)
-
-// func: MID -> Adapter
-
-// loaded from config file:
-// map: Gateway Code -> Adapter API Call
-// map: city name -> City Code (MID)
-
 // ==============================================================================================================================
 //                                      INIT
 // ==============================================================================================================================
@@ -33,9 +25,7 @@ func Init(configFile string) error {
 	if err != nil {
 		return err
 	}
-	log.Debug(adapters.String())
-
-	// servicesData.Refresh()
+	// log.Debug(adapters.String())
 	return nil
 }
 
@@ -53,6 +43,6 @@ func readConfig(filePath string) error {
 		return err
 	}
 
-	log.Debug(adapters.String())
+	// log.Debug(adapters.String())
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/op/go-logging"
 )
 
@@ -12,7 +13,7 @@ import (
 //                                      LOGS
 // ==============================================================================================================================
 var (
-	modulename = "citysourced"
+	modulename = "gateway311"
 	Log        = logging.MustGetLogger(modulename)
 	LogPrinter *logPrinter
 )
@@ -61,10 +62,31 @@ func (p Password) Redacted() interface{} {
 //                                      CONSOLE
 // ==============================================================================================================================
 
+// NewLogString creates a new LogString, and initializes color printing.
+func NewLogString() *LogString {
+	ls := new(LogString)
+	ls.color = make(map[string]func(...interface{}) string)
+	ls.color["red"] = color.New(color.FgRed).SprintFunc()
+	ls.color["green"] = color.New(color.FgGreen).SprintFunc()
+	ls.color["blue"] = color.New(color.FgBlue).SprintFunc()
+	ls.color["yellow"] = color.New(color.FgYellow).SprintFunc()
+	return ls
+}
+
 // LogString is used to "box" object representations.
 type LogString struct {
-	raw string
-	fmt string
+	raw   string
+	fmt   string
+	color map[string]func(...interface{}) string
+}
+
+// Color applies the specified color to the string.
+func (l *LogString) Color(color, s string) string {
+	f, ok := l.color[color]
+	if !ok {
+		return s
+	}
+	return f(s)
 }
 
 // AddF adds a formated line of text, like Printf().
