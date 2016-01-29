@@ -1,11 +1,11 @@
 package request
 
 import (
-	"CitySourcedAPI/logs"
-	"Gateway311/engine/common"
 	"bytes"
 	"encoding/xml"
 	"net/http"
+
+	"Gateway311/engine/common"
 )
 
 // ================================================================================================
@@ -60,16 +60,6 @@ func (r *CSSearchLLReq) Process() (*CSSearchResp, error) {
 	return &response, nil
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchLLReq) String() string {
-	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search LL\n")
-	ls.AddF("Location - lat: %v  lon: %v\n", r.Latitude, r.Longitude)
-	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
-	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
-	return ls.Box(80)
-}
-
 // ================================================================================================
 //                                      Search - Device ID
 // ================================================================================================
@@ -88,20 +78,6 @@ type CSSearchDIDReq struct {
 	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchDIDReq) String() string {
-	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search\n")
-	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
-	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
-	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
-	return ls.Box(80)
-}
-
-// ================================================================================================
-//                                      Search - Zip
-// ================================================================================================
-
 // CSSearchZipReq represents the XML payload for a report request to CitySourced.
 type CSSearchZipReq struct {
 	XMLName           xml.Name `xml:"CsSearch"`
@@ -115,16 +91,6 @@ type CSSearchZipReq struct {
 	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchZipReq) String() string {
-	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search\n")
-	ls.AddF("Location - zip: %v\n", r.Zip)
-	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
-	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
-	return ls.Box(80)
-}
-
 // ------------------------------------------------------------------------------------------------
 
 // CSSearchResp contains the search results.
@@ -133,17 +99,6 @@ type CSSearchResp struct {
 	Message      string              `xml:"Message"`
 	ResponseTime string              `xml:"ResponseTime"`
 	Reports      CSSearchRespReports `xml:"Reports"`
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchResp) String() string {
-	ls := new(common.LogString)
-	ls.AddS("CSSearchResp\n")
-	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.Reports.ReportCount, r.ResponseTime, r.Message)
-	for _, x := range r.Reports.Reports {
-		ls.AddS(x.String())
-	}
-	return ls.Box(80)
 }
 
 // CSSearchRespReports is the <Reports> sub-element in the CitySourced XML response.  It contains
@@ -189,8 +144,53 @@ type CSSearchReport struct {
 	TicketSLA         string   `json:"TicketSla" xml:"TicketSla"`
 }
 
+// ================================================================================================
+//                                      STRINGS
+// ================================================================================================
+
+// Displays the contents of the Spec_Type custom type.
+func (r CSSearchLLReq) String() string {
+	ls := new(common.LogString)
+	ls.AddS("City Sourced - Search LL\n")
+	ls.AddF("Location - lat: %v  lon: %v\n", r.Latitude, r.Longitude)
+	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
+	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
+	return ls.Box(80)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (r CSSearchDIDReq) String() string {
+	ls := new(common.LogString)
+	ls.AddS("City Sourced - Search\n")
+	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
+	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
+	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
+	return ls.Box(80)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (r CSSearchZipReq) String() string {
+	ls := new(common.LogString)
+	ls.AddS("City Sourced - Search\n")
+	ls.AddF("Location - zip: %v\n", r.Zip)
+	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
+	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
+	return ls.Box(80)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (r CSSearchResp) String() string {
+	ls := new(common.LogString)
+	ls.AddS("CSSearchResp\n")
+	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.Reports.ReportCount, r.ResponseTime, r.Message)
+	for _, x := range r.Reports.Reports {
+		ls.AddS(x.String())
+	}
+	return ls.Box(80)
+}
+
 func (s CSSearchReport) String() string {
-	ls := new(logs.LogString)
+	ls := new(common.LogString)
 	ls.AddF("Report %d\n", s.ID)
 	ls.AddF("DateCreated \"%v\"\n", s.DateCreated)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", s.DeviceType, s.DeviceModel, s.DeviceID)

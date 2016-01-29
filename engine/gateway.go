@@ -27,14 +27,13 @@ func main() {
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
-
 		rest.Get("/services", request.Services),
 		rest.Post("/requests", request.Create),
+		rest.Get("/requests", request.Search),
 		// rest.Get("/:jid/requests", rpt.GetAll),
 		// rest.Get("/:jid/requests/:id", rpt.Get),
 		// rest.Put("/:jid/requests/:id", rpt.Update),
 		// rest.Delete("/:jid/requests/:id", rpt.Delete),
-
 	)
 	if err != nil {
 		log.Fatal(err)

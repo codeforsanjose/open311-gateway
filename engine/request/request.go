@@ -37,3 +37,13 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 	}
 	w.WriteJson(&response)
 }
+
+// Search searches for Reports.
+func Search(w rest.ResponseWriter, r *rest.Request) {
+	response, err := processSearch(r)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(&response)
+}

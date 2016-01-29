@@ -1,13 +1,14 @@
 package request
 
 import (
-	"Gateway311/adapters/citysourced/data"
-	"Gateway311/adapters/citysourced/structs"
-	"Gateway311/engine/common"
 	"bytes"
 	"encoding/xml"
 	"fmt"
 	"net/http"
+
+	"Gateway311/adapters/citysourced/data"
+	"Gateway311/adapters/citysourced/structs"
+	"Gateway311/engine/common"
 )
 
 // ================================================================================================

@@ -143,12 +143,42 @@ type SearchReqBase struct {
 	Radius      string  `json:"RadiusV" xml:"RadiusV"`
 	RadiusV     int     // in meters
 	Address     string  `json:"address" xml:"address"`
-	Area        string  `json:"area" xml:"area"`
-	State       string  `json:"state" xml:"state"`
-	Zip         string  `json:"zip" xml:"zip"`
-	MaxResults  string  `json:"MaxResultsV" xml:"MaxResultsV"`
-	MaxResultsV int     //
-	SearchType  string  //
+	City        string  `json:"city" xml:"city"`
+	AreaID      string
+	State       string `json:"state" xml:"state"`
+	Zip         string `json:"zip" xml:"zip"`
+	MaxResults  string `json:"MaxResultsV" xml:"MaxResultsV"`
+	MaxResultsV int    //
+	SearchType  string //
+	Response    *SearchResp
+}
+
+//go:generate stringer -type=NSearchType
+type NSearchType int
+
+const (
+	_ NSearchType = iota
+	STLocation
+	STDeviceID
+)
+
+// NSearchReq represents the Normal struct for search requests.
+type NSearchReq struct {
+	NRouter
+	API
+	SearchType string
+	DeviceType string
+	DeviceID   string
+	Latitude   float64
+	Longitude  float64
+	Radius     int // in meters
+	MaxResults int
+	Response   *SearchResp
+}
+
+// Route returns the routing data.
+func (r SearchReqBase) Route() NRoute {
+	return NRoute{"", r.AreaID, 0}
 }
 
 // SearchResp is the response to creating or updating a report.
@@ -286,12 +316,6 @@ func (ncr NCreateRequest) String() string {
 	ls.AddF("Request - %s:  %s\n", ncr.MID.MID(), ncr.Type)
 	ls.AddF("Location - lat: %v lon: %v\n", ncr.Latitude, ncr.Longitude)
 	ls.AddF("          %s, %s   %s\n", ncr.Area, ncr.State, ncr.Zip)
-	// if math.Abs(ncr.LatitudeV) > 1 {
-	// 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", ncr.LatitudeV, ncr.Latitude, ncr.LongitudeV, ncr.Longitude)
-	// }
-	// if len(ncr.Area) > 1 {
-	// 	ls.AddF("          %s, %s   %s\n", ncr.Area, ncr.State, ncr.Zip)
-	// }
 	ls.AddF("Description: %q\n", ncr.Description)
 	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", ncr.IsAnonymous, ncr.FirstName, ncr.LastName, ncr.Email, ncr.Phone)
 	return ls.Box(80)
@@ -303,5 +327,17 @@ func (c NCreateResponse) String() string {
 	ls.AddS("Report - Resp\n")
 	ls.AddF("Message: %s\n", c.Message)
 	ls.AddF("ID: %v  AuthorID: %v\n", c.ID, c.AuthorID)
+	return ls.Box(80)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (r SearchReqBase) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Report - NCreateReq\n")
+	ls.AddF("Search type: %s\n", r.SearchType)
+	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
+	ls.AddF("GeoLoc - lat: %v (%f)  lon: %v (%f)  Radius: %v (%d)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV, r.Radius, r.RadiusV)
+	ls.AddF("Address: %s, %s   %s\n", r.City, r.State, r.Zip)
+	ls.AddF("Max results: %v (%d)\n", r.MaxResults, r.MaxResultsV)
 	return ls.Box(80)
 }

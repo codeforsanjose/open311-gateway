@@ -59,9 +59,9 @@ type CreateReqBase struct {
 // cType - defined in common.go, responsible for unmarshaling and parsing the request.
 // cIFace - defined in common.go, an interface type for parseQP() and validate() methods.
 type CreateReq struct {
-	cType         //
-	cIface        //
-	bkend  string //
+	cType
+	cIface
+	bkend string
 	CreateReqBase
 }
 
