@@ -154,19 +154,22 @@ type SearchReqBase struct {
 }
 
 //go:generate stringer -type=NSearchType
+
+// NSearchType enumerates the valid search types.
 type NSearchType int
 
+// NSearchType definitions.
 const (
-	_ NSearchType = iota
-	STLocation
-	STDeviceID
+	NSTUnknown NSearchType = iota
+	NSTLocation
+	NSTDeviceID
 )
 
 // NSearchReq represents the Normal struct for search requests.
 type NSearchReq struct {
 	NRouter
 	API
-	SearchType string
+	SearchType NSearchType
 	DeviceType string
 	DeviceID   string
 	Latitude   float64
@@ -274,7 +277,7 @@ func MidID(mid string) (int, error) {
 // Displays the contents of the Spec_Type custom type.
 func (n NServiceRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Services Request\n")
+	ls.AddS("NServiceRequest\n")
 	ls.AddF("Location - area: %v\n", n.Area)
 	return ls.Box(80)
 }
@@ -282,7 +285,7 @@ func (n NServiceRequest) String() string {
 // Displays the contents of the Spec_Type custom type.
 func (c NServicesResponse) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Services Response\n")
+	ls.AddS("NServicesResponse\n")
 	ls.AddF("Message: %q%s", c.Message, c.Services)
 	return ls.Box(90)
 }
@@ -311,7 +314,7 @@ func (s ServiceID) MID() string {
 // Displays the contents of the Spec_Type custom type.
 func (ncr NCreateRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Report - NCreateReq\n")
+	ls.AddS("NCreateRequest\n")
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", ncr.DeviceType, ncr.DeviceModel, ncr.DeviceID)
 	ls.AddF("Request - %s:  %s\n", ncr.MID.MID(), ncr.Type)
 	ls.AddF("Location - lat: %v lon: %v\n", ncr.Latitude, ncr.Longitude)
@@ -324,7 +327,7 @@ func (ncr NCreateRequest) String() string {
 // Displays the contents of the Spec_Type custom type.
 func (c NCreateResponse) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Report - Resp\n")
+	ls.AddS("NCreateResponse\n")
 	ls.AddF("Message: %s\n", c.Message)
 	ls.AddF("ID: %v  AuthorID: %v\n", c.ID, c.AuthorID)
 	return ls.Box(80)
@@ -333,7 +336,7 @@ func (c NCreateResponse) String() string {
 // Displays the contents of the Spec_Type custom type.
 func (r SearchReqBase) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Report - NCreateReq\n")
+	ls.AddS("SearchReqBase\n")
 	ls.AddF("Search type: %s\n", r.SearchType)
 	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
 	ls.AddF("GeoLoc - lat: %v (%f)  lon: %v (%f)  Radius: %v (%d)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV, r.Radius, r.RadiusV)

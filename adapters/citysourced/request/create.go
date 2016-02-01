@@ -1,11 +1,7 @@
 package request
 
 import (
-	"bytes"
-	"encoding/xml"
-	"fmt"
-	"net/http"
-
+	"Gateway311/adapters/citysourced/create"
 	"Gateway311/adapters/citysourced/data"
 	"Gateway311/adapters/citysourced/structs"
 	"Gateway311/engine/common"
@@ -19,154 +15,102 @@ import (
 // a new 311 report.
 type Report struct{}
 
-// Create mashals and sends the Create Report request to the proper back-end, and returns
-// the response in Native format.
-func (c *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
-	fmt.Printf("resp: %p\n", resp)
-	fmt.Println(rqst)
-	irqst, err := c.makeI(rqst)
-	fmt.Printf("rqst: %s\n", *irqst)
-	r, err := irqst.Process()
-	r.makeN(resp)
-	fmt.Printf("resp: %p\n%s\n", resp, *resp)
-	return err
+// Create fully processes a request to Create a Report.
+// It manages:
+//
+//  1. Validates and converts the request from the Normal form to the CitySourced native XML form.
+//  2. Calls the appropriate CitySourced REST interface with proper credentials.
+//  3. Converts the CitySourced reply back to Normal form.
+//  4. Returns the Normal Response, and any errors.
+func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
+	log.Debug("Create - request: %p  resp: %p\n", rqst, resp)
+	// Make the Create Manager
+	c := &createMgr{
+		nreq:  rqst,
+		nresp: resp,
+	}
+	log.Debug("createMgr: %#v\n", *c)
+
+	fail := func(err error) error {
+		c.nresp.Message = "Failed - " + err.Error()
+		c.nresp.ID = ""
+		c.nresp.AuthorID = ""
+		return err
+	}
+
+	if err := c.convertRequest(); err != nil {
+		return fail(err)
+	}
+	if err := c.process(); err != nil {
+		return fail(err)
+	}
+	if err := c.convertResponse(); err != nil {
+		return fail(err)
+	}
+
+	resp = c.nresp
+	log.Debug("Create COMPLETE:\n%s\n", c)
+
+	return nil
 }
 
-func (c *Report) makeI(rqst *structs.NCreateRequest) (*ICreateReq, error) {
-	// sp, err := router.ServiceProvider(c.TypeIDV)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("Unable to retrieve Service Provider for Service Type: %v", c.TypeIDV)
-	// }
-
-	provider, err := data.MIDProvider(rqst.MID)
-	if err != nil {
-		return nil, err
-	}
-	irqst := ICreateReq{
-		APIAuthKey:        provider.Key,
-		APIRequestType:    "CreateThreeOneOne",
-		APIRequestVersion: provider.APIVersion,
-		DeviceType:        rqst.DeviceType,
-		DeviceModel:       rqst.DeviceModel,
-		DeviceID:          rqst.DeviceID,
-		RequestType:       rqst.Type,
-		RequestTypeID:     rqst.MID.ID,
-		Latitude:          rqst.Latitude,
-		Longitude:         rqst.Longitude,
-		Description:       rqst.Description,
-		AuthorNameFirst:   rqst.FirstName,
-		AuthorNameLast:    rqst.LastName,
-		AuthorEmail:       rqst.Email,
-		AuthorTelephone:   rqst.Phone,
-		AuthorIsAnonymous: rqst.IsAnonymous,
-	}
-	return &irqst, nil
-}
-
-// ================================================================================================
-//                                      CitySourced
-// ================================================================================================
-
-// ICreateReq represents the XML payload for a report request to CitySourced.
-type ICreateReq struct {
-	XMLName           xml.Name `xml:"CsRequest"`
-	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
-	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
-	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
-	DeviceType        string   `json:"DeviceType" xml:"DeviceType"`
-	DeviceModel       string   `json:"DeviceModel" xml:"DeviceModel"`
-	DeviceID          string   `json:"DeviceId" xml:"DeviceId"`
-	RequestType       string   `json:"RequestType" xml:"RequestType"`
-	RequestTypeID     int      `json:"RequestTypeId" xml:"RequestTypeId"`
-	ImageURL          string   `json:"ImageUrl" xml:"ImageUrl"`
-	ImageURLXl        string   `json:"ImageUrlXl" xml:"ImageUrlXl"`
-	ImageURLLg        string   `json:"ImageUrlLg" xml:"ImageUrlLg"`
-	ImageURLMd        string   `json:"ImageUrlMd" xml:"ImageUrlMd"`
-	ImageURLSm        string   `json:"ImageUrlSm" xml:"ImageUrlSm"`
-	ImageURLXs        string   `json:"ImageUrlXs" xml:"ImageUrlXs"`
-	Latitude          float64  `json:"Latitude" xml:"Latitude"`
-	Longitude         float64  `json:"Longitude" xml:"Longitude"`
-	Directionality    string   `json:"Directionality" xml:"Directionality"`
-	Description       string   `json:"Description" xml:"Description"`
-	AuthorNameFirst   string   `json:"AuthorNameFirst" xml:"AuthorNameFirst"`
-	AuthorNameLast    string   `json:"AuthorNameLast" xml:"AuthorNameLast"`
-	AuthorEmail       string   `json:"AuthorEmail" xml:"AuthorEmail"`
-	AuthorTelephone   string   `json:"AuthorTelephone" xml:"AuthorTelephone"`
-	AuthorIsAnonymous bool     `json:"AuthorIsAnonymous" xml:"AuthorIsAnonymous"`
-	URLDetail         string   `json:"UrlDetail" xml:"UrlDetail"`
-	URLShortened      string   `json:"UrlShortened" xml:"UrlShortened"`
+// createMgr conglomerates the Normal and Native structs and supervisor logic
+// for processing a request to Create a Report.
+type createMgr struct {
+	nreq  *structs.NCreateRequest
+	req   *create.Request
+	url   string
+	resp  *create.Response
+	nresp *structs.NCreateResponse
 }
 
 // Process executes the request to create a new report.
-func (r *ICreateReq) Process() (*ICreateReqResp, error) {
-	// log.Printf("%s\n", r)
-	fail := func(err error) (*ICreateReqResp, error) {
-		response := ICreateReqResp{
-			Message:  "Failed",
-			ID:       "",
-			AuthorID: "",
-		}
-		return &response, err
-	}
+func (c *createMgr) process() error {
+	resp, err := c.req.Process(c.url)
+	c.resp = resp
+	return err
+}
 
-	var payload = new(bytes.Buffer)
-	{
-		enc := xml.NewEncoder(payload)
-		enc.Indent("  ", "    ")
-		enc.Encode(r)
-	}
-	// log.Printf("Payload:\n%v\n", payload.String())
-
-	url := "http://localhost:5050/api/"
-	resp, err := http.Post(url, "application/xml", payload)
+func (c *createMgr) convertRequest() error {
+	provider, err := data.MIDProvider(c.nreq.MID)
 	if err != nil {
-		return fail(err)
+		return err
 	}
-
-	var response ICreateReqResp
-	err = xml.NewDecoder(resp.Body).Decode(&response)
-	if err != nil {
-		return fail(err)
+	c.url = provider.URL
+	c.req = &create.Request{
+		APIAuthKey:        provider.Key,
+		APIRequestType:    "CreateThreeOneOne",
+		APIRequestVersion: provider.APIVersion,
+		DeviceType:        c.nreq.DeviceType,
+		DeviceModel:       c.nreq.DeviceModel,
+		DeviceID:          c.nreq.DeviceID,
+		RequestType:       c.nreq.Type,
+		RequestTypeID:     c.nreq.MID.ID,
+		Latitude:          c.nreq.Latitude,
+		Longitude:         c.nreq.Longitude,
+		Description:       c.nreq.Description,
+		AuthorNameFirst:   c.nreq.FirstName,
+		AuthorNameLast:    c.nreq.LastName,
+		AuthorEmail:       c.nreq.Email,
+		AuthorTelephone:   c.nreq.Phone,
+		AuthorIsAnonymous: c.nreq.IsAnonymous,
 	}
-
-	return &response, nil
+	return nil
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (r ICreateReq) String() string {
+func (c *createMgr) convertResponse() error {
+	c.nresp.Message = c.resp.Message
+	c.nresp.ID = c.resp.ID
+	c.nresp.AuthorID = c.resp.AuthorID
+	return nil
+}
+
+func (c *createMgr) String() string {
 	ls := new(common.LogString)
-	ls.AddS("City Sourced - Create\n")
-	ls.AddF("API - auth: %q  RequestType: %q  Version: %q\n", r.APIAuthKey, r.APIRequestType, r.APIRequestVersion)
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
-	ls.AddF("Request - type: %q  id: %d\n", r.RequestType, r.RequestTypeID)
-	ls.AddF("Location - lat: %v  lon: %v\n", r.Latitude, r.Longitude)
-	ls.AddF("Description: %q\n", r.Description)
-	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
-	return ls.Box(80)
-}
-
-// ------------------------------------------------------------------------------------------------
-
-// ICreateReqResp is the response to creating or updating a report.
-type ICreateReqResp struct {
-	Message  string `json:"Message" xml:"Message"`
-	ID       string `json:"ReportId" xml:"ReportId"`
-	AuthorID string `json:"AuthorId" xml:"AuthorId"`
-}
-
-// makeN converts the CitySourced data response for a Create request into
-// the Native structs.NCreateResponse format.
-func (u ICreateReqResp) makeN(resp *structs.NCreateResponse) {
-	resp.Message = u.Message
-	resp.ID = u.ID
-	resp.AuthorID = u.AuthorID
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (u ICreateReqResp) String() string {
-	ls := new(common.LogString)
-	ls.AddS("ICreateReqResp\n")
-	ls.AddF("Message: %v\n", u.Message)
-	ls.AddF("ID: %v  AuthorID: %v\n", u.ID, u.AuthorID)
-	return ls.Box(80)
+	ls.AddS("Create\n")
+	ls.AddS(c.nreq.String())
+	ls.AddS(c.req.String())
+	ls.AddS(c.resp.String())
+	ls.AddS(c.nresp.String())
+	return ls.Box(90)
 }

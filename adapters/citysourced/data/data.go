@@ -75,16 +75,6 @@ func MIDProvider(MID structs.ServiceID) (Provider, error) {
 	return *p, nil
 }
 
-// // ServiceProviders returns a list of all Service Providers for the specified City.
-// func ServiceProviders(area string) ([]*Provider, error) {
-// 	return configData.ServiceProviders(area)
-// }
-
-// // ServiceProvider returns a pointer to the Provider for the specified Provider ID.
-// func ServiceProvider(sid int) (*Provider, error) {
-// 	return configData.ServiceProvider(sid)
-// }
-
 // ==============================================================================================================================
 //                                      INIT
 // ==============================================================================================================================
@@ -152,50 +142,6 @@ type dataIndex struct {
 	provider *Provider
 	service  *structs.NService
 }
-
-// // City returns a list of all services available for the specified City.
-// func (pd *ConfigData) City(area string) (structs.NServices, error) {
-// 	larea := strings.ToLower(area)
-// 	fmt.Printf("   Services for: %s...\n", larea)
-// 	ccode, ok := pd.isValidCity(larea)
-// 	if !ok {
-// 		fmt.Printf("The area: %q is not serviced by this Gateway", area)
-// 		return nil, fmt.Errorf("The area: %q is not serviced by this Gateway", area)
-// 	}
-// 	fmt.Printf("      data length: %d\n", len(pd.areaServices[ccode]))
-// 	services, ok := pd.areaServices[ccode]
-// 	if !ok {
-// 		fmt.Printf("  NO MATCH!\n")
-// 		return nil, fmt.Errorf("Unable to find requested area")
-// 	}
-// 	return services, nil
-// }
-
-// // ServiceProviders returns a list of all Service Providers for the specified City.
-// func (rd *ConfigData) ServiceProviders(area string) ([]*Provider, error) {
-// 	larea := strings.ToLower(area)
-// 	fmt.Printf("   ServiceProviders for: %q\n", larea)
-// 	if !pd.isValidCity(larea) {
-// 		return nil, fmt.Errorf("The area: %q is not serviced by this Gateway", area)
-// 	}
-// 	var p []*Provider
-// 	for _, v := range pd.Areas[strings.ToLower(area)] {
-// 		p = append(p, v)
-// 	}
-// 	fmt.Printf("[ServiceProviders] returning %d records.\n", len(p))
-// 	return p, nil
-// }
-
-// // ServiceProvider returns a pointer to the Provider for the specified Provider ID.
-// func (pd *ConfigData) ServiceProvider(id string) (*Provider, error) {
-//
-// 	p, ok := pd.serviceProvider[id]
-// 	if !ok {
-// 		return nil, fmt.Errorf("Invalid Service ID")
-// 	}
-// 	// fmt.Printf("[ServiceProvider] returning %#v\n", *p)
-// 	return p, nil
-// }
 
 // Load loads the specified byte slice into the ConfigData structures.
 func (pd *ConfigData) Load(file []byte) error {
@@ -313,28 +259,6 @@ func (pd *ConfigData) indexCityServices() error {
 	return nil
 }
 
-// func (pd *ConfigData) indexCityServices() error {
-// 	fmt.Printf("    CityServices...\n")
-// 	pd.areaServices = make(map[string]*structs.NServices)
-// 	var nSvcs structs.NServices
-// 	for areaKey, area := range pd.Areas {
-// 		nSvcs = make(structs.NServices, 0)
-// 		for _, provider := range area.Providers {
-// 			for _, service := range provider.Services {
-// 				nSvcs = append(nSvcs, *service)
-// 			}
-// 		}
-// 		fmt.Printf("=============>>>> CityServices <<<<<==============\nArea: %q\n", areaKey)
-// 		fmt.Printf(spew.Sdump(&nSvcs))
-// 		pd.areaServices[areaKey] = &nSvcs
-// 		fmt.Printf(spew.Sdump(pd.areaServices[areaKey]))
-// 	}
-// 	for areaKey := range pd.Areas {
-// 		fmt.Printf(spew.Sdump(pd.areaServices[areaKey]))
-// 	}
-// 	return nil
-// }
-
 // String returns the represeentation of the ConfigData custom type.
 func (pd ConfigData) String() string {
 	ls := new(common.LogString)
@@ -419,7 +343,7 @@ type Provider struct {
 func (p Provider) String() string {
 	ls := new(common.LogString)
 	ls.AddF("%s (ID: %d)\n", p.Name, p.ID)
-	ls.AddF("URL: %s  ver: %s  Key: %s\n", p.APIVersion, p.URL, p.Key)
+	ls.AddF("URL: %s  ver: %s  Key: %s\n", p.URL, p.APIVersion, p.Key)
 	ls.AddS("---SERVICES:\n")
 	for _, v := range p.Services {
 		ls.AddF("   %s\n", v)

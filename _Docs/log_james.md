@@ -29,6 +29,18 @@ ___
 
 ## Log
 
+### 2016.02.01 - Mon
+
+* Reworked the Create code in the CitySourced Adapter.  There is now a very clean division between the Normal structs, the native structs, and process managers.  Create working very well with this new division.
+* The native request and response for Create are now in the create directory package.
+* Test OK.
+* Saved to GIT.
+
+### 2016.01.28 - Thu
+
+* Added NSearchType to structs.
+* Added "go generate" with stringer tool to automatically generate the String() method for NSearchType.
+
 ### 2016.01.27 - Wed
 
 * Revised RPC management in engine/router.  The router is much more self contained, and will properly route requests to the proper Adapter based solely on information within the RPCCall struct.  
