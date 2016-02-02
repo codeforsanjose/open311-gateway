@@ -64,13 +64,25 @@ func AdapterName() string {
 	return configData.Adapter.Name
 }
 
-// MIDProvider returns the Provider data for the specified Area and Provider.
+// MIDProvider returns the Provider data for the specified MidAdpID.
 func MIDProvider(MID structs.ServiceID) (Provider, error) {
 	log.Debug("MID: %s", MID.MID())
-	p, ok := configData.areaProvider[areaProvider{MID.AreaID, MID.ProviderID}]
+	return getProvider(MID.AreaID, MID.ProviderID)
+}
+
+// RouteProvider returns the Provider data for the specified NRoute.
+func RouteProvider(route structs.NRoute) (Provider, error) {
+	log.Debug("Route: %s", route)
+	return getProvider(route.AreaID, route.ProviderID)
+}
+
+// getProvider returns the Provider data for the specified Area and Provider.
+func getProvider(AreaID string, ProviderID int) (Provider, error) {
+	log.Debug("AreaID: %v  ProviderID: %v\n", AreaID, ProviderID)
+	p, ok := configData.areaProvider[areaProvider{AreaID, ProviderID}]
 	log.Debug("Provider (%t): %s", ok, *p)
 	if !ok {
-		return Provider{}, fmt.Errorf("Unable to find Provider for MID: %q", MID.MID())
+		return Provider{}, fmt.Errorf("Unable to find Provider for %v-%v", AreaID, ProviderID)
 	}
 	return *p, nil
 }

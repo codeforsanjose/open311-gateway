@@ -8,6 +8,11 @@ var (
 	log = logs.Log
 )
 
+// Report is the RPC container struct for the Report.Create service.  This service creates
+// a new 311 report.
+type Report struct{}
+
+// processer is the interface used to run all the common request processing steps (see runRequest()).
 type processer interface {
 	convertRequest() error
 	process() error
@@ -16,6 +21,7 @@ type processer interface {
 	String() string
 }
 
+// runRequest runs all of the common request processing operations.
 func runRequest(r processer) error {
 	if err := r.convertRequest(); err != nil {
 		return r.fail(err)

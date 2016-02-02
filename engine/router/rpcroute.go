@@ -47,8 +47,8 @@ func initResponseStructs() error {
 	routeMap["Services.All"].newResponse = func() interface{} { return new(structs.NServicesResponse) }
 	routeMap["Services.Area"].newResponse = func() interface{} { return new(structs.NServicesResponse) }
 	routeMap["Report.Create"].newResponse = func() interface{} { return new(structs.NCreateResponse) }
-	routeMap["Report.SearchDeviceID"].newResponse = func() interface{} { return new(structs.SearchResp) }
-	routeMap["Report.SearchLocation"].newResponse = func() interface{} { return new(structs.SearchResp) }
+	routeMap["Report.SearchDeviceID"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
+	routeMap["Report.SearchLocation"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
 
 	return nil
 }
@@ -56,21 +56,16 @@ func initResponseStructs() error {
 func initRPCList() error {
 	adapter := func(rt structs.NRouter, service string) (map[string]*rpcAdapterStatus, error) {
 		m := make(map[string]*rpcAdapterStatus)
-		for _, nroute := range rt.Route() {
-			adp, err := GetAdapter(nroute.AdpID)
-			// log.Debug("adp: %s", adp)
-			if err != nil {
-				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
-			}
-			rs, err := newAdapterStatus(adp, service)
-			// log.Debug("rs: %s", rs)
-			if err != nil {
-				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
-			}
-			m[adp.ID] = rs
-			// log.Debug("adapters: %s", m)
+		adp, err := GetAdapter(rt.Route().AdpID)
+		// log.Debug("adp: %s", adp)
+		rs, err := newAdapterStatus(adp, service)
+		// log.Debug("rs: %s", rs)
+		if err != nil {
+			return nil, fmt.Errorf("Error creating Adapter list - %s", err)
 		}
-		return m, nil
+		m[adp.ID] = rs
+		// log.Debug("adapters: %s", m)
+		return m, err
 	}
 
 	// statusList populates r.adpList with pointers to Adapters that service the specified
@@ -79,28 +74,26 @@ func initRPCList() error {
 	area := func(rt structs.NRouter, service string) (map[string]*rpcAdapterStatus, error) {
 		var al []*Adapter
 		m := make(map[string]*rpcAdapterStatus)
-		for _, nroute := range rt.Route() {
-			areaID := nroute.AreaID
-			if strings.ToLower(areaID) == "all" {
-				// log.Debug("Using ALL adapters")
-				for _, v := range adapters.Adapters {
-					al = append(al, v)
-				}
-			} else {
-				// log.Debug("Using only adapters for areaID: %s", areaID)
-				var ok bool
-				al, ok = adapters.areaAdapters[areaID]
-				if !ok {
-					return nil, fmt.Errorf("Area %q is not supported on this Gateway", areaID)
-				}
+		areaID := rt.Route().AreaID
+		if strings.ToLower(areaID) == "all" {
+			// log.Debug("Using ALL adapters")
+			for _, v := range adapters.Adapters {
+				al = append(al, v)
 			}
-			for _, adp := range al {
-				rs, err := newAdapterStatus(adp, service)
-				if err != nil {
-					return nil, fmt.Errorf("Error creating Adapter list - %s", err)
-				}
-				m[adp.ID] = rs
+		} else {
+			// log.Debug("Using only adapters for areaID: %s", areaID)
+			var ok bool
+			al, ok = adapters.areaAdapters[areaID]
+			if !ok {
+				return nil, fmt.Errorf("Area %q is not supported on this Gateway", areaID)
 			}
+		}
+		for _, adp := range al {
+			rs, err := newAdapterStatus(adp, service)
+			if err != nil {
+				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
+			}
+			m[adp.ID] = rs
 		}
 		return m, nil
 	}

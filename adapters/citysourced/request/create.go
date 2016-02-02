@@ -11,21 +11,17 @@ import (
 //                                      CREATE
 // ================================================================================================
 
-// Report is the RPC container struct for the Report.Create service.  This service creates
-// a new 311 report.
-type Report struct{}
-
-// Create fully processes a request to Create a Report.
+// Create fully processes the Create request.
 func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
 	log.Debug("Create - request: %p  resp: %p\n", rqst, resp)
 	// Make the Create Manager
-	c := &createMgr{
+	cm := &createMgr{
 		nreq:  rqst,
 		nresp: resp,
 	}
-	log.Debug("createMgr: %#v\n", *c)
+	log.Debug("createMgr: %#v\n", *cm)
 
-	return runRequest(processer(c))
+	return runRequest(processer(cm))
 }
 
 // createMgr conglomerates the Normal and Native structs and supervisor logic

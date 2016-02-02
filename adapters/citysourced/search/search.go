@@ -14,7 +14,7 @@ import (
 
 // RequestLL represents the CitySourced XML payload for a search by Lat/Lng.
 type RequestLL struct {
-	XMLName           xml.Name `xml:"CsSearch"`
+	XMLName           xml.Name `xml:"SearchLL"`
 	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
 	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
 	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
@@ -60,12 +60,12 @@ func (r *RequestLL) Process(url string) (*Response, error) {
 }
 
 // ================================================================================================
-//                                      Search - Device ID
+//                                      SEARCH DID
 // ================================================================================================
 
 // RequestDID represents the XML payload for a report request to CitySourced.
 type RequestDID struct {
-	XMLName           xml.Name `xml:"CsSearch"`
+	XMLName           xml.Name `xml:"SearchDID"`
 	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
 	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
 	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
@@ -77,7 +77,9 @@ type RequestDID struct {
 	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
 }
 
-// ------------------------------------------------------------------------------------------------
+// ================================================================================================
+//                                      RESPONSE
+// ================================================================================================
 
 // Response contains the search results.
 type Response struct {
@@ -162,9 +164,10 @@ func (r Response) String() string {
 	for _, x := range r.Reports.Reports {
 		ls.AddS(x.String())
 	}
-	return ls.Box(80)
+	return ls.Box(90)
 }
 
+// Displays the NSearchRequestDID custom type.
 func (s Report) String() string {
 	ls := new(common.LogString)
 	ls.AddF("Report %d\n", s.ID)

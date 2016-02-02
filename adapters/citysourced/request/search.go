@@ -1,221 +1,226 @@
 package request
 
 import (
-	"bytes"
-	"encoding/xml"
-	"net/http"
-
+	"Gateway311/adapters/citysourced/data"
+	"Gateway311/adapters/citysourced/search"
+	"Gateway311/adapters/citysourced/structs"
 	"Gateway311/engine/common"
 )
 
-// ================================================================================================
-//                                      Search - Lat/Lng
-// ================================================================================================
+const (
+	dfltMaxResults     int = 20
+	dfltIncludeDetails     = true
+	dfltDateRangeStart     = ""
+	dfltDateRangeEnd       = ""
+)
 
-// CSSearchLLReq represents the CitySourced XML payload for a search by Lat/Lng.
-type CSSearchLLReq struct {
-	XMLName           xml.Name `xml:"CsSearch"`
-	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
-	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
-	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
-	Latitude          float64  `json:"Latitude" xml:"Latitude"`
-	Longitude         float64  `json:"Longitude" xml:"Longitude"`
-	Radius            int      `json:"Radius" xml:"Radius"`
-	MaxResults        int      `json:"MaxResults" xml:"MaxResults"`
-	IncludeDetails    bool     `json:"IncludeDetails" xml:"IncludeDetails"`
-	DateRangeStart    string   `json:"DateRangeStart" xml:"DateRangeStart"`
-	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
+// ================================================================================================
+//                                      SEARCH LL
+// ================================================================================================
+// Search fully processes the Search request.
+func (r *Report) SearchLL(rqst *structs.NSearchRequestLL, resp *structs.NSearchResponse) error {
+	log.Debug("Search - request: %p  resp: %p\n", rqst, resp)
+	// Make the Search Manager
+	cm := &searchLLMgr{
+		nreq:  rqst,
+		nresp: resp,
+	}
+	log.Debug("searchLLMgr: %#v\n", *cm)
+
+	return runRequest(processer(cm))
 }
 
-// Process executes the request to create a new report.
-func (r *CSSearchLLReq) Process() (*CSSearchResp, error) {
-	// log.Printf("%s\n", r)
-	fail := func(err error) (*CSSearchResp, error) {
-		response := CSSearchResp{
-			Message: "Failed",
-		}
-		return &response, err
-	}
+// searchLLMgr conglomerates the Normal and Native structs and supervisor logic
+// for processing a request to Search for reports by Location.
+//  1. Validates and converts the request from the Normal form to the CitySourced native XML form.
+//  2. Calls the appropriate CitySourced REST interface with proper credentials.
+//  3. Converts the CitySourced reply back to Normal form.
+//  4. Returns the Normal Response, and any errors.
+type searchLLMgr struct {
+	nreq  *structs.NSearchRequestLL
+	req   *search.RequestLL
+	url   string
+	resp  *search.Response
+	nresp *structs.NSearchResponse
+}
 
-	var payload = new(bytes.Buffer)
-	{
-		enc := xml.NewEncoder(payload)
-		enc.Indent("  ", "    ")
-		enc.Encode(r)
-	}
-	// log.Printf("Payload:\n%v\n", payload.String())
-
-	url := "http://localhost:5050/api/"
-	resp, err := http.Post(url, "application/xml", payload)
+func (c *searchLLMgr) convertRequest() error {
+	provider, err := data.RouteProvider(c.nreq.Routing)
 	if err != nil {
-		return fail(err)
+		return err
 	}
+	c.url = provider.URL
+	c.req = &search.RequestLL{
+		APIAuthKey:        provider.Key,
+		APIRequestType:    "GetReportsByLatLng",
+		APIRequestVersion: provider.APIVersion,
+		Latitude:          c.nreq.Latitude,
+		Longitude:         c.nreq.Longitude,
+		Radius:            c.nreq.Radius,
+		MaxResults:        dfltMaxResults,
+		IncludeDetails:    dfltIncludeDetails,
+		DateRangeStart:    dfltDateRangeStart,
+		DateRangeEnd:      dfltDateRangeEnd,
+	}
+	return nil
+}
 
-	var response CSSearchResp
-	err = xml.NewDecoder(resp.Body).Decode(&response)
+// Process executes the request to search for reports by location.
+func (c *searchLLMgr) process() error {
+	resp, err := c.req.Process(c.url)
+	c.resp = resp
+	return err
+}
+
+func (c *searchLLMgr) convertResponse() error {
+	c.nresp.Message = c.resp.Message
+	c.nresp.ResponseTime = c.resp.ResponseTime
+	c.nresp.Reports = make([]structs.NSearchResponseReport, 0)
+
+	for _, rr := range c.resp.Reports.Reports {
+		c.nresp.Reports = append(c.nresp.Reports, structs.NSearchResponseReport{
+			ID:                rr.ID,
+			DateCreated:       rr.DateCreated,
+			DateUpdated:       rr.DateUpdated,
+			DeviceType:        rr.DeviceType,
+			DeviceModel:       rr.DeviceModel,
+			DeviceID:          rr.DeviceID,
+			RequestType:       rr.RequestType,
+			RequestTypeID:     rr.RequestTypeID,
+			ImageURL:          rr.ImageURL,
+			ImageURLXl:        rr.ImageURLXl,
+			ImageURLLg:        rr.ImageURLLg,
+			ImageURLMd:        rr.ImageURLMd,
+			ImageURLSm:        rr.ImageURLSm,
+			ImageURLXs:        rr.ImageURLXs,
+			City:              rr.City,
+			State:             rr.State,
+			ZipCode:           rr.ZipCode,
+			Latitude:          rr.Latitude,
+			Longitude:         rr.Longitude,
+			Directionality:    rr.Directionality,
+			Description:       rr.Description,
+			AuthorNameFirst:   rr.AuthorNameFirst,
+			AuthorNameLast:    rr.AuthorNameLast,
+			AuthorEmail:       rr.AuthorEmail,
+			AuthorTelephone:   rr.AuthorTelephone,
+			AuthorIsAnonymous: rr.AuthorIsAnonymous,
+			URLDetail:         rr.URLDetail,
+			URLShortened:      rr.URLShortened,
+			Votes:             rr.Votes,
+			StatusType:        rr.StatusType,
+			TicketSLA:         rr.TicketSLA,
+		})
+	}
+	return nil
+}
+
+func (c *searchLLMgr) fail(err error) error {
+	c.nresp.Message = "Failed - " + err.Error()
+	return err
+}
+
+func (c *searchLLMgr) String() string {
+	ls := new(common.LogString)
+	ls.AddS("SearchLL\n")
+	ls.AddS(c.nreq.String())
+	ls.AddS(c.req.String())
+	ls.AddS(c.resp.String())
+	ls.AddS(c.nresp.String())
+	return ls.Box(90)
+}
+
+/*
+// ================================================================================================
+//                                      SEARCH DID
+// ================================================================================================
+
+// Search fully processes the Search request.
+func (r *Report) SearchDID(rqst *structs.NSearchRequestLL, resp *structs.NSearchResponse) error {
+	log.Debug("Search - request: %p  resp: %p\n", rqst, resp)
+	// Make the Search Manager
+	cm := &searchDIDMgr{
+		nreq:  rqst,
+		nresp: resp,
+	}
+	log.Debug("searchDIDMgr: %#v\n", *cm)
+
+	return runRequest(processer(cm))
+}
+
+// searchDIDMgr conglomerates the Normal and Native structs and supervisor logic
+// for processing a request to Search for reports by Location.
+//  1. Validates and converts the request from the Normal form to the CitySourced native XML form.
+//  2. Calls the appropriate CitySourced REST interface with proper credentials.
+//  3. Converts the CitySourced reply back to Normal form.
+//  4. Returns the Normal Response, and any errors.
+type searchDIDMgr struct {
+	nreq  *structs.NSearchRequestLL
+	req   *search.RequestLL
+	url   string
+	resp  *search.Response
+	nresp *structs.NSearchResponse
+}
+
+func (c *searchDIDMgr) convertRequest() error {
+	provider, err := data.MIDProvider(c.nreq.MID)
 	if err != nil {
-		return fail(err)
+		return err
 	}
-
-	return &response, nil
+	c.url = provider.URL
+	c.req = &search.RequestLL{
+		APIAuthKey:        provider.Key,
+		APIRequestType:    "GetReportsByLatLng",
+		APIRequestVersion: provider.APIVersion,
+		DeviceType:        c.nreq.DeviceType,
+		DeviceModel:       c.nreq.DeviceModel,
+		DeviceID:          c.nreq.DeviceID,
+		RequestType:       c.nreq.Type,
+		RequestTypeID:     c.nreq.MID.ID,
+		Latitude:          c.nreq.Latitude,
+		Longitude:         c.nreq.Longitude,
+		Description:       c.nreq.Description,
+		AuthorNameFirst:   c.nreq.FirstName,
+		AuthorNameLast:    c.nreq.LastName,
+		AuthorEmail:       c.nreq.Email,
+		AuthorTelephone:   c.nreq.Phone,
+		AuthorIsAnonymous: c.nreq.IsAnonymous,
+	}
+	return nil
 }
 
-// ================================================================================================
-//                                      Search - Device ID
-// ================================================================================================
-
-// CSSearchDIDReq represents the XML payload for a report request to CitySourced.
-type CSSearchDIDReq struct {
-	XMLName           xml.Name `xml:"CsSearch"`
-	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
-	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
-	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
-	DeviceType        string   `json:"DeviceType" xml:"DeviceType"`
-	DeviceID          string   `json:"DeviceId" xml:"DeviceId"`
-	MaxResults        int      `json:"MaxResults" xml:"MaxResults"`
-	IncludeDetails    bool     `json:"IncludeDetails" xml:"IncludeDetails"`
-	DateRangeStart    string   `json:"DateRangeStart" xml:"DateRangeStart"`
-	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
+// Process executes the request to search for reports by location.
+func (c *searchDIDMgr) process() error {
+	resp, err := c.req.Process(c.url)
+	c.resp = resp
+	return err
 }
 
-// CSSearchZipReq represents the XML payload for a report request to CitySourced.
-type CSSearchZipReq struct {
-	XMLName           xml.Name `xml:"CsSearch"`
-	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
-	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
-	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
-	Zip               string   `json:"ZipCode" xml:"ZipCode"`
-	MaxResults        int      `json:"MaxResults" xml:"MaxResults"`
-	IncludeDetails    bool     `json:"IncludeDetails" xml:"IncludeDetails"`
-	DateRangeStart    string   `json:"DateRangeStart" xml:"DateRangeStart"`
-	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
+func (c *searchDIDMgr) convertResponse() error {
+	c.nresp.Message = c.resp.Message
+	c.nresp.ID = c.resp.ID
+	c.nresp.AuthorID = c.resp.AuthorID
+	return nil
 }
 
-// ------------------------------------------------------------------------------------------------
-
-// CSSearchResp contains the search results.
-type CSSearchResp struct {
-	XMLName      xml.Name            `xml:"CsResponse"`
-	Message      string              `xml:"Message"`
-	ResponseTime string              `xml:"ResponseTime"`
-	Reports      CSSearchRespReports `xml:"Reports"`
+func (c *searchDIDMgr) fail(err error) error {
+	c.nresp.Message = "Failed - " + err.Error()
+	c.nresp.ID = ""
+	c.nresp.AuthorID = ""
+	return err
 }
 
-// CSSearchRespReports is the <Reports> sub-element in the CitySourced XML response.  It contains
-// a list of the reports meeting the search criteria.
-type CSSearchRespReports struct {
-	ReportCount int               `xml:"ReportCount"`
-	Reports     []*CSSearchReport `xml:"Report"`
+func (c *searchDIDMgr) String() string {
+	ls := new(common.LogString)
+	ls.AddS("SearchDID\n")
+	ls.AddS(c.nreq.String())
+	ls.AddS(c.req.String())
+	ls.AddS(c.resp.String())
+	ls.AddS(c.nresp.String())
+	return ls.Box(90)
 }
-
-// CSSearchReport is the <Report> sub-element in the CitySourced XML response.
-type CSSearchReport struct {
-	XMLName           xml.Name `xml:"Report" json:"Report"`
-	ID                int64    `json:"Id" xml:"Id"`
-	DateCreated       string   `json:"DateCreated" xml:"DateCreated"`
-	DateUpdated       string   `json:"DateUpdated" xml:"DateUpdated"`
-	DeviceType        string   `json:"DeviceType" xml:"DeviceType"`
-	DeviceModel       string   `json:"DeviceModel" xml:"DeviceModel"`
-	DeviceID          string   `json:"DeviceId" xml:"DeviceId"`
-	RequestType       string   `json:"RequestType" xml:"RequestType"`
-	RequestTypeID     string   `json:"RequestTypeId" xml:"RequestTypeId"`
-	ImageURL          string   `json:"ImageUrl" xml:"ImageUrl"`
-	ImageURLXl        string   `json:"ImageUrlXl" xml:"ImageUrlXl"`
-	ImageURLLg        string   `json:"ImageUrlLg" xml:"ImageUrlLg"`
-	ImageURLMd        string   `json:"ImageUrlMd" xml:"ImageUrlMd"`
-	ImageURLSm        string   `json:"ImageUrlSm" xml:"ImageUrlSm"`
-	ImageURLXs        string   `json:"ImageUrlXs" xml:"ImageUrlXs"`
-	City              string   `json:"City" xml:"City"`
-	State             string   `json:"State" xml:"State"`
-	ZipCode           string   `json:"ZipCode" xml:"ZipCode"`
-	Latitude          string   `xml:"Latitude" json:"Latitude"`
-	Longitude         string   `xml:"Longitude" json:"Longitude"`
-	Directionality    string   `json:"Directionality" xml:"Directionality"`
-	Description       string   `json:"Description" xml:"Description"`
-	AuthorNameFirst   string   `json:"AuthorNameFirst" xml:"AuthorNameFirst"`
-	AuthorNameLast    string   `json:"AuthorNameLast" xml:"AuthorNameLast"`
-	AuthorEmail       string   `json:"AuthorEmail" xml:"AuthorEmail"`
-	AuthorTelephone   string   `json:"AuthorTelephone" xml:"AuthorTelephone"`
-	AuthorIsAnonymous string   `xml:"AuthorIsAnonymous" json:"AuthorIsAnonymous"`
-	URLDetail         string   `json:"UrlDetail" xml:"UrlDetail"`
-	URLShortened      string   `json:"UrlShortened" xml:"UrlShortened"`
-	Votes             string   `json:"Votes" xml:"Votes"`
-	StatusType        string   `json:"StatusType" xml:"StatusType"`
-	TicketSLA         string   `json:"TicketSla" xml:"TicketSla"`
-}
+*/
 
 // ================================================================================================
 //                                      STRINGS
 // ================================================================================================
-
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchLLReq) String() string {
-	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search LL\n")
-	ls.AddF("Location - lat: %v  lon: %v\n", r.Latitude, r.Longitude)
-	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
-	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
-	return ls.Box(80)
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchDIDReq) String() string {
-	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search\n")
-	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
-	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
-	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
-	return ls.Box(80)
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchZipReq) String() string {
-	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search\n")
-	ls.AddF("Location - zip: %v\n", r.Zip)
-	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
-	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
-	return ls.Box(80)
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchResp) String() string {
-	ls := new(common.LogString)
-	ls.AddS("CSSearchResp\n")
-	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.Reports.ReportCount, r.ResponseTime, r.Message)
-	for _, x := range r.Reports.Reports {
-		ls.AddS(x.String())
-	}
-	return ls.Box(80)
-}
-
-func (s CSSearchReport) String() string {
-	ls := new(common.LogString)
-	ls.AddF("Report %d\n", s.ID)
-	ls.AddF("DateCreated \"%v\"\n", s.DateCreated)
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", s.DeviceType, s.DeviceModel, s.DeviceID)
-	ls.AddF("Request - type: %q  id: %q\n", s.RequestType, s.RequestTypeID)
-	ls.AddF("Location - lat: %v  lon: %v  directionality: %q\n", s.Latitude, s.Longitude, s.Directionality)
-	ls.AddF("          %s, %s   %s\n", s.City, s.State, s.ZipCode)
-	ls.AddF("Votes: %d\n", s.Votes)
-	ls.AddF("Description: %q\n", s.Description)
-	ls.AddF("Images - std: %s\n", s.ImageURL)
-	if len(s.ImageURLXs) > 0 {
-		ls.AddF("          XS: %s\n", s.ImageURLXs)
-	}
-	if len(s.ImageURLSm) > 0 {
-		ls.AddF("          SM: %s\n", s.ImageURLSm)
-	}
-	if len(s.ImageURLMd) > 0 {
-		ls.AddF("          XS: %s\n", s.ImageURLMd)
-	}
-	if len(s.ImageURLLg) > 0 {
-		ls.AddF("          XS: %s\n", s.ImageURLLg)
-	}
-	if len(s.ImageURLXl) > 0 {
-		ls.AddF("          XS: %s\n", s.ImageURLXl)
-	}
-	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", s.AuthorIsAnonymous, s.AuthorNameFirst, s.AuthorNameLast, s.AuthorEmail, s.AuthorTelephone)
-	ls.AddF("SLA: %s\n", s.TicketSLA)
-	return ls.Box(80)
-}

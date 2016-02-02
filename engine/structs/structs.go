@@ -27,7 +27,7 @@ type API struct {
 // NRouter is the interface to retrieve the routing data (AdpID, AreaID) from
 // any N*Request.
 type NRouter interface {
-	Route() []NRoute
+	Route() NRoute
 }
 
 // NRoute represents the data needed to route requests to Adapters.
@@ -48,8 +48,8 @@ type NServiceRequest struct {
 }
 
 // Route returns the routing data.
-func (n NServiceRequest) Route() []NRoute {
-	return []NRoute{{"", n.Area, 0}}
+func (n NServiceRequest) Route() NRoute {
+	return NRoute{"", n.Area, 0}
 }
 
 // NServicesResponse is the returned struct for a Services request.
@@ -115,8 +115,8 @@ type NCreateRequest struct {
 }
 
 // Route returns the routing data.
-func (ncr NCreateRequest) Route() []NRoute {
-	return []NRoute{{ncr.MID.AdpID, ncr.MID.AreaID, ncr.MID.ProviderID}}
+func (ncr NCreateRequest) Route() NRoute {
+	return NRoute{ncr.MID.AdpID, ncr.MID.AreaID, ncr.MID.ProviderID}
 }
 
 // NCreateResponse is the response to creating or updating a report.
@@ -130,32 +130,41 @@ type NCreateResponse struct {
 //                                      SEARCH
 // =======================================================================================
 
-// SearchReqBase is used to create a report.
-type SearchReqBase struct {
+// NSearchRequestLL represents the Normal struct for a location based search request.
+type NSearchRequestLL struct {
 	NRouter
+	Routing NRoute
 	API
-	DeviceType  string  `json:"deviceType" xml:"deviceType"`
-	DeviceID    string  `json:"deviceId" xml:"deviceId"`
-	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
-	LatitudeV   float64 //
-	Longitude   string  `json:"LongitudeV" xml:"LongitudeV"`
-	LongitudeV  float64 //
-	Radius      string  `json:"RadiusV" xml:"RadiusV"`
-	RadiusV     int     // in meters
-	Address     string  `json:"address" xml:"address"`
-	City        string  `json:"city" xml:"city"`
-	AreaID      string
-	State       string `json:"state" xml:"state"`
-	Zip         string `json:"zip" xml:"zip"`
-	MaxResults  string `json:"MaxResultsV" xml:"MaxResultsV"`
-	MaxResultsV int    //
-	SearchType  string //
-	Response    *SearchResp
+	SearchType NSearchType
+	Latitude   float64
+	Longitude  float64
+	AreaID     string
+	Radius     int // in meters
+	MaxResults int
+	Response   *NSearchResponse
 }
 
 // Route returns the routing data.
-func (r SearchReqBase) Route() []NRoute {
-	return []NRoute{{"", r.AreaID, 0}}
+func (r NSearchRequestLL) Route() NRoute {
+	return r.Routing
+}
+
+// NSearchRequestDID represents the Normal struct for a request to search for all reports
+// authored by the specified Device ID.
+type NSearchRequestDID struct {
+	NRouter
+	Routing NRoute
+	API
+	SearchType NSearchType
+	DeviceType string
+	DeviceID   string
+	MaxResults int
+	Response   *NSearchResponse
+}
+
+// Route returns the routing data.
+func (r NSearchRequestDID) Route() NRoute {
+	return r.Routing
 }
 
 //go:generate stringer -type=NSearchType
@@ -170,47 +179,47 @@ const (
 	NSTDeviceID
 )
 
-// NSearchReqLL represents the Normal struct for a location based search request.
-type NSearchReqLL struct {
-	NRouter
-	API
-	SearchType NSearchType
-	Latitude   float64
-	Longitude  float64
-	AreaID     string
-	Radius     int // in meters
-	MaxResults int
-	Response   *SearchResp
+// NSearchResponse contains the search results.
+type NSearchResponse struct {
+	Message      string
+	ReportCount  int
+	ResponseTime string
+	Reports      []NSearchResponseReport
 }
 
-// Route returns the routing data.
-func (r NSearchReqLL) Route() []NRoute {
-	return []NRoute{{"", r.AreaID, 0}}
-}
-
-// NSearchReqDID represents the Normal struct for a request to search for all reports
-// authored by the specified Device ID.
-type NSearchReqDID struct {
-	NRouter
-	API
-	SearchType NSearchType
-	DeviceType string
-	DeviceID   string
-	MaxResults int
-	Routes     []NRoute
-	Response   *SearchResp
-}
-
-// Route returns the routing data.
-func (r NSearchReqDID) Route() []NRoute {
-	return r.Routes
-}
-
-// SearchResp is the response to creating or updating a report.
-type SearchResp struct {
-	Message  string `json:"Message" xml:"Message"`
-	ID       string `json:"ReportId" xml:"ReportId"`
-	AuthorID string `json:"AuthorId" xml:"AuthorId"`
+// NSearchResponseReport represents a report.
+type NSearchResponseReport struct {
+	ID                int64
+	DateCreated       string
+	DateUpdated       string
+	DeviceType        string
+	DeviceModel       string
+	DeviceID          string
+	RequestType       string
+	RequestTypeID     string
+	ImageURL          string
+	ImageURLXl        string
+	ImageURLLg        string
+	ImageURLMd        string
+	ImageURLSm        string
+	ImageURLXs        string
+	City              string
+	State             string
+	ZipCode           string
+	Latitude          string
+	Longitude         string
+	Directionality    string
+	Description       string
+	AuthorNameFirst   string
+	AuthorNameLast    string
+	AuthorEmail       string
+	AuthorTelephone   string
+	AuthorIsAnonymous string
+	URLDetail         string
+	URLShortened      string
+	Votes             string
+	StatusType        string
+	TicketSLA         string
 }
 
 // =======================================================================================
@@ -296,7 +305,7 @@ func MidID(mid string) (int, error) {
 //                                      STRINGS
 // =======================================================================================
 
-// Displays the contents of the Spec_Type custom type.
+// Displays the NServiceRequest custom type.
 func (n NServiceRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NServiceRequest\n")
@@ -304,7 +313,7 @@ func (n NServiceRequest) String() string {
 	return ls.Box(80)
 }
 
-// Displays the contents of the Spec_Type custom type.
+// Displays the NServicesResponse custom type.
 func (c NServicesResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NServicesResponse\n")
@@ -312,13 +321,14 @@ func (c NServicesResponse) String() string {
 	return ls.Box(90)
 }
 
+// Displays the NService custom type.
 func (s NService) String() string {
 	// r := fmt.Sprintf("  %s-%s-%d-%d  %-40s  %v", s.AdpID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
 	r := fmt.Sprintf("  %-20s  %-40s  %v", s.MID(), s.Name, s.Categories)
 	return r
 }
 
-// Displays the contents of the Spec_Type custom type.
+// Displays the NServices custom type.
 func (c NServices) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NServices\n")
@@ -333,7 +343,7 @@ func (s ServiceID) MID() string {
 	return fmt.Sprintf("%s-%s-%d-%d", s.AdpID, s.AreaID, s.ProviderID, s.ID)
 }
 
-// Displays the contents of the Spec_Type custom type.
+// Displays the NCreateRequest custom type.
 func (ncr NCreateRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NCreateRequest\n")
@@ -346,7 +356,7 @@ func (ncr NCreateRequest) String() string {
 	return ls.Box(80)
 }
 
-// Displays the contents of the Spec_Type custom type.
+// Displays the NCreateResponse custom type.
 func (c NCreateResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NCreateResponse\n")
@@ -355,14 +365,65 @@ func (c NCreateResponse) String() string {
 	return ls.Box(80)
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (r SearchReqBase) String() string {
+// Displays the NSearchRequestLL custom type.
+func (r NSearchRequestLL) String() string {
 	ls := new(common.LogString)
-	ls.AddS("SearchReqBase\n")
-	ls.AddF("Search type: %s\n", r.SearchType)
-	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
-	ls.AddF("GeoLoc - lat: %v (%f)  lon: %v (%f)  Radius: %v (%d)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV, r.Radius, r.RadiusV)
-	ls.AddF("Address: %s, %s   %s\n", r.City, r.State, r.Zip)
-	ls.AddF("Max results: %v (%d)\n", r.MaxResults, r.MaxResultsV)
+	ls.AddS("NSearchRequestLL\n")
+	ls.AddF("SearchType: %s\n", r.SearchType)
+	ls.AddF("Lat: %v  Lng: %v   Radius: %v AreaID: %q\n", r.Latitude, r.Longitude, r.Radius, r.AreaID)
+	ls.AddF("MaxResults: %v  Routing: %s\n", r.MaxResults, r.Routing)
+	return ls.Box(80)
+}
+
+// Displays the NSearchRequestDID custom type.
+func (r NSearchRequestDID) String() string {
+	ls := new(common.LogString)
+	ls.AddS("NSearchRequestDID\n")
+	ls.AddF("SearchType: %s\n", r.SearchType)
+	ls.AddF("Device type: %v  ID: %v\n", r.DeviceType, r.DeviceID)
+	ls.AddF("MaxResults: %v  Routing: %s\n", r.MaxResults, r.Routing)
+	return ls.Box(80)
+}
+
+// Displays the NSearchResponse custom type.
+func (r NSearchResponse) String() string {
+	ls := new(common.LogString)
+	ls.AddS("NSearchResponse\n")
+	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.ReportCount, r.ResponseTime, r.Message)
+	for _, x := range r.Reports {
+		ls.AddS(x.String())
+	}
+	return ls.Box(90)
+}
+
+// Displays the the NSearchRequestDID custom type.
+func (r NSearchResponseReport) String() string {
+	ls := new(common.LogString)
+	ls.AddF("Report %d\n", r.ID)
+	ls.AddF("DateCreated \"%v\"\n", r.DateCreated)
+	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
+	ls.AddF("Request - type: %q  id: %q\n", r.RequestType, r.RequestTypeID)
+	ls.AddF("Location - lat: %v  lon: %v  directionality: %q\n", r.Latitude, r.Longitude, r.Directionality)
+	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.ZipCode)
+	ls.AddF("Votes: %d\n", r.Votes)
+	ls.AddF("Description: %q\n", r.Description)
+	ls.AddF("Images - std: %s\n", r.ImageURL)
+	if len(r.ImageURLXs) > 0 {
+		ls.AddF("          XS: %s\n", r.ImageURLXs)
+	}
+	if len(r.ImageURLSm) > 0 {
+		ls.AddF("          SM: %s\n", r.ImageURLSm)
+	}
+	if len(r.ImageURLMd) > 0 {
+		ls.AddF("          XS: %s\n", r.ImageURLMd)
+	}
+	if len(r.ImageURLLg) > 0 {
+		ls.AddF("          XS: %s\n", r.ImageURLLg)
+	}
+	if len(r.ImageURLXl) > 0 {
+		ls.AddF("          XS: %s\n", r.ImageURLXl)
+	}
+	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
+	ls.AddF("SLA: %s\n", r.TicketSLA)
 	return ls.Box(80)
 }

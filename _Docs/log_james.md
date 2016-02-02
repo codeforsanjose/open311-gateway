@@ -35,6 +35,10 @@ ___
 * Started organizing the Search in adapters/citysourced.
 * Test OK.
 * Saved to GIT.
+* Reverted the above change.  This pushes routing logic into the Adapters, which is not a good road.  The Adapters should be very simple, mediating a single request.  There should not be any routing logic in the Adapters...
+* First draft of SearchLL() ready for testing in adapters/citysourced.
+* Saved to GIT.
+* 
 
 ### 2016.02.01 - Mon
 
