@@ -27,7 +27,7 @@ type API struct {
 // NRouter is the interface to retrieve the routing data (AdpID, AreaID) from
 // any N*Request.
 type NRouter interface {
-	Route() NRoute
+	Route() []NRoute
 }
 
 // NRoute represents the data needed to route requests to Adapters.
@@ -48,8 +48,8 @@ type NServiceRequest struct {
 }
 
 // Route returns the routing data.
-func (n NServiceRequest) Route() NRoute {
-	return NRoute{"", n.Area, 0}
+func (n NServiceRequest) Route() []NRoute {
+	return []NRoute{{"", n.Area, 0}}
 }
 
 // NServicesResponse is the returned struct for a Services request.
@@ -115,8 +115,8 @@ type NCreateRequest struct {
 }
 
 // Route returns the routing data.
-func (ncr NCreateRequest) Route() NRoute {
-	return NRoute{ncr.MID.AdpID, ncr.MID.AreaID, ncr.MID.ProviderID}
+func (ncr NCreateRequest) Route() []NRoute {
+	return []NRoute{{ncr.MID.AdpID, ncr.MID.AreaID, ncr.MID.ProviderID}}
 }
 
 // NCreateResponse is the response to creating or updating a report.
@@ -153,6 +153,11 @@ type SearchReqBase struct {
 	Response    *SearchResp
 }
 
+// Route returns the routing data.
+func (r SearchReqBase) Route() []NRoute {
+	return []NRoute{{"", r.AreaID, 0}}
+}
+
 //go:generate stringer -type=NSearchType
 
 // NSearchType enumerates the valid search types.
@@ -165,23 +170,40 @@ const (
 	NSTDeviceID
 )
 
-// NSearchReq represents the Normal struct for search requests.
-type NSearchReq struct {
+// NSearchReqLL represents the Normal struct for a location based search request.
+type NSearchReqLL struct {
 	NRouter
 	API
 	SearchType NSearchType
-	DeviceType string
-	DeviceID   string
 	Latitude   float64
 	Longitude  float64
+	AreaID     string
 	Radius     int // in meters
 	MaxResults int
 	Response   *SearchResp
 }
 
 // Route returns the routing data.
-func (r SearchReqBase) Route() NRoute {
-	return NRoute{"", r.AreaID, 0}
+func (r NSearchReqLL) Route() []NRoute {
+	return []NRoute{{"", r.AreaID, 0}}
+}
+
+// NSearchReqDID represents the Normal struct for a request to search for all reports
+// authored by the specified Device ID.
+type NSearchReqDID struct {
+	NRouter
+	API
+	SearchType NSearchType
+	DeviceType string
+	DeviceID   string
+	MaxResults int
+	Routes     []NRoute
+	Response   *SearchResp
+}
+
+// Route returns the routing data.
+func (r NSearchReqDID) Route() []NRoute {
+	return r.Routes
 }
 
 // SearchResp is the response to creating or updating a report.

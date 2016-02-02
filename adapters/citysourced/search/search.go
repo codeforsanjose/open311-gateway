@@ -9,11 +9,11 @@ import (
 )
 
 // ================================================================================================
-//                                      Search - Lat/Lng
+//                                      SEARCH LL
 // ================================================================================================
 
-// CSSearchLLReq represents the CitySourced XML payload for a search by Lat/Lng.
-type CSSearchLLReq struct {
+// RequestLL represents the CitySourced XML payload for a search by Lat/Lng.
+type RequestLL struct {
 	XMLName           xml.Name `xml:"CsSearch"`
 	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
 	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
@@ -28,10 +28,10 @@ type CSSearchLLReq struct {
 }
 
 // Process executes the request to create a new report.
-func (r *CSSearchLLReq) Process() (*CSSearchResp, error) {
+func (r *RequestLL) Process(url string) (*Response, error) {
 	// log.Printf("%s\n", r)
-	fail := func(err error) (*CSSearchResp, error) {
-		response := CSSearchResp{
+	fail := func(err error) (*Response, error) {
+		response := Response{
 			Message: "Failed",
 		}
 		return &response, err
@@ -45,13 +45,12 @@ func (r *CSSearchLLReq) Process() (*CSSearchResp, error) {
 	}
 	// log.Printf("Payload:\n%v\n", payload.String())
 
-	url := "http://localhost:5050/api/"
 	resp, err := http.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
 	}
 
-	var response CSSearchResp
+	var response Response
 	err = xml.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return fail(err)
@@ -64,8 +63,8 @@ func (r *CSSearchLLReq) Process() (*CSSearchResp, error) {
 //                                      Search - Device ID
 // ================================================================================================
 
-// CSSearchDIDReq represents the XML payload for a report request to CitySourced.
-type CSSearchDIDReq struct {
+// RequestDID represents the XML payload for a report request to CitySourced.
+type RequestDID struct {
 	XMLName           xml.Name `xml:"CsSearch"`
 	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
 	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
@@ -78,38 +77,25 @@ type CSSearchDIDReq struct {
 	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
 }
 
-// CSSearchZipReq represents the XML payload for a report request to CitySourced.
-type CSSearchZipReq struct {
-	XMLName           xml.Name `xml:"CsSearch"`
-	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
-	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
-	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
-	Zip               string   `json:"ZipCode" xml:"ZipCode"`
-	MaxResults        int      `json:"MaxResults" xml:"MaxResults"`
-	IncludeDetails    bool     `json:"IncludeDetails" xml:"IncludeDetails"`
-	DateRangeStart    string   `json:"DateRangeStart" xml:"DateRangeStart"`
-	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
-}
-
 // ------------------------------------------------------------------------------------------------
 
-// CSSearchResp contains the search results.
-type CSSearchResp struct {
-	XMLName      xml.Name            `xml:"CsResponse"`
-	Message      string              `xml:"Message"`
-	ResponseTime string              `xml:"ResponseTime"`
-	Reports      CSSearchRespReports `xml:"Reports"`
+// Response contains the search results.
+type Response struct {
+	XMLName      xml.Name `xml:"CsResponse"`
+	Message      string   `xml:"Message"`
+	ResponseTime string   `xml:"ResponseTime"`
+	Reports      Reports  `xml:"Reports"`
 }
 
-// CSSearchRespReports is the <Reports> sub-element in the CitySourced XML response.  It contains
+// Reports is the <Reports> sub-element in the CitySourced XML response.  It contains
 // a list of the reports meeting the search criteria.
-type CSSearchRespReports struct {
-	ReportCount int               `xml:"ReportCount"`
-	Reports     []*CSSearchReport `xml:"Report"`
+type Reports struct {
+	ReportCount int       `xml:"ReportCount"`
+	Reports     []*Report `xml:"Report"`
 }
 
-// CSSearchReport is the <Report> sub-element in the CitySourced XML response.
-type CSSearchReport struct {
+// Report is the <Report> sub-element in the CitySourced XML response.
+type Report struct {
 	XMLName           xml.Name `xml:"Report" json:"Report"`
 	ID                int64    `json:"Id" xml:"Id"`
 	DateCreated       string   `json:"DateCreated" xml:"DateCreated"`
@@ -149,9 +135,9 @@ type CSSearchReport struct {
 // ================================================================================================
 
 // Displays the contents of the Spec_Type custom type.
-func (r CSSearchLLReq) String() string {
+func (r RequestLL) String() string {
 	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search LL\n")
+	ls.AddS("RequestLL\n")
 	ls.AddF("Location - lat: %v  lon: %v\n", r.Latitude, r.Longitude)
 	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
 	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
@@ -159,9 +145,9 @@ func (r CSSearchLLReq) String() string {
 }
 
 // Displays the contents of the Spec_Type custom type.
-func (r CSSearchDIDReq) String() string {
+func (r RequestDID) String() string {
 	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search\n")
+	ls.AddS("RequestDID\n")
 	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
 	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
 	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
@@ -169,19 +155,9 @@ func (r CSSearchDIDReq) String() string {
 }
 
 // Displays the contents of the Spec_Type custom type.
-func (r CSSearchZipReq) String() string {
+func (r Response) String() string {
 	ls := new(common.LogString)
-	ls.AddS("City Sourced - Search\n")
-	ls.AddF("Location - zip: %v\n", r.Zip)
-	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
-	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
-	return ls.Box(80)
-}
-
-// Displays the contents of the Spec_Type custom type.
-func (r CSSearchResp) String() string {
-	ls := new(common.LogString)
-	ls.AddS("CSSearchResp\n")
+	ls.AddS("Response\n")
 	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.Reports.ReportCount, r.ResponseTime, r.Message)
 	for _, x := range r.Reports.Reports {
 		ls.AddS(x.String())
@@ -189,7 +165,7 @@ func (r CSSearchResp) String() string {
 	return ls.Box(80)
 }
 
-func (s CSSearchReport) String() string {
+func (s Report) String() string {
 	ls := new(common.LogString)
 	ls.AddF("Report %d\n", s.ID)
 	ls.AddF("DateCreated \"%v\"\n", s.DateCreated)

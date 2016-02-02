@@ -16,12 +16,6 @@ import (
 type Report struct{}
 
 // Create fully processes a request to Create a Report.
-// It manages:
-//
-//  1. Validates and converts the request from the Normal form to the CitySourced native XML form.
-//  2. Calls the appropriate CitySourced REST interface with proper credentials.
-//  3. Converts the CitySourced reply back to Normal form.
-//  4. Returns the Normal Response, and any errors.
 func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
 	log.Debug("Create - request: %p  resp: %p\n", rqst, resp)
 	// Make the Create Manager
@@ -36,6 +30,10 @@ func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateRespo
 
 // createMgr conglomerates the Normal and Native structs and supervisor logic
 // for processing a request to Create a Report.
+//  1. Validates and converts the request from the Normal form to the CitySourced native XML form.
+//  2. Calls the appropriate CitySourced REST interface with proper credentials.
+//  3. Converts the CitySourced reply back to Normal form.
+//  4. Returns the Normal Response, and any errors.
 type createMgr struct {
 	nreq  *structs.NCreateRequest
 	req   *create.Request

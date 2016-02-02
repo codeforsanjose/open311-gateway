@@ -29,6 +29,13 @@ ___
 
 ## Log
 
+### 2016.02.02 - Tue
+
+* Changed structs.NRoute to always be a slice, so that multiple routes can be supported.  This will be needed for Search by Device ID. 
+* Started organizing the Search in adapters/citysourced.
+* Test OK.
+* Saved to GIT.
+
 ### 2016.02.01 - Mon
 
 * Reworked the Create code in the CitySourced Adapter.  There is now a very clean division between the Normal structs, the native structs, and process managers.  Create working very well with this new division.
