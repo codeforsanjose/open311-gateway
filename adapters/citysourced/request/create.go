@@ -31,27 +31,7 @@ func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateRespo
 	}
 	log.Debug("createMgr: %#v\n", *c)
 
-	fail := func(err error) error {
-		c.nresp.Message = "Failed - " + err.Error()
-		c.nresp.ID = ""
-		c.nresp.AuthorID = ""
-		return err
-	}
-
-	if err := c.convertRequest(); err != nil {
-		return fail(err)
-	}
-	if err := c.process(); err != nil {
-		return fail(err)
-	}
-	if err := c.convertResponse(); err != nil {
-		return fail(err)
-	}
-
-	resp = c.nresp
-	log.Debug("Create COMPLETE:\n%s\n", c)
-
-	return nil
+	return runRequest(processer(c))
 }
 
 // createMgr conglomerates the Normal and Native structs and supervisor logic
@@ -62,13 +42,6 @@ type createMgr struct {
 	url   string
 	resp  *create.Response
 	nresp *structs.NCreateResponse
-}
-
-// Process executes the request to create a new report.
-func (c *createMgr) process() error {
-	resp, err := c.req.Process(c.url)
-	c.resp = resp
-	return err
 }
 
 func (c *createMgr) convertRequest() error {
@@ -98,11 +71,25 @@ func (c *createMgr) convertRequest() error {
 	return nil
 }
 
+// Process executes the request to create a new report.
+func (c *createMgr) process() error {
+	resp, err := c.req.Process(c.url)
+	c.resp = resp
+	return err
+}
+
 func (c *createMgr) convertResponse() error {
 	c.nresp.Message = c.resp.Message
 	c.nresp.ID = c.resp.ID
 	c.nresp.AuthorID = c.resp.AuthorID
 	return nil
+}
+
+func (c *createMgr) fail(err error) error {
+	c.nresp.Message = "Failed - " + err.Error()
+	c.nresp.ID = ""
+	c.nresp.AuthorID = ""
+	return err
 }
 
 func (c *createMgr) String() string {

@@ -35,6 +35,10 @@ ___
 * The native request and response for Create are now in the create directory package.
 * Test OK.
 * Saved to GIT.
+* In adapters/citysourced/request.go, created an interface "processer", and runRequest() for the main processing steps for all requests.
+* Test OK.
+* Saved to GIT.
+* 
 
 ### 2016.01.28 - Thu
 
