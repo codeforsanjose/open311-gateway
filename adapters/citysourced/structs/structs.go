@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/fatih/color"
+
 	"Gateway311/engine/common"
 )
 
@@ -19,6 +21,7 @@ type NRequestCommon struct {
 	Route NRoute
 	Rtype NRequestType
 	NRouter
+	NRequester
 }
 
 // GetType returns the Request Type as a string.
@@ -32,11 +35,24 @@ func (r NRequestCommon) GetTypeS() string {
 	return r.Rtype.String()
 }
 
-// // NRequestPkger defines the behavior of a Request Package.
-// type NRequestPkger interface {
-// 	GetRoute() NRoute
-// 	SetRoute(route NRoute)
-// }
+// GetRoute returns NRequestCommon.Route
+func (r NRequestCommon) GetRoute() NRoute {
+	return r.Route
+}
+
+// SetRoute sets the route in NRequestCommon.
+func (r *NRequestCommon) SetRoute(route NRoute) {
+	r.Route = route
+}
+
+// NRequester defines the behavior of a Request Package.
+type NRequester interface {
+	GetRoute() NRoute
+	SetRoute(route NRoute)
+	RouteType() NRouteType
+	GetType() NRequestType
+	GetTypeS() string
+}
 
 // -----------------------------------NRequestType --------------------------------------
 
@@ -63,8 +79,6 @@ const (
 // any N*Request.
 type NRouter interface {
 	GetRoutes() NRoutes
-	GetType() NRequestType
-	GetTypeS() string
 }
 
 // NRoutes represents a list of Routes for a request.
@@ -81,15 +95,6 @@ func (r NRoutes) add(nr NRoute) NRoutes {
 	return r
 }
 
-func (r NRoutes) String() string {
-	ls := new(common.LogString)
-	ls.AddS("NRoutes\n")
-	for _, r := range r {
-		ls.AddF("%s\n", r)
-	}
-	return ls.Box(40)
-}
-
 // NRoute represents the data needed to route requests to Adapters.
 type NRoute struct {
 	AdpID      string
@@ -97,9 +102,34 @@ type NRoute struct {
 	ProviderID int
 }
 
-// String displays the type.
-func (r NRoute) String() string {
-	return fmt.Sprintf("%s-%s-%d", r.AdpID, r.AreaID, r.ProviderID)
+// NRouteType enumerates the valid route types.
+type NRouteType int
+
+// NRT* are constants enumerating the valid request types.
+const (
+	NRtTypUnknown NRouteType = iota
+	NRtTypInvalid
+	NRtTypEmpty
+	NRtTypFull
+	NRtTypAllAdapters
+	NRtTypAllAreas
+)
+
+// RouteType returns the validity and type of the NRoute.
+func (r NRoute) RouteType() NRouteType {
+	fmt.Printf("Route - AdpID: %q  AreaID: %q  Provider: %d\n", r.AdpID, r.AreaID, r.ProviderID)
+	switch {
+	case r.AdpID == "" && r.AreaID == "" && r.ProviderID == 0:
+		return NRtTypEmpty
+	case r.AdpID > "" && r.AreaID > "" && r.ProviderID > 0:
+		return NRtTypFull
+	case r.AdpID == "all" && r.AreaID == "" && r.ProviderID == 0:
+		return NRtTypAllAdapters
+	case r.AdpID == "" && r.AreaID == "all" && r.ProviderID == 0:
+		return NRtTypAllAreas
+	default:
+		return NRtTypInvalid
+	}
 }
 
 // =======================================================================================
@@ -199,8 +229,8 @@ type NSearchRequestLL struct {
 	NRequestCommon
 	Latitude   float64
 	Longitude  float64
-	AreaID     string
 	Radius     int // in meters
+	AreaID     string
 	MaxResults int
 }
 
@@ -355,14 +385,15 @@ func MidID(mid string) (int, error) {
 func (r NRequestCommon) String() string {
 	ls := new(common.LogString)
 	ls.AddF("Request: %s\n", r.Rtype.String())
-	ls.AddF("Route: %q\n", r.Route.String())
+	ls.AddF("Route: %s\n", r.Route.String())
 	return ls.Box(40)
 }
 
 // Displays the NServiceRequest custom type.
 func (r NServiceRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddF("NServiceRequest (%s)\n", r.GetTypeS())
+	ls.AddF("NServiceRequest\n")
+	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("Location - area: %v\n", r.Area)
 	return ls.Box(80)
 }
@@ -377,7 +408,6 @@ func (r NServicesResponse) String() string {
 
 // Displays the NService custom type.
 func (s NService) String() string {
-	// r := fmt.Sprintf("  %s-%s-%d-%d  %-40s  %v", s.AdpID, s.AreaID, s.ProviderID, s.ID, s.Name, s.Categories)
 	r := fmt.Sprintf("  %-20s  %-40s  %v", s.MID(), s.Name, s.Categories)
 	return r
 }
@@ -397,10 +427,47 @@ func (r ServiceID) MID() string {
 	return fmt.Sprintf("%s-%s-%d-%d", r.AdpID, r.AreaID, r.ProviderID, r.ID)
 }
 
+func (r NRouteType) String() string {
+	switch r {
+	case NRtTypInvalid:
+		return color.RedString("Invalid")
+	case NRtTypEmpty:
+		return color.RedString("Empty")
+	case NRtTypFull:
+		return color.GreenString("Full")
+	case NRtTypAllAdapters:
+		return color.YellowString("AllAdp")
+	case NRtTypAllAreas:
+		return color.YellowString("AllArea")
+	default:
+		return color.RedString("Unknown")
+	}
+}
+
+// String displays the type.
+func (r NRoute) String() string {
+	// fmtEmpty := color.New(color.BgRed, color.FgWhite, color.Bold).SprintFunc()
+	// empty := fmtEmpty("\u2205")
+	// empty := color.RedString("\u2205")
+	if r.AdpID == "" && r.AreaID == "" && r.ProviderID == 0 {
+		return fmt.Sprintf("[%s] %s", r.RouteType(), color.RedString("\u2205\u2205\u2205"))
+	}
+	AdpID, AreaID, ProviderID := r.AdpID, r.AreaID, r.ProviderID
+	if r.AdpID == "" {
+		AdpID = color.RedString("\u2205")
+	}
+	if r.AreaID == "" {
+		// r.AreaID = "\u00F8"
+		AreaID = color.RedString("\u2205")
+	}
+	return fmt.Sprintf("[%s] %s-%s-%d", r.RouteType(), AdpID, AreaID, ProviderID)
+}
+
 // Displays the NCreateRequest custom type.
 func (r NCreateRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddF("NCreateRequest (%s)\n", r.GetTypeS())
+	ls.AddF("NCreateRequest\n")
+	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - %s:  %s\n", r.MID.MID(), r.Type)
 	ls.AddF("Location - lat: %v lon: %v\n", r.Latitude, r.Longitude)
@@ -422,8 +489,8 @@ func (r NCreateResponse) String() string {
 // Displays the NSearchRequestLL custom type.
 func (r NSearchRequestLL) String() string {
 	ls := new(common.LogString)
-	ls.AddF("NSearchRequestLL (%s)\n", r.GetTypeS())
-	ls.AddF("Routing: %s\n", r.GetRoutes())
+	ls.AddF("NSearchRequestLL\n")
+	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("Lat: %v  Lng: %v   Radius: %v AreaID: %q\n", r.Latitude, r.Longitude, r.Radius, r.AreaID)
 	ls.AddF("MaxResults: %v\n", r.MaxResults)
 	return ls.Box(80)
@@ -432,8 +499,8 @@ func (r NSearchRequestLL) String() string {
 // Displays the NSearchRequestDID custom type.
 func (r NSearchRequestDID) String() string {
 	ls := new(common.LogString)
-	ls.AddF("NSearchRequestDID (%s)\n", r.GetTypeS())
-	ls.AddF("Routing: %s\n", r.GetRoutes())
+	ls.AddF("NSearchRequestDID\n")
+	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("Device type: %v  ID: %v\n", r.DeviceType, r.DeviceID)
 	ls.AddF("MaxResults: %v\n", r.MaxResults)
 	return ls.Box(80)
@@ -480,4 +547,13 @@ func (r NSearchResponseReport) String() string {
 	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
 	ls.AddF("SLA: %s\n", r.TicketSLA)
 	return ls.Box(80)
+}
+
+func (r NRoutes) String() string {
+	ls := new(common.LogString)
+	ls.AddS("NRoutes\n")
+	for _, r := range r {
+		ls.AddF("%s\n", r)
+	}
+	return ls.Box(40)
 }

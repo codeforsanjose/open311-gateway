@@ -27,6 +27,7 @@ func (r *Report) SearchLL(rqst *structs.NSearchRequestLL, resp *structs.NSearchR
 		nresp: resp,
 	}
 	log.Debug("searchLLMgr: %#v\n", *cm)
+	log.Debug(cm.nreq.String())
 
 	return runRequest(processer(cm))
 }

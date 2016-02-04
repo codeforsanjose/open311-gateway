@@ -41,29 +41,29 @@ type ServicesReq struct {
 
 }
 
-func (c *ServicesReq) validate() error {
-	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
-		c.LatitudeV = x
+func (r *ServicesReq) validate() error {
+	if x, err := strconv.ParseFloat(r.Latitude, 64); err == nil {
+		r.LatitudeV = x
 	}
-	if x, err := strconv.ParseFloat(c.Longitude, 64); err == nil {
-		c.LongitudeV = x
+	if x, err := strconv.ParseFloat(r.Longitude, 64); err == nil {
+		r.LongitudeV = x
 	}
 	return nil
 }
 
-func (c *ServicesReq) parseQP(r *rest.Request) error {
-	c.Latitude = r.URL.Query().Get("lat")
-	c.Longitude = r.URL.Query().Get("lng")
-	c.City = r.URL.Query().Get("city")
+func (r *ServicesReq) parseQP(rqst *rest.Request) error {
+	r.Latitude = rqst.URL.Query().Get("lat")
+	r.Longitude = rqst.URL.Query().Get("lng")
+	r.City = rqst.URL.Query().Get("city")
 	return nil
 }
 
-func (c *ServicesReq) init(r *rest.Request) error {
-	c.load(c, r)
+func (r *ServicesReq) init(rqst *rest.Request) error {
+	r.load(r, rqst)
 	return nil
 }
 
-func (c *ServicesReq) run() (interface{}, error) {
+func (r *ServicesReq) run() (interface{}, error) {
 	var err error
 	fail := func(err string) (*ServicesResp, error) {
 		response := ServicesResp{Message: fmt.Sprintf("Failed - %s", err)}
@@ -71,26 +71,26 @@ func (c *ServicesReq) run() (interface{}, error) {
 	}
 
 	switch {
-	case c.LatitudeV > 24.0 && c.LongitudeV >= -180.0 && c.LongitudeV <= -66.0:
-		c.City, err = geo.CityForLatLng(c.LatitudeV, c.LongitudeV)
+	case r.LatitudeV > 24.0 && r.LongitudeV >= -180.0 && r.LongitudeV <= -66.0:
+		r.City, err = geo.CityForLatLng(r.LatitudeV, r.LongitudeV)
 		if err != nil {
-			return fail(fmt.Sprintf("Cannot find city for %v:%v - %s", c.Latitude, c.Longitude, err.Error()))
+			return fail(fmt.Sprintf("Cannot find city for %v:%v - %s", r.Latitude, r.Longitude, err.Error()))
 		}
 		fallthrough
 
-	case len(c.City) > 2:
-		areaID, err := router.GetAreaID(c.City)
+	case len(r.City) > 2:
+		areaID, err := router.GetAreaID(r.City)
 		if err != nil {
-			return fail(fmt.Sprintf("Cannot find services for %v - %s", c.City, err.Error()))
+			return fail(fmt.Sprintf("Cannot find services for %v - %s", r.City, err.Error()))
 		}
 		services, err := services.GetArea(areaID)
 		if err != nil {
-			return fail(fmt.Sprintf("Cannot find services for %v - %s", c.City, err.Error()))
+			return fail(fmt.Sprintf("Cannot find services for %v - %s", r.City, err.Error()))
 		}
 		r, err := newServiceResp("OK", services)
 		return &r, nil
 	}
-	return nil, fmt.Errorf("Invalid location - lat: %v lng: %v  city: %v", c.Latitude, c.Longitude, c.City)
+	return nil, fmt.Errorf("Invalid location - lat: %v lng: %v  city: %v", r.Latitude, r.Longitude, r.City)
 }
 
 // =======================================================================================
@@ -131,10 +131,10 @@ type ServicesRespS struct {
 // =======================================================================================
 
 // Displays the contents of the Spec_Type custom type.
-func (c ServicesReq) String() string {
+func (r ServicesReq) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services\n")
-	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", c.LatitudeV, c.LongitudeV, c.City)
+	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", r.LatitudeV, r.LongitudeV, r.City)
 	return ls.Box(80)
 }
 

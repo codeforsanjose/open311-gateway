@@ -29,12 +29,26 @@ ___
 
 ## Log
 
+### 2016.02.04 - Thu
+
+* Cleaned up debug display of routes.
+* Created NRouteType enumeration.
+* Added RouteType() to NRouter interface.
+* In engine/request/create.go, merged CreateReqBase into CreateReq, and dropped the CreateReqBase struct. Unnecessary complication.
+* Cleaned up engine/request/search.go.
+* Changed many method receivers to be "r" for consistency and ease of readability.
+* Revised engine/router/rpc.go to put the route properly into each outbound RPC request - this involved making a copy of each struct.
+* Test OK.
+* Saved to GIT.
+
 ### 2016.02.03 - Wed
 
 * Creating a "wrapper" for the rpc calls (structs.NRequestPkg) is not working... the rpc/gob system on the Adapter (client) is rejecting the RPC call seemingly because it doesn't know what to do with the Request interface values - and registering those types in gob isn't helping.  So... backing up to a previous commit, and will put the common request type as an anonymous struct into NServiceRequest, NCreateRequest, etc. Keep things simple...
 * All is good again - Services and Create working again.   Now back to Search.
 * Saved to GIT.
-* 
+* Route is now being engraved in each RPC request.
+* Test OK.
+* Saved to GIT.
 
 ### 2016.02.02 - Tue
 

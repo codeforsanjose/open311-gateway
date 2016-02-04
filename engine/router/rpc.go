@@ -141,11 +141,34 @@ func (r *RPCCall) send() error {
 			var pAdpStat *rpcAdapterStatus
 			pAdpStat, r.adpList[k] = v, nil
 			r.processes++
-			go func(pas *rpcAdapterStatus) {
-				log.Debug("Calling adapter:\n%s\n", pas)
-				pas.err = pas.adapter.Client.Call(r.service, r.request, pas.response)
-				r.results <- pas
-			}(pAdpStat)
+			go func(pAdpStat *rpcAdapterStatus, rqst interface{}) {
+				log.Debug("Calling adapter:\n%s\n", pAdpStat)
+				log.Debug("Request type: %T", rqst)
+				var rqstCopy interface{}
+				switch v := rqst.(type) {
+				case *structs.NServiceRequest:
+					rCopy := *v
+					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
+					rqstCopy = &rCopy
+					log.Debug("Sending: %s", rCopy.String())
+				case *structs.NCreateRequest:
+					rCopy := *v
+					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
+					rqstCopy = &rCopy
+					log.Debug("Sending: %s", rCopy.String())
+				case *structs.NSearchRequestLL:
+					rCopy := *v
+					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
+					rqstCopy = &rCopy
+					log.Debug("Sending: %s", rCopy.String())
+				default:
+					log.Errorf("Invalid type in send RPC: %T", rqst)
+					return
+				}
+
+				pAdpStat.err = pAdpStat.adapter.Client.Call(r.service, rqstCopy, pAdpStat.response)
+				r.results <- pAdpStat
+			}(pAdpStat, r.request)
 		} else {
 			log.Warning("Skipping: %s - not connected!", v.adapter.ID)
 		}
@@ -191,7 +214,7 @@ func (r RPCCall) String() string {
 	ls.AddF("%s\n", r.request)
 	ls2 := new(common.LogString)
 	ls2.AddS("Adapters\n")
-	ls2.AddF("         Name/Type/Address                 Sent  Repl    Route           Response\n")
+	ls2.AddF("         Name/Type/Address                 Sent  Repl    ResponseType                     Route\n")
 	for k, v := range r.adpList {
 		ls2.AddF("  %4s: %s\n", k, v.StringNH())
 	}
@@ -212,12 +235,12 @@ func (r RPCCall) String() string {
 func (r rpcAdapterStatus) String() string {
 	ls := new(common.LogString)
 	ls.AddS("rpcAdapterStatus\n")
-	ls.AddS(" Name/Type/Address                 Sent  Repl    Route            Response\n")
-	ls.AddF("%-30s     %5t %5t   %-15s (%T)%p", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, r.route.String(), r.response, r.response)
+	ls.AddS(" Name/Type/Address                 Sent  Repl    ResponseType                     Route\n")
+	ls.AddF("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
 	return ls.Box(100)
 }
 
 func (r rpcAdapterStatus) StringNH() string {
-	s := fmt.Sprintf("%-30s     %5t %5t   %-15s (%T)%p", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, r.route.String(), r.response, r.response)
+	s := fmt.Sprintf("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
 	return s
 }

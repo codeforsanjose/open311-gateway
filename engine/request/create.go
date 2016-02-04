@@ -25,9 +25,16 @@ func processCreate(r *rest.Request) (interface{}, error) {
 	return creq.run()
 }
 
-// CreateReqBase represents a new report.  It is an anonymous field in the CreateReq
-// struct.
-type CreateReqBase struct {
+// CreateReq represents a new Report.  The struct is composed of three anonymous structs:
+//
+// CreateReqBase - represents a new report.  Contains all fields to unmarshal a
+// a request to create a new report.
+// cType - defined in common.go, responsible for unmarshaling and parsing the request.
+// cIFace - defined in common.go, an interface type for parseQP() and validate() methods.
+type CreateReq struct {
+	cType
+	cIface
+	bkend       string
 	MID         structs.ServiceID `json:"srvId" xml:"srvId"`
 	ServiceName string            `json:"srvName" xml:"srvName"`
 	DeviceType  string            `json:"deviceType" xml:"deviceType"`
@@ -51,61 +58,48 @@ type CreateReqBase struct {
 	response    *structs.NCreateResponse
 }
 
-// CreateReq represents a new Report.  The struct is composed of three anonymous structs:
-//
-// CreateReqBase - represents a new report.  Contains all fields to unmarshal a
-// a request to create a new report.
-// cType - defined in common.go, responsible for unmarshaling and parsing the request.
-// cIFace - defined in common.go, an interface type for parseQP() and validate() methods.
-type CreateReq struct {
-	cType
-	cIface
-	bkend string
-	CreateReqBase
-}
-
-func (c *CreateReq) newNCreate() (structs.NCreateRequest, error) {
+func (r *CreateReq) newNCreate() (structs.NCreateRequest, error) {
 	n := structs.NCreateRequest{
 		NRequestCommon: structs.NRequestCommon{
 			Rtype: structs.NRTCreate,
 		},
-		MID:         c.MID,
-		Type:        c.ServiceName,
-		DeviceType:  c.DeviceType,
-		DeviceModel: c.DeviceModel,
-		DeviceID:    c.DeviceID,
-		Latitude:    c.LatitudeV,
-		Longitude:   c.LongitudeV,
-		Address:     c.Address,
-		State:       c.State,
-		Zip:         c.Zip,
-		FirstName:   c.FirstName,
-		LastName:    c.LastName,
-		Email:       c.Email,
-		Phone:       c.Phone,
-		IsAnonymous: c.isAnonymous,
-		Description: c.Description,
+		MID:         r.MID,
+		Type:        r.ServiceName,
+		DeviceType:  r.DeviceType,
+		DeviceModel: r.DeviceModel,
+		DeviceID:    r.DeviceID,
+		Latitude:    r.LatitudeV,
+		Longitude:   r.LongitudeV,
+		Address:     r.Address,
+		State:       r.State,
+		Zip:         r.Zip,
+		FirstName:   r.FirstName,
+		LastName:    r.LastName,
+		Email:       r.Email,
+		Phone:       r.Phone,
+		IsAnonymous: r.isAnonymous,
+		Description: r.Description,
 	}
 	return n, nil
 
 }
 
 // validate the unmarshaled data.
-func (c *CreateReq) validate() error {
-	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
-		c.LatitudeV = x
+func (r *CreateReq) validate() error {
+	if x, err := strconv.ParseFloat(r.Latitude, 64); err == nil {
+		r.LatitudeV = x
 	}
-	if x, err := strconv.ParseFloat(c.Longitude, 64); err == nil {
-		c.LongitudeV = x
+	if x, err := strconv.ParseFloat(r.Longitude, 64); err == nil {
+		r.LongitudeV = x
 	}
-	if x, err := strconv.ParseBool(c.IsAnonymous); err == nil {
-		c.isAnonymous = x
+	if x, err := strconv.ParseBool(r.IsAnonymous); err == nil {
+		r.isAnonymous = x
 	}
 	return nil
 }
 
 // parseQP unloads any query parms in the request.
-func (c *CreateReq) parseQP(r *rest.Request) error {
+func (r *CreateReq) parseQP(rqst *rest.Request) error {
 	return nil
 }
 
@@ -113,41 +107,41 @@ func (c *CreateReq) parseQP(r *rest.Request) error {
 // 1. Decodes the input payload.
 // 2. Calls parseQP to parse and load any query parms into the struct.
 // 3. Calls validate() to check all inputs.
-func (c *CreateReq) init(r *rest.Request) error {
-	c.load(c, r)
-	adp, err := router.GetAdapter(c.MID.AdpID)
+func (r *CreateReq) init(rqst *rest.Request) error {
+	r.load(r, rqst)
+	adp, err := router.GetAdapter(r.MID.AdpID)
 	if err != nil {
-		log.Warning("Unable to get adapter for id: %s", c.MID.AdpID)
+		log.Warning("Unable to get adapter for id: %s", r.MID.AdpID)
 		return err
 	}
-	c.bkend = adp.ID
+	r.bkend = adp.ID
 	return nil
 }
 
 // run sends the request to the appropriate Adapter, and waits for a reponse.
-func (c *CreateReq) run() (interface{}, error) {
-	rqst, err := c.newNCreate()
+func (r *CreateReq) run() (interface{}, error) {
+	rqst, err := r.newNCreate()
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
-	r, err := router.NewRPCCall("Report.Create", rqst, c.adapterReply)
+	rpcCall, err := router.NewRPCCall("Report.Create", &rqst, r.adapterReply)
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
-	err = r.Run()
+	err = rpcCall.Run()
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
-	return c.response, err
+	return r.response, err
 }
 
 // adapterReply processes the reply returned from the RPC call, by placing a
 // pointer to the response in CreateReq.response.
-func (c *CreateReq) adapterReply(ndata interface{}) error {
-	c.response = ndata.(*structs.NCreateResponse)
+func (r *CreateReq) adapterReply(ndata interface{}) error {
+	r.response = ndata.(*structs.NCreateResponse)
 	return nil
 }
 
@@ -156,29 +150,21 @@ func (c *CreateReq) adapterReply(ndata interface{}) error {
 // =======================================================================================
 
 // String displays the contents of the CreateReqBase type.
-func (c CreateReqBase) String() string {
-	ls := new(common.LogString)
-	ls.AddS("Report - CreateReqBase\n")
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", c.DeviceType, c.DeviceModel, c.DeviceID)
-	ls.AddF("Request - id: %q  name: %q\n", c.MID.MID(), c.ServiceName)
-	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
-	ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
-	if math.Abs(c.LatitudeV) > 1 {
-		ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", c.LatitudeV, c.Latitude, c.LongitudeV, c.Longitude)
-	}
-	if len(c.City) > 1 {
-		ls.AddF("          %s, %s   %s\n", c.City, c.State, c.Zip)
-	}
-	ls.AddF("Description: %q\n", c.Description)
-	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", c.isAnonymous, c.FirstName, c.LastName, c.Email, c.Phone)
-	return ls.Box(80)
-}
-
-// String displays the contents of the CreateReqBase type.
-func (c CreateReq) String() string {
+func (r CreateReq) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Report - CreateReq\n")
-	ls.AddF("Backend: %s\n", c.bkend)
-	ls.AddS(c.CreateReqBase.String())
-	return ls.Box(90)
+	ls.AddF("Backend: %s\n", r.bkend)
+	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
+	ls.AddF("Request - id: %q  name: %q\n", r.MID.MID(), r.ServiceName)
+	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", r.LatitudeV, r.Latitude, r.LongitudeV, r.Longitude)
+	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.Zip)
+	if math.Abs(r.LatitudeV) > 1 {
+		ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", r.LatitudeV, r.Latitude, r.LongitudeV, r.Longitude)
+	}
+	if len(r.City) > 1 {
+		ls.AddF("          %s, %s   %s\n", r.City, r.State, r.Zip)
+	}
+	ls.AddF("Description: %q\n", r.Description)
+	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", r.isAnonymous, r.FirstName, r.LastName, r.Email, r.Phone)
+	return ls.Box(80)
 }

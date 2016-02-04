@@ -26,7 +26,7 @@ func init() {
 	routeMap["Services.Area"] = &routeMapMethods{}
 	routeMap["Report.Create"] = &routeMapMethods{}
 	routeMap["Report.SearchDeviceID"] = &routeMapMethods{}
-	routeMap["Report.SearchLocation"] = &routeMapMethods{}
+	routeMap["Report.SearchLL"] = &routeMapMethods{}
 
 	if err := initResponseStructs(); err != nil {
 		log.Critical("Unable to initialize the routeMap - %s", err)
@@ -48,7 +48,7 @@ func initResponseStructs() error {
 	routeMap["Services.Area"].newResponse = func() interface{} { return new(structs.NServicesResponse) }
 	routeMap["Report.Create"].newResponse = func() interface{} { return new(structs.NCreateResponse) }
 	routeMap["Report.SearchDeviceID"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
-	routeMap["Report.SearchLocation"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
+	routeMap["Report.SearchLL"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
 
 	return nil
 }
@@ -117,8 +117,8 @@ func initRPCList() error {
 	routeMap["Report.SearchDeviceID"].buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
 		return area(r, "Report.SearchDeviceID")
 	}
-	routeMap["Report.SearchLocation"].buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
-		return area(r, "Report.SearchLocation")
+	routeMap["Report.SearchLL"].buildAdapterList = func(r structs.NRouter) (map[string]*rpcAdapterStatus, error) {
+		return area(r, "Report.SearchLL")
 	}
 	return nil
 }

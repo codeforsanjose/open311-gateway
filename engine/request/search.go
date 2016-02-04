@@ -57,138 +57,160 @@ type SearchRequest struct {
 	Response    *structs.NSearchResponse
 }
 
-func (sr *SearchRequest) validate() error {
-	if x, err := strconv.ParseFloat(sr.Latitude, 64); err == nil {
-		sr.LatitudeV = x
+func (r *SearchRequest) newNSearchLL() (structs.NSearchRequestLL, error) {
+	n := structs.NSearchRequestLL{
+		NRequestCommon: structs.NRequestCommon{
+			Rtype: structs.NRTSearchLL,
+		},
+		Latitude:   r.LatitudeV,
+		Longitude:  r.LongitudeV,
+		Radius:     r.RadiusV,
+		AreaID:     r.AreaID,
+		MaxResults: r.MaxResultsV,
 	}
-	if x, err := strconv.ParseFloat(sr.Longitude, 64); err == nil {
-		sr.LongitudeV = x
+	return n, nil
+
+}
+
+func (r *SearchRequest) validate() error {
+	if x, err := strconv.ParseFloat(r.Latitude, 64); err == nil {
+		r.LatitudeV = x
 	}
-	if x, err := strconv.ParseInt(sr.Radius, 10, 64); err == nil {
+	if x, err := strconv.ParseFloat(r.Longitude, 64); err == nil {
+		r.LongitudeV = x
+	}
+	if x, err := strconv.ParseInt(r.Radius, 10, 64); err == nil {
 		switch {
 		case int(x) < searchRadiusMin:
-			sr.RadiusV = searchRadiusMin
+			r.RadiusV = searchRadiusMin
 		case int(x) > searchRadiusMax:
-			sr.RadiusV = searchRadiusMax
+			r.RadiusV = searchRadiusMax
 		default:
-			sr.RadiusV = int(x)
+			r.RadiusV = int(x)
 		}
 	}
-	if x, err := strconv.ParseInt(sr.MaxResults, 0, 64); err == nil {
-		sr.MaxResultsV = int(x)
+	if x, err := strconv.ParseInt(r.MaxResults, 0, 64); err == nil {
+		r.MaxResultsV = int(x)
 	}
 
 	return nil
 }
 
-func (sr *SearchRequest) parseQP(r *rest.Request) error {
-	sr.DeviceType = r.URL.Query().Get("dtype")
-	sr.DeviceID = r.URL.Query().Get("did")
-	sr.Latitude = r.URL.Query().Get("lat")
-	sr.Longitude = r.URL.Query().Get("lng")
-	sr.City = r.URL.Query().Get("city")
+func (r *SearchRequest) parseQP(rqst *rest.Request) error {
+	log.Debug(spew.Sdump(rqst.URL))
+	r.DeviceType = rqst.URL.Query().Get("dtype")
+	r.DeviceID = rqst.URL.Query().Get("did")
+	r.Latitude = rqst.URL.Query().Get("lat")
+	r.Longitude = rqst.URL.Query().Get("lng")
+	r.Radius = rqst.URL.Query().Get("radius")
+	r.City = rqst.URL.Query().Get("city")
 	return nil
 }
 
-func (sr *SearchRequest) init(r *rest.Request) error {
-	sr.load(sr, r)
+func (r *SearchRequest) init(rqst *rest.Request) error {
+	r.load(r, rqst)
 	return nil
 }
 
-func (sr *SearchRequest) run() (interface{}, error) {
-	city, err := geo.CityForLatLng(sr.LatitudeV, sr.LongitudeV)
+func (r *SearchRequest) run() (interface{}, error) {
+	city, err := geo.CityForLatLng(r.LatitudeV, r.LongitudeV)
 	if err != nil {
-		return nil, fmt.Errorf("The lat/lng: %v:%v is not in a city", sr.LatitudeV, sr.LongitudeV)
+		return nil, fmt.Errorf("The lat/lng: %v:%v is not in a city", r.LatitudeV, r.LongitudeV)
 	}
-	sr.City = city
-	sr.AreaID, err = router.GetAreaID(city)
+	r.City = city
+	r.AreaID, err = router.GetAreaID(city)
 	if err != nil {
-		return nil, fmt.Errorf("The city: %q is not serviced by this gateway", sr.City)
+		return nil, fmt.Errorf("The city: %q is not serviced by this gateway", r.City)
 	}
-	log.Debug("%s", sr)
+	log.Debug("%s", r)
 
-	r, err := router.NewRPCCall("Report.SearchLocation", sr, sr.adapterReply)
+	rqst, err := r.newNSearchLL()
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
-	err = r.Run()
+	rpcCall, err := router.NewRPCCall("Report.SearchLL", &rqst, r.adapterReply)
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
-	return sr.Response, err
+	err = rpcCall.Run()
+	if err != nil {
+		log.Error(err.Error())
+		return nil, err
+	}
+	return r.Response, err
 }
 
 // adapterReply processes the reply returned from the RPC call, by placing a
 // pointer to the response in CreateReq.response.
-func (sr *SearchRequest) adapterReply(ndata interface{}) error {
-	sr.Response = ndata.(*structs.NSearchResponse)
+func (r *SearchRequest) adapterReply(ndata interface{}) error {
+	r.Response = ndata.(*structs.NSearchResponse)
 	return nil
 }
 
-func (sr *SearchRequest) convertN() (interface{}, error) {
+func (r *SearchRequest) convertN() (interface{}, error) {
 	var err error
 	switch {
-	case sr.LatitudeV > 24.0 && sr.LongitudeV >= -180.0 && sr.LongitudeV <= -66.0:
-		sr.City, err = geo.CityForLatLng(sr.LatitudeV, sr.LongitudeV)
+	case r.LatitudeV > 24.0 && r.LongitudeV >= -180.0 && r.LongitudeV <= -66.0:
+		r.City, err = geo.CityForLatLng(r.LatitudeV, r.LongitudeV)
 		if err != nil {
-			return nil, fmt.Errorf("Cannot find city for %v:%v - %s", sr.Latitude, sr.Longitude, err.Error())
+			return nil, fmt.Errorf("Cannot find city for %v:%v - %s", r.Latitude, r.Longitude, err.Error())
 		}
-		areaID, err := router.GetAreaID(sr.City)
-		if err != nil {
-			return nil, err
-		}
-		sr.AreaID = areaID
-		return sr.convertLL()
-
-	case len(sr.City) > 2:
-		areaID, err := router.GetAreaID(sr.City)
+		areaID, err := router.GetAreaID(r.City)
 		if err != nil {
 			return nil, err
 		}
-		sr.AreaID = areaID
-		return sr.convertLL()
+		r.AreaID = areaID
+		return r.convertLL()
 
-	case len(sr.DeviceType) > 2 && len(sr.DeviceID) > 2:
-		return sr.convertDID()
+	case len(r.City) > 2:
+		areaID, err := router.GetAreaID(r.City)
+		if err != nil {
+			return nil, err
+		}
+		r.AreaID = areaID
+		return r.convertLL()
+
+	case len(r.DeviceType) > 2 && len(r.DeviceID) > 2:
+		return r.convertDID()
 
 	}
 	return nil, fmt.Errorf("Invalid search request.")
 }
 
-func (sr *SearchRequest) convertLL() (interface{}, error) {
+func (r *SearchRequest) convertLL() (interface{}, error) {
 	return structs.NSearchRequestLL{
 		// NSearchRequest: structs.NSearchRequest{
 		// 	SearchType: structs.NSTLocation,
 		// },
-		Latitude:   sr.LatitudeV,
-		Longitude:  sr.LongitudeV,
-		AreaID:     sr.AreaID,
-		Radius:     sr.RadiusV,
-		MaxResults: sr.MaxResultsV,
+		Latitude:   r.LatitudeV,
+		Longitude:  r.LongitudeV,
+		AreaID:     r.AreaID,
+		Radius:     r.RadiusV,
+		MaxResults: r.MaxResultsV,
 	}, nil
 }
 
-func (sr *SearchRequest) convertDID() (interface{}, error) {
+func (r *SearchRequest) convertDID() (interface{}, error) {
 	return structs.NSearchRequestDID{
 		// NSearchRequest: structs.NSearchRequest{
 		// 	SearchType: structs.NSTDeviceID,
 		// },
-		DeviceType: sr.DeviceType,
-		DeviceID:   sr.DeviceID,
-		MaxResults: sr.MaxResultsV,
+		DeviceType: r.DeviceType,
+		DeviceID:   r.DeviceID,
+		MaxResults: r.MaxResultsV,
 	}, nil
 }
 
 // String displays the contents of the SearchRequest custom type.
-func (sr SearchRequest) String() string {
+func (r SearchRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Search\n")
-	ls.AddF("Bkend: %s\n", sr.bkend)
-	ls.AddF("Device Type: %s ID: %s\n", sr.DeviceType, sr.DeviceID)
-	ls.AddF("Lat: %v (%f)  Lng: %v (%f)\n", sr.Latitude, sr.LatitudeV, sr.Longitude, sr.LongitudeV)
-	ls.AddF("Radius: %v (%d) AreaID: %q\n", sr.Radius, sr.RadiusV, sr.AreaID)
-	ls.AddF("MaxResults: %v\n", sr.MaxResults)
+	ls.AddF("Bkend: %s\n", r.bkend)
+	ls.AddF("Device Type: %s ID: %s\n", r.DeviceType, r.DeviceID)
+	ls.AddF("Lat: %v (%f)  Lng: %v (%f)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV)
+	ls.AddF("Radius: %v (%d) AreaID: %q\n", r.Radius, r.RadiusV, r.AreaID)
+	ls.AddF("MaxResults: %v\n", r.MaxResults)
 	return ls.Box(80)
 }
