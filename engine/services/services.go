@@ -26,7 +26,7 @@ func GetArea(areaID string) (structs.NServices, error) {
 	return servicesData.getArea(areaID)
 }
 
-// Refresh initiates a refresh of the Services List Cache.
+// Refresh initiates a refresh of the Services Cache.
 func Refresh() {
 	servicesData.refresh()
 }
@@ -43,48 +43,102 @@ func Shutdown() {
 
 // cache is the cache for Services data.  The "list" is the active list.  The
 // active list is a simple copy of either list0 or list1 (i.e. it's effectively a
-// pointer to the underlying data in list0 or list1).  If the activeList is 0, then list1
-// is cleared and is available for loading.  Vice versa for activeList1.
+// pointer to the underlying data in list0 or list1).  If the activeSet is 0, then list1
+// is cleared and is available for loading.  Vice versa for activeSet1.
 type cache struct {
-	list       [2]map[string]structs.NServices // Index: AreaID
-	activeList int
-	update     chan bool // Update request queue
+	list      [2]map[string]structs.NServices // Index: AreaID
+	routes    [2]map[string]structs.NRoutes   // Index: AreaID
+	activeSet int
+	update    chan bool // Update request queue
 	sync.RWMutex
 }
 
-func (sd *cache) loadList() (ll int) {
-	if sd.activeList == 0 {
-		ll = 1
-	}
-	return
-}
-
 // getArea retrieves the ServiceList for the specified area.
-func (sd *cache) getArea(areaID string) (structs.NServices, error) {
-	sd.RLock()
-	defer sd.RUnlock()
-	l, ok := sd.list[sd.activeList][areaID]
+func (r *cache) getArea(areaID string) (structs.NServices, error) {
+	r.RLock()
+	defer r.RUnlock()
+	l, ok := r.list[r.activeSet][areaID]
 	if !ok {
 		return nil, fmt.Errorf("The requested AreaID: %q is not serviced by this gateway.", areaID)
 	}
 	return l, nil
 }
 
-// indexAreaAdapters indexes all Adapters by the AreaID.
-func (sd *cache) indexAreaAdapters(ll int) error {
+// getArea retrieves the ServiceList for the specified area.
+func (r *cache) getAreaRoutes(areaID string) (structs.NRoutes, error) {
+	r.RLock()
+	defer r.RUnlock()
+	l, ok := r.routes[r.activeSet][areaID]
+	if !ok {
+		return nil, fmt.Errorf("There are no routes for AreaID: %q", areaID)
+	}
+	return l, nil
+}
+
+func (r *cache) processRefresh() {
+	rqst := &structs.NServiceRequest{
+		NRequestCommon: structs.NRequestCommon{
+			Rtype: structs.NRTServicesAll,
+		},
+		Area: "all",
+	}
+	rpcCall, err := router.NewRPCCall("Services.All", rqst, servicesData.merge)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	err = rpcCall.Run()
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	r.indexAreaAdapters()
+	r.indexRoutes()
+	r.switchSet()
+	log.Debug("Cache%s", r)
+}
+
+//
+func (r *cache) indexRoutes() error {
+	ls := r.loadSet()
+
+	// Build a unique list of NRoutes.
+	allRoutes := make(map[structs.NRoute]bool)
+	for _, nservices := range r.list[ls] {
+		for _, nservice := range nservices {
+			allRoutes[nservice.GetRoute()] = true
+		}
+	}
+
+	for route := range allRoutes {
+		if _, ok := r.routes[ls][route.AreaID]; !ok {
+			r.routes[ls][route.AreaID] = make(structs.NRoutes, 0)
+		}
+		r.routes[ls][route.AreaID] = append(r.routes[ls][route.AreaID], route)
+	}
+
+	return nil
+}
+
+// indexAreaAdapters indexes all Adapters by the AreaID, and sends to router via
+// the router.GetChAreaAdp() channel
+func (r *cache) indexAreaAdapters() error {
+	ls := r.loadSet()
 	type mk struct {
 		areaID, adp string
 	}
 
-	m := make(map[mk]bool)
-	for _, sl := range sd.list[ll] { // NServices
-		for _, s := range sl { // NService
-			m[mk{s.AreaID, s.AdpID}] = true
+	// Build a unique list of [AreaID, AdpID] combinations.
+	areaAdp := make(map[mk]bool)
+	for _, nservices := range r.list[ls] {
+		for _, nservice := range nservices {
+			areaAdp[mk{nservice.AreaID, nservice.AdpID}] = true
 		}
 	}
 
+	// Convert the above list to a map of a list of AdpID for each AreaID.
 	alist := make(map[string][]string)
-	for k := range m {
+	for k := range areaAdp {
 		if _, ok := alist[k.areaID]; !ok {
 			alist[k.areaID] = make([]string, 0)
 		}
@@ -96,91 +150,86 @@ func (sd *cache) indexAreaAdapters(ll int) error {
 	return nil
 }
 
+func (r *cache) loadSet() (ls int) {
+	if r.activeSet == 0 {
+		ls = 1
+	}
+	return
+}
+
+func (r *cache) clearLoadSet(ds int) {
+	r.list[r.loadSet()] = make(map[string]structs.NServices)
+	r.routes[r.loadSet()] = make(map[string]structs.NRoutes)
+}
+
 // refresh initiates a service list update - that is, it requests the current service lists
 // from all Adapters, merges the data back into the standby service list cache, and makes
 // the freshly loaded cache the active cache.
-func (sd *cache) refresh() {
-	sd.update <- true
+func (r *cache) refresh() {
+	r.update <- true
 }
 
-func (sd *cache) processRefresh() {
-	rqst := &structs.NServiceRequest{
-		NRequestCommon: structs.NRequestCommon{
-			Rtype: structs.NRTServicesAll,
-		},
-		Area: "all",
-	}
-	r, err := router.NewRPCCall("Services.All", rqst, servicesData.merge)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-	err = r.Run()
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-	sd.indexAreaAdapters(sd.loadList())
-	sd.switchList()
-}
-
-func (sd *cache) switchList() {
-	sd.Lock()
-	defer sd.Unlock()
-	if sd.activeList == 0 {
+func (r *cache) switchSet() {
+	r.Lock()
+	defer r.Unlock()
+	if r.activeSet == 0 {
 		log.Debug("Switched from list 0 to 1")
-		sd.activeList = 1
-		sd.list[0] = make(map[string]structs.NServices)
+		r.activeSet = 1
+		r.clearLoadSet(0)
 	} else {
 		log.Debug("Switched from list 1 to 0")
-		sd.activeList = 0
-		sd.list[1] = make(map[string]structs.NServices)
+		r.activeSet = 0
+		r.clearLoadSet(1)
 	}
 }
 
-func (sd *cache) merge(ndata interface{}) error {
+func (r *cache) merge(ndata interface{}) error {
 	data := (ndata.(*structs.NServicesResponse)).Services
-	sd.Lock()
-	defer sd.Unlock()
-	var loadList int
-	switch sd.activeList {
+	r.Lock()
+	defer r.Unlock()
+	var loadSet int
+	switch r.activeSet {
 	case 0:
-		loadList = 1
+		loadSet = 1
 	case 1:
-		loadList = 0
+		loadSet = 0
 	default:
-		msg := fmt.Sprintf("Invalid ServiceData activeList: %v", sd.activeList)
+		msg := fmt.Sprintf("Invalid ServiceData activeSet: %v", r.activeSet)
 		log.Fatal(msg)
 		return errors.New(msg)
 	}
 	for _, ns := range data {
-		if _, ok := sd.list[loadList][ns.AreaID]; !ok {
+		if _, ok := r.list[loadSet][ns.AreaID]; !ok {
 			log.Info("Created Area: %q", ns.AreaID)
-			sd.list[loadList][ns.AreaID] = make(structs.NServices, 0)
+			r.list[loadSet][ns.AreaID] = make(structs.NServices, 0)
 		}
-		sd.list[loadList][ns.AreaID] = append(sd.list[loadList][ns.AreaID], ns)
+		r.list[loadSet][ns.AreaID] = append(r.list[loadSet][ns.AreaID], ns)
 		// log.Debug("   Appending: %s - %s", ns.MID(), ns.Name)
 	}
 	return nil
 }
 
-func (sd *cache) init() {
-	sd.Lock()
-	defer sd.Unlock()
-	sd.list[0] = make(map[string]structs.NServices)
-	sd.list[1] = make(map[string]structs.NServices)
-	sd.update = make(chan bool, 1)
-	sd.activeList = 0
+func (r *cache) init() {
+	r.Lock()
+	defer r.Unlock()
+	r.list[0] = make(map[string]structs.NServices)
+	r.list[1] = make(map[string]structs.NServices)
+
+	r.routes[0] = make(map[string]structs.NRoutes)
+	r.routes[1] = make(map[string]structs.NRoutes)
+
+	r.update = make(chan bool, 1)
+	r.activeSet = 0
 
 	go func() {
 		for {
-			_, ok := <-sd.update
+			_, ok := <-r.update
 			if !ok {
 				log.Info("Terminating cache refresh queue...")
 				break
 			} else {
 				log.Debug("Running Services refresh...")
-				sd.processRefresh()
+				r.processRefresh()
 			}
 		}
 	}()
@@ -188,8 +237,8 @@ func (sd *cache) init() {
 
 // Shutdown should be called at system shutdown.  It will terminate the update channel, and
 // permform any other necessary cleanup.
-func (sd *cache) shutdown() {
-	close(sd.update)
+func (r *cache) shutdown() {
+	close(r.update)
 }
 
 // ==============================================================================================================================
@@ -197,10 +246,15 @@ func (sd *cache) shutdown() {
 // ==============================================================================================================================
 
 // Displays the contents of the Spec_Type custom type.
-func (sd cache) String() string {
+func (r cache) String() string {
 	ls := new(common.LogString)
-	ls.AddF("cache [%d]\n", sd.activeList)
-	for k, v := range sd.list[sd.activeList] {
+	ls.AddF("cache [%d]\n", r.activeSet)
+	ls.AddS("------- Service List --------\n")
+	for k, v := range r.list[r.activeSet] {
+		ls.AddF("<<<<<Area: %s >>>>>%s", k, v)
+	}
+	ls.AddS("------- Route List --------\n")
+	for k, v := range r.routes[r.activeSet] {
 		ls.AddF("<<<<<Area: %s >>>>>%s", k, v)
 	}
 	return ls.Box(90)

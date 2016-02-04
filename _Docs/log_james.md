@@ -1,14 +1,15 @@
 ## To Do.todo
 
-* Get Create working again. @done(2016-01-25)
-* Add structs.API to Services request.
-* Change request/common.go: error check validate()... do not error check body or query parm conversion.
+*  
+* Consider reworking engine/router/rpcroute.go - the map idea seemed like a good idea at the time, but it's difficult to understand and debug.
 * Implement report searches:
-	* Single ID
-	* DeviceID
-	* LatLng
-	* Address
+	* Single ID (SearchID)
+	* DeviceID  (SearchDID)
+	* LatLng    (SearchLL)
+	* Address (converted to LatLng in engine... submitted to Adapter as SearchLL)
 * Update RAML file with JSON specs for input and output payloads.
+* On the engine, search needs an index of CityCode -> Providers.  When the ServiceList is loaded, we need to create that index. @done(2016-02-04)
+* * Get Create working again. @done(2016-01-25)
 * Update Services cache on Engine. @done(2016-01-22)
 	* Be able to safely and easily refresh the services list. @done(2016-01-22)
 	* Quickly lookup location -> AreaID -> Service list. @done(2016-01-22)
@@ -40,6 +41,8 @@ ___
 * Revised engine/router/rpc.go to put the route properly into each outbound RPC request - this involved making a copy of each struct.
 * Test OK.
 * Saved to GIT.
+* Created "routes" in the Cache in engine/services/services.go.  This is a map of Routes by AreaID.  This will be used by Search and any other functions requiring routing to an Adapter/Provider for an Area.
+* 
 
 ### 2016.02.03 - Wed
 

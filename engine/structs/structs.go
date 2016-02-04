@@ -113,11 +113,11 @@ const (
 	NRtTypFull
 	NRtTypAllAdapters
 	NRtTypAllAreas
+	NRtTypArea
 )
 
 // RouteType returns the validity and type of the NRoute.
 func (r NRoute) RouteType() NRouteType {
-	fmt.Printf("Route - AdpID: %q  AreaID: %q  Provider: %d\n", r.AdpID, r.AreaID, r.ProviderID)
 	switch {
 	case r.AdpID == "" && r.AreaID == "" && r.ProviderID == 0:
 		return NRtTypEmpty
@@ -127,6 +127,8 @@ func (r NRoute) RouteType() NRouteType {
 		return NRtTypAllAdapters
 	case r.AdpID == "" && r.AreaID == "all" && r.ProviderID == 0:
 		return NRtTypAllAreas
+	case r.AdpID == "" && r.AreaID > "" && r.ProviderID == 0:
+		return NRtTypArea
 	default:
 		return NRtTypInvalid
 	}
@@ -179,6 +181,15 @@ type ServiceID struct {
 	AreaID     string
 	ProviderID int
 	ID         int
+}
+
+// GetRoute returns the NRoute for the ServiceID.
+func (r ServiceID) GetRoute() NRoute {
+	return NRoute{
+		AdpID:      r.AdpID,
+		AreaID:     r.AreaID,
+		ProviderID: r.ProviderID,
+	}
 }
 
 // =======================================================================================
@@ -436,9 +447,11 @@ func (r NRouteType) String() string {
 	case NRtTypFull:
 		return color.GreenString("Full")
 	case NRtTypAllAdapters:
-		return color.YellowString("AllAdp")
+		return color.YellowString("AllAdps")
 	case NRtTypAllAreas:
-		return color.YellowString("AllArea")
+		return color.YellowString("AllAreas")
+	case NRtTypArea:
+		return color.YellowString("Area")
 	default:
 		return color.RedString("Unknown")
 	}

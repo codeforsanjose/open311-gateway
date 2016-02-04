@@ -134,7 +134,6 @@ func (r *RPCCall) Run() error {
 }
 
 func (r *RPCCall) send() error {
-	log.Debug("Starting RPC send:%s\n", r)
 	for k, v := range r.adpList {
 		if v.adapter.Connected {
 			// Give the pointer to the AdapterStatus to the go routine.
@@ -142,8 +141,8 @@ func (r *RPCCall) send() error {
 			pAdpStat, r.adpList[k] = v, nil
 			r.processes++
 			go func(pAdpStat *rpcAdapterStatus, rqst interface{}) {
-				log.Debug("Calling adapter:\n%s\n", pAdpStat)
-				log.Debug("Request type: %T", rqst)
+				// log.Debug("Calling adapter:\n%s\n", pAdpStat)
+				// log.Debug("Request type: %T", rqst)
 				var rqstCopy interface{}
 				switch v := rqst.(type) {
 				case *structs.NServiceRequest:
