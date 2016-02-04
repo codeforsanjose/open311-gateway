@@ -46,7 +46,7 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 	router, ok := request.(structs.NRouter)
 	// log.Debug("%+v  ok: %t", router, ok)
 	if !ok {
-		return nil, fmt.Errorf("The request (type: %s) does not implement structs.Router", reflect.TypeOf(request))
+		return nil, fmt.Errorf("The request (type: %s) does not implement structs.NRouter", reflect.TypeOf(request))
 	}
 	// log.Debug("Building adpList...")
 	routeMethods, ok := routeMap[service]
@@ -133,13 +133,8 @@ func (r *RPCCall) Run() error {
 	return nil
 }
 
-// setAdapters builds the list of Adapters that will be called with the Request.
-func (r *RPCCall) setAdapters() error {
-
-	return nil
-}
-
 func (r *RPCCall) send() error {
+	log.Debug("Starting RPC send:%s\n", r)
 	for k, v := range r.adpList {
 		if v.adapter.Connected {
 			// Give the pointer to the AdapterStatus to the go routine.
@@ -147,7 +142,7 @@ func (r *RPCCall) send() error {
 			pAdpStat, r.adpList[k] = v, nil
 			r.processes++
 			go func(pas *rpcAdapterStatus) {
-				// fmt.Printf("Inside go routine:\n%s\n%s\n", pas, r)
+				log.Debug("Calling adapter:\n%s\n", pas)
 				pas.err = pas.adapter.Client.Call(r.service, r.request, pas.response)
 				r.results <- pas
 			}(pAdpStat)
@@ -163,15 +158,17 @@ func (r *RPCCall) send() error {
 // --------------------------------- rpcAdapterStatus -----------------------------------
 type rpcAdapterStatus struct {
 	adapter  *Adapter
+	route    structs.NRoute
 	response interface{}
 	sent     bool
 	replied  bool
 	err      error
 }
 
-func newAdapterStatus(adp *Adapter, service string) (*rpcAdapterStatus, error) {
+func newAdapterStatus(adp *Adapter, service string, route structs.NRoute) (*rpcAdapterStatus, error) {
 	aStat := &rpcAdapterStatus{
 		adapter: adp,
+		route:   route,
 		sent:    false,
 		replied: false,
 	}
@@ -194,9 +191,9 @@ func (r RPCCall) String() string {
 	ls.AddF("%s\n", r.request)
 	ls2 := new(common.LogString)
 	ls2.AddS("Adapters\n")
-	ls2.AddF("         Name/Type/Address                 Sent  Repl     Response\n")
+	ls2.AddF("         Name/Type/Address                 Sent  Repl    Route           Response\n")
 	for k, v := range r.adpList {
-		ls2.AddF("  %4s: %s\n", k, v)
+		ls2.AddF("  %4s: %s\n", k, v.StringNH())
 	}
 	ls.AddF("%s", ls2.Box(80))
 	ls.AddF("Processes: %d\n", r.processes)
@@ -213,7 +210,14 @@ func (r RPCCall) String() string {
 }
 
 func (r rpcAdapterStatus) String() string {
-	s := fmt.Sprintf("%-30s     %5t %5t   (%s)%p", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, reflect.TypeOf(r.response), r.response)
-	// s += spew.Sdump(r.response) + "\n"
+	ls := new(common.LogString)
+	ls.AddS("rpcAdapterStatus\n")
+	ls.AddS(" Name/Type/Address                 Sent  Repl    Route            Response\n")
+	ls.AddF("%-30s     %5t %5t   %-15s (%T)%p", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, r.route.String(), r.response, r.response)
+	return ls.Box(100)
+}
+
+func (r rpcAdapterStatus) StringNH() string {
+	s := fmt.Sprintf("%-30s     %5t %5t   %-15s (%T)%p", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, r.route.String(), r.response, r.response)
 	return s
 }

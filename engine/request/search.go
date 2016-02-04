@@ -24,75 +24,90 @@ const (
 // =======================================================================================
 
 func processSearch(r *rest.Request) (interface{}, error) {
-	sreq := SearchReq{}
+	sreq := SearchRequest{}
 	if err := sreq.init(r); err != nil {
 		log.Errorf("processSearch failed - %s", err)
-		log.Errorf("SearchReq: %s", spew.Sdump(sreq))
+		log.Errorf("SearchRequest: %s", spew.Sdump(sreq))
 		return nil, err
 	}
 	log.Debug("After init:\n%s\n", sreq)
 	return sreq.run()
 }
 
-// SearchReq represents the Search request (Normal form).
-type SearchReq struct {
+// SearchRequest represents the Search request (Normal form).
+type SearchRequest struct {
 	cType
 	cIface
-	bkend string
-	structs.SearchReqBase
+	bkend       string
+	DeviceType  string  `json:"deviceType" xml:"deviceType"`
+	DeviceID    string  `json:"deviceId" xml:"deviceId"`
+	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
+	LatitudeV   float64 //
+	Longitude   string  `json:"LongitudeV" xml:"LongitudeV"`
+	LongitudeV  float64 //
+	Radius      string  `json:"RadiusV" xml:"RadiusV"`
+	RadiusV     int     // in meters
+	Address     string  `json:"address" xml:"address"`
+	City        string  `json:"city" xml:"city"`
+	AreaID      string  //
+	State       string  `json:"state" xml:"state"`
+	Zip         string  `json:"zip" xml:"zip"`
+	MaxResults  string  `json:"MaxResultsV" xml:"MaxResultsV"`
+	MaxResultsV int     //
+	Response    *structs.NSearchResponse
 }
 
-func (c *SearchReq) validate() error {
-	if x, err := strconv.ParseFloat(c.Latitude, 64); err == nil {
-		c.LatitudeV = x
+func (sr *SearchRequest) validate() error {
+	if x, err := strconv.ParseFloat(sr.Latitude, 64); err == nil {
+		sr.LatitudeV = x
 	}
-	if x, err := strconv.ParseFloat(c.Longitude, 64); err == nil {
-		c.LongitudeV = x
+	if x, err := strconv.ParseFloat(sr.Longitude, 64); err == nil {
+		sr.LongitudeV = x
 	}
-	if x, err := strconv.ParseInt(c.Radius, 10, 64); err == nil {
+	if x, err := strconv.ParseInt(sr.Radius, 10, 64); err == nil {
 		switch {
 		case int(x) < searchRadiusMin:
-			c.RadiusV = searchRadiusMin
+			sr.RadiusV = searchRadiusMin
 		case int(x) > searchRadiusMax:
-			c.RadiusV = searchRadiusMax
+			sr.RadiusV = searchRadiusMax
 		default:
-			c.RadiusV = int(x)
+			sr.RadiusV = int(x)
 		}
 	}
-	if x, err := strconv.ParseInt(c.MaxResults, 0, 64); err == nil {
-		c.MaxResultsV = int(x)
+	if x, err := strconv.ParseInt(sr.MaxResults, 0, 64); err == nil {
+		sr.MaxResultsV = int(x)
 	}
 
 	return nil
 }
 
-func (c *SearchReq) parseQP(r *rest.Request) error {
-	c.DeviceType = r.URL.Query().Get("dtype")
-	c.DeviceID = r.URL.Query().Get("did")
-	c.Latitude = r.URL.Query().Get("lat")
-	c.Longitude = r.URL.Query().Get("lng")
-	c.City = r.URL.Query().Get("city")
+func (sr *SearchRequest) parseQP(r *rest.Request) error {
+	sr.DeviceType = r.URL.Query().Get("dtype")
+	sr.DeviceID = r.URL.Query().Get("did")
+	sr.Latitude = r.URL.Query().Get("lat")
+	sr.Longitude = r.URL.Query().Get("lng")
+	sr.City = r.URL.Query().Get("city")
 	return nil
 }
 
-func (c *SearchReq) init(r *rest.Request) error {
-	c.load(c, r)
+func (sr *SearchRequest) init(r *rest.Request) error {
+	sr.load(sr, r)
 	return nil
 }
 
-func (c *SearchReq) run() (interface{}, error) {
-	city, err := geo.CityForLatLng(c.LatitudeV, c.LongitudeV)
+func (sr *SearchRequest) run() (interface{}, error) {
+	city, err := geo.CityForLatLng(sr.LatitudeV, sr.LongitudeV)
 	if err != nil {
-		return nil, fmt.Errorf("The lat/lng: %v:%v is not in a city", c.LatitudeV, c.LongitudeV)
+		return nil, fmt.Errorf("The lat/lng: %v:%v is not in a city", sr.LatitudeV, sr.LongitudeV)
 	}
-	c.City = city
-	c.AreaID, err = router.GetAreaID(city)
+	sr.City = city
+	sr.AreaID, err = router.GetAreaID(city)
 	if err != nil {
-		return nil, fmt.Errorf("The city: %q is not serviced by this gateway", c.City)
+		return nil, fmt.Errorf("The city: %q is not serviced by this gateway", sr.City)
 	}
-	log.Debug("%s", c)
+	log.Debug("%s", sr)
 
-	r, err := router.NewRPCCall("Report.SearchLocation", c, c.adapterReply)
+	r, err := router.NewRPCCall("Report.SearchLocation", sr, sr.adapterReply)
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err
@@ -102,70 +117,78 @@ func (c *SearchReq) run() (interface{}, error) {
 		log.Error(err.Error())
 		return nil, err
 	}
-	return c.Response, err
+	return sr.Response, err
 }
 
 // adapterReply processes the reply returned from the RPC call, by placing a
 // pointer to the response in CreateReq.response.
-func (c *SearchReq) adapterReply(ndata interface{}) error {
-	c.Response = ndata.(*structs.SearchResp)
+func (sr *SearchRequest) adapterReply(ndata interface{}) error {
+	sr.Response = ndata.(*structs.NSearchResponse)
 	return nil
 }
 
-func (c *SearchReq) processCS() (interface{}, error) {
-	log.Debug("[processCS] src: %s", spew.Sdump(c))
-	// rqst, _ := c.toCSSearchLL()
-	// resp, _ := rqst.Process()
-	// ourResp, _ := fromSearchCS(resp)
+func (sr *SearchRequest) convertN() (interface{}, error) {
+	var err error
+	switch {
+	case sr.LatitudeV > 24.0 && sr.LongitudeV >= -180.0 && sr.LongitudeV <= -66.0:
+		sr.City, err = geo.CityForLatLng(sr.LatitudeV, sr.LongitudeV)
+		if err != nil {
+			return nil, fmt.Errorf("Cannot find city for %v:%v - %s", sr.Latitude, sr.Longitude, err.Error())
+		}
+		areaID, err := router.GetAreaID(sr.City)
+		if err != nil {
+			return nil, err
+		}
+		sr.AreaID = areaID
+		return sr.convertLL()
 
-	// return ourResp, nil
+	case len(sr.City) > 2:
+		areaID, err := router.GetAreaID(sr.City)
+		if err != nil {
+			return nil, err
+		}
+		sr.AreaID = areaID
+		return sr.convertLL()
 
-	return nil, nil
+	case len(sr.DeviceType) > 2 && len(sr.DeviceID) > 2:
+		return sr.convertDID()
+
+	}
+	return nil, fmt.Errorf("Invalid search request.")
 }
 
-// Displays the contents of the Spec_Type custom type.
-func (c SearchReq) String() string {
+func (sr *SearchRequest) convertLL() (interface{}, error) {
+	return structs.NSearchRequestLL{
+		// NSearchRequest: structs.NSearchRequest{
+		// 	SearchType: structs.NSTLocation,
+		// },
+		Latitude:   sr.LatitudeV,
+		Longitude:  sr.LongitudeV,
+		AreaID:     sr.AreaID,
+		Radius:     sr.RadiusV,
+		MaxResults: sr.MaxResultsV,
+	}, nil
+}
+
+func (sr *SearchRequest) convertDID() (interface{}, error) {
+	return structs.NSearchRequestDID{
+		// NSearchRequest: structs.NSearchRequest{
+		// 	SearchType: structs.NSTDeviceID,
+		// },
+		DeviceType: sr.DeviceType,
+		DeviceID:   sr.DeviceID,
+		MaxResults: sr.MaxResultsV,
+	}, nil
+}
+
+// String displays the contents of the SearchRequest custom type.
+func (sr SearchRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Search\n")
-	ls.AddF("Bkend: %s\n", c.bkend)
-	ls.AddF("Device ID: %s\n", c.DeviceID)
-	ls.AddS(c.SearchReqBase.String())
+	ls.AddF("Bkend: %s\n", sr.bkend)
+	ls.AddF("Device Type: %s ID: %s\n", sr.DeviceType, sr.DeviceID)
+	ls.AddF("Lat: %v (%f)  Lng: %v (%f)\n", sr.Latitude, sr.LatitudeV, sr.Longitude, sr.LongitudeV)
+	ls.AddF("Radius: %v (%d) AreaID: %q\n", sr.Radius, sr.RadiusV, sr.AreaID)
+	ls.AddF("MaxResults: %v\n", sr.MaxResults)
 	return ls.Box(80)
 }
-
-//
-// // --------------------------- Integrations ----------------------------------------------
-//
-// func (c *SearchReq) toCSSearchLL() (*integration.CSSearchLLReq, error) {
-//
-// 	rqst := integration.CSSearchLLReq{
-// 	// APIAuthKey:        sp.Key,
-// 	// APIRequestType:    "SearchThreeOneOne",
-// 	// APIRequestVersion: sp.APIVersion,
-// 	// DeviceType:        c.DeviceType,
-// 	// DeviceModel:       c.DeviceModel,
-// 	// DeviceID:          c.DeviceID,
-// 	// RequestType:       c.Type,
-// 	// RequestTypeID:     c.TypeIDV,
-// 	// Latitude:          c.LatitudeV,
-// 	// Longitude:         c.LongitudeV,
-// 	// Description:       c.Description,
-// 	// AuthorNameFirst:   c.FirstName,
-// 	// AuthorNameLast:    c.LastName,
-// 	// AuthorEmail:       c.Email,
-// 	// AuthorTelephone:   c.Phone,
-// 	// AuthorIsAnonymous: c.isAnonymous,
-// 	}
-// 	return &rqst, nil
-// }
-//
-// // =======================================================================================
-// //                                      Response
-// // =======================================================================================
-//
-// func fromSearchCS(src *integration.CSSearchResp) (*SearchResp, error) {
-// 	resp := SearchResp{
-// 		Message: src.Message,
-// 	}
-// 	return &resp, nil
-// }

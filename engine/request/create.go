@@ -28,7 +28,6 @@ func processCreate(r *rest.Request) (interface{}, error) {
 // CreateReqBase represents a new report.  It is an anonymous field in the CreateReq
 // struct.
 type CreateReqBase struct {
-	structs.API
 	MID         structs.ServiceID `json:"srvId" xml:"srvId"`
 	ServiceName string            `json:"srvName" xml:"srvName"`
 	DeviceType  string            `json:"deviceType" xml:"deviceType"`
@@ -67,6 +66,9 @@ type CreateReq struct {
 
 func (c *CreateReq) newNCreate() (structs.NCreateRequest, error) {
 	n := structs.NCreateRequest{
+		NRequestCommon: structs.NRequestCommon{
+			Rtype: structs.NRTCreate,
+		},
 		MID:         c.MID,
 		Type:        c.ServiceName,
 		DeviceType:  c.DeviceType,

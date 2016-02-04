@@ -29,6 +29,13 @@ ___
 
 ## Log
 
+### 2016.02.03 - Wed
+
+* Creating a "wrapper" for the rpc calls (structs.NRequestPkg) is not working... the rpc/gob system on the Adapter (client) is rejecting the RPC call seemingly because it doesn't know what to do with the Request interface values - and registering those types in gob isn't helping.  So... backing up to a previous commit, and will put the common request type as an anonymous struct into NServiceRequest, NCreateRequest, etc. Keep things simple...
+* All is good again - Services and Create working again.   Now back to Search.
+* Saved to GIT.
+* 
+
 ### 2016.02.02 - Tue
 
 * Changed structs.NRoute to always be a slice, so that multiple routes can be supported.  This will be needed for Search by Device ID. 

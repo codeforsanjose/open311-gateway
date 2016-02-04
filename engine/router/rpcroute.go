@@ -56,16 +56,21 @@ func initResponseStructs() error {
 func initRPCList() error {
 	adapter := func(rt structs.NRouter, service string) (map[string]*rpcAdapterStatus, error) {
 		m := make(map[string]*rpcAdapterStatus)
-		adp, err := GetAdapter(rt.Route().AdpID)
-		// log.Debug("adp: %s", adp)
-		rs, err := newAdapterStatus(adp, service)
-		// log.Debug("rs: %s", rs)
-		if err != nil {
-			return nil, fmt.Errorf("Error creating Adapter list - %s", err)
+		for _, nroute := range rt.GetRoutes() {
+			adp, err := GetAdapter(nroute.AdpID)
+			// log.Debug("adp: %s", adp)
+			if err != nil {
+				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
+			}
+			rs, err := newAdapterStatus(adp, service, nroute)
+			// log.Debug("rs: %s", rs)
+			if err != nil {
+				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
+			}
+			m[adp.ID] = rs
+			// log.Debug("adapters: %s", m)
 		}
-		m[adp.ID] = rs
-		// log.Debug("adapters: %s", m)
-		return m, err
+		return m, nil
 	}
 
 	// statusList populates r.adpList with pointers to Adapters that service the specified
@@ -74,26 +79,28 @@ func initRPCList() error {
 	area := func(rt structs.NRouter, service string) (map[string]*rpcAdapterStatus, error) {
 		var al []*Adapter
 		m := make(map[string]*rpcAdapterStatus)
-		areaID := rt.Route().AreaID
-		if strings.ToLower(areaID) == "all" {
-			// log.Debug("Using ALL adapters")
-			for _, v := range adapters.Adapters {
-				al = append(al, v)
+		for _, nroute := range rt.GetRoutes() {
+			areaID := nroute.AreaID
+			if strings.ToLower(areaID) == "all" {
+				// log.Debug("Using ALL adapters")
+				for _, v := range adapters.Adapters {
+					al = append(al, v)
+				}
+			} else {
+				// log.Debug("Using only adapters for areaID: %s", areaID)
+				var ok bool
+				al, ok = adapters.areaAdapters[areaID]
+				if !ok {
+					return nil, fmt.Errorf("Area %q is not supported on this Gateway", areaID)
+				}
 			}
-		} else {
-			// log.Debug("Using only adapters for areaID: %s", areaID)
-			var ok bool
-			al, ok = adapters.areaAdapters[areaID]
-			if !ok {
-				return nil, fmt.Errorf("Area %q is not supported on this Gateway", areaID)
+			for _, adp := range al {
+				rs, err := newAdapterStatus(adp, service, nroute)
+				if err != nil {
+					return nil, fmt.Errorf("Error creating Adapter list - %s", err)
+				}
+				m[adp.ID] = rs
 			}
-		}
-		for _, adp := range al {
-			rs, err := newAdapterStatus(adp, service)
-			if err != nil {
-				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
-			}
-			m[adp.ID] = rs
 		}
 		return m, nil
 	}

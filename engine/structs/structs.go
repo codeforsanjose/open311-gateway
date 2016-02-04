@@ -9,16 +9,51 @@ import (
 )
 
 // =======================================================================================
-//                                      API
+//                                      REQUEST
 // =======================================================================================
 
-// API contains the information required by the Backend to process a transation - e.g. the
-// API authorization key, API call, etc.
-type API struct {
-	APIAuthKey        string `json:"ApiAuthKey" xml:"ApiAuthKey"`
-	APIRequestType    string `json:"ApiRequestType" xml:"ApiRequestType"`
-	APIRequestVersion string `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
+// -----------------------------------NRequestCommon --------------------------------------
+
+// NRequestCommon represents properties common to all requests.
+type NRequestCommon struct {
+	Route NRoute
+	Rtype NRequestType
+	NRouter
 }
+
+// GetType returns the Request Type as a string.
+func (r NRequestCommon) GetType() NRequestType {
+	return r.Rtype
+}
+
+// GetTypeS returns the Request Type as a string.
+func (r NRequestCommon) GetTypeS() string {
+	fmt.Println("[NRequestCommon: GetTypeS()] start")
+	return r.Rtype.String()
+}
+
+// // NRequestPkger defines the behavior of a Request Package.
+// type NRequestPkger interface {
+// 	GetRoute() NRoute
+// 	SetRoute(route NRoute)
+// }
+
+// -----------------------------------NRequestType --------------------------------------
+
+//go:generate stringer -type=NRequestType
+
+// NRequestType enumerates the valid request types.
+type NRequestType int
+
+// NRT* are constants enumerating the valid request types.
+const (
+	NRTUnknown NRequestType = iota
+	NRTServicesAll
+	NRTServicesArea
+	NRTCreate
+	NRTSearchLL
+	NRTSearchDID
+)
 
 // =======================================================================================
 //                                      ROUTE
@@ -27,7 +62,32 @@ type API struct {
 // NRouter is the interface to retrieve the routing data (AdpID, AreaID) from
 // any N*Request.
 type NRouter interface {
-	Route() NRoute
+	GetRoutes() NRoutes
+	GetType() NRequestType
+	GetTypeS() string
+}
+
+// NRoutes represents a list of Routes for a request.
+type NRoutes []NRoute
+
+// NewNRoutes returns a new instance of NRoutes.
+func NewNRoutes() NRoutes {
+	return make([]NRoute, 0)
+}
+
+// NRoutes represents a list of Routes for a request.
+func (r NRoutes) add(nr NRoute) NRoutes {
+	r = append(r, nr)
+	return r
+}
+
+func (r NRoutes) String() string {
+	ls := new(common.LogString)
+	ls.AddS("NRoutes\n")
+	for _, r := range r {
+		ls.AddF("%s\n", r)
+	}
+	return ls.Box(40)
 }
 
 // NRoute represents the data needed to route requests to Adapters.
@@ -37,19 +97,24 @@ type NRoute struct {
 	ProviderID int
 }
 
+// String displays the type.
+func (r NRoute) String() string {
+	return fmt.Sprintf("%s-%s-%d", r.AdpID, r.AreaID, r.ProviderID)
+}
+
 // =======================================================================================
 //                                      SERVICES
 // =======================================================================================
 
 // NServiceRequest is used to get list of services available to the user.
 type NServiceRequest struct {
-	NRouter
+	NRequestCommon
 	Area string
 }
 
-// Route returns the routing data.
-func (n NServiceRequest) Route() NRoute {
-	return NRoute{"", n.Area, 0}
+// GetRoutes returns the routing data.
+func (r NServiceRequest) GetRoutes() NRoutes {
+	return NewNRoutes().add(NRoute{"", r.Area, 0})
 }
 
 // NServicesResponse is the returned struct for a Services request.
@@ -93,8 +158,7 @@ type ServiceID struct {
 // NCreateRequest is used to create a new Report.  It is the "native" format of the
 // data, and is used by the Engine and all backend Adapters.
 type NCreateRequest struct {
-	NRouter
-	API
+	NRequestCommon
 	MID         ServiceID
 	Type        string
 	DeviceType  string
@@ -114,9 +178,9 @@ type NCreateRequest struct {
 	Description string
 }
 
-// Route returns the routing data.
-func (ncr NCreateRequest) Route() NRoute {
-	return NRoute{ncr.MID.AdpID, ncr.MID.AreaID, ncr.MID.ProviderID}
+// GetRoutes returns the routing data.
+func (r NCreateRequest) GetRoutes() NRoutes {
+	return NewNRoutes().add(NRoute{r.MID.AdpID, r.MID.AreaID, r.MID.ProviderID})
 }
 
 // NCreateResponse is the response to creating or updating a report.
@@ -132,52 +196,34 @@ type NCreateResponse struct {
 
 // NSearchRequestLL represents the Normal struct for a location based search request.
 type NSearchRequestLL struct {
-	NRouter
-	Routing NRoute
-	API
-	SearchType NSearchType
+	NRequestCommon
 	Latitude   float64
 	Longitude  float64
 	AreaID     string
 	Radius     int // in meters
 	MaxResults int
-	Response   *NSearchResponse
 }
 
-// Route returns the routing data.
-func (r NSearchRequestLL) Route() NRoute {
-	return r.Routing
+// GetRoutes returns the routing data.
+func (r NSearchRequestLL) GetRoutes() NRoutes {
+	return NewNRoutes().add(NRoute{"", r.AreaID, 0})
 }
 
 // NSearchRequestDID represents the Normal struct for a request to search for all reports
 // authored by the specified Device ID.
 type NSearchRequestDID struct {
-	NRouter
-	Routing NRoute
-	API
-	SearchType NSearchType
+	NRequestCommon
 	DeviceType string
 	DeviceID   string
 	MaxResults int
-	Response   *NSearchResponse
+	RouteList  NRoutes
+	AreaID     string
 }
 
-// Route returns the routing data.
-func (r NSearchRequestDID) Route() NRoute {
-	return r.Routing
+// GetRoutes returns the routing data.
+func (r NSearchRequestDID) GetRoutes() NRoutes {
+	return r.RouteList
 }
-
-//go:generate stringer -type=NSearchType
-
-// NSearchType enumerates the valid search types.
-type NSearchType int
-
-// NSearchType definitions.
-const (
-	NSTUnknown NSearchType = iota
-	NSTLocation
-	NSTDeviceID
-)
 
 // NSearchResponse contains the search results.
 type NSearchResponse struct {
@@ -305,19 +351,27 @@ func MidID(mid string) (int, error) {
 //                                      STRINGS
 // =======================================================================================
 
-// Displays the NServiceRequest custom type.
-func (n NServiceRequest) String() string {
+// Displays the NRequestCommon custom type.
+func (r NRequestCommon) String() string {
 	ls := new(common.LogString)
-	ls.AddS("NServiceRequest\n")
-	ls.AddF("Location - area: %v\n", n.Area)
+	ls.AddF("Request: %s\n", r.Rtype.String())
+	ls.AddF("Route: %q\n", r.Route.String())
+	return ls.Box(40)
+}
+
+// Displays the NServiceRequest custom type.
+func (r NServiceRequest) String() string {
+	ls := new(common.LogString)
+	ls.AddF("NServiceRequest (%s)\n", r.GetTypeS())
+	ls.AddF("Location - area: %v\n", r.Area)
 	return ls.Box(80)
 }
 
 // Displays the NServicesResponse custom type.
-func (c NServicesResponse) String() string {
+func (r NServicesResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NServicesResponse\n")
-	ls.AddF("Message: %q%s", c.Message, c.Services)
+	ls.AddF("Message: %q%s", r.Message, r.Services)
 	return ls.Box(90)
 }
 
@@ -329,59 +383,59 @@ func (s NService) String() string {
 }
 
 // Displays the NServices custom type.
-func (c NServices) String() string {
+func (r NServices) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NServices\n")
-	for _, s := range c {
+	for _, s := range r {
 		ls.AddF("%s\n", s)
 	}
 	return ls.Box(80)
 }
 
 // MID creates the Master ID string for the Service.
-func (s ServiceID) MID() string {
-	return fmt.Sprintf("%s-%s-%d-%d", s.AdpID, s.AreaID, s.ProviderID, s.ID)
+func (r ServiceID) MID() string {
+	return fmt.Sprintf("%s-%s-%d-%d", r.AdpID, r.AreaID, r.ProviderID, r.ID)
 }
 
 // Displays the NCreateRequest custom type.
-func (ncr NCreateRequest) String() string {
+func (r NCreateRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddS("NCreateRequest\n")
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", ncr.DeviceType, ncr.DeviceModel, ncr.DeviceID)
-	ls.AddF("Request - %s:  %s\n", ncr.MID.MID(), ncr.Type)
-	ls.AddF("Location - lat: %v lon: %v\n", ncr.Latitude, ncr.Longitude)
-	ls.AddF("          %s, %s   %s\n", ncr.Area, ncr.State, ncr.Zip)
-	ls.AddF("Description: %q\n", ncr.Description)
-	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", ncr.IsAnonymous, ncr.FirstName, ncr.LastName, ncr.Email, ncr.Phone)
+	ls.AddF("NCreateRequest (%s)\n", r.GetTypeS())
+	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
+	ls.AddF("Request - %s:  %s\n", r.MID.MID(), r.Type)
+	ls.AddF("Location - lat: %v lon: %v\n", r.Latitude, r.Longitude)
+	ls.AddF("          %s, %s   %s\n", r.Area, r.State, r.Zip)
+	ls.AddF("Description: %q\n", r.Description)
+	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", r.IsAnonymous, r.FirstName, r.LastName, r.Email, r.Phone)
 	return ls.Box(80)
 }
 
 // Displays the NCreateResponse custom type.
-func (c NCreateResponse) String() string {
+func (r NCreateResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NCreateResponse\n")
-	ls.AddF("Message: %s\n", c.Message)
-	ls.AddF("ID: %v  AuthorID: %v\n", c.ID, c.AuthorID)
+	ls.AddF("Message: %s\n", r.Message)
+	ls.AddF("ID: %v  AuthorID: %v\n", r.ID, r.AuthorID)
 	return ls.Box(80)
 }
 
 // Displays the NSearchRequestLL custom type.
 func (r NSearchRequestLL) String() string {
 	ls := new(common.LogString)
-	ls.AddS("NSearchRequestLL\n")
-	ls.AddF("SearchType: %s\n", r.SearchType)
+	ls.AddF("NSearchRequestLL (%s)\n", r.GetTypeS())
+	ls.AddF("Routing: %s\n", r.GetRoutes())
 	ls.AddF("Lat: %v  Lng: %v   Radius: %v AreaID: %q\n", r.Latitude, r.Longitude, r.Radius, r.AreaID)
-	ls.AddF("MaxResults: %v  Routing: %s\n", r.MaxResults, r.Routing)
+	ls.AddF("MaxResults: %v\n", r.MaxResults)
 	return ls.Box(80)
 }
 
 // Displays the NSearchRequestDID custom type.
 func (r NSearchRequestDID) String() string {
 	ls := new(common.LogString)
-	ls.AddS("NSearchRequestDID\n")
-	ls.AddF("SearchType: %s\n", r.SearchType)
+	ls.AddF("NSearchRequestDID (%s)\n", r.GetTypeS())
+	ls.AddF("Routing: %s\n", r.GetRoutes())
 	ls.AddF("Device type: %v  ID: %v\n", r.DeviceType, r.DeviceID)
-	ls.AddF("MaxResults: %v  Routing: %s\n", r.MaxResults, r.Routing)
+	ls.AddF("MaxResults: %v\n", r.MaxResults)
 	return ls.Box(80)
 }
 

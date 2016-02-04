@@ -17,7 +17,8 @@ const (
 // ================================================================================================
 //                                      SEARCH LL
 // ================================================================================================
-// Search fully processes the Search request.
+
+// SearchLL fully processes a "Search by Location" request.
 func (r *Report) SearchLL(rqst *structs.NSearchRequestLL, resp *structs.NSearchResponse) error {
 	log.Debug("Search - request: %p  resp: %p\n", rqst, resp)
 	// Make the Search Manager
@@ -45,7 +46,7 @@ type searchLLMgr struct {
 }
 
 func (c *searchLLMgr) convertRequest() error {
-	provider, err := data.RouteProvider(c.nreq.Routing)
+	provider, err := data.RouteProvider(c.nreq.Route)
 	if err != nil {
 		return err
 	}
