@@ -36,9 +36,6 @@ type ServicesReq struct {
 	validLatLng bool    //
 	City        string  `json:"city" xml:"city"`
 	validCity   bool    //
-
-	bkend string //
-
 }
 
 func (r *ServicesReq) validate() error {

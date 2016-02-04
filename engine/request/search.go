@@ -38,7 +38,6 @@ func processSearch(r *rest.Request) (interface{}, error) {
 type SearchRequest struct {
 	cType
 	cIface
-	bkend       string
 	DeviceType  string  `json:"deviceType" xml:"deviceType"`
 	DeviceID    string  `json:"deviceId" xml:"deviceId"`
 	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
@@ -207,7 +206,6 @@ func (r *SearchRequest) convertDID() (interface{}, error) {
 func (r SearchRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Search\n")
-	ls.AddF("Bkend: %s\n", r.bkend)
 	ls.AddF("Device Type: %s ID: %s\n", r.DeviceType, r.DeviceID)
 	ls.AddF("Lat: %v (%f)  Lng: %v (%f)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV)
 	ls.AddF("Radius: %v (%d) AreaID: %q\n", r.Radius, r.RadiusV, r.AreaID)

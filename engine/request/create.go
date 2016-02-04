@@ -34,7 +34,6 @@ func processCreate(r *rest.Request) (interface{}, error) {
 type CreateReq struct {
 	cType
 	cIface
-	bkend       string
 	MID         structs.ServiceID `json:"srvId" xml:"srvId"`
 	ServiceName string            `json:"srvName" xml:"srvName"`
 	DeviceType  string            `json:"deviceType" xml:"deviceType"`
@@ -109,12 +108,11 @@ func (r *CreateReq) parseQP(rqst *rest.Request) error {
 // 3. Calls validate() to check all inputs.
 func (r *CreateReq) init(rqst *rest.Request) error {
 	r.load(r, rqst)
-	adp, err := router.GetAdapter(r.MID.AdpID)
+	_, err := router.GetAdapter(r.MID.AdpID)
 	if err != nil {
 		log.Warning("Unable to get adapter for id: %s", r.MID.AdpID)
 		return err
 	}
-	r.bkend = adp.ID
 	return nil
 }
 
@@ -153,7 +151,6 @@ func (r *CreateReq) adapterReply(ndata interface{}) error {
 func (r CreateReq) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Report - CreateReq\n")
-	ls.AddF("Backend: %s\n", r.bkend)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - id: %q  name: %q\n", r.MID.MID(), r.ServiceName)
 	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", r.LatitudeV, r.Latitude, r.LongitudeV, r.Longitude)

@@ -42,7 +42,9 @@ ___
 * Test OK.
 * Saved to GIT.
 * Created "routes" in the Cache in engine/services/services.go.  This is a map of Routes by AreaID.  This will be used by Search and any other functions requiring routing to an Adapter/Provider for an Area.
-* 
+* Removed all references to "bkend" in any of the data structures.  This has been replaced by structs.NRoute(s).
+* Test OK.
+* Saved to GIT.
 
 ### 2016.02.03 - Wed
 
