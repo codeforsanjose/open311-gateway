@@ -15,11 +15,17 @@ import (
 
 var (
 	adapters Adapters
+	routes   routeData
 )
 
 // GetChAreaAdp returns the channel used to update the areaAdapters index.
 func GetChAreaAdp() chan map[string][]string {
-	return adapters.chAreaAdp
+	return adapters.chUpdate
+}
+
+// GetChRouteUpd returns the channel used to update the Route Data (received from Services).
+func GetChRouteUpd() chan map[string]structs.NRoutes {
+	return routes.chUpdate
 }
 
 // GetAreaAdapters returns a list of the Adapters that provide services to the specified
@@ -43,17 +49,86 @@ func GetAdapter(id string) (*Adapter, error) {
 	return adapters.getAdapter(id)
 }
 
+// GetAreaRoutes returns a list of Routes (structs.NRoutes) for the specified Area.
+func GetAreaRoutes(areaID string) (structs.NRoutes, error) {
+	return routes.getAreaRoutes(areaID)
+}
+
+// ==============================================================================================================================
+//                                      ROUTES
+// ==============================================================================================================================
+
+// routeData is the list of currently active Routes.
+type routeData struct {
+	routes    [2]map[string]structs.NRoutes // Index: AreaID
+	activeSet int
+	chUpdate  chan map[string]structs.NRoutes // Channel to receive updates from Services.
+	sync.RWMutex
+}
+
+// getArea retrieves the ServiceList for the specified area.
+func (r *routeData) getAreaRoutes(areaID string) (structs.NRoutes, error) {
+	r.RLock()
+	defer r.RUnlock()
+	l, ok := r.routes[r.activeSet][areaID]
+	if !ok {
+		return nil, fmt.Errorf("There are no routes for AreaID: %q", areaID)
+	}
+	return l, nil
+}
+
+func (r *routeData) update(upd map[string]structs.NRoutes) {
+	r.routes[r.loadSet()] = upd
+	r.switchSet()
+	log.Debug("Updated routeData!%s", r)
+}
+
+func (r *routeData) loadSet() (ls int) {
+	if r.activeSet == 0 {
+		ls = 1
+	}
+	return
+}
+
+func (r *routeData) clearLoadSet(ds int) {
+	r.routes[r.loadSet()] = make(map[string]structs.NRoutes)
+}
+
+func (r *routeData) switchSet() {
+	r.Lock()
+	defer r.Unlock()
+	if r.activeSet == 0 {
+		log.Debug("Switched from list 0 to 1")
+		r.activeSet = 1
+		r.clearLoadSet(0)
+	} else {
+		log.Debug("Switched from list 1 to 0")
+		r.activeSet = 0
+		r.clearLoadSet(1)
+	}
+}
+
+// String displays the contents of the Spec_Type custom type.
+func (r routeData) String() string {
+	ls := new(common.LogString)
+	ls.AddF("routeData [%d]\n", r.activeSet)
+	for k, v := range r.routes[r.activeSet] {
+		ls.AddF("<<<<<Area: %s >>>>>%s", k, v)
+	}
+	return ls.Box(90)
+}
+
 // ==============================================================================================================================
 //                                      ADAPTERS
 // ==============================================================================================================================
 
 // Adapters is the list of all active Adapters.
 type Adapters struct {
-	loaded    bool
-	loadedAt  time.Time
-	Adapters  map[string]*Adapter `json:"adapters"`
-	Areas     map[string]*Area    `json:"areas"`
-	chAreaAdp chan map[string][]string
+	loaded   bool
+	loadedAt time.Time
+	Adapters map[string]*Adapter `json:"adapters"`
+	Areas    map[string]*Area    `json:"areas"`
+	chUpdate chan map[string][]string
 
 	areaAlias    map[string]*Area      // Index: an alias for an area
 	areaAdapters map[string][]*Adapter // Index: AreaID
@@ -223,16 +298,28 @@ type Area struct {
 // ==============================================================================================================================
 
 func init() {
-	adapters.chAreaAdp = make(chan map[string][]string, 1)
-
+	adapters.chUpdate = make(chan map[string][]string, 1)
 	go func() {
 		for {
 			select {
-			case aa, ok := <-adapters.chAreaAdp:
+			case aa, ok := <-adapters.chUpdate:
 				if !ok {
 					break
 				}
 				adapters.updateAreaAdapters(aa)
+			}
+		}
+	}()
+
+	routes.chUpdate = make(chan map[string]structs.NRoutes, 1)
+	go func() {
+		for {
+			select {
+			case upd, ok := <-routes.chUpdate:
+				if !ok {
+					break
+				}
+				routes.update(upd)
 			}
 		}
 	}()

@@ -47,7 +47,6 @@ func Shutdown() {
 // is cleared and is available for loading.  Vice versa for activeSet1.
 type cache struct {
 	list      [2]map[string]structs.NServices // Index: AreaID
-	routes    [2]map[string]structs.NRoutes   // Index: AreaID
 	activeSet int
 	update    chan bool // Update request queue
 	sync.RWMutex
@@ -60,17 +59,6 @@ func (r *cache) getArea(areaID string) (structs.NServices, error) {
 	l, ok := r.list[r.activeSet][areaID]
 	if !ok {
 		return nil, fmt.Errorf("The requested AreaID: %q is not serviced by this gateway.", areaID)
-	}
-	return l, nil
-}
-
-// getArea retrieves the ServiceList for the specified area.
-func (r *cache) getAreaRoutes(areaID string) (structs.NRoutes, error) {
-	r.RLock()
-	defer r.RUnlock()
-	l, ok := r.routes[r.activeSet][areaID]
-	if !ok {
-		return nil, fmt.Errorf("There are no routes for AreaID: %q", areaID)
 	}
 	return l, nil
 }
@@ -110,12 +98,15 @@ func (r *cache) indexRoutes() error {
 		}
 	}
 
+	routeMap := make(map[string]structs.NRoutes)
 	for route := range allRoutes {
-		if _, ok := r.routes[ls][route.AreaID]; !ok {
-			r.routes[ls][route.AreaID] = make(structs.NRoutes, 0)
+		if _, ok := routeMap[route.AreaID]; !ok {
+			routeMap[route.AreaID] = make(structs.NRoutes, 0)
 		}
-		r.routes[ls][route.AreaID] = append(r.routes[ls][route.AreaID], route)
+		routeMap[route.AreaID] = append(routeMap[route.AreaID], route)
 	}
+
+	router.GetChRouteUpd() <- routeMap
 
 	return nil
 }
@@ -159,7 +150,6 @@ func (r *cache) loadSet() (ls int) {
 
 func (r *cache) clearLoadSet(ds int) {
 	r.list[r.loadSet()] = make(map[string]structs.NServices)
-	r.routes[r.loadSet()] = make(map[string]structs.NRoutes)
 }
 
 // refresh initiates a service list update - that is, it requests the current service lists
@@ -215,9 +205,6 @@ func (r *cache) init() {
 	r.list[0] = make(map[string]structs.NServices)
 	r.list[1] = make(map[string]structs.NServices)
 
-	r.routes[0] = make(map[string]structs.NRoutes)
-	r.routes[1] = make(map[string]structs.NRoutes)
-
 	r.update = make(chan bool, 1)
 	r.activeSet = 0
 
@@ -251,10 +238,6 @@ func (r cache) String() string {
 	ls.AddF("cache [%d]\n", r.activeSet)
 	ls.AddS("------- Service List --------\n")
 	for k, v := range r.list[r.activeSet] {
-		ls.AddF("<<<<<Area: %s >>>>>%s", k, v)
-	}
-	ls.AddS("------- Route List --------\n")
-	for k, v := range r.routes[r.activeSet] {
 		ls.AddF("<<<<<Area: %s >>>>>%s", k, v)
 	}
 	return ls.Box(90)

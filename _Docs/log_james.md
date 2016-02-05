@@ -45,6 +45,12 @@ ___
 * Removed all references to "bkend" in any of the data structures.  This has been replaced by structs.NRoute(s).
 * Test OK.
 * Saved to GIT.
+* In engine/router:
+	* Added routeData to data.go.  Contains all routing data, and is updated everytime the Service List is updated.  A channel is used to pipe the update from the Services package to the Router package (necessary to avoid an import cycle).
+	* Reworked engine/router/rpcroute.go to support the use of routeData.
+* Removed route data from engine/services/services.go.
+* In structs.go, added NResponseCommon (analogous to NRequestCommon).  Also NResponser interface and NResponseType enumerated type.
+* Saved to GIT.
 
 ### 2016.02.03 - Wed
 

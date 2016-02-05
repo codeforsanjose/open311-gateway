@@ -96,7 +96,6 @@ func (r *SearchRequest) validate() error {
 }
 
 func (r *SearchRequest) parseQP(rqst *rest.Request) error {
-	log.Debug(spew.Sdump(rqst.URL))
 	r.DeviceType = rqst.URL.Query().Get("dtype")
 	r.DeviceID = rqst.URL.Query().Get("did")
 	r.Latitude = rqst.URL.Query().Get("lat")
@@ -205,7 +204,7 @@ func (r *SearchRequest) convertDID() (interface{}, error) {
 // String displays the contents of the SearchRequest custom type.
 func (r SearchRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Search\n")
+	ls.AddS("SearchRequest\n")
 	ls.AddF("Device Type: %s ID: %s\n", r.DeviceType, r.DeviceID)
 	ls.AddF("Lat: %v (%f)  Lng: %v (%f)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV)
 	ls.AddF("Radius: %v (%d) AreaID: %q\n", r.Radius, r.RadiusV, r.AreaID)

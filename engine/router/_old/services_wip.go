@@ -37,7 +37,7 @@ type rpcCalls struct {
 	request   interface{}
 	result    chan *rpcAdapterStatus
 	processes int
-	listIF    map[string]*rpcAdapterStatus
+	listIF    map[structs.NRoute]*rpcAdapterStatus
 	process   ResponseProcesser
 	errs      []error
 }
@@ -49,7 +49,7 @@ func newRPCCall(service, areaID string, request interface{}, process ResponsePro
 		service: service,
 		request: request,
 		result:  make(chan *rpc.Call, rpcChanSize),
-		listIF:  make(map[string]*rpcAdapterStatus),
+		listIF:  make(map[structs.NRoute]*rpcAdapterStatus),
 		process: process,
 		errs:    make([]error, 0),
 	}

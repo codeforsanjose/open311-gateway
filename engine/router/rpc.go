@@ -33,11 +33,11 @@ var (
 // adpID: adapter ID
 // areaID: Area ID
 func NewRPCCall(service string, request interface{}, process func(interface{}) error) (*RPCCall, error) {
-	r := RPCCall{
+	rpcCall := RPCCall{
 		service: service,
 		request: request,
 		results: make(chan *rpcAdapterStatus, rpcChanSize),
-		adpList: make(map[string]*rpcAdapterStatus),
+		adpList: make(map[structs.NRoute]*rpcAdapterStatus),
 		process: process,
 		errs:    make([]error, 0),
 	}
@@ -58,10 +58,10 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 		return nil, fmt.Errorf("Unable to prep RPCCall for request: %s - %s", reflect.TypeOf(request), err)
 	}
 
-	r.adpList = adpList
+	rpcCall.adpList = adpList
 
 	// log.Debug("RPCCall: %s", r)
-	return &r, nil
+	return &rpcCall, nil
 }
 
 // ResponseProcesser is the interface for
@@ -75,7 +75,7 @@ type RPCCall struct {
 	request   interface{}
 	results   chan *rpcAdapterStatus
 	processes int
-	adpList   map[string]*rpcAdapterStatus // Key: AdapterID
+	adpList   map[structs.NRoute]*rpcAdapterStatus // Key: AdapterID
 	process   func(interface{}) error
 	errs      []error
 }
@@ -102,7 +102,7 @@ func (r *RPCCall) Run() error {
 		for !timedout {
 			select {
 			case answer := <-r.results:
-				r.adpList[answer.adapter.ID] = answer
+				r.adpList[answer.route] = answer
 				r.processes--
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)

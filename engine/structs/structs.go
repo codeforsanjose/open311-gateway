@@ -14,8 +14,6 @@ import (
 //                                      REQUEST
 // =======================================================================================
 
-// -----------------------------------NRequestCommon --------------------------------------
-
 // NRequestCommon represents properties common to all requests.
 type NRequestCommon struct {
 	Route NRoute
@@ -44,6 +42,8 @@ func (r NRequestCommon) GetRoute() NRoute {
 func (r *NRequestCommon) SetRoute(route NRoute) {
 	r.Route = route
 }
+
+// -----------------------------------NRequester --------------------------------------
 
 // NRequester defines the behavior of a Request Package.
 type NRequester interface {
@@ -107,32 +107,87 @@ type NRouteType int
 
 // NRT* are constants enumerating the valid request types.
 const (
-	NRtTypUnknown NRouteType = iota
-	NRtTypInvalid
-	NRtTypEmpty
+	NRtTypInvalid NRouteType = iota
 	NRtTypFull
-	NRtTypAllAdapters
-	NRtTypAllAreas
 	NRtTypArea
+	NRtTypAllAreas
+	NRtTypAllAdapters
 )
 
 // RouteType returns the validity and type of the NRoute.
 func (r NRoute) RouteType() NRouteType {
 	switch {
-	case r.AdpID == "" && r.AreaID == "" && r.ProviderID == 0:
-		return NRtTypEmpty
 	case r.AdpID > "" && r.AreaID > "" && r.ProviderID > 0:
 		return NRtTypFull
-	case r.AdpID == "all" && r.AreaID == "" && r.ProviderID == 0:
-		return NRtTypAllAdapters
-	case r.AdpID == "" && r.AreaID == "all" && r.ProviderID == 0:
+	case r.AdpID > "" && r.AreaID == "all" && r.ProviderID == 0:
 		return NRtTypAllAreas
 	case r.AdpID == "" && r.AreaID > "" && r.ProviderID == 0:
 		return NRtTypArea
+	case r.AdpID == "all" && r.AreaID == "" && r.ProviderID == 0:
+		return NRtTypAllAdapters
 	default:
 		return NRtTypInvalid
 	}
 }
+
+// =======================================================================================
+//                                      RESPONSE
+// =======================================================================================
+
+// NResponseCommon represents properties common to all requests.
+type NResponseCommon struct {
+	Route NRoute
+	Rtype NResponseType
+	NResponseer
+}
+
+// GetType returns the Response Type as a string.
+func (r NResponseCommon) GetType() NResponseType {
+	return r.Rtype
+}
+
+// GetTypeS returns the Response Type as a string.
+func (r NResponseCommon) GetTypeS() string {
+	fmt.Println("[NResponseCommon: GetTypeS()] start")
+	return r.Rtype.String()
+}
+
+// GetRoute returns NResponseCommon.Route
+func (r NResponseCommon) GetRoute() NRoute {
+	return r.Route
+}
+
+// SetRoute sets the route in NResponseCommon.
+func (r *NResponseCommon) SetRoute(route NRoute) {
+	r.Route = route
+}
+
+// -----------------------------------NResponseer --------------------------------------
+
+// NResponseer defines the behavior of a Response Package.
+type NResponseer interface {
+	GetType() NResponseType
+	GetTypeS() string
+	GetRoute() NRoute
+	SetRoute(route NRoute)
+}
+
+// -----------------------------------NResponseType --------------------------------------
+
+//go:generate stringer -type=NResponseType
+
+// NResponseType enumerates the valid request types.
+type NResponseType int
+
+// NRspT* are constants enumerating the valid request types.
+const (
+	NRspTUnknown NResponseType = iota
+	NRspTServices
+	NRspTServicesArea
+	NRspTCreate
+	NRspTSearchLL
+	NRspTSearchDID
+)
 
 // =======================================================================================
 //                                      SERVICES
@@ -146,11 +201,15 @@ type NServiceRequest struct {
 
 // GetRoutes returns the routing data.
 func (r NServiceRequest) GetRoutes() NRoutes {
+	if r.Area == "all" {
+		return NewNRoutes().add(NRoute{"all", "", 0})
+	}
 	return NewNRoutes().add(NRoute{"", r.Area, 0})
 }
 
 // NServicesResponse is the returned struct for a Services request.
 type NServicesResponse struct {
+	NResponseCommon
 	AdpID    string
 	Message  string
 	Services NServices
@@ -226,6 +285,7 @@ func (r NCreateRequest) GetRoutes() NRoutes {
 
 // NCreateResponse is the response to creating or updating a report.
 type NCreateResponse struct {
+	NResponseCommon
 	Message  string `json:"Message" xml:"Message"`
 	ID       string `json:"ReportId" xml:"ReportId"`
 	AuthorID string `json:"AuthorId" xml:"AuthorId"`
@@ -268,6 +328,7 @@ func (r NSearchRequestDID) GetRoutes() NRoutes {
 
 // NSearchResponse contains the search results.
 type NSearchResponse struct {
+	NResponseCommon
 	Message      string
 	ReportCount  int
 	ResponseTime string
@@ -395,7 +456,15 @@ func MidID(mid string) (int, error) {
 // Displays the NRequestCommon custom type.
 func (r NRequestCommon) String() string {
 	ls := new(common.LogString)
-	ls.AddF("Request: %s\n", r.Rtype.String())
+	ls.AddF("Type: %s\n", r.Rtype.String())
+	ls.AddF("Route: %s\n", r.Route.String())
+	return ls.Box(40)
+}
+
+// Displays the NResponseCommon custom type.
+func (r NResponseCommon) String() string {
+	ls := new(common.LogString)
+	ls.AddF("Type: %s\n", r.Rtype.String())
 	ls.AddF("Route: %s\n", r.Route.String())
 	return ls.Box(40)
 }
@@ -440,10 +509,6 @@ func (r ServiceID) MID() string {
 
 func (r NRouteType) String() string {
 	switch r {
-	case NRtTypInvalid:
-		return color.RedString("Invalid")
-	case NRtTypEmpty:
-		return color.RedString("Empty")
 	case NRtTypFull:
 		return color.GreenString("Full")
 	case NRtTypAllAdapters:
@@ -453,7 +518,7 @@ func (r NRouteType) String() string {
 	case NRtTypArea:
 		return color.YellowString("Area")
 	default:
-		return color.RedString("Unknown")
+		return color.RedString("Invalid")
 	}
 }
 
