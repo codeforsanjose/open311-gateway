@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/fatih/color"
+
 	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
 )
@@ -17,6 +19,7 @@ const (
 
 var (
 	showRunTimes = true
+	showResponse = true
 )
 
 // =======================================================================================
@@ -129,6 +132,9 @@ func (r *RPCCall) Run() error {
 	if showRunTimes {
 		log.Info("RPC Call: %q took: %s", r.service, time.Since(sendTime))
 	}
+	if showResponse {
+		log.Debug("Response:%s", r)
+	}
 	return nil
 }
 
@@ -144,12 +150,12 @@ func (r *RPCCall) send() error {
 				// log.Debug("Request type: %T", rqst)
 				var rqstCopy interface{}
 				switch v := rqst.(type) {
-				case *structs.NServiceRequest:
+				case *structs.NServicels
 					rCopy := *v
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
 					log.Debug("Sending: %s", rCopy.String())
-				case *structs.NCreateRequest:
+				case *structs.NCreatels
 					rCopy := *v
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
@@ -176,7 +182,9 @@ func (r *RPCCall) send() error {
 	return nil
 }
 
-// --------------------------------- rpcAdapterStatus -----------------------------------
+// =======================================================================================
+//                                      ADAPTER STATUS
+// =======================================================================================
 type rpcAdapterStatus struct {
 	adapter  *Adapter
 	route    structs.NRoute
@@ -200,6 +208,18 @@ func newAdapterStatus(adp *Adapter, service string, route structs.NRoute) (*rpcA
 	return aStat, nil
 }
 
+// =======================================================================================
+//                                      ADAPTER ROUTE MAP
+// =======================================================================================
+
+// adapterRouteMap is used in the RPC system to keep track of what is being sent to each Adapter
+// Route, and the reply status and content.  Each RPCCall has an adpaterRouteMap instance.
+type adapterRouteList map[structs.NRoute]*rpcAdapterStatus
+
+func newAdapterRouteList() adapterRouteList {
+	return make(adapterRouteList)
+}
+
 // ==============================================================================================================================
 //                                      STRINGS
 // ==============================================================================================================================
@@ -208,15 +228,8 @@ func (r RPCCall) String() string {
 	ls := new(common.LogString)
 	ls.AddS("RPC Call\n")
 	ls.AddF("Service: %s\n", r.service)
-	ls.AddF("Request: (%p)  results chan: (%p)\n", &r.request, r.results)
-	ls.AddF("%s\n", r.request)
-	ls2 := new(common.LogString)
-	ls2.AddS("Adapters\n")
-	ls2.AddF("         Name/Type/Address                 Sent  Repl    ResponseType                     Route\n")
-	for k, v := range r.adpList {
-		ls2.AddF("  %4s: %s\n", k, v.StringNH())
-	}
-	ls.AddF("%s", ls2.Box(80))
+	ls.AddF("%s", r.request)
+	ls.AddS(r.adpList.String())
 	ls.AddF("Processes: %d\n", r.processes)
 	ls.AddF("Process interface: (%p)\n", r.process)
 	if len(r.errs) == 0 {
@@ -227,7 +240,7 @@ func (r RPCCall) String() string {
 			ls.AddF("\t%s\n", e.Error())
 		}
 	}
-	return ls.Box(90)
+	return ls.Box(120)
 }
 
 func (r rpcAdapterStatus) String() string {
@@ -238,7 +251,52 @@ func (r rpcAdapterStatus) String() string {
 	return ls.Box(100)
 }
 
+func (r rpcAdapterStatus) StringResp() string {
+	ls := new(common.LogString)
+	ls.AddS("rpcAdapterStatus\n")
+	ls.AddS(" Name/Type/Address                 Sent  Repl    ResponseType                     Route\n")
+	ls.AddF("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
+	ls.AddF("%s", r.response)
+	return ls.Box(100)
+}
+
 func (r rpcAdapterStatus) StringNH() string {
 	s := fmt.Sprintf("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
 	return s
+}
+
+func (r rpcAdapterStatus) StringNHResp() string {
+	s := fmt.Sprintf("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)\n", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
+	s += stringResponse(r.response)
+	return s
+}
+
+func stringResponse(r interface{}) string {
+	switch v := r.(type) {
+	case *structs.NServicesResponse:
+		return v.String()
+	case *structs.NCreateResponse:
+		return v.String()
+	case *structs.NSearchResponse:
+		return v.String()
+	default:
+		return fmt.Sprintf("Cannot show type: %T\n", r)
+	}
+}
+
+func (r adapterRouteList) String() string {
+	ls := new(common.LogString)
+	ls.AddS("adapterRouteList\n")
+	ls.AddF("    Route/Type/Address              Sent  Repl    ResponseType                     Route        (match)\n")
+	for route, adpStat := range r {
+		routeMatch := color.GreenString("OK")
+		if route != adpStat.route {
+			routeMatch = color.RedString("Mismatch!")
+		}
+		ls.AddF("%s %s\n", adpStat.StringNH(), routeMatch)
+		if showResponse {
+			ls.AddS(stringResponse(adpStat.response))
+		}
+	}
+	return ls.Box(110)
 }

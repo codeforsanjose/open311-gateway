@@ -3,32 +3,10 @@ package router
 import (
 	"fmt"
 
-	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
 
 	// "github.com/davecgh/go-spew/spew"
 )
-
-// =======================================================================================
-//                                      ADAPTER ROUTE MAP
-// =======================================================================================
-
-// adapterRouteMap is used in the RPC system to keep track of what is being sent to each Adapter
-// Route, and the reply status and content.  Each RPCCall has an adpaterRouteMap instance.
-type adapterRouteList map[structs.NRoute]*rpcAdapterStatus
-
-func newAdapterRouteList() adapterRouteList {
-	return make(adapterRouteList)
-}
-
-func (r adapterRouteList) String() string {
-	ls := new(common.LogString)
-	ls.AddS("adapterRouteList\n")
-	for route, adpStat := range r {
-		ls.AddF("%s%s\n", route, adpStat)
-	}
-	return ls.Box(100)
-}
 
 // =======================================================================================
 //                                      RPC ROUTE MAP

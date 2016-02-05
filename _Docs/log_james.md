@@ -38,6 +38,8 @@ ___
 * Changed the "map[structs.NRoute]*rpcAdapterStatus" to a custom type in engine/router/rpc.go and rpcroute.go.  
 * Test OK.
 * Saved to GIT.
+* Cleaned up debug prints.
+* Saved to GIT.
 * 
 
 ### 2016.02.04 - Thu
