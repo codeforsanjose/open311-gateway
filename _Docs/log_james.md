@@ -35,6 +35,9 @@ ___
 * In engine/router, changed "routeMap" to "serviceMap".  This is more descriptive.
 * Test OK.
 * Saved to GIT..
+* Changed the "map[structs.NRoute]*rpcAdapterStatus" to a custom type in engine/router/rpc.go and rpcroute.go.  
+* Test OK.
+* Saved to GIT.
 * 
 
 ### 2016.02.04 - Thu

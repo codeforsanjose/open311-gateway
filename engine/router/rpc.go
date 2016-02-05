@@ -36,7 +36,7 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 		service: service,
 		request: request,
 		results: make(chan *rpcAdapterStatus, rpcChanSize),
-		adpList: make(map[structs.NRoute]*rpcAdapterStatus),
+		adpList: make(adapterRouteList),
 		process: process,
 		errs:    make([]error, 0),
 	}
@@ -74,7 +74,7 @@ type RPCCall struct {
 	request   interface{}
 	results   chan *rpcAdapterStatus
 	processes int
-	adpList   map[structs.NRoute]*rpcAdapterStatus // Key: AdapterID
+	adpList   adapterRouteList // Key: AdapterID
 	process   func(interface{}) error
 	errs      []error
 }

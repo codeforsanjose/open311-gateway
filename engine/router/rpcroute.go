@@ -3,12 +3,32 @@ package router
 import (
 	"fmt"
 
+	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
 
 	// "github.com/davecgh/go-spew/spew"
 )
 
-// type serviceMapType map[string]*serviceMapMethods
+// =======================================================================================
+//                                      ADAPTER ROUTE MAP
+// =======================================================================================
+
+// adapterRouteMap is used in the RPC system to keep track of what is being sent to each Adapter
+// Route, and the reply status and content.  Each RPCCall has an adpaterRouteMap instance.
+type adapterRouteList map[structs.NRoute]*rpcAdapterStatus
+
+func newAdapterRouteList() adapterRouteList {
+	return make(adapterRouteList)
+}
+
+func (r adapterRouteList) String() string {
+	ls := new(common.LogString)
+	ls.AddS("adapterRouteList\n")
+	for route, adpStat := range r {
+		ls.AddF("%s%s\n", route, adpStat)
+	}
+	return ls.Box(100)
+}
 
 // =======================================================================================
 //                                      RPC ROUTE MAP
@@ -53,15 +73,9 @@ func initResponseStructs() error {
 }
 
 func initRPCList() error {
-	showAdpMap := func(adpMap map[structs.NRoute]*rpcAdapterStatus) {
-		for k, v := range adpMap {
-			log.Debug("%s%s", k, v)
-		}
-	}
-
-	adapter := func(rt structs.NRouter, service string) (map[structs.NRoute]*rpcAdapterStatus, error) {
+	adapter := func(rt structs.NRouter, service string) (adapterRouteList, error) {
 		log.Debug("[serviceMap: adapter] service: %q\nroutes: %s\n", service, rt.GetRoutes())
-		m := make(map[structs.NRoute]*rpcAdapterStatus)
+		adpStatList := newAdapterRouteList()
 		for _, nroute := range rt.GetRoutes() {
 			adp, err := GetAdapter(nroute.AdpID)
 			// log.Debug("adp: %s", adp)
@@ -73,19 +87,19 @@ func initRPCList() error {
 			if err != nil {
 				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
 			}
-			m[nroute] = rs
-			// log.Debug("adapters: %s", m)
+			adpStatList[nroute] = rs
+			// log.Debug("adapters: %s", adpStatList)
 		}
-		showAdpMap(m)
-		return m, nil
+		log.Debug(adpStatList.String())
+		return adpStatList, nil
 	}
 
 	// statusList populates r.adpList with pointers to Adapters that service the specified
 	// Area.
-	// area := func(areaID, service string) (map[structs.NRoute]*rpcAdapterStatus, error) {
-	area := func(rt structs.NRouter, service string) (map[structs.NRoute]*rpcAdapterStatus, error) {
+	// area := func(areaID, service string) (adapterRouteList, error) {
+	area := func(rt structs.NRouter, service string) (adapterRouteList, error) {
 		log.Debug("[serviceMap: area] service: %q\nroutes: %s\n", service, rt.GetRoutes())
-		adpStatList := make(map[structs.NRoute]*rpcAdapterStatus)
+		adpStatList := newAdapterRouteList()
 		for _, nroute := range rt.GetRoutes() {
 			switch nroute.RouteType() {
 			case structs.NRtTypAllAdapters:
@@ -132,23 +146,23 @@ func initRPCList() error {
 				return nil, fmt.Errorf("Cannot create the Adapter List - invalid route: %s", nroute)
 			}
 		}
-		showAdpMap(adpStatList)
+		log.Debug(adpStatList.String())
 		return adpStatList, nil
 	}
 
-	serviceMap["Services.All"].buildAdapterList = func(r structs.NRouter) (map[structs.NRoute]*rpcAdapterStatus, error) {
+	serviceMap["Services.All"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return area(r, "Services.All")
 	}
-	serviceMap["Services.Area"].buildAdapterList = func(r structs.NRouter) (map[structs.NRoute]*rpcAdapterStatus, error) {
+	serviceMap["Services.Area"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return area(r, "Services.Area")
 	}
-	serviceMap["Report.Create"].buildAdapterList = func(r structs.NRouter) (map[structs.NRoute]*rpcAdapterStatus, error) {
+	serviceMap["Report.Create"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return adapter(r, "Report.Create")
 	}
-	serviceMap["Report.SearchDeviceID"].buildAdapterList = func(r structs.NRouter) (map[structs.NRoute]*rpcAdapterStatus, error) {
+	serviceMap["Report.SearchDeviceID"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return area(r, "Report.SearchDeviceID")
 	}
-	serviceMap["Report.SearchLL"].buildAdapterList = func(r structs.NRouter) (map[structs.NRoute]*rpcAdapterStatus, error) {
+	serviceMap["Report.SearchLL"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return area(r, "Report.SearchLL")
 	}
 	return nil
@@ -159,5 +173,5 @@ func initRPCList() error {
 // =======================================================================================
 type serviceMapMethods struct {
 	newResponse      func() interface{}
-	buildAdapterList func(structs.NRouter) (map[structs.NRoute]*rpcAdapterStatus, error)
+	buildAdapterList func(structs.NRouter) (adapterRouteList, error)
 }
