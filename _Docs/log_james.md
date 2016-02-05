@@ -30,6 +30,13 @@ ___
 
 ## Log
 
+### 2016.02.05 - Fri
+
+* In engine/router, changed "routeMap" to "serviceMap".  This is more descriptive.
+* Test OK.
+* Saved to GIT..
+* 
+
 ### 2016.02.04 - Thu
 
 * Cleaned up debug display of routes.

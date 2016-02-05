@@ -17,7 +17,6 @@ const (
 
 var (
 	showRunTimes = true
-	// routeMap     map[string]routeMapMethods
 )
 
 // =======================================================================================
@@ -49,9 +48,9 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 		return nil, fmt.Errorf("The request (type: %s) does not implement structs.NRouter", reflect.TypeOf(request))
 	}
 	// log.Debug("Building adpList...")
-	routeMethods, ok := routeMap[service]
+	routeMethods, ok := serviceMap[service]
 	if !ok {
-		return nil, fmt.Errorf("RouteMap does not exist for service: %s", service)
+		return nil, fmt.Errorf("serviceMap does not exist for service: %s", service)
 	}
 	adpList, err := routeMethods.buildAdapterList(router)
 	if err != nil {
@@ -195,7 +194,7 @@ func newAdapterStatus(adp *Adapter, service string, route structs.NRoute) (*rpcA
 		replied: false,
 	}
 
-	rs := routeMap[service].newResponse()
+	rs := serviceMap[service].newResponse()
 	aStat.response = rs
 	// log.Debug("aStat: %s", aStat)
 	return aStat, nil
