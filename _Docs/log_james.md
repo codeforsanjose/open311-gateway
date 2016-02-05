@@ -51,6 +51,8 @@ ___
 * Removed route data from engine/services/services.go.
 * In structs.go, added NResponseCommon (analogous to NRequestCommon).  Also NResponser interface and NResponseType enumerated type.
 * Saved to GIT.
+* SearchLL rudimentarily working!
+* Saved to GIT.
 
 ### 2016.02.03 - Wed
 

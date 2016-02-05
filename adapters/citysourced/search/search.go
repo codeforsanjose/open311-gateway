@@ -14,7 +14,7 @@ import (
 
 // RequestLL represents the CitySourced XML payload for a search by Lat/Lng.
 type RequestLL struct {
-	XMLName           xml.Name `xml:"SearchLL"`
+	XMLName           xml.Name `xml:"CsRequest"`
 	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
 	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
 	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`

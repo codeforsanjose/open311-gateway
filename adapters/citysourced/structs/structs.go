@@ -285,10 +285,10 @@ func (r NCreateRequest) GetRoutes() NRoutes {
 
 // NCreateResponse is the response to creating or updating a report.
 type NCreateResponse struct {
-	NResponseCommon
-	Message  string `json:"Message" xml:"Message"`
-	ID       string `json:"ReportId" xml:"ReportId"`
-	AuthorID string `json:"AuthorId" xml:"AuthorId"`
+	NResponseCommon `json:"-"`
+	Message         string `json:"Message" xml:"Message"`
+	ID              string `json:"ReportId" xml:"ReportId"`
+	AuthorID        string `json:"AuthorId" xml:"AuthorId"`
 }
 
 // =======================================================================================
@@ -328,11 +328,11 @@ func (r NSearchRequestDID) GetRoutes() NRoutes {
 
 // NSearchResponse contains the search results.
 type NSearchResponse struct {
-	NResponseCommon
-	Message      string
-	ReportCount  int
-	ResponseTime string
-	Reports      []NSearchResponseReport
+	NResponseCommon `json:"-"`
+	Message         string
+	ReportCount     int
+	ResponseTime    string
+	Reports         []NSearchResponseReport
 }
 
 // NSearchResponseReport represents a report.
