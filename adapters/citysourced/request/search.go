@@ -75,6 +75,7 @@ func (c *searchLLMgr) process() error {
 }
 
 func (c *searchLLMgr) convertResponse() error {
+	c.nresp.SetRoute(c.nreq.GetRoute())
 	c.nresp.Message = c.resp.Message
 	c.nresp.ResponseTime = c.resp.ResponseTime
 	c.nresp.Reports = make([]structs.NSearchResponseReport, 0)

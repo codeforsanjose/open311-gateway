@@ -73,6 +73,7 @@ func (c *createMgr) process() error {
 }
 
 func (c *createMgr) convertResponse() error {
+	c.nresp.SetRoute(c.nreq.GetRoute())
 	c.nresp.Message = c.resp.Message
 	c.nresp.ID = c.resp.ID
 	c.nresp.AuthorID = c.resp.AuthorID

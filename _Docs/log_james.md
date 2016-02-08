@@ -30,6 +30,11 @@ ___
 
 ## Log
 
+### 2016.02.08 - Mon
+
+* Saved to GIT.
+* 
+
 ### 2016.02.05 - Fri
 
 * In engine/router, changed "routeMap" to "serviceMap".  This is more descriptive.
@@ -40,7 +45,8 @@ ___
 * Saved to GIT.
 * Cleaned up debug prints.
 * Saved to GIT.
-* 
+* Cleaned up routing.
+* Reversed accidental name refactor.
 
 ### 2016.02.04 - Thu
 

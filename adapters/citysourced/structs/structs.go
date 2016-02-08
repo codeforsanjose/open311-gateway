@@ -461,14 +461,6 @@ func (r NRequestCommon) String() string {
 	return ls.Box(40)
 }
 
-// Displays the NResponseCommon custom type.
-func (r NResponseCommon) String() string {
-	ls := new(common.LogString)
-	ls.AddF("Type: %s\n", r.Rtype.String())
-	ls.AddF("Route: %s\n", r.Route.String())
-	return ls.Box(40)
-}
-
 // Displays the NServiceRequest custom type.
 func (r NServiceRequest) String() string {
 	ls := new(common.LogString)
@@ -478,10 +470,19 @@ func (r NServiceRequest) String() string {
 	return ls.Box(80)
 }
 
+// Displays the NResponseCommon custom type.
+func (r NResponseCommon) String() string {
+	ls := new(common.LogString)
+	ls.AddF("Type: %s\n", r.Rtype.String())
+	ls.AddF("Route: %s\n", r.Route.String())
+	return ls.Box(40)
+}
+
 // Displays the NServicesResponse custom type.
 func (r NServicesResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NServicesResponse\n")
+	ls.AddS(r.NResponseCommon.String())
 	ls.AddF("Message: %q%s", r.Message, r.Services)
 	return ls.Box(90)
 }
@@ -559,6 +560,7 @@ func (r NCreateRequest) String() string {
 func (r NCreateResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NCreateResponse\n")
+	ls.AddS(r.NResponseCommon.String())
 	ls.AddF("Message: %s\n", r.Message)
 	ls.AddF("ID: %v  AuthorID: %v\n", r.ID, r.AuthorID)
 	return ls.Box(80)
@@ -588,6 +590,7 @@ func (r NSearchRequestDID) String() string {
 func (r NSearchResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddS("NSearchResponse\n")
+	ls.AddS(r.NResponseCommon.String())
 	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.ReportCount, r.ResponseTime, r.Message)
 	for _, x := range r.Reports {
 		ls.AddS(x.String())
@@ -598,7 +601,7 @@ func (r NSearchResponse) String() string {
 // Displays the the NSearchRequestDID custom type.
 func (r NSearchResponseReport) String() string {
 	ls := new(common.LogString)
-	ls.AddF("Report %d\n", r.ID)
+	ls.AddF("NSearchResponseReport %d\n", r.ID)
 	ls.AddF("DateCreated \"%v\"\n", r.DateCreated)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - type: %q  id: %q\n", r.RequestType, r.RequestTypeID)

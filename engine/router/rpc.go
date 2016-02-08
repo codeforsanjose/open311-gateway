@@ -18,8 +18,9 @@ const (
 )
 
 var (
-	showRunTimes = true
-	showResponse = true
+	showRunTimes       = true
+	showResponse       = true
+	showResponseDetail = false
 )
 
 // =======================================================================================
@@ -150,12 +151,12 @@ func (r *RPCCall) send() error {
 				// log.Debug("Request type: %T", rqst)
 				var rqstCopy interface{}
 				switch v := rqst.(type) {
-				case *structs.NServicels
+				case *structs.NServiceRequest:
 					rCopy := *v
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
 					log.Debug("Sending: %s", rCopy.String())
-				case *structs.NCreatels
+				case *structs.NCreateRequest:
 					rCopy := *v
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
@@ -294,7 +295,7 @@ func (r adapterRouteList) String() string {
 			routeMatch = color.RedString("Mismatch!")
 		}
 		ls.AddF("%s %s\n", adpStat.StringNH(), routeMatch)
-		if showResponse {
+		if showResponseDetail {
 			ls.AddS(stringResponse(adpStat.response))
 		}
 	}

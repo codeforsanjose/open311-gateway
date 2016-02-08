@@ -17,7 +17,7 @@
 			"providers": [{
 				"id": 1,
 				"name": "CitySourced - SJ",
-				"url": "http://localhost:5050/api/",
+				"url": "http://localhost:5053/api/",
 				"apiVersion": "1",
 				"key": "a01234567890z",
 				"services": [{
