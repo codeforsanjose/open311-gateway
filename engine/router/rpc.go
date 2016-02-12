@@ -4,12 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sync"
 	"time"
 
 	"github.com/fatih/color"
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
+	"Gateway311/engine/telemetry"
 )
 
 const (
@@ -18,6 +20,7 @@ const (
 )
 
 var (
+	msgID              sidType
 	showRunTimes       = true
 	showResponse       = true
 	showResponseDetail = false
@@ -106,6 +109,7 @@ func (r *RPCCall) Run() error {
 			select {
 			case answer := <-r.results:
 				r.adpList[answer.route] = answer
+				telemetry.Send(answer.id, "GW1", "", "", "eng-recv")
 				r.processes--
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)
@@ -150,27 +154,36 @@ func (r *RPCCall) send() error {
 				// log.Debug("Calling adapter:\n%s\n", pAdpStat)
 				// log.Debug("Request type: %T", rqst)
 				var rqstCopy interface{}
+				var msgtype string
+
 				switch v := rqst.(type) {
 				case *structs.NServiceRequest:
 					rCopy := *v
+					structs.NRequester(&rCopy).SetID(pAdpStat.id)
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
+					msgtype = "ServiceRequest"
 					log.Debug("Sending: %s", rCopy.String())
 				case *structs.NCreateRequest:
 					rCopy := *v
+					structs.NRequester(&rCopy).SetID(pAdpStat.id)
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
+					msgtype = "CreateRequest"
 					log.Debug("Sending: %s", rCopy.String())
 				case *structs.NSearchRequestLL:
 					rCopy := *v
+					structs.NRequester(&rCopy).SetID(pAdpStat.id)
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
+					msgtype = "SearchRequest"
 					log.Debug("Sending: %s", rCopy.String())
 				default:
 					log.Errorf("Invalid type in send RPC: %T", rqst)
 					return
 				}
 
+				telemetry.Send(pAdpStat.id, "GW1", msgtype, pAdpStat.route.SString(), "eng-send")
 				pAdpStat.err = pAdpStat.adapter.Client.Call(r.service, rqstCopy, pAdpStat.response)
 				r.results <- pAdpStat
 			}(pAdpStat, r.request)
@@ -187,6 +200,7 @@ func (r *RPCCall) send() error {
 //                                      ADAPTER STATUS
 // =======================================================================================
 type rpcAdapterStatus struct {
+	id       int64
 	adapter  *Adapter
 	route    structs.NRoute
 	response interface{}
@@ -197,6 +211,7 @@ type rpcAdapterStatus struct {
 
 func newAdapterStatus(adp *Adapter, service string, route structs.NRoute) (*rpcAdapterStatus, error) {
 	aStat := &rpcAdapterStatus{
+		id:      msgID.Get(),
 		adapter: adp,
 		route:   route,
 		sent:    false,
@@ -219,6 +234,30 @@ type adapterRouteList map[structs.NRoute]*rpcAdapterStatus
 
 func newAdapterRouteList() adapterRouteList {
 	return make(adapterRouteList)
+}
+
+// =======================================================================================
+//                                      MESSAGE ID
+// =======================================================================================
+
+type sidType struct {
+	id int64
+	sync.Mutex
+}
+
+func (r *sidType) Get() int64 {
+	r.Lock()
+	defer r.Unlock()
+	r.id++
+	return r.id
+}
+
+// ==============================================================================================================================
+//                                      init
+// ==============================================================================================================================
+
+func init() {
+	msgID.id = 10000
 }
 
 // ==============================================================================================================================

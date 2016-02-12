@@ -87,6 +87,10 @@ func (c *createMgr) fail(err error) error {
 	return err
 }
 
+func (c *createMgr) getID() int64 {
+	return c.nreq.ID
+}
+
 func (c *createMgr) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Create\n")

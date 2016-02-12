@@ -123,6 +123,10 @@ func (c *searchLLMgr) fail(err error) error {
 	return err
 }
 
+func (c *searchLLMgr) getID() int64 {
+	return c.nreq.ID
+}
+
 func (c *searchLLMgr) String() string {
 	ls := new(common.LogString)
 	ls.AddS("SearchLL\n")

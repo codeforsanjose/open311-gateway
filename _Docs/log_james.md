@@ -30,10 +30,19 @@ ___
 
 ## Log
 
+### 2016.02.12 - Fri
+
+* Started building monitoring app. This will make it easier to verify routing is working properly, as well as monitoring critical processes in the Engine and Adapters.
+* Saved to GIT.
+
+
+### 2016.02.11 - Thu
+
+* Started termui monitor interface.
+
 ### 2016.02.08 - Mon
 
 * Saved to GIT.
-* 
 
 ### 2016.02.05 - Fri
 

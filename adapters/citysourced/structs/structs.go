@@ -16,10 +16,21 @@ import (
 
 // NRequestCommon represents properties common to all requests.
 type NRequestCommon struct {
+	ID    int64
 	Route NRoute
 	Rtype NRequestType
 	NRouter
 	NRequester
+}
+
+// GetID returns the Request ID
+func (r NRequestCommon) GetID() int64 {
+	return r.ID
+}
+
+// SetID sets the Request ID
+func (r *NRequestCommon) SetID(id int64) {
+	r.ID = id
 }
 
 // GetType returns the Request Type as a string.
@@ -47,6 +58,8 @@ func (r *NRequestCommon) SetRoute(route NRoute) {
 
 // NRequester defines the behavior of a Request Package.
 type NRequester interface {
+	GetID() int64
+	SetID(int64)
 	GetRoute() NRoute
 	SetRoute(route NRoute)
 	RouteType() NRouteType
@@ -136,6 +149,7 @@ func (r NRoute) RouteType() NRouteType {
 
 // NResponseCommon represents properties common to all requests.
 type NResponseCommon struct {
+	ID    int64
 	Route NRoute
 	Rtype NResponseType
 	NResponseer
@@ -457,6 +471,7 @@ func MidID(mid string) (int, error) {
 func (r NRequestCommon) String() string {
 	ls := new(common.LogString)
 	ls.AddF("Type: %s\n", r.Rtype.String())
+	ls.AddF("ID: %v\n", r.ID)
 	ls.AddF("Route: %s\n", r.Route.String())
 	return ls.Box(40)
 }
@@ -521,6 +536,10 @@ func (r NRouteType) String() string {
 	default:
 		return color.RedString("Invalid")
 	}
+}
+
+func (r NRoute) SString() string {
+	return fmt.Sprintf("%s-%s-%d", r.AdpID, r.AreaID, r.ProviderID)
 }
 
 // String displays the type.
