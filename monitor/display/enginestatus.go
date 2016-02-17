@@ -9,8 +9,8 @@ type engStatusType struct {
 	name       string
 	lastUpdate time.Time
 	status     string
-	addr       string
 	adapters   string
+	addr       string
 	rqstCount  int64
 }
 
@@ -23,27 +23,12 @@ const (
 )
 
 func newEngStatusType(m message) (dataInterface, error) {
-	if m.mType != msgTypeES {
-		return nil, fmt.Errorf("invalid message type: %q sent to System Update - message: %v", m.mType, m)
+	engStatus := new(engStatusType)
+	err := engStatus.update(m)
+	if err != nil {
+		return nil, err
 	}
-	if !m.valid() {
-		return nil, fmt.Errorf("invalid message: %#v", m)
-	}
-	name := m.data[esName]
-	status := m.data[esStatus]
-	adapters := m.data[esAdapters]
-	addr := m.data[esAddr]
-	// log.Debug("Name: %q  status: %q  adapters: %q  addr: %q", name, status, adapters, addr)
-
-	d := &engStatusType{
-		name:       name,
-		lastUpdate: time.Now(),
-		status:     status,
-		adapters:   adapters,
-		addr:       addr,
-	}
-	// log.Debug("d: %#v", d)
-	return dataInterface(d), nil
+	return dataInterface(engStatus), nil
 }
 
 func (r engStatusType) display() string {
@@ -51,19 +36,16 @@ func (r engStatusType) display() string {
 }
 
 func (r *engStatusType) update(m message) error {
-	// log.Debug(m.String())
-	if m.mType != msgTypeES {
-		return fmt.Errorf("invalid message type: %q sent to System Update - message: %v", m.mType, m)
-	}
-	if !m.valid() {
-		return fmt.Errorf("invalid message: %#v", m)
+	s, err := unmarshalEngStatusMsg(m)
+	if err != nil {
+		return err
 	}
 
-	r.name = m.data[esName]
+	r.name = s.name
 	r.lastUpdate = time.Now()
-	r.status = m.data[esStatus]
-	if r.addr > "" {
-		r.addr = m.data[esAddr]
+	r.status = s.status
+	if s.addr > "" {
+		r.addr = s.addr
 	}
 	return nil
 }
@@ -78,4 +60,33 @@ func (r *engStatusType) getLastUpdate() time.Time {
 
 func (r *engStatusType) setStatus(status string) {
 	r.status = status
+}
+
+// -------------------------------------------- message --------------------------------------------------------------------
+
+type engStatusMsgType struct {
+	name     string
+	status   string
+	adapters string
+	addr     string
+}
+
+func unmarshalEngStatusMsg(m message) (*engStatusMsgType, error) {
+	if m.mType != msgTypeES {
+		return &engStatusMsgType{}, fmt.Errorf("invalid message type: %q sent to EngineStatus - message: %v", m.mType, m)
+	}
+	if !m.valid() {
+		return &engStatusMsgType{}, fmt.Errorf("invalid message: %#v", m)
+	}
+
+	return &engStatusMsgType{
+		name:     m.data[esName],
+		status:   m.data[esStatus],
+		adapters: m.data[esAdapters],
+		addr:     m.data[esAddr],
+	}, nil
+}
+
+func (r engStatusMsgType) marshal() ([]byte, error) {
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s", msgTypeES, msgDelimiter, r.name, msgDelimiter, r.status, msgDelimiter, r.addr, msgDelimiter, r.adapters)), nil
 }

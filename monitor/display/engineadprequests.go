@@ -21,29 +21,12 @@ const (
 )
 
 func newEngAdpRequestType(m message) (dataInterface, error) {
-	if m.mType != msgTypeEA {
-		return nil, fmt.Errorf("invalid message type: %q sent to Eng Adp Request - message: %v", m.mType, m)
-	}
-	if !m.valid() {
-		return nil, fmt.Errorf("invalid message: %#v", m)
-	}
-	id := m.data[eaID]
-	status := m.data[eaStatus]
-	at, err := time.Parse(time.RFC3339Nano, m.data[eaAt])
+	engAdpRequest := new(engAdpRequestType)
+	err := engAdpRequest.update(m)
 	if err != nil {
-		at = time.Now()
+		return nil, err
 	}
-	route := m.data[eaRoute]
-	// log.Debug("Name: %q  status: %q  adapters: %q  addr: %q", name, status, adapters, addr)
-
-	d := &engAdpRequestType{
-		id:     id,
-		status: status,
-		at:     at,
-		route:  route,
-	}
-	// log.Debug("d: %#v", d)
-	return dataInterface(d), nil
+	return dataInterface(engAdpRequest), nil
 }
 
 func (r engAdpRequestType) display() string {
@@ -51,22 +34,14 @@ func (r engAdpRequestType) display() string {
 }
 
 func (r *engAdpRequestType) update(m message) error {
-	// log.Debug(m.String())
-	if m.mType != msgTypeES {
-		return fmt.Errorf("invalid message type: %q sent to System Update - message: %v", m.mType, m)
-	}
-	if !m.valid() {
-		return fmt.Errorf("invalid message: %#v", m)
-	}
-
-	r.id = m.data[eaID]
-	r.route = m.data[eaRoute]
-	r.status = m.data[eaStatus]
-	at, err := time.Parse(time.RFC3339Nano, m.data[eaAt])
+	s, err := unmarshalAdpEngRequestMsg(m)
 	if err != nil {
-		at = time.Now()
+		return err
 	}
-	r.at = at
+	r.id = s.id
+	r.status = s.status
+	r.route = s.route
+	r.at = s.at
 	return nil
 }
 
@@ -80,4 +55,39 @@ func (r *engAdpRequestType) getLastUpdate() time.Time {
 
 func (r *engAdpRequestType) setStatus(status string) {
 	r.status = status
+}
+
+// -------------------------------------------- message --------------------------------------------------------------------
+
+type engAdpRequestMsgType struct {
+	id     string
+	status string
+	route  string
+	at     time.Time
+}
+
+func unmarshalAdpEngRequestMsg(m message) (*engAdpRequestMsgType, error) {
+	if m.mType != msgTypeEA {
+		return &engAdpRequestMsgType{}, fmt.Errorf("invalid message type: %q sent to EngineRequest - message: %v", m.mType, m)
+	}
+	if !m.valid() {
+		return &engAdpRequestMsgType{}, fmt.Errorf("invalid message: %#v", m)
+	}
+
+	s := engAdpRequestMsgType{
+		id:     m.data[eaID],
+		status: m.data[eaStatus],
+		route:  m.data[eaRoute],
+	}
+	if at, err := time.Parse(time.RFC3339Nano, m.data[eaAt]); err == nil {
+		s.at = at
+	} else {
+		s.at = time.Now()
+	}
+	return &s, nil
+
+}
+
+func (r engAdpRequestMsgType) marshal() ([]byte, error) {
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s", msgTypeEA, msgDelimiter, r.id, msgDelimiter, r.status, msgDelimiter, r.route, msgDelimiter, r.at.Format(time.RFC3339))), nil
 }

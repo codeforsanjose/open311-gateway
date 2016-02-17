@@ -23,31 +23,12 @@ const (
 )
 
 func newEngRequestType(m message) (dataInterface, error) {
-	if m.mType != msgTypeER {
-		return nil, fmt.Errorf("invalid message type: %q sent to Engine Request - message: %v", m.mType, m)
-	}
-	if !m.valid() {
-		return nil, fmt.Errorf("invalid message: %#v", m)
-	}
-	id := m.data[erID]
-	status := m.data[erStatus]
-	at, err := time.Parse(time.RFC3339Nano, m.data[erAt])
+	engRequest := new(engRequestType)
+	err := engRequest.update(m)
 	if err != nil {
-		at = time.Now()
+		return nil, err
 	}
-	rType := m.data[erRqstType]
-	areaID := m.data[erAreaID]
-	// log.Debug("Name: %q  status: %q  adapters: %q  addr: %q", name, status, adapters, addr)
-
-	d := &engRequestType{
-		id:     id,
-		status: status,
-		at:     at,
-		rType:  rType,
-		areaID: areaID,
-	}
-	// log.Debug("d: %#v", d)
-	return dataInterface(d), nil
+	return dataInterface(engRequest), nil
 }
 
 func (r engRequestType) display() string {
@@ -55,23 +36,15 @@ func (r engRequestType) display() string {
 }
 
 func (r *engRequestType) update(m message) error {
-	// log.Debug(m.String())
-	if m.mType != msgTypeES {
-		return fmt.Errorf("invalid message type: %q sent to System Update - message: %v", m.mType, m)
-	}
-	if !m.valid() {
-		return fmt.Errorf("invalid message: %#v", m)
-	}
-
-	r.id = m.data[erID]
-	r.rType = m.data[erRqstType]
-	r.status = m.data[erStatus]
-	at, err := time.Parse(time.RFC3339Nano, m.data[erAt])
+	s, err := unmarshalEngRequestMsg(m)
 	if err != nil {
-		at = time.Now()
+		return err
 	}
-	r.at = at
-	r.areaID = m.data[erAreaID]
+	r.id = s.id
+	r.rType = s.rType
+	r.status = s.status
+	r.at = s.at
+	r.areaID = s.areaID
 	return nil
 }
 
@@ -85,4 +58,40 @@ func (r *engRequestType) getLastUpdate() time.Time {
 
 func (r *engRequestType) setStatus(status string) {
 	r.status = status
+}
+
+// -------------------------------------------- message --------------------------------------------------------------------
+
+type engRequestMsgType struct {
+	id     string
+	rType  string
+	status string
+	at     time.Time
+	areaID string
+}
+
+func unmarshalEngRequestMsg(m message) (*engRequestMsgType, error) {
+	if m.mType != msgTypeER {
+		return &engRequestMsgType{}, fmt.Errorf("invalid message type: %q sent to EngineRequest - message: %v", m.mType, m)
+	}
+	if !m.valid() {
+		return &engRequestMsgType{}, fmt.Errorf("invalid message: %#v", m)
+	}
+
+	s := engRequestMsgType{
+		id:     m.data[erID],
+		rType:  m.data[erRqstType],
+		status: m.data[erStatus],
+		areaID: m.data[erAreaID],
+	}
+	if at, err := time.Parse(time.RFC3339Nano, m.data[erAt]); err == nil {
+		s.at = at
+	} else {
+		s.at = time.Now()
+	}
+	return &s, nil
+}
+
+func (r engRequestMsgType) marshal() ([]byte, error) {
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", msgTypeER, msgDelimiter, r.id, msgDelimiter, r.rType, msgDelimiter, r.status, msgDelimiter, r.at.Format(time.RFC3339), msgDelimiter, r.areaID)), nil
 }

@@ -1,4 +1,4 @@
-package display
+package message
 
 import (
 	"fmt"
@@ -11,12 +11,11 @@ import (
 
 // Message types
 const (
-	msgTypeES = "ES"
-	msgTypeER = "ER"
-	msgTypeEA = "EA"
+	typeES = "ES"
+	typeER = "ER"
+	typeEA = "EA"
 
-	msgTypeIndex = 0
-	msgDelimiter = "|"
+	typeIndex = 0
 )
 
 // -------------------------------------------- message --------------------------------------------------------------------
@@ -31,7 +30,7 @@ func newMessage(b []byte, n int) (message, error) {
 	if n <= 0 {
 		return message{}, fmt.Errorf("message has no contents")
 	}
-	m := strings.Split(string(b[0:n]), msgDelimiter)
+	m := strings.Split(string(b[0:n]), "|")
 	return message{
 		mType: m[0],
 		key:   m[msgKeys[m[0]]],
@@ -59,20 +58,21 @@ var msgKeys map[string]int
 
 func initMsgKeys() {
 	msgKeys = make(map[string]int)
-	msgKeys[msgTypeES] = esName
-	msgKeys[msgTypeER] = erID
-	msgKeys[msgTypeEA] = eaID
+	msgKeys[typeES] = esName
+	msgKeys[typeER] = erID
+	msgKeys[typeEA] = eaID
 }
 
 var msgLen map[string]int
 
 func initMsgLen() {
 	msgLen = make(map[string]int)
-	msgLen[msgTypeES] = esLength
-	msgLen[msgTypeER] = erLength
-	msgLen[msgTypeEA] = eaLength
+	msgLen[typeES] = esLength
+	msgLen[typeER] = erLength
+	msgLen[typeEA] = eaLength
 }
 
 func init() {
-
+	initMsgKeys()
+	initMsgLen()
 }

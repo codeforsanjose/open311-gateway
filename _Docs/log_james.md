@@ -33,6 +33,11 @@ ___
 ### 2016.02.17 - Wed
 
 * Saved current work on the Monitor program to git.
+* Fleshed out messages and data:
+	* Engine Status
+	* Engine Requests
+	* Engine Status
+* Saved to GIT.
 
 ### 2016.02.16 - Tue
 
