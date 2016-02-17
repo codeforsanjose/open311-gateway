@@ -5,6 +5,8 @@ import (
 	"sort"
 	"sync"
 	"time"
+
+	"Gateway311/monitor/comm"
 )
 
 // ==============================================================================================================================
@@ -13,7 +15,7 @@ import (
 
 type dataInterface interface {
 	display() string
-	update(m message) error
+	update(m comm.Message) error
 	key() string
 	getLastUpdate() time.Time
 	setStatus(status string) // Testing only!
@@ -45,37 +47,37 @@ func newSortedData(mType string, sortAsc bool) *sortedData {
 	}
 }
 
-func (r *sortedData) update(m message) error {
-	if _, ok := r.data[m.key]; !ok {
+func (r *sortedData) update(m comm.Message) error {
+	if _, ok := r.data[m.Key()]; !ok {
 		return r.add(m)
 	}
 
 	r.Lock()
 	defer r.Unlock()
-	r.data[m.key].update(m)
+	r.data[m.Key()].update(m)
 	return nil
 }
 
-func (r *sortedData) add(m message) (err error) {
+func (r *sortedData) add(m comm.Message) (err error) {
 	var d dataInterface
-	switch m.mType {
-	case msgTypeES:
+	switch m.Mtype() {
+	case comm.MsgTypeES:
 		d, err = newEngStatusType(m)
 		if err != nil {
 			return err
 		}
-	case msgTypeER:
+	case comm.MsgTypeER:
 		d, err = newEngRequestType(m)
 		if err != nil {
 			return err
 		}
-	case msgTypeEA:
+	case comm.MsgTypeEA:
 		d, err = newEngAdpRequestType(m)
 		if err != nil {
 			return err
 		}
 	default:
-		return fmt.Errorf("invalid message type: %q", m.mType)
+		return fmt.Errorf("invalid message type: %q", m.Mtype())
 	}
 
 	r.Lock()

@@ -1,6 +1,7 @@
 package display
 
 import (
+	"Gateway311/monitor/comm"
 	"_sketches/spew"
 	"fmt"
 	"net"
@@ -12,7 +13,7 @@ import (
 
 // StartReceiver starts the UDP receive process.  The bytes received are parsed
 // by the separator character "|" into a slice of strings, and put on the msgChan.
-func StartReceiver(addr string, msgChan chan<- message, done <-chan bool) error {
+func StartReceiver(addr string, msgChan chan<- comm.Message, done <-chan bool) error {
 	a, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		return fmt.Errorf("error resolving address - %s", err.Error())
@@ -36,7 +37,7 @@ func StartReceiver(addr string, msgChan chan<- message, done <-chan bool) error 
 			}
 
 			if n > 0 {
-				msg, err := newMessage(buf, n)
+				msg, err := comm.NewMessage(buf, n)
 				if err == nil {
 					msgChan <- msg
 				} else {

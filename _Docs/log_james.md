@@ -38,6 +38,10 @@ ___
 	* Engine Requests
 	* Engine Status
 * Saved to GIT.
+* Created a new package "comm".  This will contain all the basic communication - messages, udp/network, etc.
+* Moved all Message handling to "comm".
+* Test OK.
+* Saved to GIT.
 
 ### 2016.02.16 - Tue
 
