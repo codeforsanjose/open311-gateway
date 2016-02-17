@@ -30,6 +30,14 @@ ___
 
 ## Log
 
+### 2016.02.17 - Wed
+
+* Saved current work on the Monitor program to git.
+
+### 2016.02.16 - Tue
+
+* Building Monitor program using uiTerm.
+
 ### 2016.02.12 - Fri
 
 * Started building monitoring app. This will make it easier to verify routing is working properly, as well as monitoring critical processes in the Engine and Adapters.

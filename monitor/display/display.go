@@ -2,8 +2,6 @@ package display
 
 import (
 	"fmt"
-	"sort"
-	"sync"
 	"time"
 
 	"Gateway311/monitor/logs"
@@ -12,29 +10,276 @@ import (
 )
 
 var (
-	systemList  systems
+	// systemList  systems
 	displayList displays
-	log         = logs.Log
+
+	engStatuses *sortedData
+	engRequests *sortedData
+	engAdpCalls *sortedData
+	adpRequests *sortedData
+
+	msgChan chan message
+	done    chan bool
+
+	log = logs.Log
 )
 
-type sysData struct {
-	name       string
-	lastUpdate time.Time
-	status     string
-	addr       string
+// ==============================================================================================================================
+//                                      DISPLAYS
+// ==============================================================================================================================
+
+type displays struct {
+	d    []*ui.List
+	data []func() []string
+	l    []ui.Bufferer
 }
 
-const (
-	suiType int = iota
-	suiName
-	suiStatus
-	suiAddr
-)
-const MsgTypeSUI = "S"
+func (r *displays) init() error {
+	r.d = make([]*ui.List, 0)
+	r.l = make([]ui.Bufferer, 0)
 
-func (r sysData) String() string {
-	return fmt.Sprintf("%-10s  %10s %6.1f  %s", r.name, r.status, time.Since(r.lastUpdate).Seconds(), r.addr)
+	r.newList("Engine List", 0, 0, 7, 80, engStatuses.display)
+	r.newList("Eng01 Requests", 0, 7, 7, 80, engRequests.display)
+	r.newList("Eng01 Adapter Calls", 0, 14, 10, 80, engAdpCalls.display)
+
+	for _, uiList := range r.d {
+		r.l = append(r.l, uiList)
+	}
+	return nil
 }
+
+func (r *displays) run() {
+	if err := ui.Init(); err != nil {
+		panic(err)
+	}
+	defer ui.Close()
+
+	draw := func(t int) {
+		for i, d := range r.d {
+			d.Items = r.data[i]()
+		}
+		ui.Render(r.l...)
+	}
+
+	ui.Handle("/sys/kbd/q", func(ui.Event) {
+		ui.StopLoop()
+	})
+	ui.Handle("/timer/1s", func(e ui.Event) {
+		t := e.Data.(ui.EvtTimer)
+		draw(int(t.Count))
+	})
+	ui.Loop()
+}
+
+func (r *displays) newList(caption string, x, y, height, width int, getData func() []string) error {
+	l := ui.NewList()
+	l.Items = getData()
+	l.ItemFgColor = ui.ColorWhite
+	l.BorderLabel = caption
+	l.Height = height
+	l.Width = width
+	l.X = x
+	l.Y = y
+	r.d = append(r.d, l)
+	r.data = append(r.data, getData)
+	return nil
+
+}
+
+// RunTest blah blah
+func RunTest() {
+	if err := engStatuses.update(newMessageTest([]string{"ES", "Sys1", "active!", "CS1, CS2", "127.0.0.1/5081"})); err != nil {
+		log.Error(err.Error())
+	}
+	if err := engStatuses.update(newMessageTest([]string{"ES", "Sys2", "active", "", "127.0.0.1/5082"})); err != nil {
+		log.Error(err.Error())
+	}
+
+	if err := engRequests.update(newMessageTest([]string{"ER", "10001", "Create", "Active", time.Now().Format(time.RFC3339), "SJ"})); err != nil {
+		log.Error(err.Error())
+	}
+
+	if err := engAdpCalls.update(newMessageTest([]string{"EA", "10001-1", "active", "CS1-SJ-1", time.Now().Format(time.RFC3339)})); err != nil {
+		log.Error(err.Error())
+	}
+	if err := engAdpCalls.update(newMessageTest([]string{"EA", "10001-2", "active", "CS1-SC-1", time.Now().Format(time.RFC3339)})); err != nil {
+		log.Error(err.Error())
+	}
+
+	go func() {
+		var cnt int
+		for {
+			cnt++
+			id := fmt.Sprintf("Sys%02d", cnt)
+			if err := engStatuses.update(newMessageTest([]string{"ES", id, "CS1, CS2", "active", ""})); err != nil {
+				log.Fatalf(err.Error())
+			}
+			for name, data := range engStatuses.data {
+				if time.Since(data.getLastUpdate()).Seconds() > 10 {
+					engStatuses.data[name].setStatus("INACTIVE")
+				}
+			}
+			if cnt == 10 {
+				if err := engStatuses.update(newMessageTest([]string{"ES", "Sys3", "active", "XXX", "127.0.0.1/5083"})); err != nil {
+					log.Fatalf(err.Error())
+				}
+			}
+			time.Sleep(time.Second * 1)
+		}
+	}()
+	displayList.run()
+}
+
+// ==============================================================================================================================
+//                                      INIT
+// ==============================================================================================================================
+
+func init() {
+	initMsgKeys()
+	initMsgLen()
+	engStatuses = newSortedData(msgTypeES, true)
+	engRequests = newSortedData(msgTypeER, false)
+	engAdpCalls = newSortedData(msgTypeEA, false)
+
+	msgChan = make(chan message, 1000)
+	done = make(chan bool)
+
+	// displayList = displays{}
+	displayList.init()
+
+}
+
+func shutdown() {
+	done <- true
+}
+
+/*
+func RunTest1() {
+
+	if err := ui.Init(); err != nil {
+		panic(err)
+	}
+	defer ui.Close()
+
+	if err := engStatuses.update([]string{"S", "Sys1", "active!", "127.0.0.1/5081"}); err != nil {
+		log.Fatalf(err.Error())
+	}
+	if err := engStatuses.update([]string{"S", "Sys2", "active", "127.0.0.1/5082"}); err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	go func() {
+		var cnt int
+		for {
+			cnt++
+			if err := engStatuses.update([]string{"S", "Sys1", "active", ""}); err != nil {
+				log.Fatalf(err.Error())
+			}
+			for name, system := range engStatuses.m {
+				if time.Since(system.lastUpdate).Seconds() > 10 {
+					engStatuses.Lock()
+					engStatuses.m[name].status = "INACTIVE"
+					engStatuses.Unlock()
+				}
+			}
+			if cnt == 10 {
+				if err := engStatuses.update([]string{"S", "Sys3", "active", "127.0.0.1/5083"}); err != nil {
+					log.Fatalf(err.Error())
+				}
+			}
+			time.Sleep(time.Second * 1)
+		}
+	}()
+
+	list := ui.NewList()
+	log.Debug("list type: %T", list)
+	list.Items = engStatuses.display()
+	list.ItemFgColor = ui.ColorWhite
+	list.BorderLabel = "System List"
+	list.Height = 7
+	list.Width = 80
+	list.Y = 4
+
+	draw := func(t int) {
+		list.Items = engStatuses.display()
+		ui.Render(list)
+	}
+
+	ui.Handle("/sys/kbd/q", func(ui.Event) {
+		ui.StopLoop()
+	})
+	ui.Handle("/timer/1s", func(e ui.Event) {
+		t := e.Data.(ui.EvtTimer)
+		draw(int(t.Count))
+	})
+	ui.Loop()
+
+}
+*/
+
+/*
+func RunOld() {
+	log.Debug("Here we go...")
+
+	go Display()
+	a, err := net.ResolveUDPAddr("udp", monitorAddr)
+	if err != nil {
+		fmt.Printf("Error resolving address - %s", err.Error())
+		stop()
+		os.Exit(-1)
+	}
+	fmt.Printf("Address: %s\n", spew.Sdump(a))
+	MonitorConn, _ := net.ListenUDP("udp", a)
+	defer MonitorConn.Close()
+	MonitorConn.SetReadBuffer(1048576)
+
+	buf := make([]byte, 1024)
+
+	fmt.Printf("MsgID           Source                Type                 Destination\n")
+	for {
+		n, _, err := MonitorConn.ReadFromUDP(buf)
+		msgStr := strings.Split(string(buf[0:n]), "|")
+		// fmt.Printf("%-15s %-20s  %-20s %s\n", msgStr[MIMsgID], fmt.Sprintf("[%s: %s]", msgStr[MISysID], msgStr[MIStatus]), msgStr[MIOp], msgStr[MIDest])
+		msgID, err := strconv.ParseInt(msgStr[MIMsgID], 10, 64)
+		if err != nil || msgID <= 0 {
+			log.Error("Invalid message id: %q", msgStr[MIMsgID])
+			continue
+		}
+		_, found := sMap[msgID]
+		if !found {
+			sMap[msgID] = &fullStatus{
+				status: status{
+					ID:        msgID,
+					CreatedAt: time.Now(),
+					SysID:     msgStr[MISysID],
+					Op:        msgStr[MIOp],
+					Dest:      msgStr[MIDest],
+				},
+			}
+		}
+
+		switch msgStr[MIStatus] {
+		case "eng-send":
+			sMap[msgID].engSent = true
+		case "eng-recv":
+			sMap[msgID].engRecv = true
+		case "adp-recv":
+			sMap[msgID].adpRecv = true
+		case "adp-send":
+			sMap[msgID].adpSent = true
+		}
+
+		displayItem(sMap[msgID])
+
+	}
+}
+*/
+
+/*
+
+// ==============================================================================================================================
+//                                      SYSTEMS
+// ==============================================================================================================================
 
 type systems struct {
 	sorted bool
@@ -67,14 +312,14 @@ func (r *systems) index() error {
 	return nil
 }
 
-func (r *systems) update(msg []string) error {
-	if msg[suiType] != MsgTypeSUI {
-		return fmt.Errorf("invalid message type: %q sent to System Update - message: %v", msg[suiType], msg)
+func (r *systems) update(data []string) (key string, err error) {
+	if data[sesType] != msgTypeES {
+		return fmt.Errorf("invalid message type: %q sent to System Update - message: %v", data[sesType], data)
 	}
 
-	name := msg[suiName]
-	status := msg[suiStatus]
-	addr := msg[suiAddr]
+	name := data[sesName]
+	status := data[sesStatus]
+	addr := data[sesAddr]
 
 	r.Lock()
 	defer r.Unlock()
@@ -98,161 +343,20 @@ func (r *systems) update(msg []string) error {
 	return nil
 }
 
-// ==============================================================================================================================
-//                                      DISPLAYS
-// ==============================================================================================================================
+// -------------------------------------------- sysData -------------------------------------------------------------------------
 
-type displays struct {
-	systems *ui.List
-	l       []ui.Bufferer
+type sysData struct {
+	name       string
+	lastUpdate time.Time
+	status     string
+	addr       string
 }
 
-func (r *displays) init() error {
-	r.setupSystemsDisplay()
-	r.l = make([]ui.Bufferer, 0)
-	r.l = append(r.l, ui.Bufferer(r.systems))
-	return nil
+func (r sysData) String() string {
+	return fmt.Sprintf("%-10s  %10s %8.1f  %s", r.name, r.status, time.Since(r.lastUpdate).Seconds(), r.addr)
 }
 
-func (r *displays) run() {
-	if err := ui.Init(); err != nil {
-		panic(err)
-	}
-	defer ui.Close()
-	log.Debug("After ui.Init")
-
-	draw := func(t int) {
-		r.systems.Items = systemList.display()
-		ui.Render(r.l...)
-	}
-
-	ui.Handle("/sys/kbd/q", func(ui.Event) {
-		ui.StopLoop()
-	})
-	ui.Handle("/timer/1s", func(e ui.Event) {
-		t := e.Data.(ui.EvtTimer)
-		draw(int(t.Count))
-	})
-	ui.Loop()
-}
-
-func (r *displays) setupSystemsDisplay() error {
-	r.systems = ui.NewList()
-	r.systems.Items = systemList.display()
-	r.systems.ItemFgColor = ui.ColorWhite
-	r.systems.BorderLabel = "System List"
-	r.systems.Height = 7
-	r.systems.Width = 80
-	r.systems.Y = 4
-	return nil
-}
-
-func RunTest() {
-	if err := systemList.update([]string{"S", "Sys1", "active!", "127.0.0.1/5081"}); err != nil {
-		log.Fatalf(err.Error())
-	}
-	if err := systemList.update([]string{"S", "Sys2", "active", "127.0.0.1/5082"}); err != nil {
-		log.Fatalf(err.Error())
-	}
-
-	go func() {
-		var cnt int
-		for {
-			cnt++
-			if err := systemList.update([]string{"S", "Sys1", "active", ""}); err != nil {
-				log.Fatalf(err.Error())
-			}
-			for name, system := range systemList.m {
-				if time.Since(system.lastUpdate).Seconds() > 10 {
-					systemList.Lock()
-					systemList.m[name].status = "INACTIVE"
-					systemList.Unlock()
-				}
-			}
-			if cnt == 10 {
-				if err := systemList.update([]string{"S", "Sys3", "active", "127.0.0.1/5083"}); err != nil {
-					log.Fatalf(err.Error())
-				}
-			}
-			time.Sleep(time.Second * 1)
-		}
-	}()
-	displayList.run()
-}
-
-func RunTest1() {
-
-	if err := ui.Init(); err != nil {
-		panic(err)
-	}
-	defer ui.Close()
-
-	if err := systemList.update([]string{"S", "Sys1", "active!", "127.0.0.1/5081"}); err != nil {
-		log.Fatalf(err.Error())
-	}
-	if err := systemList.update([]string{"S", "Sys2", "active", "127.0.0.1/5082"}); err != nil {
-		log.Fatalf(err.Error())
-	}
-
-	go func() {
-		var cnt int
-		for {
-			cnt++
-			if err := systemList.update([]string{"S", "Sys1", "active", ""}); err != nil {
-				log.Fatalf(err.Error())
-			}
-			for name, system := range systemList.m {
-				if time.Since(system.lastUpdate).Seconds() > 10 {
-					systemList.Lock()
-					systemList.m[name].status = "INACTIVE"
-					systemList.Unlock()
-				}
-			}
-			if cnt == 10 {
-				if err := systemList.update([]string{"S", "Sys3", "active", "127.0.0.1/5083"}); err != nil {
-					log.Fatalf(err.Error())
-				}
-			}
-			time.Sleep(time.Second * 1)
-		}
-	}()
-
-	list := ui.NewList()
-	log.Debug("list type: %T", list)
-	list.Items = systemList.display()
-	list.ItemFgColor = ui.ColorWhite
-	list.BorderLabel = "System List"
-	list.Height = 7
-	list.Width = 80
-	list.Y = 4
-
-	draw := func(t int) {
-		list.Items = systemList.display()
-		ui.Render(list)
-	}
-
-	ui.Handle("/sys/kbd/q", func(ui.Event) {
-		ui.StopLoop()
-	})
-	ui.Handle("/timer/1s", func(e ui.Event) {
-		t := e.Data.(ui.EvtTimer)
-		draw(int(t.Count))
-	})
-	ui.Loop()
-
-}
-
-// ==============================================================================================================================
-//                                      INIT
-// ==============================================================================================================================
-
-func init() {
-	systemList = systems{
-		m: make(map[string]*sysData),
-	}
-	// displayList = displays{}
-	displayList.init()
-}
+*/
 
 /*
 func Run1() {
