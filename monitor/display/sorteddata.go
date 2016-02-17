@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"Gateway311/monitor/comm"
+	"Gateway311/monitor/telemetry"
 )
 
 // ==============================================================================================================================
@@ -15,7 +15,7 @@ import (
 
 type dataInterface interface {
 	display() string
-	update(m comm.Message) error
+	update(m telemetry.Message) error
 	key() string
 	getLastUpdate() time.Time
 	setStatus(status string) // Testing only!
@@ -47,7 +47,7 @@ func newSortedData(mType string, sortAsc bool) *sortedData {
 	}
 }
 
-func (r *sortedData) update(m comm.Message) error {
+func (r *sortedData) update(m telemetry.Message) error {
 	if _, ok := r.data[m.Key()]; !ok {
 		return r.add(m)
 	}
@@ -58,20 +58,20 @@ func (r *sortedData) update(m comm.Message) error {
 	return nil
 }
 
-func (r *sortedData) add(m comm.Message) (err error) {
+func (r *sortedData) add(m telemetry.Message) (err error) {
 	var d dataInterface
 	switch m.Mtype() {
-	case comm.MsgTypeES:
+	case telemetry.MsgTypeES:
 		d, err = newEngStatusType(m)
 		if err != nil {
 			return err
 		}
-	case comm.MsgTypeER:
+	case telemetry.MsgTypeER:
 		d, err = newEngRequestType(m)
 		if err != nil {
 			return err
 		}
-	case comm.MsgTypeEA:
+	case telemetry.MsgTypeEA:
 		d, err = newEngAdpRequestType(m)
 		if err != nil {
 			return err

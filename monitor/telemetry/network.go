@@ -1,10 +1,16 @@
-package display
+package telemetry
 
 import (
-	"Gateway311/monitor/comm"
-	"_sketches/spew"
 	"fmt"
 	"net"
+
+	"Gateway311/monitor/logs"
+
+	"github.com/davecgh/go-spew/spew"
+)
+
+var (
+	log = logs.Log
 )
 
 // ==============================================================================================================================
@@ -13,7 +19,7 @@ import (
 
 // StartReceiver starts the UDP receive process.  The bytes received are parsed
 // by the separator character "|" into a slice of strings, and put on the msgChan.
-func StartReceiver(addr string, msgChan chan<- comm.Message, done <-chan bool) error {
+func StartReceiver(addr string, msgChan chan<- Message, done <-chan bool) error {
 	a, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		return fmt.Errorf("error resolving address - %s", err.Error())
@@ -37,7 +43,7 @@ func StartReceiver(addr string, msgChan chan<- comm.Message, done <-chan bool) e
 			}
 
 			if n > 0 {
-				msg, err := comm.NewMessage(buf, n)
+				msg, err := NewMessage(buf, n)
 				if err == nil {
 					msgChan <- msg
 				} else {

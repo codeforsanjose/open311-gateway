@@ -1,9 +1,10 @@
 package display
 
 import (
-	"Gateway311/monitor/comm"
 	"fmt"
 	"time"
+
+	"Gateway311/monitor/telemetry"
 )
 
 type engStatusType struct {
@@ -15,7 +16,7 @@ type engStatusType struct {
 	rqstCount  int64
 }
 
-func newEngStatusType(m comm.Message) (dataInterface, error) {
+func newEngStatusType(m telemetry.Message) (dataInterface, error) {
 	engStatus := new(engStatusType)
 	err := engStatus.update(m)
 	if err != nil {
@@ -28,8 +29,8 @@ func (r engStatusType) display() string {
 	return fmt.Sprintf("%-10s  %10s %8.1f  %s", r.name, r.status, time.Since(r.lastUpdate).Seconds(), r.addr)
 }
 
-func (r *engStatusType) update(m comm.Message) error {
-	s, err := comm.UnmarshalEngStatusMsg(m)
+func (r *engStatusType) update(m telemetry.Message) error {
+	s, err := telemetry.UnmarshalEngStatusMsg(m)
 	if err != nil {
 		return err
 	}

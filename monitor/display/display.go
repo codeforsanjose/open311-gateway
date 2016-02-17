@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"Gateway311/monitor/comm"
 	"Gateway311/monitor/logs"
+	"Gateway311/monitor/telemetry"
 
 	ui "github.com/gizak/termui"
 )
@@ -19,7 +19,7 @@ var (
 	engAdpCalls *sortedData
 	adpRequests *sortedData
 
-	msgChan chan comm.Message
+	msgChan chan telemetry.Message
 	done    chan bool
 
 	log = logs.Log
@@ -89,21 +89,21 @@ func (r *displays) newList(caption string, x, y, height, width int, getData func
 
 // RunTest blah blah
 func RunTest() {
-	if err := engStatuses.update(comm.NewMessageTest([]string{"ES", "Sys1", "active!", "CS1, CS2", "127.0.0.1/5081"})); err != nil {
+	if err := engStatuses.update(telemetry.NewMessageTest([]string{"ES", "Sys1", "active!", "CS1, CS2", "127.0.0.1/5081"})); err != nil {
 		log.Error(err.Error())
 	}
-	if err := engStatuses.update(comm.NewMessageTest([]string{"ES", "Sys2", "active", "", "127.0.0.1/5082"})); err != nil {
-		log.Error(err.Error())
-	}
-
-	if err := engRequests.update(comm.NewMessageTest([]string{"ER", "10001", "Create", "Active", time.Now().Format(time.RFC3339), "SJ"})); err != nil {
+	if err := engStatuses.update(telemetry.NewMessageTest([]string{"ES", "Sys2", "active", "", "127.0.0.1/5082"})); err != nil {
 		log.Error(err.Error())
 	}
 
-	if err := engAdpCalls.update(comm.NewMessageTest([]string{"EA", "10001-1", "active", "CS1-SJ-1", time.Now().Format(time.RFC3339)})); err != nil {
+	if err := engRequests.update(telemetry.NewMessageTest([]string{"ER", "10001", "Create", "Active", time.Now().Format(time.RFC3339), "SJ"})); err != nil {
 		log.Error(err.Error())
 	}
-	if err := engAdpCalls.update(comm.NewMessageTest([]string{"EA", "10001-2", "active", "CS1-SC-1", time.Now().Format(time.RFC3339)})); err != nil {
+
+	if err := engAdpCalls.update(telemetry.NewMessageTest([]string{"EA", "10001-1", "active", "CS1-SJ-1", time.Now().Format(time.RFC3339)})); err != nil {
+		log.Error(err.Error())
+	}
+	if err := engAdpCalls.update(telemetry.NewMessageTest([]string{"EA", "10001-2", "active", "CS1-SC-1", time.Now().Format(time.RFC3339)})); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -112,7 +112,7 @@ func RunTest() {
 		for {
 			cnt++
 			id := fmt.Sprintf("Sys%02d", cnt)
-			if err := engStatuses.update(comm.NewMessageTest([]string{"ES", id, "CS1, CS2", "active", ""})); err != nil {
+			if err := engStatuses.update(telemetry.NewMessageTest([]string{"ES", id, "CS1, CS2", "active", ""})); err != nil {
 				log.Fatalf(err.Error())
 			}
 			for name, data := range engStatuses.data {
@@ -121,7 +121,7 @@ func RunTest() {
 				}
 			}
 			if cnt == 10 {
-				if err := engStatuses.update(comm.NewMessageTest([]string{"ES", "Sys3", "active", "XXX", "127.0.0.1/5083"})); err != nil {
+				if err := engStatuses.update(telemetry.NewMessageTest([]string{"ES", "Sys3", "active", "XXX", "127.0.0.1/5083"})); err != nil {
 					log.Fatalf(err.Error())
 				}
 			}
@@ -136,11 +136,11 @@ func RunTest() {
 // ==============================================================================================================================
 
 func init() {
-	engStatuses = newSortedData(comm.MsgTypeES, true)
-	engRequests = newSortedData(comm.MsgTypeER, false)
-	engAdpCalls = newSortedData(comm.MsgTypeEA, false)
+	engStatuses = newSortedData(telemetry.MsgTypeES, true)
+	engRequests = newSortedData(telemetry.MsgTypeER, false)
+	engAdpCalls = newSortedData(telemetry.MsgTypeEA, false)
 
-	msgChan = make(chan comm.Message, 1000)
+	msgChan = make(chan telemetry.Message, 1000)
 	done = make(chan bool)
 
 	// displayList = displays{}
@@ -312,7 +312,7 @@ func (r *systems) index() error {
 }
 
 func (r *systems) update(data []string) (key string, err error) {
-	if data[sesType] != comm.MsgTypeES {
+	if data[sesType] != telemetry.MsgTypeES {
 		return fmt.Errorf("invalid message type: %q sent to System Update - message: %v", data[sesType], data)
 	}
 

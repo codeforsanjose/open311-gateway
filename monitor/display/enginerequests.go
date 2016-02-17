@@ -1,9 +1,10 @@
 package display
 
 import (
-	"Gateway311/monitor/comm"
 	"fmt"
 	"time"
+
+	"Gateway311/monitor/telemetry"
 )
 
 type engRequestType struct {
@@ -14,7 +15,7 @@ type engRequestType struct {
 	areaID string
 }
 
-func newEngRequestType(m comm.Message) (dataInterface, error) {
+func newEngRequestType(m telemetry.Message) (dataInterface, error) {
 	engRequest := new(engRequestType)
 	err := engRequest.update(m)
 	if err != nil {
@@ -27,8 +28,8 @@ func (r engRequestType) display() string {
 	return fmt.Sprintf("%-10s  %-25s  %-12s %8.1f", r.id, fmt.Sprintf("%s (%s)", r.rType, r.areaID), r.status, time.Since(r.at).Seconds())
 }
 
-func (r *engRequestType) update(m comm.Message) error {
-	s, err := comm.UnmarshalEngRequestMsg(m)
+func (r *engRequestType) update(m telemetry.Message) error {
+	s, err := telemetry.UnmarshalEngRequestMsg(m)
 	if err != nil {
 		return err
 	}

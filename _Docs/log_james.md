@@ -42,6 +42,9 @@ ___
 * Moved all Message handling to "comm".
 * Test OK.
 * Saved to GIT.
+* Renamed "comm" package to "telemetry".  This will match with "engine" and "adapter" usages.
+* Created hard link of monitor/telemetry/message.go in engine/telemetry and adapter/citysourced/telemetry.
+* Saved to GIT.
 
 ### 2016.02.16 - Tue
 
