@@ -53,6 +53,11 @@ ___
 * In Engine:
 	* Update telemetry - added SendEngRequest() and SendEngRPC() calls.
 * Saved to GIT.
+* Cleaned up Monitor:
+	* Deleted old test and development code.
+	* Added telemetry.Start() and display.Start() calls.
+	* Initialization and shutdown is cleaner now.
+* Saved to GIT.
 
 ### 2016.02.16 - Tue
 

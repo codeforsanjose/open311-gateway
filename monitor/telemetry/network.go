@@ -5,8 +5,6 @@ import (
 	"net"
 
 	"Gateway311/monitor/logs"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 var (
@@ -14,15 +12,16 @@ var (
 	msgChan     chan Message
 	done        chan bool
 	monitorConn *net.UDPConn
-)
-
-const (
-	monitorAddr = "127.0.0.1:5051"
+	monitorAddr string
 )
 
 func init() {
 	msgChan = make(chan Message, 1000)
 	done = make(chan bool)
+}
+
+// Start starts the telemetry system.
+func Start() {
 
 	if err := StartReceiver(monitorAddr, msgChan, done); err != nil {
 		Shutdown()
@@ -36,18 +35,23 @@ func Shutdown() {
 	monitorConn.Close()
 }
 
+// SetAddr sets the receiver address.
+func SetAddr(addr string) {
+	monitorAddr = addr
+}
+
 // ==============================================================================================================================
-//                                      DATA
+//                                      RECEIVER
 // ==============================================================================================================================
 
 // StartReceiver starts the UDP receive process.  The bytes received are parsed
 // by the separator character "|" into a slice of strings, and put on the msgChan.
 func StartReceiver(addr string, msgChan chan<- Message, done <-chan bool) error {
+	log.Debug("Address: %v", addr)
 	a, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		return fmt.Errorf("error resolving address - %s", err.Error())
 	}
-	fmt.Printf("Address: %s\n", spew.Sdump(a))
 	monitorConn, _ = net.ListenUDP("udp", a)
 	monitorConn.SetReadBuffer(1048576)
 
