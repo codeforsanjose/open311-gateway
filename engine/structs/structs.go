@@ -14,6 +14,32 @@ import (
 //                                      REQUEST
 // =======================================================================================
 
+// NID represents the full ID for any Normalized Request or Response.
+type NID struct {
+	rqstID int64
+	rpcID  int64
+}
+
+// Set sets the NID.
+func (r *NID) Set(rqstID, rpcID int64) {
+	r.rqstID = rqstID
+	r.rpcID = rpcID
+}
+
+// Get gets the NID.
+func (r NID) Get() (int64, int64) {
+	return r.rqstID, r.rpcID
+}
+
+// String returns the string representation NID.
+func (r NID) String() string {
+	return fmt.Sprintf("%d-%d", r.rqstID, r.rpcID)
+}
+
+// =======================================================================================
+//                                      REQUEST
+// =======================================================================================
+
 // NRequestCommon represents properties common to all requests.
 type NRequestCommon struct {
 	ID    int64

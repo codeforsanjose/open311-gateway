@@ -96,8 +96,14 @@ func Start() {
 			switch msg.Mtype() {
 			case telemetry.MsgTypeES:
 				log.Debug("Message type ES - %v\n", msg.Data())
+				if err := engStatuses.update(msg); err != nil {
+					log.Error(err.Error())
+				}
 			case telemetry.MsgTypeER:
 				log.Debug("Message type ER - %v\n", msg.Data())
+				if err := engRequests.update(msg); err != nil {
+					log.Error(err.Error())
+				}
 			case telemetry.MsgTypeERPC:
 				log.Debug("Message type ARPC - %v\n", msg.Data())
 				if err := engAdpCalls.update(msg); err != nil {

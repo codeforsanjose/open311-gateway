@@ -23,9 +23,9 @@ const (
 //                                      Request
 // =======================================================================================
 
-func processSearch(r *rest.Request) (interface{}, error) {
+func processSearch(rqst *rest.Request, rqstID int64) (interface{}, error) {
 	sreq := SearchRequest{}
-	if err := sreq.init(r); err != nil {
+	if err := sreq.init(rqst, rqstID); err != nil {
 		log.Errorf("processSearch failed - %s", err)
 		log.Errorf("SearchRequest: %s", spew.Sdump(sreq))
 		return nil, err
@@ -53,7 +53,10 @@ type SearchRequest struct {
 	Zip         string  `json:"zip" xml:"zip"`
 	MaxResults  string  `json:"MaxResultsV" xml:"MaxResultsV"`
 	MaxResultsV int     //
-	Response    *structs.NSearchResponse
+	response    struct {
+		cRType
+		*structs.NSearchResponse
+	}
 }
 
 func (r *SearchRequest) newNSearchLL() (structs.NSearchRequestLL, error) {
@@ -105,8 +108,8 @@ func (r *SearchRequest) parseQP(rqst *rest.Request) error {
 	return nil
 }
 
-func (r *SearchRequest) init(rqst *rest.Request) error {
-	r.load(r, rqst)
+func (r *SearchRequest) init(rqst *rest.Request, rqstID int64) error {
+	r.load(r, rqstID, rqst)
 	return nil
 }
 
@@ -137,13 +140,14 @@ func (r *SearchRequest) run() (interface{}, error) {
 		log.Error(err.Error())
 		return nil, err
 	}
-	return r.Response, err
+	return r.response, err
 }
 
 // adapterReply processes the reply returned from the RPC call, by placing a
 // pointer to the response in CreateReq.response.
 func (r *SearchRequest) adapterReply(ndata interface{}) error {
-	r.Response = ndata.(*structs.NSearchResponse)
+	r.response.NSearchResponse = ndata.(*structs.NSearchResponse)
+	r.response.id = r.id
 	return nil
 }
 
@@ -204,7 +208,7 @@ func (r *SearchRequest) convertDID() (interface{}, error) {
 // String displays the contents of the SearchRequest custom type.
 func (r SearchRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddS("SearchRequest\n")
+	ls.AddF("SearchRequest - %d\n", r.id)
 	ls.AddF("Device Type: %s ID: %s\n", r.DeviceType, r.DeviceID)
 	ls.AddF("Lat: %v (%f)  Lng: %v (%f)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV)
 	ls.AddF("Radius: %v (%d) AreaID: %q\n", r.Radius, r.RadiusV, r.AreaID)

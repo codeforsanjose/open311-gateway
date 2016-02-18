@@ -30,6 +30,12 @@ ___
 
 ## Log
 
+### 2016.02.18 - Thu
+
+* Request monitoring working.
+* Starting to make changes to support IDs in RPC requests.
+* Saved to GIT.
+
 ### 2016.02.17 - Wed
 
 * Saved current work on the Monitor program to git.

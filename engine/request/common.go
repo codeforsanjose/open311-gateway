@@ -11,21 +11,23 @@ import (
 // ==============================================================================================================================
 type cType struct {
 	self cIface
+	id   int64
 }
 
-func (cx *cType) load(p cIface, r *rest.Request) error {
-	cx.self = p
+func (r *cType) load(p cIface, rqstID int64, rqst *rest.Request) error {
+	r.self = p
+	r.id = rqstID
 
-	if err := r.DecodeJsonPayload(cx.self); err != nil {
+	if err := rqst.DecodeJsonPayload(r.self); err != nil {
 		if err.Error() != "JSON payload is empty" {
 			return fmt.Errorf("Unable to process request: %s", err)
 		}
 	}
-	if err := cx.self.parseQP(r); err != nil {
+	if err := r.self.parseQP(rqst); err != nil {
 		return fmt.Errorf("Unable to process request: %s", err)
 	}
 
-	if err := cx.self.validate(); err != nil {
+	if err := r.self.validate(); err != nil {
 		return fmt.Errorf("Unable to process request: %s", err)
 	}
 
@@ -35,4 +37,12 @@ func (cx *cType) load(p cIface, r *rest.Request) error {
 type cIface interface {
 	parseQP(r *rest.Request) error
 	validate() error
+}
+
+type cRType struct {
+	id int64
+}
+
+func (r *cRType) SetID(id int64) {
+	r.id = id
 }

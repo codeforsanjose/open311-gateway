@@ -8,11 +8,14 @@ import (
 )
 
 type engRequestType struct {
-	id     string
-	rType  string
-	status string
-	at     time.Time
-	areaID string
+	id          string
+	rType       string
+	status      string
+	areaID      string
+	start       time.Time
+	startSet    bool
+	complete    time.Time
+	completeSet bool
 }
 
 func newEngRequestType(m telemetry.Message) (dataInterface, error) {
@@ -25,7 +28,13 @@ func newEngRequestType(m telemetry.Message) (dataInterface, error) {
 }
 
 func (r engRequestType) display() string {
-	return fmt.Sprintf("%-10s  %-25s  %-12s %8.1f", r.id, fmt.Sprintf("%s (%s)", r.rType, r.areaID), r.status, time.Since(r.at).Seconds())
+	var dur time.Duration
+	if r.startSet && r.completeSet {
+		dur = r.complete.Sub(r.start) / time.Millisecond
+	} else {
+		dur = time.Since(r.start) / time.Millisecond
+	}
+	return fmt.Sprintf("%-10s  %-25s  %-12s %6dms", r.id, fmt.Sprintf("%s (%s)", r.rType, r.areaID), r.status, dur)
 }
 
 func (r *engRequestType) update(m telemetry.Message) error {
@@ -36,8 +45,15 @@ func (r *engRequestType) update(m telemetry.Message) error {
 	r.id = s.ID
 	r.rType = s.Rtype
 	r.status = s.Status
-	r.at = s.At
 	r.areaID = s.AreaID
+	switch {
+	case s.Status == "open" && s.At.Year() > 2000 && !r.startSet:
+		r.start = s.At
+		r.startSet = true
+	case (s.Status == "complete" || s.Status == "error") && s.At.Year() > 2000:
+		r.complete = s.At
+		r.completeSet = true
+	}
 	return nil
 }
 

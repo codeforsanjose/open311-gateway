@@ -17,9 +17,9 @@ import (
 // =======================================================================================
 //                                      REQUEST
 // =======================================================================================
-func processServices(r *rest.Request) (interface{}, error) {
+func processServices(rqst *rest.Request, rqstID int64) (interface{}, error) {
 	op := ServicesReq{}
-	if err := op.init(r); err != nil {
+	if err := op.init(rqst, rqstID); err != nil {
 		return nil, err
 	}
 	return op.run()
@@ -55,8 +55,8 @@ func (r *ServicesReq) parseQP(rqst *rest.Request) error {
 	return nil
 }
 
-func (r *ServicesReq) init(rqst *rest.Request) error {
-	r.load(r, rqst)
+func (r *ServicesReq) init(rqst *rest.Request, rqstID int64) error {
+	r.load(r, rqstID, rqst)
 	return nil
 }
 
@@ -64,6 +64,7 @@ func (r *ServicesReq) run() (interface{}, error) {
 	var err error
 	fail := func(err string) (*ServicesResp, error) {
 		response := ServicesResp{Message: fmt.Sprintf("Failed - %s", err)}
+		response.SetID(r.id)
 		return &response, fmt.Errorf("%s", err)
 	}
 
@@ -84,10 +85,11 @@ func (r *ServicesReq) run() (interface{}, error) {
 		if err != nil {
 			return fail(fmt.Sprintf("Cannot find services for %v - %s", r.City, err.Error()))
 		}
-		r, err := newServiceResp("OK", services)
-		return &r, nil
+		response, err := newServiceResp("OK", services)
+		response.SetID(r.id)
+		return &response, nil
 	}
-	return nil, fmt.Errorf("Invalid location - lat: %v lng: %v  city: %v", r.Latitude, r.Longitude, r.City)
+	return fail(fmt.Sprintf("Invalid location - lat: %v lng: %v  city: %v", r.Latitude, r.Longitude, r.City))
 }
 
 // =======================================================================================
@@ -113,12 +115,14 @@ func newServiceResp(msg string, ns structs.NServices) (ServicesResp, error) {
 
 // ServicesResp represents a list of services.
 type ServicesResp struct {
+	cRType
 	Message  string                   `json:"message" xml:"Message"`
 	Services map[string]ServicesRespS `json:"services" xml:"Services"`
 }
 
 // ServicesRespS represents a service in a service list.
 type ServicesRespS struct {
+	cRType
 	Name       string   `json:"name"`
 	Categories []string `json:"catg"`
 }
@@ -130,7 +134,7 @@ type ServicesRespS struct {
 // Displays the contents of the Spec_Type custom type.
 func (r ServicesReq) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Services\n")
+	ls.AddF("ServicesReq - %d\n", r.id)
 	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", r.LatitudeV, r.LongitudeV, r.City)
 	return ls.Box(80)
 }

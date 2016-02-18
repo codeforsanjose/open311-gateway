@@ -15,9 +15,9 @@ import (
 // =======================================================================================
 //                                      REQUEST
 // =======================================================================================
-func processCreate(r *rest.Request) (interface{}, error) {
+func processCreate(rqst *rest.Request, rqstID int64) (interface{}, error) {
 	creq := CreateReq{}
-	if err := creq.init(r); err != nil {
+	if err := creq.init(rqst, rqstID); err != nil {
 		log.Errorf("processCreate failed - %s", err)
 		log.Errorf("CreateReq: %s", spew.Sdump(creq))
 		return nil, err
@@ -54,7 +54,10 @@ type CreateReq struct {
 	IsAnonymous string            `json:"isAnonymous" xml:"isAnonymous"`
 	isAnonymous bool              //
 	Description string            `json:"Description" xml:"Description"`
-	response    *structs.NCreateResponse
+	response    struct {
+		cRType
+		*structs.NCreateResponse
+	}
 }
 
 func (r *CreateReq) newNCreate() (structs.NCreateRequest, error) {
@@ -106,8 +109,8 @@ func (r *CreateReq) parseQP(rqst *rest.Request) error {
 // 1. Decodes the input payload.
 // 2. Calls parseQP to parse and load any query parms into the struct.
 // 3. Calls validate() to check all inputs.
-func (r *CreateReq) init(rqst *rest.Request) error {
-	r.load(r, rqst)
+func (r *CreateReq) init(rqst *rest.Request, rqstID int64) error {
+	r.load(r, rqstID, rqst)
 	_, err := router.GetAdapter(r.MID.AdpID)
 	if err != nil {
 		log.Warning("Unable to get adapter for id: %s", r.MID.AdpID)
@@ -118,6 +121,7 @@ func (r *CreateReq) init(rqst *rest.Request) error {
 
 // run sends the request to the appropriate Adapter, and waits for a reponse.
 func (r *CreateReq) run() (interface{}, error) {
+	log.Debug(r.String())
 	rqst, err := r.newNCreate()
 	if err != nil {
 		log.Error(err.Error())
@@ -139,7 +143,8 @@ func (r *CreateReq) run() (interface{}, error) {
 // adapterReply processes the reply returned from the RPC call, by placing a
 // pointer to the response in CreateReq.response.
 func (r *CreateReq) adapterReply(ndata interface{}) error {
-	r.response = ndata.(*structs.NCreateResponse)
+	r.response.NCreateResponse = ndata.(*structs.NCreateResponse)
+	r.response.id = r.id
 	return nil
 }
 
@@ -150,11 +155,9 @@ func (r *CreateReq) adapterReply(ndata interface{}) error {
 // String displays the contents of the CreateReqBase type.
 func (r CreateReq) String() string {
 	ls := new(common.LogString)
-	ls.AddS("Report - CreateReq\n")
+	ls.AddF("CreateReq - %d\n", r.id)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - id: %q  name: %q\n", r.MID.MID(), r.ServiceName)
-	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", r.LatitudeV, r.Latitude, r.LongitudeV, r.Longitude)
-	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.Zip)
 	if math.Abs(r.LatitudeV) > 1 {
 		ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", r.LatitudeV, r.Latitude, r.LongitudeV, r.Longitude)
 	}

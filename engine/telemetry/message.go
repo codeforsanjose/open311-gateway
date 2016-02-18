@@ -190,7 +190,7 @@ func UnmarshalEngRequestMsg(m Message) (*EngRequestMsgType, error) {
 
 // Marshal converts a EngRequestMsgType to a Raw Message.
 func (r EngRequestMsgType) Marshal() ([]byte, error) {
-	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", MsgTypeER, msgDelimiter, r.ID, msgDelimiter, r.Rtype, msgDelimiter, r.Status, msgDelimiter, r.At.Format(time.RFC3339), msgDelimiter, r.AreaID)), nil
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", MsgTypeER, msgDelimiter, r.ID, msgDelimiter, r.Rtype, msgDelimiter, r.Status, msgDelimiter, r.At.Format(time.RFC3339Nano), msgDelimiter, r.AreaID)), nil
 }
 
 // -------------------------------------------- EngRPCMsgType --------------------------------------------------------------------
@@ -236,5 +236,5 @@ func UnmarshalEngRPCMsg(m Message) (*EngRPCMsgType, error) {
 
 // Marshal converts a EngRPCMsgType to a Raw Message.
 func (r EngRPCMsgType) Marshal() ([]byte, error) {
-	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s", MsgTypeERPC, msgDelimiter, r.ID, msgDelimiter, r.Status, msgDelimiter, r.Route, msgDelimiter, r.At.Format(time.RFC3339))), nil
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s", MsgTypeERPC, msgDelimiter, r.ID, msgDelimiter, r.Status, msgDelimiter, r.Route, msgDelimiter, r.At.Format(time.RFC3339Nano))), nil
 }
