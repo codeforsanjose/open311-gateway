@@ -45,6 +45,14 @@ ___
 * Renamed "comm" package to "telemetry".  This will match with "engine" and "adapter" usages.
 * Created hard link of monitor/telemetry/message.go in engine/telemetry and adapter/citysourced/telemetry.
 * Saved to GIT.
+* In Monitor:
+	* Cleaned up network connection (telemetry/network.go).
+	* Changed "AdpEngRequest" to "EngRPC" (more concise and descriptive).
+	* Changed MsgTypeEA to MsgTypeERPC to match above.
+	* Moved all network related code into telemetry/network.go.
+* In Engine:
+	* Update telemetry - added SendEngRequest() and SendEngRPC() calls.
+* Saved to GIT.
 
 ### 2016.02.16 - Tue
 

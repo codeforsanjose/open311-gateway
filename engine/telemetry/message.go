@@ -12,9 +12,12 @@ import (
 
 // Message types
 const (
-	MsgTypeES = "ES"
-	MsgTypeER = "ER"
-	MsgTypeEA = "EA"
+	MsgTypeES   = "ES"   // Engine Status
+	MsgTypeER   = "ER"   // Engine Request
+	MsgTypeERPC = "ERPC" // Engine RPC
+
+	MsgTypeAS   = "AS"   // Adapter Status
+	MsgTypeARPC = "ARPC" // Adapter RPC
 
 	MsgTypeIndex = 0
 	msgDelimiter = "|"
@@ -34,14 +37,18 @@ func initMsgKeys() {
 	msgKeys = make(map[string]int)
 	msgKeys[MsgTypeES] = esName
 	msgKeys[MsgTypeER] = erID
-	msgKeys[MsgTypeEA] = eaID
+	msgKeys[MsgTypeERPC] = eaID
 }
 
 func initMsgLen() {
 	msgLen = make(map[string]int)
 	msgLen[MsgTypeES] = esLength
 	msgLen[MsgTypeER] = erLength
-	msgLen[MsgTypeEA] = eaLength
+	msgLen[MsgTypeERPC] = eaLength
+}
+
+type msgSender interface {
+	Marshal() ([]byte, error)
 }
 
 // -------------------------------------------- message --------------------------------------------------------------------
@@ -186,10 +193,10 @@ func (r EngRequestMsgType) Marshal() ([]byte, error) {
 	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", MsgTypeER, msgDelimiter, r.ID, msgDelimiter, r.Rtype, msgDelimiter, r.Status, msgDelimiter, r.At.Format(time.RFC3339), msgDelimiter, r.AreaID)), nil
 }
 
-// -------------------------------------------- EngAdpRequestMsgType --------------------------------------------------------------------
+// -------------------------------------------- EngRPCMsgType --------------------------------------------------------------------
 
-// EngAdpRequestMsgType represents the Engine Adapter Request messages.
-type EngAdpRequestMsgType struct {
+// EngRPCMsgType represents the Engine Adapter Request messages.
+type EngRPCMsgType struct {
 	ID     string
 	Status string
 	Route  string
@@ -204,16 +211,16 @@ const (
 	eaLength
 )
 
-// UnmarshalAdpEngRequestMsg converts a Raw Message to an EngAdpRequestMsgType instance
-func UnmarshalAdpEngRequestMsg(m Message) (*EngAdpRequestMsgType, error) {
-	if m.mType != MsgTypeEA {
-		return &EngAdpRequestMsgType{}, fmt.Errorf("invalid message type: %q sent to EngineRequest - message: %v", m.mType, m)
+// UnmarshalEngRPCMsg converts a Raw Message to an EngRPCMsgType instance
+func UnmarshalEngRPCMsg(m Message) (*EngRPCMsgType, error) {
+	if m.mType != MsgTypeERPC {
+		return &EngRPCMsgType{}, fmt.Errorf("invalid message type: %q sent to EngineRequest - message: %v", m.mType, m)
 	}
 	if !m.valid() {
-		return &EngAdpRequestMsgType{}, fmt.Errorf("invalid message: %#v", m)
+		return &EngRPCMsgType{}, fmt.Errorf("invalid message: %#v", m)
 	}
 
-	s := EngAdpRequestMsgType{
+	s := EngRPCMsgType{
 		ID:     m.data[eaID],
 		Status: m.data[eaStatus],
 		Route:  m.data[eaRoute],
@@ -227,7 +234,7 @@ func UnmarshalAdpEngRequestMsg(m Message) (*EngAdpRequestMsgType, error) {
 
 }
 
-// Marshal converts a EngAdpRequestMsgType to a Raw Message.
-func (r EngAdpRequestMsgType) Marshal() ([]byte, error) {
-	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s", MsgTypeEA, msgDelimiter, r.ID, msgDelimiter, r.Status, msgDelimiter, r.Route, msgDelimiter, r.At.Format(time.RFC3339))), nil
+// Marshal converts a EngRPCMsgType to a Raw Message.
+func (r EngRPCMsgType) Marshal() ([]byte, error) {
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s", MsgTypeERPC, msgDelimiter, r.ID, msgDelimiter, r.Status, msgDelimiter, r.Route, msgDelimiter, r.At.Format(time.RFC3339))), nil
 }

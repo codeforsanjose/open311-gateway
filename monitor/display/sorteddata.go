@@ -71,8 +71,8 @@ func (r *sortedData) add(m telemetry.Message) (err error) {
 		if err != nil {
 			return err
 		}
-	case telemetry.MsgTypeEA:
-		d, err = newEngAdpRequestType(m)
+	case telemetry.MsgTypeERPC:
+		d, err = newEngRPCType(m)
 		if err != nil {
 			return err
 		}

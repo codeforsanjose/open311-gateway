@@ -109,7 +109,7 @@ func (r *RPCCall) Run() error {
 			select {
 			case answer := <-r.results:
 				r.adpList[answer.route] = answer
-				telemetry.Send(answer.id, "GW1", "", "", "eng-recv")
+				telemetry.SendEngRPC(answer.id, 0, "eng-recv", "", time.Now())
 				r.processes--
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)
@@ -183,7 +183,8 @@ func (r *RPCCall) send() error {
 					return
 				}
 
-				telemetry.Send(pAdpStat.id, "GW1", msgtype, pAdpStat.route.SString(), "eng-send")
+				log.Debug("Request type: %s", msgtype)
+				telemetry.SendEngRPC(pAdpStat.id, 0, "eng-send", pAdpStat.route.SString(), time.Now())
 				pAdpStat.err = pAdpStat.adapter.Client.Call(r.service, rqstCopy, pAdpStat.response)
 				r.results <- pAdpStat
 			}(pAdpStat, r.request)

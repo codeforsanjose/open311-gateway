@@ -19,9 +19,6 @@ var (
 	engAdpCalls *sortedData
 	adpRequests *sortedData
 
-	msgChan chan telemetry.Message
-	done    chan bool
-
 	log = logs.Log
 )
 
@@ -100,10 +97,10 @@ func RunTest() {
 		log.Error(err.Error())
 	}
 
-	if err := engAdpCalls.update(telemetry.NewMessageTest([]string{"EA", "10001-1", "active", "CS1-SJ-1", time.Now().Format(time.RFC3339)})); err != nil {
+	if err := engAdpCalls.update(telemetry.NewMessageTest([]string{"ERPC", "10001-1", "active", "CS1-SJ-1", time.Now().Format(time.RFC3339)})); err != nil {
 		log.Error(err.Error())
 	}
-	if err := engAdpCalls.update(telemetry.NewMessageTest([]string{"EA", "10001-2", "active", "CS1-SC-1", time.Now().Format(time.RFC3339)})); err != nil {
+	if err := engAdpCalls.update(telemetry.NewMessageTest([]string{"ERPC", "10001-2", "active", "CS1-SC-1", time.Now().Format(time.RFC3339)})); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -138,18 +135,9 @@ func RunTest() {
 func init() {
 	engStatuses = newSortedData(telemetry.MsgTypeES, true)
 	engRequests = newSortedData(telemetry.MsgTypeER, false)
-	engAdpCalls = newSortedData(telemetry.MsgTypeEA, false)
+	engAdpCalls = newSortedData(telemetry.MsgTypeERPC, false)
 
-	msgChan = make(chan telemetry.Message, 1000)
-	done = make(chan bool)
-
-	// displayList = displays{}
 	displayList.init()
-
-}
-
-func shutdown() {
-	done <- true
 }
 
 /*

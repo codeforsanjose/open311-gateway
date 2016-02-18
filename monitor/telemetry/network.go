@@ -10,8 +10,31 @@ import (
 )
 
 var (
-	log = logs.Log
+	log         = logs.Log
+	msgChan     chan Message
+	done        chan bool
+	monitorConn *net.UDPConn
 )
+
+const (
+	monitorAddr = "127.0.0.1:5051"
+)
+
+func init() {
+	msgChan = make(chan Message, 1000)
+	done = make(chan bool)
+
+	if err := StartReceiver(monitorAddr, msgChan, done); err != nil {
+		Shutdown()
+		log.Fatalf("Unable to start receiver - %s", err.Error())
+	}
+}
+
+// Shutdown ensures an orderly finalization of active processes.
+func Shutdown() {
+	done <- true
+	monitorConn.Close()
+}
 
 // ==============================================================================================================================
 //                                      DATA
@@ -25,16 +48,15 @@ func StartReceiver(addr string, msgChan chan<- Message, done <-chan bool) error 
 		return fmt.Errorf("error resolving address - %s", err.Error())
 	}
 	fmt.Printf("Address: %s\n", spew.Sdump(a))
-	MonitorConn, _ := net.ListenUDP("udp", a)
-	defer MonitorConn.Close()
-	MonitorConn.SetReadBuffer(1048576)
+	monitorConn, _ = net.ListenUDP("udp", a)
+	monitorConn.SetReadBuffer(1048576)
 
 	go func() {
 		buf := make([]byte, 1024)
 		for {
-			n, _, err := MonitorConn.ReadFromUDP(buf)
+			n, _, err := monitorConn.ReadFromUDP(buf)
 			if err != nil {
-				log.Errorf("Error receiving UDP: %s", err.Error())
+				log.Fatalf("Error receiving UDP: %s", err.Error())
 			}
 			select {
 			case <-done:

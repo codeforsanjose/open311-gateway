@@ -14,7 +14,7 @@ type engAdpRequestType struct {
 	at     time.Time
 }
 
-func newEngAdpRequestType(m telemetry.Message) (dataInterface, error) {
+func newEngRPCType(m telemetry.Message) (dataInterface, error) {
 	engAdpRequest := new(engAdpRequestType)
 	err := engAdpRequest.update(m)
 	if err != nil {
@@ -28,7 +28,7 @@ func (r engAdpRequestType) display() string {
 }
 
 func (r *engAdpRequestType) update(m telemetry.Message) error {
-	s, err := telemetry.UnmarshalAdpEngRequestMsg(m)
+	s, err := telemetry.UnmarshalEngRPCMsg(m)
 	if err != nil {
 		return err
 	}
