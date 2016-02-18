@@ -40,13 +40,18 @@ func SetAddr(addr string) {
 	monitorAddr = addr
 }
 
+// GetMsgChan returns the message queue channel.
+func GetMsgChan() chan Message {
+	return msgChan
+}
+
 // ==============================================================================================================================
 //                                      RECEIVER
 // ==============================================================================================================================
 
 // StartReceiver starts the UDP receive process.  The bytes received are parsed
 // by the separator character "|" into a slice of strings, and put on the msgChan.
-func StartReceiver(addr string, msgChan chan<- Message, done <-chan bool) error {
+func StartReceiver(addr string, msgChan chan Message, done <-chan bool) error {
 	log.Debug("Address: %v", addr)
 	a, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
@@ -55,6 +60,7 @@ func StartReceiver(addr string, msgChan chan<- Message, done <-chan bool) error 
 	monitorConn, _ = net.ListenUDP("udp", a)
 	monitorConn.SetReadBuffer(1048576)
 
+	// Receive UDP
 	go func() {
 		buf := make([]byte, 1024)
 		for {
@@ -62,6 +68,7 @@ func StartReceiver(addr string, msgChan chan<- Message, done <-chan bool) error 
 			if err != nil {
 				log.Fatalf("Error receiving UDP: %s", err.Error())
 			}
+			// log.Debug("Received %d bytes: %q", n, string(buf[0:n]))
 			select {
 			case <-done:
 				return

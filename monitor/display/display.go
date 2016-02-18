@@ -87,6 +87,38 @@ func (r *displays) newList(caption string, x, y, height, width int, getData func
 // Start initializes and starts the Display processes.  It should be called AFTER the
 // init() processes.
 func Start() {
+
+	// Process messages
+	go func() {
+		msgChan := telemetry.GetMsgChan()
+
+		for msg := range msgChan {
+			switch msg.Mtype() {
+			case telemetry.MsgTypeES:
+				log.Debug("Message type ES - %v\n", msg.Data())
+			case telemetry.MsgTypeER:
+				log.Debug("Message type ER - %v\n", msg.Data())
+			case telemetry.MsgTypeERPC:
+				log.Debug("Message type ARPC - %v\n", msg.Data())
+				if err := engAdpCalls.update(msg); err != nil {
+					log.Error(err.Error())
+				}
+
+			case telemetry.MsgTypeAS:
+				log.Debug("Message type AS - %v\n", msg.Data())
+			case telemetry.MsgTypeARPC:
+				log.Debug("Message type ARPC - %v\n", msg.Data())
+			default:
+				log.Errorf("Invalid message received - type: %q msg: [%v]\n", msg.Mtype(), msg.Data())
+			}
+		}
+	}()
+
+	// runTests()
+	displayList.run()
+}
+
+func runTests() {
 	if err := engStatuses.update(telemetry.NewMessageTest([]string{"ES", "Sys1", "active!", "CS1, CS2", "127.0.0.1/5081"})); err != nil {
 		log.Error(err.Error())
 	}
@@ -126,7 +158,6 @@ func Start() {
 			time.Sleep(time.Second * 1)
 		}
 	}()
-	displayList.run()
 }
 
 // ==============================================================================================================================

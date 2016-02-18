@@ -58,6 +58,9 @@ ___
 	* Added telemetry.Start() and display.Start() calls.
 	* Initialization and shutdown is cleaner now.
 * Saved to GIT.
+* In monitor/display/display.go: added go func() to process message chan (incoming message queue).
+* Engine starting to communicate with Monitor...
+* Saved to GIT.
 
 ### 2016.02.16 - Tue
 
