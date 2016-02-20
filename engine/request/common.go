@@ -11,7 +11,7 @@ import (
 // ==============================================================================================================================
 type cType struct {
 	self cIface
-	id   int64
+	cRType
 }
 
 func (r *cType) load(p cIface, rqstID int64, rqst *rest.Request) error {
@@ -45,4 +45,8 @@ type cRType struct {
 
 func (r *cRType) SetID(id int64) {
 	r.id = id
+}
+
+func (r *cRType) GetID() int64 {
+	return r.id
 }

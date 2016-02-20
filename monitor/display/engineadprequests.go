@@ -17,7 +17,7 @@ type engAdpRequestType struct {
 	completeSet bool
 }
 
-func newEngRPCType(m telemetry.Message) (dataInterface, error) {
+func newEngRPC(m telemetry.Message) (dataInterface, error) {
 	engAdpRequest := new(engAdpRequestType)
 	err := engAdpRequest.update(m)
 	if err != nil {

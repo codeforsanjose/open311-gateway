@@ -1,9 +1,12 @@
 package request
 
 import (
+	"time"
+
 	"Gateway311/adapters/citysourced/create"
 	"Gateway311/adapters/citysourced/data"
 	"Gateway311/adapters/citysourced/structs"
+	"Gateway311/adapters/citysourced/telemetry"
 	"Gateway311/engine/common"
 )
 
@@ -62,6 +65,7 @@ func (c *createMgr) convertRequest() error {
 		AuthorTelephone:   c.nreq.Phone,
 		AuthorIsAnonymous: c.nreq.IsAnonymous,
 	}
+	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", c.url, time.Now())
 	return nil
 }
 
@@ -73,6 +77,7 @@ func (c *createMgr) process() error {
 }
 
 func (c *createMgr) convertResponse() error {
+	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(c.nreq.GetRoute())
 	c.nresp.Message = c.resp.Message
 	c.nresp.ID = c.resp.ID
@@ -87,8 +92,12 @@ func (c *createMgr) fail(err error) error {
 	return err
 }
 
-func (c *createMgr) getID() int64 {
-	return c.nreq.ID
+func (c *createMgr) getIDS() string {
+	return c.nreq.GetIDS()
+}
+
+func (c *createMgr) getRoute() string {
+	return c.nreq.GetRoute().SString()
 }
 
 func (c *createMgr) String() string {

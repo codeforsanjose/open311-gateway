@@ -123,8 +123,12 @@ func (c *searchLLMgr) fail(err error) error {
 	return err
 }
 
-func (c *searchLLMgr) getID() int64 {
-	return c.nreq.ID
+func (c *searchLLMgr) getIDS() string {
+	return c.nreq.GetIDS()
+}
+
+func (c *searchLLMgr) getRoute() string {
+	return c.nreq.GetRoute().SString()
 }
 
 func (c *searchLLMgr) String() string {

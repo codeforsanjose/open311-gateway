@@ -8,30 +8,14 @@ import (
 	"Gateway311/engine/logs"
 )
 
-const (
-	MIMsgID int = iota
-	MISysID
-	MIOp
-	MIDest
-	MIStatus
-)
-
 var (
 	log         = logs.Log
 	chTQue      chan msgSender
 	monitorAddr = "127.0.0.1:5051"
 )
 
-type status struct {
-	MsgID  int64
-	SysID  string
-	Op     string
-	Dest   string
-	Status string
-}
-
-// Send queues a status message onto the send channel.
-func SendEngRequest(msgID int64, rType, status, areaID string, at time.Time) {
+// SendRequest queues an Engine REST Request message onto the send channel.
+func SendRequest(msgID int64, rType, status, areaID string, at time.Time) {
 	statusMsg := EngRequestMsgType{
 		ID:     fmt.Sprintf("%d", msgID),
 		Rtype:  rType,
@@ -43,16 +27,15 @@ func SendEngRequest(msgID int64, rType, status, areaID string, at time.Time) {
 
 }
 
-// SendEngRPC sends an Adapter RPC status message to the monitor.
-func SendEngRPC(RqstID, RPCID int64, status, route string, at time.Time) {
+// SendRPC sends an Adapter RPC status message to the monitor.
+func SendRPC(id, status, route string, at time.Time) {
 	statusMsg := EngRPCMsgType{
-		ID:     fmt.Sprintf("%d-%d", RqstID, RPCID),
+		ID:     id,
 		Status: status,
 		Route:  route,
 		At:     at,
 	}
 	chTQue <- msgSender(statusMsg)
-
 }
 
 // Shutdown should be called to gracefully stop the telemetry processes.
@@ -90,6 +73,4 @@ func init() {
 			}
 		}
 	}()
-
-	//
 }

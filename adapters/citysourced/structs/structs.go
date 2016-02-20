@@ -14,9 +14,41 @@ import (
 //                                      REQUEST
 // =======================================================================================
 
+// NID represents the full ID for any Normalized Request or Response.
+type NID struct {
+	RqstID int64
+	RpcID  int64
+}
+
+// SetNID sets the NID.
+func (r *NID) SetNID(rqstID, rpcID int64) {
+	if rqstID > 0 {
+		fmt.Printf("Setting RqstID: %d\n", rqstID)
+		r.RqstID = rqstID
+	}
+	if rpcID > 0 {
+		fmt.Printf("Setting RpcID: %d\n", rpcID)
+		r.RpcID = rpcID
+	}
+}
+
+// GetNID gets the NID.
+func (r NID) GetNID() (int64, int64) {
+	return r.RqstID, r.RpcID
+}
+
+// String returns the string representation NID.
+func (r NID) String() string {
+	return fmt.Sprintf("%d-%d", r.RqstID, r.RpcID)
+}
+
+// =======================================================================================
+//                                      REQUEST
+// =======================================================================================
+
 // NRequestCommon represents properties common to all requests.
 type NRequestCommon struct {
-	ID    int64
+	ID    NID
 	Route NRoute
 	Rtype NRequestType
 	NRouter
@@ -24,13 +56,19 @@ type NRequestCommon struct {
 }
 
 // GetID returns the Request ID
-func (r NRequestCommon) GetID() int64 {
-	return r.ID
+func (r NRequestCommon) GetID() (int64, int64) {
+	return r.ID.GetNID()
+}
+
+// GetIDS returns the Request ID as a string
+func (r NRequestCommon) GetIDS() string {
+	x, y := r.GetID()
+	return fmt.Sprintf("%v-%v", x, y)
 }
 
 // SetID sets the Request ID
-func (r *NRequestCommon) SetID(id int64) {
-	r.ID = id
+func (r *NRequestCommon) SetID(rqstID, rpcID int64) {
+	r.ID.SetNID(rqstID, rpcID)
 }
 
 // GetType returns the Request Type as a string.
@@ -58,8 +96,9 @@ func (r *NRequestCommon) SetRoute(route NRoute) {
 
 // NRequester defines the behavior of a Request Package.
 type NRequester interface {
-	GetID() int64
-	SetID(int64)
+	GetID() (int64, int64)
+	GetIDS() string
+	SetID(int64, int64)
 	GetRoute() NRoute
 	SetRoute(route NRoute)
 	RouteType() NRouteType
@@ -149,10 +188,32 @@ func (r NRoute) RouteType() NRouteType {
 
 // NResponseCommon represents properties common to all requests.
 type NResponseCommon struct {
-	ID    int64
+	ID    NID
 	Route NRoute
 	Rtype NResponseType
-	NResponseer
+	NResponser
+}
+
+// GetID returns the Request ID
+func (r NResponseCommon) GetID() (int64, int64) {
+	return r.ID.GetNID()
+}
+
+// GetIDS returns the Request ID as a string
+func (r NResponseCommon) GetIDS() string {
+	x, y := r.GetID()
+	return fmt.Sprintf("%v-%v", x, y)
+}
+
+// SetID sets the Request ID
+func (r *NResponseCommon) SetID(rqstID, rpcID int64) {
+	r.ID.SetNID(rqstID, rpcID)
+}
+
+// SetIDF sets the Request ID using the specified function.
+func (r *NResponseCommon) SetIDF(f func() (int64, int64)) {
+	x, y := f()
+	r.ID.SetNID(x, y)
 }
 
 // GetType returns the Response Type as a string.
@@ -178,8 +239,11 @@ func (r *NResponseCommon) SetRoute(route NRoute) {
 
 // -----------------------------------NResponseer --------------------------------------
 
-// NResponseer defines the behavior of a Response Package.
-type NResponseer interface {
+// NResponser defines the behavior of a Response Package.
+type NResponser interface {
+	GetID() (int64, int64)
+	GetIDS() string
+	SetID(int64, int64)
 	GetType() NResponseType
 	GetTypeS() string
 	GetRoute() NRoute
@@ -538,11 +602,12 @@ func (r NRouteType) String() string {
 	}
 }
 
+// SString returns a short representation of a Route.
 func (r NRoute) SString() string {
 	return fmt.Sprintf("%s-%s-%d", r.AdpID, r.AreaID, r.ProviderID)
 }
 
-// String displays the type.
+// String displays a Route.
 func (r NRoute) String() string {
 	// fmtEmpty := color.New(color.BgRed, color.FgWhite, color.Bold).SprintFunc()
 	// empty := fmtEmpty("\u2205")

@@ -37,14 +37,18 @@ func initMsgKeys() {
 	msgKeys = make(map[string]int)
 	msgKeys[MsgTypeES] = esName
 	msgKeys[MsgTypeER] = erID
-	msgKeys[MsgTypeERPC] = eaID
+	msgKeys[MsgTypeERPC] = erpcID
+	msgKeys[MsgTypeAS] = asName
+	msgKeys[MsgTypeARPC] = arpcID
 }
 
 func initMsgLen() {
 	msgLen = make(map[string]int)
 	msgLen[MsgTypeES] = esLength
 	msgLen[MsgTypeER] = erLength
-	msgLen[MsgTypeERPC] = eaLength
+	msgLen[MsgTypeERPC] = erpcLength
+	msgLen[MsgTypeAS] = asLength
+	msgLen[MsgTypeARPC] = arpcLength
 }
 
 type msgSender interface {
@@ -204,11 +208,11 @@ type EngRPCMsgType struct {
 }
 
 const (
-	eaID int = 1 + iota
-	eaStatus
-	eaRoute
-	eaAt
-	eaLength
+	erpcID int = 1 + iota
+	erpcStatus
+	erpcRoute
+	erpcAt
+	erpcLength
 )
 
 // UnmarshalEngRPCMsg converts a Raw Message to an EngRPCMsgType instance
@@ -221,11 +225,11 @@ func UnmarshalEngRPCMsg(m Message) (*EngRPCMsgType, error) {
 	}
 
 	s := EngRPCMsgType{
-		ID:     m.data[eaID],
-		Status: m.data[eaStatus],
-		Route:  m.data[eaRoute],
+		ID:     m.data[erpcID],
+		Status: m.data[erpcStatus],
+		Route:  m.data[erpcRoute],
 	}
-	if at, err := time.Parse(time.RFC3339Nano, m.data[eaAt]); err == nil {
+	if at, err := time.Parse(time.RFC3339Nano, m.data[erpcAt]); err == nil {
 		s.At = at
 	} else {
 		s.At = time.Now()
@@ -237,4 +241,90 @@ func UnmarshalEngRPCMsg(m Message) (*EngRPCMsgType, error) {
 // Marshal converts a EngRPCMsgType to a Raw Message.
 func (r EngRPCMsgType) Marshal() ([]byte, error) {
 	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s", MsgTypeERPC, msgDelimiter, r.ID, msgDelimiter, r.Status, msgDelimiter, r.Route, msgDelimiter, r.At.Format(time.RFC3339Nano))), nil
+}
+
+// -------------------------------------------- AdpStatusMsgType --------------------------------------------------------------------
+
+// AdpStatusMsgType represents the Engine Status messages.
+type AdpStatusMsgType struct {
+	Name   string
+	Status string
+	Addr   string
+}
+
+const (
+	asName int = 1 + iota
+	asStatus
+	asAddr
+	asLength
+)
+
+// UnmarshalAdpStatusMsg converts a Raw Message to an AdpStatusMsgType instance
+func UnmarshalAdpStatusMsg(m Message) (*AdpStatusMsgType, error) {
+	if m.mType != MsgTypeAS {
+		return &AdpStatusMsgType{}, fmt.Errorf("invalid message type: %q sent to EngineStatus - message: %v", m.mType, m)
+	}
+	if !m.valid() {
+		return &AdpStatusMsgType{}, fmt.Errorf("invalid message: %#v", m)
+	}
+
+	return &AdpStatusMsgType{
+		Name:   m.data[asName],
+		Status: m.data[asStatus],
+		Addr:   m.data[asAddr],
+	}, nil
+}
+
+// Marshal converts a AdpStatusMsgType to a Raw Message.
+func (r AdpStatusMsgType) Marshal() ([]byte, error) {
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s", MsgTypeAS, msgDelimiter, r.Name, msgDelimiter, r.Status, msgDelimiter, r.Addr)), nil
+}
+
+// -------------------------------------------- AdpRPCMsgType --------------------------------------------------------------------
+
+// AdpRPCMsgType represents the Engine Adapter Request messages.
+type AdpRPCMsgType struct {
+	ID     string
+	Status string
+	Route  string
+	URL    string
+	At     time.Time
+}
+
+const (
+	arpcID int = 1 + iota
+	arpcStatus
+	arpcRoute
+	arpcURL
+	arpcAt
+	arpcLength
+)
+
+// UnmarshalAdpRPCMsg converts a Raw Message to an AdpRPCMsgType instance
+func UnmarshalAdpRPCMsg(m Message) (*AdpRPCMsgType, error) {
+	if m.mType != MsgTypeARPC {
+		return &AdpRPCMsgType{}, fmt.Errorf("invalid message type: %q sent to EngineRequest - message: %v", m.mType, m)
+	}
+	if !m.valid() {
+		return &AdpRPCMsgType{}, fmt.Errorf("invalid message: %#v", m)
+	}
+
+	s := AdpRPCMsgType{
+		ID:     m.data[arpcID],
+		Status: m.data[arpcStatus],
+		Route:  m.data[arpcRoute],
+		URL:    m.data[arpcURL],
+	}
+	if at, err := time.Parse(time.RFC3339Nano, m.data[arpcAt]); err == nil {
+		s.At = at
+	} else {
+		s.At = time.Now()
+	}
+	return &s, nil
+
+}
+
+// Marshal converts a AdpRPCMsgType to a Raw Message.
+func (r AdpRPCMsgType) Marshal() ([]byte, error) {
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", MsgTypeARPC, msgDelimiter, r.ID, msgDelimiter, r.Status, msgDelimiter, r.Route, msgDelimiter, r.URL, msgDelimiter, r.At.Format(time.RFC3339))), nil
 }

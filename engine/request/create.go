@@ -63,6 +63,9 @@ type CreateReq struct {
 func (r *CreateReq) newNCreate() (structs.NCreateRequest, error) {
 	n := structs.NCreateRequest{
 		NRequestCommon: structs.NRequestCommon{
+			ID: structs.NID{
+				RqstID: r.id,
+			},
 			Rtype: structs.NRTCreate,
 		},
 		MID:         r.MID,

@@ -18,7 +18,7 @@ type engRequestType struct {
 	completeSet bool
 }
 
-func newEngRequestType(m telemetry.Message) (dataInterface, error) {
+func newEngRequest(m telemetry.Message) (dataInterface, error) {
 	engRequest := new(engRequestType)
 	err := engRequest.update(m)
 	if err != nil {

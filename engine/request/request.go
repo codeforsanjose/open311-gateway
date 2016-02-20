@@ -24,48 +24,52 @@ var (
 //  http;//xyz.com/api/services?lat=34.236144&lon=-118.604794
 //  http;//xyz.com/api/services?city=san+jose
 func Services(w rest.ResponseWriter, r *rest.Request) {
-	rqstID := rqstID.Get()
-	SendTelemetry(rqstID, "Services", "open")
+	rqstID := rqstID.get()
+	sendTelemetry(rqstID, "Services", "open")
 	response, err := processServices(r, rqstID)
 	if err != nil {
-		SendTelemetry(rqstID, "Services", "error")
+		sendTelemetry(rqstID, "Services", "error")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	SendTelemetry(rqstID, "Services", "complete")
+	sendTelemetry(rqstID, "Services", "complete")
 	w.WriteJson(&response)
 }
 
 // Create creates a new report.
 func Create(w rest.ResponseWriter, r *rest.Request) {
-	rqstID := rqstID.Get()
-	SendTelemetry(rqstID, "Create", "open")
+	rqstID := rqstID.get()
+	sendTelemetry(rqstID, "Create", "open")
 	response, err := processCreate(r, rqstID)
 	if err != nil {
-		SendTelemetry(rqstID, "Create", "error")
+		sendTelemetry(rqstID, "Create", "error")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	SendTelemetry(rqstID, "Create", "complete")
+	sendTelemetry(rqstID, "Create", "complete")
 	w.WriteJson(&response)
 }
 
 // Search searches for Reports.
 func Search(w rest.ResponseWriter, r *rest.Request) {
-	rqstID := rqstID.Get()
-	SendTelemetry(rqstID, "Search", "open")
+	rqstID := rqstID.get()
+	sendTelemetry(rqstID, "Search", "open")
 	response, err := processSearch(r, rqstID)
 	if err != nil {
-		SendTelemetry(rqstID, "Search", "error")
+		sendTelemetry(rqstID, "Search", "error")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	SendTelemetry(rqstID, "Search", "complete")
+	sendTelemetry(rqstID, "Search", "complete")
 	w.WriteJson(&response)
 }
 
-func SendTelemetry(rqstID int64, op, status string) {
-	telemetry.SendEngRequest(rqstID, op, status, "", time.Now())
+// =======================================================================================
+//                                      TELEMETRY
+// =======================================================================================
+
+func sendTelemetry(rqstID int64, op, status string) {
+	telemetry.SendRequest(rqstID, op, status, "", time.Now())
 }
 
 // =======================================================================================
@@ -74,7 +78,7 @@ func SendTelemetry(rqstID int64, op, status string) {
 
 type sidType int64
 
-func (r *sidType) Get() int64 {
+func (r *sidType) get() int64 {
 	return atomic.AddInt64((*int64)(r), 1)
 }
 

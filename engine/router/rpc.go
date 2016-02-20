@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"sync"
 	"time"
 
 	"github.com/fatih/color"
@@ -20,7 +19,7 @@ const (
 )
 
 var (
-	msgID              sidType
+	// msgID              sidType
 	showRunTimes       = true
 	showResponse       = true
 	showResponseDetail = false
@@ -109,7 +108,7 @@ func (r *RPCCall) Run() error {
 			select {
 			case answer := <-r.results:
 				r.adpList[answer.route] = answer
-				telemetry.SendEngRPC(answer.id, 0, "eng-recv", "", time.Now())
+				telemetry.SendRPC(answer.response.(structs.NResponser).GetIDS(), "complete", "", time.Now())
 				r.processes--
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)
@@ -159,21 +158,21 @@ func (r *RPCCall) send() error {
 				switch v := rqst.(type) {
 				case *structs.NServiceRequest:
 					rCopy := *v
-					structs.NRequester(&rCopy).SetID(pAdpStat.id)
+					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
 					msgtype = "ServiceRequest"
 					log.Debug("Sending: %s", rCopy.String())
 				case *structs.NCreateRequest:
 					rCopy := *v
-					structs.NRequester(&rCopy).SetID(pAdpStat.id)
+					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
 					msgtype = "CreateRequest"
 					log.Debug("Sending: %s", rCopy.String())
 				case *structs.NSearchRequestLL:
 					rCopy := *v
-					structs.NRequester(&rCopy).SetID(pAdpStat.id)
+					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
 					msgtype = "SearchRequest"
@@ -184,7 +183,7 @@ func (r *RPCCall) send() error {
 				}
 
 				log.Debug("Request type: %s", msgtype)
-				telemetry.SendEngRPC(pAdpStat.id, 0, "eng-send", pAdpStat.route.SString(), time.Now())
+				telemetry.SendRPC(rqstCopy.(structs.NRequester).GetIDS(), "open", pAdpStat.route.SString(), time.Now())
 				pAdpStat.err = pAdpStat.adapter.Client.Call(r.service, rqstCopy, pAdpStat.response)
 				r.results <- pAdpStat
 			}(pAdpStat, r.request)
@@ -210,9 +209,9 @@ type rpcAdapterStatus struct {
 	err      error
 }
 
-func newAdapterStatus(adp *Adapter, service string, route structs.NRoute) (*rpcAdapterStatus, error) {
+func newAdapterStatus(adp *Adapter, service string, route structs.NRoute, id int) (*rpcAdapterStatus, error) {
 	aStat := &rpcAdapterStatus{
-		id:      msgID.Get(),
+		id:      int64(id),
 		adapter: adp,
 		route:   route,
 		sent:    false,
@@ -237,6 +236,7 @@ func newAdapterRouteList() adapterRouteList {
 	return make(adapterRouteList)
 }
 
+/*
 // =======================================================================================
 //                                      MESSAGE ID
 // =======================================================================================
@@ -252,14 +252,15 @@ func (r *sidType) Get() int64 {
 	r.id++
 	return r.id
 }
+*/
 
 // ==============================================================================================================================
 //                                      init
 // ==============================================================================================================================
 
-func init() {
-	msgID.id = 10000
-}
+// func init() {
+// 	msgID.id = 10000
+// }
 
 // ==============================================================================================================================
 //                                      STRINGS

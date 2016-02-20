@@ -54,13 +54,13 @@ func initRPCList() error {
 	adapter := func(rt structs.NRouter, service string) (adapterRouteList, error) {
 		log.Debug("[serviceMap: adapter] service: %q\nroutes: %s\n", service, rt.GetRoutes())
 		adpStatList := newAdapterRouteList()
-		for _, nroute := range rt.GetRoutes() {
+		for i, nroute := range rt.GetRoutes() {
 			adp, err := GetAdapter(nroute.AdpID)
 			// log.Debug("adp: %s", adp)
 			if err != nil {
 				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
 			}
-			rs, err := newAdapterStatus(adp, service, nroute)
+			rs, err := newAdapterStatus(adp, service, nroute, i+1)
 			// log.Debug("rs: %s", rs)
 			if err != nil {
 				return nil, fmt.Errorf("Error creating Adapter list - %s", err)
@@ -78,13 +78,13 @@ func initRPCList() error {
 	area := func(rt structs.NRouter, service string) (adapterRouteList, error) {
 		log.Debug("[serviceMap: area] service: %q\nroutes: %s\n", service, rt.GetRoutes())
 		adpStatList := newAdapterRouteList()
-		for _, nroute := range rt.GetRoutes() {
+		for i, nroute := range rt.GetRoutes() {
 			switch nroute.RouteType() {
 			case structs.NRtTypAllAdapters:
 				log.Debug("Using ALL adapters")
 				for _, adp := range adapters.Adapters {
 					route := structs.NRoute{AdpID: adp.ID, AreaID: "all", ProviderID: 0}
-					adpStat, err := newAdapterStatus(adp, service, route)
+					adpStat, err := newAdapterStatus(adp, service, route, i+1)
 					if err != nil {
 						return nil, fmt.Errorf("Error creating route list - %s", err)
 					}
@@ -101,7 +101,7 @@ func initRPCList() error {
 					if err != nil {
 						return nil, fmt.Errorf("Invalid adpater id in route: %s", route)
 					}
-					adpStat, err := newAdapterStatus(adp, service, route)
+					adpStat, err := newAdapterStatus(adp, service, route, i+1)
 					if err != nil {
 						return nil, fmt.Errorf("Error creating route list - %s", err)
 					}
@@ -113,7 +113,7 @@ func initRPCList() error {
 				if err != nil {
 					return nil, fmt.Errorf("Invalid adpater id in route: %s", nroute)
 				}
-				adpStat, err := newAdapterStatus(adp, service, nroute)
+				adpStat, err := newAdapterStatus(adp, service, nroute, i+1)
 				if err != nil {
 					return nil, fmt.Errorf("Error creating route list - %s", err)
 				}

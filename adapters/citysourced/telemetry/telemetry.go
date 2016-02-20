@@ -1,44 +1,28 @@
 package telemetry
 
 import (
-	"fmt"
 	"net"
+	"time"
 
 	"Gateway311/engine/logs"
 )
 
-const (
-	MIMsgID int = iota
-	MISysID
-	MIOp
-	MIDest
-	MIStatus
-)
-
 var (
 	log         = logs.Log
-	chTQue      chan status
+	chTQue      chan msgSender
 	monitorAddr = "127.0.0.1:5051"
 )
 
-type status struct {
-	MsgID  int64
-	SysID  string
-	Op     string
-	Dest   string
-	Status string
-}
-
-// Send queues a status message onto the send channel.
-func Send(MsgID int64, SysID, Op, Dest, Status string) {
-	statusMsg := status{
-		MsgID:  MsgID,
-		SysID:  SysID,
-		Op:     Op,
-		Dest:   Dest,
-		Status: Status,
+// SendRPC queues an RPC status message onto the send channel.
+func SendRPC(id, status, route, url string, at time.Time) {
+	statusMsg := AdpRPCMsgType{
+		ID:     id,
+		Status: status,
+		Route:  route,
+		URL:    url,
+		At:     at,
 	}
-	chTQue <- statusMsg
+	chTQue <- msgSender(statusMsg)
 
 }
 
@@ -48,7 +32,7 @@ func Shutdown() {
 }
 
 func init() {
-	chTQue = make(chan status, 100)
+	chTQue = make(chan msgSender, 100)
 
 	tlmtryServer, err := net.ResolveUDPAddr("udp", monitorAddr)
 	if err != nil {
@@ -66,15 +50,15 @@ func init() {
 		log.Debug("Telemetry sender starting...")
 		defer conn.Close()
 		for m := range chTQue {
-			msg := fmt.Sprintf("%d|%s|%s|%s|%s", m.MsgID, m.SysID, m.Op, m.Dest, m.Status)
-			log.Debug(msg)
-			buf := []byte(msg)
-			_, err := conn.Write(buf)
+			msg, err := m.Marshal()
 			if err != nil {
+				log.Warning("unable to send message - %s", err.Error())
+				continue
+			}
+			log.Debug(string(msg))
+			if _, err := conn.Write(msg); err != nil {
 				log.Warning(err.Error())
 			}
 		}
 	}()
-
-	//
 }

@@ -30,6 +30,14 @@ ___
 
 ## Log
 
+### 2016.02.19 - Fri
+
+* Added Adapter monitoring messages and calls.
+* Saved to GIT.
+* Adapter RPC monitoring starting to work.
+* Saved to GIT.
+
+
 ### 2016.02.18 - Thu
 
 * Request monitoring working.

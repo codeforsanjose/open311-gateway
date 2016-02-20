@@ -62,17 +62,27 @@ func (r *sortedData) add(m telemetry.Message) (err error) {
 	var d dataInterface
 	switch m.Mtype() {
 	case telemetry.MsgTypeES:
-		d, err = newEngStatusType(m)
+		d, err = newEngStatus(m)
 		if err != nil {
 			return err
 		}
 	case telemetry.MsgTypeER:
-		d, err = newEngRequestType(m)
+		d, err = newEngRequest(m)
 		if err != nil {
 			return err
 		}
 	case telemetry.MsgTypeERPC:
-		d, err = newEngRPCType(m)
+		d, err = newEngRPC(m)
+		if err != nil {
+			return err
+		}
+	case telemetry.MsgTypeAS:
+		d, err = newAdpStatus(m)
+		if err != nil {
+			return err
+		}
+	case telemetry.MsgTypeARPC:
+		d, err = newAdpRPC(m)
 		if err != nil {
 			return err
 		}

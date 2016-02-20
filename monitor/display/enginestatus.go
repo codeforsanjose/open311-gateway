@@ -9,14 +9,14 @@ import (
 
 type engStatusType struct {
 	name       string
-	lastUpdate time.Time
 	status     string
 	adapters   string
 	addr       string
 	rqstCount  int64
+	lastUpdate time.Time
 }
 
-func newEngStatusType(m telemetry.Message) (dataInterface, error) {
+func newEngStatus(m telemetry.Message) (dataInterface, error) {
 	engStatus := new(engStatusType)
 	err := engStatus.update(m)
 	if err != nil {

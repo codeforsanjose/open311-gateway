@@ -17,7 +17,9 @@ var (
 	engStatuses *sortedData
 	engRequests *sortedData
 	engAdpCalls *sortedData
-	adpRequests *sortedData
+
+	adpStatuses *sortedData
+	adpCalls01  *sortedData
 
 	log = logs.Log
 )
@@ -36,9 +38,12 @@ func (r *displays) init() error {
 	r.d = make([]*ui.List, 0)
 	r.l = make([]ui.Bufferer, 0)
 
-	r.newList("Engine List", 0, 0, 7, 80, engStatuses.display)
+	r.newList("Engine Status", 0, 0, 7, 80, engStatuses.display)
 	r.newList("Eng01 Requests", 0, 7, 7, 80, engRequests.display)
-	r.newList("Eng01 Adapter Calls", 0, 14, 10, 80, engAdpCalls.display)
+	r.newList("Eng01 Adapter Calls", 0, 14, 14, 80, engAdpCalls.display)
+
+	r.newList("Adapter Status", 80, 0, 14, 80, adpStatuses.display)
+	r.newList("CS1 Calls", 80, 14, 14, 100, adpCalls01.display)
 
 	for _, uiList := range r.d {
 		r.l = append(r.l, uiList)
@@ -93,27 +98,29 @@ func Start() {
 		msgChan := telemetry.GetMsgChan()
 
 		for msg := range msgChan {
+			log.Debug("Message type [%s] - %v\n", msg.Mtype(), msg.Data())
 			switch msg.Mtype() {
 			case telemetry.MsgTypeES:
-				log.Debug("Message type ES - %v\n", msg.Data())
 				if err := engStatuses.update(msg); err != nil {
 					log.Error(err.Error())
 				}
 			case telemetry.MsgTypeER:
-				log.Debug("Message type ER - %v\n", msg.Data())
 				if err := engRequests.update(msg); err != nil {
 					log.Error(err.Error())
 				}
 			case telemetry.MsgTypeERPC:
-				log.Debug("Message type ARPC - %v\n", msg.Data())
 				if err := engAdpCalls.update(msg); err != nil {
 					log.Error(err.Error())
 				}
 
 			case telemetry.MsgTypeAS:
-				log.Debug("Message type AS - %v\n", msg.Data())
+				if err := adpStatuses.update(msg); err != nil {
+					log.Error(err.Error())
+				}
 			case telemetry.MsgTypeARPC:
-				log.Debug("Message type ARPC - %v\n", msg.Data())
+				if err := adpCalls01.update(msg); err != nil {
+					log.Error(err.Error())
+				}
 			default:
 				log.Errorf("Invalid message received - type: %q msg: [%v]\n", msg.Mtype(), msg.Data())
 			}
@@ -174,6 +181,9 @@ func init() {
 	engStatuses = newSortedData(telemetry.MsgTypeES, true)
 	engRequests = newSortedData(telemetry.MsgTypeER, false)
 	engAdpCalls = newSortedData(telemetry.MsgTypeERPC, false)
+
+	adpStatuses = newSortedData(telemetry.MsgTypeAS, true)
+	adpCalls01 = newSortedData(telemetry.MsgTypeARPC, false)
 
 	displayList.init()
 }
