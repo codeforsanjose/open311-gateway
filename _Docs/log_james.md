@@ -30,6 +30,11 @@ ___
 
 ## Log
 
+### 2016.02.22 - Mon
+
+* In structs, changed the ID in responses from an int to a ReportID (new struct).  The ReportID includes the Route, so an upvote or comment to a specific report can be properly routed.
+* 
+
 ### 2016.02.21 - Sun
 
 * Telemetry and Message ID's working pretty well now for Create and Search.  

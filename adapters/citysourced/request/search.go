@@ -79,15 +79,16 @@ func (c *searchLLMgr) process() error {
 }
 
 func (c *searchLLMgr) convertResponse() (resultCount int, err error) {
+	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
-	c.nresp.SetRoute(c.nreq.GetRoute())
+	c.nresp.SetRoute(route)
 	c.nresp.Message = c.resp.Message
 	c.nresp.ResponseTime = c.resp.ResponseTime
 	c.nresp.Reports = make([]structs.NSearchResponseReport, 0)
 
 	for _, rr := range c.resp.Reports.Reports {
 		c.nresp.Reports = append(c.nresp.Reports, structs.NSearchResponseReport{
-			ID:                rr.ID,
+			RID:               structs.NewRID(route, rr.ID),
 			DateCreated:       rr.DateCreated,
 			DateUpdated:       rr.DateUpdated,
 			DeviceType:        rr.DeviceType,

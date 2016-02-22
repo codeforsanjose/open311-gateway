@@ -329,6 +329,30 @@ func (r ServiceID) GetRoute() NRoute {
 	}
 }
 
+// ------------------------------- ReportID -------------------------------
+
+// ReportID adds routing information to a ReportID returned by a call to a
+// Service Provider.
+type ReportID struct {
+	NRoute
+	ID string
+}
+
+// NewRID creates a ReportID by concatenating a Route (NRoute string) with a message
+// response ID.
+func NewRID(route NRoute, id string) ReportID {
+	return ReportID{
+		NRoute: route,
+		ID:     id,
+	}
+
+}
+
+// GetRoute returns the NRoute for the ReportID.
+func (r ReportID) String() string {
+	return fmt.Sprintf("%s-%s", r.NRoute, r.ID)
+}
+
 // =======================================================================================
 //                                      CREATE
 // =======================================================================================
@@ -364,9 +388,10 @@ func (r NCreateRequest) GetRoutes() NRoutes {
 // NCreateResponse is the response to creating or updating a report.
 type NCreateResponse struct {
 	NResponseCommon `json:"-"`
-	Message         string `json:"Message" xml:"Message"`
-	ID              string `json:"ReportId" xml:"ReportId"`
-	AuthorID        string `json:"AuthorId" xml:"AuthorId"`
+	Message         string   `json:"Message" xml:"Message"`
+	RID             ReportID `json:"ReportId" xml:"ReportId"`
+	// ID              string `json:"ReportId" xml:"ReportId"`
+	AuthorID string `json:"AuthorId" xml:"AuthorId"`
 }
 
 // =======================================================================================
@@ -415,7 +440,7 @@ type NSearchResponse struct {
 
 // NSearchResponseReport represents a report.
 type NSearchResponseReport struct {
-	ID                int64
+	RID               ReportID `xml:"ID" json:"ID"`
 	DateCreated       string
 	DateUpdated       string
 	DeviceType        string
@@ -587,6 +612,11 @@ func (r ServiceID) MID() string {
 	return fmt.Sprintf("%s-%s-%d-%d", r.AdpID, r.AreaID, r.ProviderID, r.ID)
 }
 
+// RID creates the Master ID string for the Service.
+func (r ReportID) RID() string {
+	return fmt.Sprintf("%s-%s-%d-%s", r.AdpID, r.AreaID, r.ProviderID, r.ID)
+}
+
 func (r NRouteType) String() string {
 	switch r {
 	case NRtTypFull:
@@ -685,7 +715,7 @@ func (r NSearchResponse) String() string {
 // Displays the the NSearchRequestDID custom type.
 func (r NSearchResponseReport) String() string {
 	ls := new(common.LogString)
-	ls.AddF("NSearchResponseReport %d\n", r.ID)
+	ls.AddF("NSearchResponseReport %d\n", r.RID.RID())
 	ls.AddF("DateCreated \"%v\"\n", r.DateCreated)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - type: %q  id: %q\n", r.RequestType, r.RequestTypeID)

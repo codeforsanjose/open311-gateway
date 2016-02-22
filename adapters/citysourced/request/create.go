@@ -77,17 +77,18 @@ func (c *createMgr) process() error {
 }
 
 func (c *createMgr) convertResponse() (int, error) {
+	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
-	c.nresp.SetRoute(c.nreq.GetRoute())
+	c.nresp.SetRoute(route)
+	c.nresp.RID = structs.NewRID(route, c.resp.ID)
 	c.nresp.Message = c.resp.Message
-	c.nresp.ID = c.resp.ID
 	c.nresp.AuthorID = c.resp.AuthorID
 	return 1, nil
 }
 
 func (c *createMgr) fail(err error) error {
 	c.nresp.Message = "Failed - " + err.Error()
-	c.nresp.ID = ""
+	c.nresp.RID = structs.ReportID{}
 	c.nresp.AuthorID = ""
 	return err
 }

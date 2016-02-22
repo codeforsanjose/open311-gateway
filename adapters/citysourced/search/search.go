@@ -99,7 +99,7 @@ type Reports struct {
 // Report is the <Report> sub-element in the CitySourced XML response.
 type Report struct {
 	XMLName           xml.Name `xml:"Report" json:"Report"`
-	ID                int64    `json:"Id" xml:"Id"`
+	ID                string   `json:"Id" xml:"Id"`
 	DateCreated       string   `json:"DateCreated" xml:"DateCreated"`
 	DateUpdated       string   `json:"DateUpdated" xml:"DateUpdated"`
 	DeviceType        string   `json:"DeviceType" xml:"DeviceType"`
