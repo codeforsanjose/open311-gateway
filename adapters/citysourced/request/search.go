@@ -1,9 +1,12 @@
 package request
 
 import (
+	"time"
+
 	"Gateway311/adapters/citysourced/data"
 	"Gateway311/adapters/citysourced/search"
 	"Gateway311/adapters/citysourced/structs"
+	"Gateway311/adapters/citysourced/telemetry"
 	"Gateway311/engine/common"
 )
 
@@ -64,6 +67,7 @@ func (c *searchLLMgr) convertRequest() error {
 		DateRangeStart:    dfltDateRangeStart,
 		DateRangeEnd:      dfltDateRangeEnd,
 	}
+	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", c.url, 0, time.Now())
 	return nil
 }
 
@@ -74,7 +78,8 @@ func (c *searchLLMgr) process() error {
 	return err
 }
 
-func (c *searchLLMgr) convertResponse() error {
+func (c *searchLLMgr) convertResponse() (resultCount int, err error) {
+	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(c.nreq.GetRoute())
 	c.nresp.Message = c.resp.Message
 	c.nresp.ResponseTime = c.resp.ResponseTime
@@ -115,7 +120,7 @@ func (c *searchLLMgr) convertResponse() error {
 			TicketSLA:         rr.TicketSLA,
 		})
 	}
-	return nil
+	return len(c.nresp.Reports), nil
 }
 
 func (c *searchLLMgr) fail(err error) error {

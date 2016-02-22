@@ -2,6 +2,7 @@ package telemetry
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -156,16 +157,16 @@ type EngRequestMsgType struct {
 	ID     string
 	Rtype  string
 	Status string
-	At     time.Time
 	AreaID string
+	At     time.Time
 }
 
 const (
 	erID int = 1 + iota
 	erRqstType
 	erStatus
-	erAt
 	erAreaID
+	erAt
 	erLength
 )
 
@@ -194,7 +195,7 @@ func UnmarshalEngRequestMsg(m Message) (*EngRequestMsgType, error) {
 
 // Marshal converts a EngRequestMsgType to a Raw Message.
 func (r EngRequestMsgType) Marshal() ([]byte, error) {
-	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", MsgTypeER, msgDelimiter, r.ID, msgDelimiter, r.Rtype, msgDelimiter, r.Status, msgDelimiter, r.At.Format(time.RFC3339Nano), msgDelimiter, r.AreaID)), nil
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", MsgTypeER, msgDelimiter, r.ID, msgDelimiter, r.Rtype, msgDelimiter, r.Status, msgDelimiter, r.AreaID, msgDelimiter, r.At.Format(time.RFC3339Nano))), nil
 }
 
 // -------------------------------------------- EngRPCMsgType --------------------------------------------------------------------
@@ -284,18 +285,22 @@ func (r AdpStatusMsgType) Marshal() ([]byte, error) {
 
 // AdpRPCMsgType represents the Engine Adapter Request messages.
 type AdpRPCMsgType struct {
-	ID     string
-	Status string
-	Route  string
-	URL    string
-	At     time.Time
+	AdpID   string
+	ID      string
+	Status  string
+	Route   string
+	URL     string
+	Results int
+	At      time.Time
 }
 
 const (
-	arpcID int = 1 + iota
+	arpcAdpID int = 1 + iota
+	arpcID
 	arpcStatus
 	arpcRoute
 	arpcURL
+	arpcResults
 	arpcAt
 	arpcLength
 )
@@ -310,10 +315,15 @@ func UnmarshalAdpRPCMsg(m Message) (*AdpRPCMsgType, error) {
 	}
 
 	s := AdpRPCMsgType{
+		AdpID:  m.data[arpcAdpID],
 		ID:     m.data[arpcID],
 		Status: m.data[arpcStatus],
 		Route:  m.data[arpcRoute],
 		URL:    m.data[arpcURL],
+	}
+	results, err := strconv.Atoi(m.data[arpcResults])
+	if err == nil {
+		s.Results = results
 	}
 	if at, err := time.Parse(time.RFC3339Nano, m.data[arpcAt]); err == nil {
 		s.At = at
@@ -326,5 +336,5 @@ func UnmarshalAdpRPCMsg(m Message) (*AdpRPCMsgType, error) {
 
 // Marshal converts a AdpRPCMsgType to a Raw Message.
 func (r AdpRPCMsgType) Marshal() ([]byte, error) {
-	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s", MsgTypeARPC, msgDelimiter, r.ID, msgDelimiter, r.Status, msgDelimiter, r.Route, msgDelimiter, r.URL, msgDelimiter, r.At.Format(time.RFC3339))), nil
+	return []byte(fmt.Sprintf("%s%s%s%s%s%s%s%s%s%s%s%s%v%s%s", MsgTypeARPC, msgDelimiter, r.AdpID, msgDelimiter, r.ID, msgDelimiter, r.Status, msgDelimiter, r.Route, msgDelimiter, r.URL, msgDelimiter, r.Results, msgDelimiter, r.At.Format(time.RFC3339))), nil
 }

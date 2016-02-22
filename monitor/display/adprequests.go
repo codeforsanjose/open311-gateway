@@ -8,10 +8,12 @@ import (
 )
 
 type adpRequestType struct {
+	adpID       string
 	id          string
 	status      string
 	route       string
 	url         string
+	results     int
 	start       time.Time
 	startSet    bool
 	complete    time.Time
@@ -34,7 +36,7 @@ func (r adpRequestType) display() string {
 	} else {
 		dur = time.Since(r.start) / time.Millisecond
 	}
-	return fmt.Sprintf("%-10s  %-60s %-10s %6dms", r.id, fmt.Sprintf("%s-->%s", r.route, r.url), r.status, dur)
+	return fmt.Sprintf("%-5s %-10s  %-60.60s %-5s %2d %6dms", r.adpID, r.id, fmt.Sprintf("%s -> %s", r.route, r.url), r.status, r.results, dur)
 }
 
 func (r *adpRequestType) update(m telemetry.Message) error {
@@ -42,17 +44,23 @@ func (r *adpRequestType) update(m telemetry.Message) error {
 	if err != nil {
 		return err
 	}
+	r.adpID = s.AdpID
 	r.id = s.ID
 	r.status = s.Status
 	r.route = s.Route
+	// Only (re)set URL if it is present.
 	if s.URL > "" {
 		r.url = s.URL
+	}
+	// Only set result count if it's not already been set, and if it's gt zero.
+	if r.results == 0 && s.Results > 0 {
+		r.results = s.Results
 	}
 	switch {
 	case s.Status == "open" && s.At.Year() > 2000 && !r.startSet:
 		r.start = s.At
 		r.startSet = true
-	case (s.Status == "complete" || s.Status == "error") && s.At.Year() > 2000:
+	case (s.Status == "done" || s.Status == "error") && s.At.Year() > 2000:
 		r.complete = s.At
 		r.completeSet = true
 	}

@@ -62,6 +62,9 @@ type SearchRequest struct {
 func (r *SearchRequest) newNSearchLL() (structs.NSearchRequestLL, error) {
 	n := structs.NSearchRequestLL{
 		NRequestCommon: structs.NRequestCommon{
+			ID: structs.NID{
+				RqstID: r.id,
+			},
 			Rtype: structs.NRTSearchLL,
 		},
 		Latitude:   r.LatitudeV,

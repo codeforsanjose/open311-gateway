@@ -108,7 +108,7 @@ func (r *RPCCall) Run() error {
 			select {
 			case answer := <-r.results:
 				r.adpList[answer.route] = answer
-				telemetry.SendRPC(answer.response.(structs.NResponser).GetIDS(), "complete", "", time.Now())
+				telemetry.SendRPC(answer.response.(structs.NResponser).GetIDS(), "done", "", time.Now())
 				r.processes--
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)
@@ -143,7 +143,10 @@ func (r *RPCCall) Run() error {
 }
 
 func (r *RPCCall) send() error {
+	var i int64
 	for k, v := range r.adpList {
+		i++
+		v.id = i
 		if v.adapter.Connected {
 			// Give the pointer to the AdapterStatus to the go routine.
 			var pAdpStat *rpcAdapterStatus

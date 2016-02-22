@@ -30,6 +30,13 @@ ___
 
 ## Log
 
+### 2016.02.21 - Sun
+
+* Telemetry and Message ID's working pretty well now for Create and Search.  
+* Added result count to telemetry.
+* Deleted old engine router code.
+* Saved to GIT.
+
 ### 2016.02.19 - Fri
 
 * Added Adapter monitoring messages and calls.

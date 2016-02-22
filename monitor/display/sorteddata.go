@@ -47,6 +47,13 @@ func newSortedData(mType string, sortAsc bool) *sortedData {
 	}
 }
 
+func (r *sortedData) clear() {
+	r.Lock()
+	defer r.Unlock()
+	r.data = make(map[string]dataInterface)
+	r.ind = make([]string, 0)
+}
+
 func (r *sortedData) update(m telemetry.Message) error {
 	if _, ok := r.data[m.Key()]; !ok {
 		return r.add(m)
@@ -77,7 +84,7 @@ func (r *sortedData) add(m telemetry.Message) (err error) {
 			return err
 		}
 	case telemetry.MsgTypeAS:
-		d, err = newAdpStatus(m)
+		d, err = newAdpRPC(m)
 		if err != nil {
 			return err
 		}

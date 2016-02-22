@@ -65,7 +65,7 @@ func (c *createMgr) convertRequest() error {
 		AuthorTelephone:   c.nreq.Phone,
 		AuthorIsAnonymous: c.nreq.IsAnonymous,
 	}
-	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", c.url, time.Now())
+	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", c.url, 0, time.Now())
 	return nil
 }
 
@@ -76,13 +76,13 @@ func (c *createMgr) process() error {
 	return err
 }
 
-func (c *createMgr) convertResponse() error {
+func (c *createMgr) convertResponse() (int, error) {
 	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(c.nreq.GetRoute())
 	c.nresp.Message = c.resp.Message
 	c.nresp.ID = c.resp.ID
 	c.nresp.AuthorID = c.resp.AuthorID
-	return nil
+	return 1, nil
 }
 
 func (c *createMgr) fail(err error) error {

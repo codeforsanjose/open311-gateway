@@ -4,6 +4,7 @@ import (
 	"net"
 	"time"
 
+	"Gateway311/adapters/citysourced/data"
 	"Gateway311/engine/logs"
 )
 
@@ -14,13 +15,15 @@ var (
 )
 
 // SendRPC queues an RPC status message onto the send channel.
-func SendRPC(id, status, route, url string, at time.Time) {
+func SendRPC(id, status, route, url string, results int, at time.Time) {
 	statusMsg := AdpRPCMsgType{
-		ID:     id,
-		Status: status,
-		Route:  route,
-		URL:    url,
-		At:     at,
+		AdpID:   data.AdapterName(),
+		ID:      id,
+		Status:  status,
+		Route:   route,
+		URL:     url,
+		Results: results,
+		At:      at,
 	}
 	chTQue <- msgSender(statusMsg)
 

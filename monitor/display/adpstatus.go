@@ -15,7 +15,7 @@ type adpStatusType struct {
 	lastUpdate time.Time
 }
 
-func newAdpStatus(m telemetry.Message) (dataInterface, error) {
+func newAdpStatusType(m telemetry.Message) (dataInterface, error) {
 	adpStatus := new(adpStatusType)
 	err := adpStatus.update(m)
 	if err != nil {

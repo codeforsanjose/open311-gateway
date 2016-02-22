@@ -18,7 +18,7 @@ type Report struct{}
 type processer interface {
 	convertRequest() error
 	process() error
-	convertResponse() error
+	convertResponse() (int, error)
 	fail(err error) error
 	getIDS() string
 	getRoute() string
@@ -27,22 +27,24 @@ type processer interface {
 
 // runRequest runs all of the common request processing operations.
 func runRequest(r processer) error {
-	telemetry.SendRPC(r.getIDS(), "open", r.getRoute(), "", time.Now())
+	id := r.getIDS()
+	telemetry.SendRPC(id, "open", r.getRoute(), "", 0, time.Now())
 
 	if err := r.convertRequest(); err != nil {
-		telemetry.SendRPC(r.getIDS(), "error", r.getRoute(), "", time.Now())
+		telemetry.SendRPC(id, "error", r.getRoute(), "", 0, time.Now())
 		return r.fail(err)
 	}
 	if err := r.process(); err != nil {
-		telemetry.SendRPC(r.getIDS(), "error", r.getRoute(), "", time.Now())
+		telemetry.SendRPC(id, "error", r.getRoute(), "", 0, time.Now())
 		return r.fail(err)
 	}
-	if err := r.convertResponse(); err != nil {
-		telemetry.SendRPC(r.getIDS(), "error", r.getRoute(), "", time.Now())
+	resultCount, err := r.convertResponse()
+	if err != nil {
+		telemetry.SendRPC(id, "error", r.getRoute(), "", 0, time.Now())
 		return r.fail(err)
 	}
 	// telemetry.SendRPC(r.getID(), data.AdapterName(), "", "", "adp-send")
-	telemetry.SendRPC(r.getIDS(), "complete", r.getRoute(), "", time.Now())
-	log.Debug("COMPLETED:%s\n", r.String())
+	telemetry.SendRPC(id, "done", r.getRoute(), "", resultCount, time.Now())
+	log.Debug("Request COMPLETED:%s\n", r.String())
 	return nil
 }

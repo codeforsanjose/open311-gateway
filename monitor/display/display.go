@@ -38,12 +38,19 @@ func (r *displays) init() error {
 	r.d = make([]*ui.List, 0)
 	r.l = make([]ui.Bufferer, 0)
 
-	r.newList("Engine Status", 0, 0, 7, 80, engStatuses.display)
-	r.newList("Eng01 Requests", 0, 7, 7, 80, engRequests.display)
-	r.newList("Eng01 Adapter Calls", 0, 14, 14, 80, engAdpCalls.display)
+	r.newList("Engine Status", 0, 0, 10, 80, engStatuses.display)
+	r.newList("Adapter Status", 80, 0, 10, 80, adpStatuses.display)
 
-	r.newList("Adapter Status", 80, 0, 14, 80, adpStatuses.display)
-	r.newList("CS1 Calls", 80, 14, 14, 100, adpCalls01.display)
+	r.newList("Eng01 Requests", 0, 10, 15, 80, engRequests.display)
+	r.newList("Eng01 Adapter Calls", 80, 10, 15, 80, engAdpCalls.display)
+
+	r.newList("Adapter Calls", 0, 25, 15, 160, adpCalls01.display)
+
+	debugList := func() []string {
+		return telemetry.DebugListLast(20)
+	}
+
+	r.newList("DEBUG", 0, 40, 20, 240, debugList)
 
 	for _, uiList := range r.d {
 		r.l = append(r.l, uiList)
@@ -67,6 +74,12 @@ func (r *displays) run() {
 	ui.Handle("/sys/kbd/q", func(ui.Event) {
 		ui.StopLoop()
 	})
+	ui.Handle("/sys/kbd/d", func(ui.Event) {
+		telemetry.DebugClear()
+	})
+	ui.Handle("/sys/kbd/c", func(ui.Event) {
+		clearAll()
+	})
 	ui.Handle("/timer/1s", func(e ui.Event) {
 		t := e.Data.(ui.EvtTimer)
 		draw(int(t.Count))
@@ -89,6 +102,17 @@ func (r *displays) newList(caption string, x, y, height, width int, getData func
 
 }
 
+func clearAll() {
+	engStatuses.clear()
+	engRequests.clear()
+	engAdpCalls.clear()
+
+	adpStatuses.clear()
+	adpCalls01.clear()
+	telemetry.DebugClear()
+
+}
+
 // Start initializes and starts the Display processes.  It should be called AFTER the
 // init() processes.
 func Start() {
@@ -98,7 +122,7 @@ func Start() {
 		msgChan := telemetry.GetMsgChan()
 
 		for msg := range msgChan {
-			log.Debug("Message type [%s] - %v\n", msg.Mtype(), msg.Data())
+			telemetry.DebugMsg("Message type [%s] - %#v\n", msg.Mtype(), msg.Data())
 			switch msg.Mtype() {
 			case telemetry.MsgTypeES:
 				if err := engStatuses.update(msg); err != nil {

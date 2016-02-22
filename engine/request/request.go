@@ -32,7 +32,7 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	sendTelemetry(rqstID, "Services", "complete")
+	sendTelemetry(rqstID, "Services", "done")
 	w.WriteJson(&response)
 }
 
@@ -46,7 +46,7 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	sendTelemetry(rqstID, "Create", "complete")
+	sendTelemetry(rqstID, "Create", "done")
 	w.WriteJson(&response)
 }
 
@@ -60,7 +60,7 @@ func Search(w rest.ResponseWriter, r *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	sendTelemetry(rqstID, "Search", "complete")
+	sendTelemetry(rqstID, "Search", "done")
 	w.WriteJson(&response)
 }
 

@@ -43,12 +43,14 @@ func (r *engAdpRequestType) update(m telemetry.Message) error {
 	}
 	r.id = s.ID
 	r.status = s.Status
-	r.route = s.Route
+	if s.Route > "" {
+		r.route = s.Route
+	}
 	switch {
 	case s.Status == "open" && s.At.Year() > 2000 && !r.startSet:
 		r.start = s.At
 		r.startSet = true
-	case (s.Status == "complete" || s.Status == "error") && s.At.Year() > 2000:
+	case (s.Status == "done" || s.Status == "error") && s.At.Year() > 2000:
 		r.complete = s.At
 		r.completeSet = true
 	}

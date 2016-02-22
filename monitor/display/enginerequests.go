@@ -50,7 +50,7 @@ func (r *engRequestType) update(m telemetry.Message) error {
 	case s.Status == "open" && s.At.Year() > 2000 && !r.startSet:
 		r.start = s.At
 		r.startSet = true
-	case (s.Status == "complete" || s.Status == "error") && s.At.Year() > 2000:
+	case (s.Status == "done" || s.Status == "error") && s.At.Year() > 2000:
 		r.complete = s.At
 		r.completeSet = true
 	}
