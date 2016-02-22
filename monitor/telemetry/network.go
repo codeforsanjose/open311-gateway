@@ -52,7 +52,7 @@ func GetMsgChan() chan Message {
 // StartReceiver starts the UDP receive process.  The bytes received are parsed
 // by the separator character "|" into a slice of strings, and put on the msgChan.
 func StartReceiver(addr string, msgChan chan Message, done <-chan bool) error {
-	log.Debug("Address: %v", addr)
+	// log.Debug("Address: %v", addr)
 	a, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		return fmt.Errorf("error resolving address - %s", err.Error())

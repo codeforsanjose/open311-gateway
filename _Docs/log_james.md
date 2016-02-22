@@ -33,6 +33,9 @@ ___
 ### 2016.02.22 - Mon
 
 * In structs, changed the ID in responses from an int to a ReportID (new struct).  The ReportID includes the Route, so an upvote or comment to a specific report can be properly routed.
+* Saved to GIT.
+* Deleted engine/request/_old code.
+* Saved to GIT.
 * 
 
 ### 2016.02.21 - Sun
