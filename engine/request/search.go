@@ -34,17 +34,25 @@ func processSearch(rqst *rest.Request, rqstID int64) (interface{}, error) {
 	return sreq.run()
 }
 
+const (
+	srchtUnknown = iota
+	srchtReportID
+	srchtDeviceID
+	stchtLatLng
+)
+
 // SearchRequest represents the Search request (Normal form).
 type SearchRequest struct {
 	cType
 	cIface
+	RID         string  `json:"reportID" xml:"reportID"`
 	DeviceType  string  `json:"deviceType" xml:"deviceType"`
 	DeviceID    string  `json:"deviceId" xml:"deviceId"`
-	Latitude    string  `json:"LatitudeV" xml:"LatitudeV"`
+	Latitude    string  `json:"latitude" xml:"latitude"`
 	LatitudeV   float64 //
-	Longitude   string  `json:"LongitudeV" xml:"LongitudeV"`
+	Longitude   string  `json:"longitude" xml:"longitude"`
 	LongitudeV  float64 //
-	Radius      string  `json:"RadiusV" xml:"RadiusV"`
+	Radius      string  `json:"radius" xml:"radius"`
 	RadiusV     int     // in meters
 	Address     string  `json:"address" xml:"address"`
 	City        string  `json:"city" xml:"city"`
@@ -53,6 +61,7 @@ type SearchRequest struct {
 	Zip         string  `json:"zip" xml:"zip"`
 	MaxResults  string  `json:"MaxResultsV" xml:"MaxResultsV"`
 	MaxResultsV int     //
+	srchType    int
 	response    struct {
 		cRType
 		*structs.NSearchResponse
@@ -77,6 +86,21 @@ func (r *SearchRequest) newNSearchLL() (structs.NSearchRequestLL, error) {
 
 }
 
+func (r *SearchRequest) setSearchType() error {
+	switch {
+	case len(r.RID) >= 10:
+		r.srchType = srchtReportID
+	case len(r.DeviceType) > 2 && len(r.DeviceID) > 2:
+		r.srchType = srchtDeviceID
+	case r.LatitudeV > 24.0 && r.LongitudeV >= -180.0 && r.LongitudeV <= -66.0:
+		r.srchType = stchtLatLng
+	default:
+		r.srchType = srchtUnknown
+		return fmt.Errorf("invalid query parameters for Search request")
+	}
+	return nil
+}
+
 func (r *SearchRequest) validate() error {
 	if x, err := strconv.ParseFloat(r.Latitude, 64); err == nil {
 		r.LatitudeV = x
@@ -98,114 +122,92 @@ func (r *SearchRequest) validate() error {
 		r.MaxResultsV = int(x)
 	}
 
+	if err := r.setSearchType(); err != nil {
+		log.Error(err.Error())
+		return err
+	}
 	return nil
 }
 
 func (r *SearchRequest) parseQP(rqst *rest.Request) error {
+	r.RID = rqst.URL.Query().Get("rid")
 	r.DeviceType = rqst.URL.Query().Get("dtype")
 	r.DeviceID = rqst.URL.Query().Get("did")
 	r.Latitude = rqst.URL.Query().Get("lat")
 	r.Longitude = rqst.URL.Query().Get("lng")
 	r.Radius = rqst.URL.Query().Get("radius")
-	r.City = rqst.URL.Query().Get("city")
 	return nil
 }
 
 func (r *SearchRequest) init(rqst *rest.Request, rqstID int64) error {
-	r.load(r, rqstID, rqst)
+	if err := r.load(r, rqstID, rqst); err != nil {
+		return err
+	}
+	r.response.NSearchResponse = &structs.NSearchResponse{
+		Reports: make([]structs.NSearchResponseReport, 0),
+	}
 	return nil
 }
 
 func (r *SearchRequest) run() (interface{}, error) {
-	city, err := geo.CityForLatLng(r.LatitudeV, r.LongitudeV)
-	if err != nil {
-		return nil, fmt.Errorf("The lat/lng: %v:%v is not in a city", r.LatitudeV, r.LongitudeV)
-	}
-	r.City = city
-	r.AreaID, err = router.GetAreaID(city)
-	if err != nil {
-		return nil, fmt.Errorf("The city: %q is not serviced by this gateway", r.City)
-	}
-	log.Debug("%s", r)
+	var rpcCall *router.RPCCall
+	switch r.srchType {
+	case srchtUnknown:
+		return nil, fmt.Errorf("unknown search type - invalid query parms")
+	case srchtReportID:
+		return nil, fmt.Errorf("Search by ReportID not implemented")
+	case srchtDeviceID:
+		return nil, fmt.Errorf("Search by DeviceID not implemented")
+	case stchtLatLng:
+		city, err := geo.CityForLatLng(r.LatitudeV, r.LongitudeV)
+		if err != nil {
+			return nil, fmt.Errorf("The lat/lng: %v:%v is not in a city", r.LatitudeV, r.LongitudeV)
+		}
+		r.City = city
+		r.AreaID, err = router.GetAreaID(city)
+		if err != nil {
+			return nil, fmt.Errorf("The city: %q is not serviced by this gateway", r.City)
+		}
+		log.Debug("%s", r)
 
-	rqst, err := r.newNSearchLL()
-	if err != nil {
+		rqst, err := r.newNSearchLL()
+		if err != nil {
+			log.Error(err.Error())
+			return nil, err
+		}
+		rpcCall, err = router.NewRPCCall("Report.SearchLL", &rqst, r.adapterReply)
+		if err != nil {
+			log.Error(err.Error())
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unknown search type: %v", r.srchType)
+	}
+
+	if err := rpcCall.Run(); err != nil {
 		log.Error(err.Error())
 		return nil, err
 	}
-	rpcCall, err := router.NewRPCCall("Report.SearchLL", &rqst, r.adapterReply)
-	if err != nil {
-		log.Error(err.Error())
-		return nil, err
+	r.response.NSearchResponse.ReportCount = len(r.response.NSearchResponse.Reports)
+	if r.response.NSearchResponse.ReportCount > 0 {
+		r.response.NSearchResponse.Message = "OK"
+	} else {
+		r.response.NSearchResponse.Message = "No reports found"
 	}
-	err = rpcCall.Run()
-	if err != nil {
-		log.Error(err.Error())
-		return nil, err
-	}
-	return r.response, err
+	return r.response, nil
 }
 
 // adapterReply processes the reply returned from the RPC call, by placing a
 // pointer to the response in CreateReq.response.
 func (r *SearchRequest) adapterReply(ndata interface{}) error {
-	r.response.NSearchResponse = ndata.(*structs.NSearchResponse)
+	reply, ok := ndata.(*structs.NSearchResponse)
+	log.Debug("reply: %p  ok: %t", reply, ok)
+	if !ok {
+		return fmt.Errorf("invalid interface received: %T", ndata)
+	}
+	r.response.NSearchResponse.Reports = append(r.response.NSearchResponse.Reports, reply.Reports...)
 	r.response.id = r.id
 	return nil
-}
-
-func (r *SearchRequest) convertN() (interface{}, error) {
-	var err error
-	switch {
-	case r.LatitudeV > 24.0 && r.LongitudeV >= -180.0 && r.LongitudeV <= -66.0:
-		r.City, err = geo.CityForLatLng(r.LatitudeV, r.LongitudeV)
-		if err != nil {
-			return nil, fmt.Errorf("Cannot find city for %v:%v - %s", r.Latitude, r.Longitude, err.Error())
-		}
-		areaID, err := router.GetAreaID(r.City)
-		if err != nil {
-			return nil, err
-		}
-		r.AreaID = areaID
-		return r.convertLL()
-
-	case len(r.City) > 2:
-		areaID, err := router.GetAreaID(r.City)
-		if err != nil {
-			return nil, err
-		}
-		r.AreaID = areaID
-		return r.convertLL()
-
-	case len(r.DeviceType) > 2 && len(r.DeviceID) > 2:
-		return r.convertDID()
-
-	}
-	return nil, fmt.Errorf("Invalid search request.")
-}
-
-func (r *SearchRequest) convertLL() (interface{}, error) {
-	return structs.NSearchRequestLL{
-		// NSearchRequest: structs.NSearchRequest{
-		// 	SearchType: structs.NSTLocation,
-		// },
-		Latitude:   r.LatitudeV,
-		Longitude:  r.LongitudeV,
-		AreaID:     r.AreaID,
-		Radius:     r.RadiusV,
-		MaxResults: r.MaxResultsV,
-	}, nil
-}
-
-func (r *SearchRequest) convertDID() (interface{}, error) {
-	return structs.NSearchRequestDID{
-		// NSearchRequest: structs.NSearchRequest{
-		// 	SearchType: structs.NSTDeviceID,
-		// },
-		DeviceType: r.DeviceType,
-		DeviceID:   r.DeviceID,
-		MaxResults: r.MaxResultsV,
-	}, nil
 }
 
 // String displays the contents of the SearchRequest custom type.

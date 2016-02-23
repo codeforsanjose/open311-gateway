@@ -5,7 +5,7 @@
 * Implement report searches:
 	* Single ID (SearchID)
 	* DeviceID  (SearchDID)
-	* LatLng    (SearchLL)
+	* LatLng    (SearchLL) @done(2016-02-23)
 	* Address (converted to LatLng in engine... submitted to Adapter as SearchLL)
 * Update RAML file with JSON specs for input and output payloads.
 * On the engine, search needs an index of CityCode -> Providers.  When the ServiceList is loaded, we need to create that index. @done(2016-02-04)
@@ -30,13 +30,25 @@ ___
 
 ## Log
 
+### 2016.02.23 - Tue
+
+* Added panic/recover functions to the Services(), Create() and Search() functions in engine/request/request.go.
+*  Modified Engine Search - in engine/request/search.go:
+	* Added srchType field to SearchRequest struct.  
+	* Added constants for the valid srchType's (ReportID, DeviceID, and LatLng).
+	* Cleaned up JSON/XML tags for the SearchRequest struct.
+	* SearchRequest.validate() calls the new function setSearchType().  This function ascertains the type of search based on which query parms were used, in the following priority: ReportID, DeviceID, LatLng.  In other words, if the ReportID is present, then that will be search type.  If ReportID has not been set, or appears invalid, and there is a valid DeviceID, then that will will be the search used.  If neither ReportID or DeviceID searches look ok, then LatLng will be checked.  If the Lat & Lng don't look valid, then the search request is rejected.
+* Saved to GIT.
+* 
+
 ### 2016.02.22 - Mon
 
 * In structs, changed the ID in responses from an int to a ReportID (new struct).  The ReportID includes the Route, so an upvote or comment to a specific report can be properly routed.
 * Saved to GIT.
 * Deleted engine/request/_old code.
 * Saved to GIT.
-* 
+* Fixed Search function on the Engine - it was not consolidating multiple returns from Adapter Routes. 
+* Saved to GIT.
 
 ### 2016.02.21 - Sun
 

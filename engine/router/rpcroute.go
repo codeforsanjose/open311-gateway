@@ -52,7 +52,7 @@ func initResponseStructs() error {
 
 func initRPCList() error {
 	adapter := func(rt structs.NRouter, service string) (adapterRouteList, error) {
-		log.Debug("[serviceMap: adapter] service: %q\nroutes: %s\n", service, rt.GetRoutes())
+		// log.Debug("[serviceMap: adapter] service: %q\nroutes: %s\n", service, rt.GetRoutes())
 		adpStatList := newAdapterRouteList()
 		for i, nroute := range rt.GetRoutes() {
 			adp, err := GetAdapter(nroute.AdpID)
@@ -68,7 +68,7 @@ func initRPCList() error {
 			adpStatList[nroute] = rs
 			// log.Debug("adapters: %s", adpStatList)
 		}
-		log.Debug(adpStatList.String())
+		// log.Debug(adpStatList.String())
 		return adpStatList, nil
 	}
 
@@ -76,7 +76,7 @@ func initRPCList() error {
 	// Area.
 	// area := func(areaID, service string) (adapterRouteList, error) {
 	area := func(rt structs.NRouter, service string) (adapterRouteList, error) {
-		log.Debug("[serviceMap: area] service: %q\nroutes: %s\n", service, rt.GetRoutes())
+		// log.Debug("[serviceMap: area] service: %q\nroutes: %s\n", service, rt.GetRoutes())
 		adpStatList := newAdapterRouteList()
 		for i, nroute := range rt.GetRoutes() {
 			switch nroute.RouteType() {
@@ -124,7 +124,7 @@ func initRPCList() error {
 				return nil, fmt.Errorf("Cannot create the Adapter List - invalid route: %s", nroute)
 			}
 		}
-		log.Debug(adpStatList.String())
+		// log.Debug(adpStatList.String())
 		return adpStatList, nil
 	}
 

@@ -24,6 +24,11 @@ var (
 //  http;//xyz.com/api/services?lat=34.236144&lon=-118.604794
 //  http;//xyz.com/api/services?city=san+jose
 func Services(w rest.ResponseWriter, r *rest.Request) {
+	defer func() {
+		if rcvr := recover(); rcvr != nil {
+			rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
+		}
+	}()
 	rqstID := rqstID.get()
 	sendTelemetry(rqstID, "Services", "open")
 	response, err := processServices(r, rqstID)
@@ -38,6 +43,11 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 
 // Create creates a new report.
 func Create(w rest.ResponseWriter, r *rest.Request) {
+	defer func() {
+		if rcvr := recover(); rcvr != nil {
+			rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
+		}
+	}()
 	rqstID := rqstID.get()
 	sendTelemetry(rqstID, "Create", "open")
 	response, err := processCreate(r, rqstID)
@@ -52,6 +62,11 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 
 // Search searches for Reports.
 func Search(w rest.ResponseWriter, r *rest.Request) {
+	// defer func() {
+	// 	if rcvr := recover(); rcvr != nil {
+	// 		rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
+	// 	}
+	// }()
 	rqstID := rqstID.get()
 	sendTelemetry(rqstID, "Search", "open")
 	response, err := processSearch(r, rqstID)

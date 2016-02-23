@@ -83,10 +83,11 @@ func (r *cache) processRefresh() {
 	r.indexAreaAdapters()
 	r.indexRoutes()
 	r.switchSet()
-	log.Debug("Cache%s", r)
+	// log.Debug("Cache%s", r)
 }
 
-//
+// indexRoutes builds a unique list of all NRoutes and posts it to the
+// router.GetChRouteUpd() channel.
 func (r *cache) indexRoutes() error {
 	ls := r.loadSet()
 
