@@ -426,7 +426,10 @@ type NSearchRequestDID struct {
 
 // GetRoutes returns the routing data.
 func (r NSearchRequestDID) GetRoutes() NRoutes {
-	return r.RouteList
+	if len(r.RouteList) > 0 {
+		return r.RouteList
+	}
+	return NewNRoutes().add(NRoute{"", r.AreaID, 0})
 }
 
 // NSearchResponse contains the search results.
@@ -721,7 +724,7 @@ func (r NSearchResponseReport) String() string {
 	ls.AddF("Request - type: %q  id: %q\n", r.RequestType, r.RequestTypeID)
 	ls.AddF("Location - lat: %v  lon: %v  directionality: %q\n", r.Latitude, r.Longitude, r.Directionality)
 	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.ZipCode)
-	ls.AddF("Votes: %d\n", r.Votes)
+	ls.AddF("Votes: %v\n", r.Votes)
 	ls.AddF("Description: %q\n", r.Description)
 	ls.AddF("Images - std: %s\n", r.ImageURL)
 	if len(r.ImageURLXs) > 0 {

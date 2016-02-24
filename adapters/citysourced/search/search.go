@@ -3,6 +3,7 @@ package search
 import (
 	"bytes"
 	"encoding/xml"
+	"log"
 	"net/http"
 
 	"Gateway311/engine/common"
@@ -65,7 +66,7 @@ func (r *RequestLL) Process(url string) (*Response, error) {
 
 // RequestDID represents the XML payload for a report request to CitySourced.
 type RequestDID struct {
-	XMLName           xml.Name `xml:"SearchDID"`
+	XMLName           xml.Name `xml:"CsRequest"`
 	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
 	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
 	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
@@ -75,6 +76,38 @@ type RequestDID struct {
 	IncludeDetails    bool     `json:"IncludeDetails" xml:"IncludeDetails"`
 	DateRangeStart    string   `json:"DateRangeStart" xml:"DateRangeStart"`
 	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
+}
+
+// Process executes the request to create a new report.
+func (r *RequestDID) Process(url string) (*Response, error) {
+	// log.Printf("%s\n", r)
+	fail := func(err error) (*Response, error) {
+		response := Response{
+			Message: "Failed",
+		}
+		return &response, err
+	}
+
+	var payload = new(bytes.Buffer)
+	{
+		enc := xml.NewEncoder(payload)
+		enc.Indent("  ", "    ")
+		enc.Encode(r)
+	}
+	log.Printf("Payload:\n%v\n", payload.String())
+
+	resp, err := http.Post(url, "application/xml", payload)
+	if err != nil {
+		return fail(err)
+	}
+
+	var response Response
+	err = xml.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return fail(err)
+	}
+
+	return &response, nil
 }
 
 // ================================================================================================

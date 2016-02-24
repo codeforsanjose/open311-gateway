@@ -30,6 +30,12 @@ ___
 
 ## Log
 
+### 2016.02.24 - Wed
+
+* Search by DeviceID working.  Needs thorough testing.
+* Saved to GIT.
+
+
 ### 2016.02.23 - Tue
 
 * Added panic/recover functions to the Services(), Create() and Search() functions in engine/request/request.go.

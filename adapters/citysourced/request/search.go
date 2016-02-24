@@ -23,7 +23,7 @@ const (
 
 // SearchLL fully processes a "Search by Location" request.
 func (r *Report) SearchLL(rqst *structs.NSearchRequestLL, resp *structs.NSearchResponse) error {
-	log.Debug("Search - request: %p  resp: %p\n", rqst, resp)
+	log.Debug("SearchLL - request: %p  resp: %p\n", rqst, resp)
 	// Make the Search Manager
 	cm := &searchLLMgr{
 		nreq:  rqst,
@@ -147,13 +147,12 @@ func (c *searchLLMgr) String() string {
 	return ls.Box(90)
 }
 
-/*
 // ================================================================================================
 //                                      SEARCH DID
 // ================================================================================================
 
-// Search fully processes the Search request.
-func (r *Report) SearchDID(rqst *structs.NSearchRequestLL, resp *structs.NSearchResponse) error {
+// SearchDID fully processes the Search by DeviceID request.
+func (r *Report) SearchDID(rqst *structs.NSearchRequestDID, resp *structs.NSearchResponse) error {
 	log.Debug("Search - request: %p  resp: %p\n", rqst, resp)
 	// Make the Search Manager
 	cm := &searchDIDMgr{
@@ -172,36 +171,29 @@ func (r *Report) SearchDID(rqst *structs.NSearchRequestLL, resp *structs.NSearch
 //  3. Converts the CitySourced reply back to Normal form.
 //  4. Returns the Normal Response, and any errors.
 type searchDIDMgr struct {
-	nreq  *structs.NSearchRequestLL
-	req   *search.RequestLL
+	nreq  *structs.NSearchRequestDID
+	req   *search.RequestDID
 	url   string
 	resp  *search.Response
 	nresp *structs.NSearchResponse
 }
 
 func (c *searchDIDMgr) convertRequest() error {
-	provider, err := data.MIDProvider(c.nreq.MID)
+	provider, err := data.RouteProvider(c.nreq.Route)
 	if err != nil {
 		return err
 	}
 	c.url = provider.URL
-	c.req = &search.RequestLL{
+	c.req = &search.RequestDID{
 		APIAuthKey:        provider.Key,
-		APIRequestType:    "GetReportsByLatLng",
+		APIRequestType:    "GetReportsByDeviceId",
 		APIRequestVersion: provider.APIVersion,
 		DeviceType:        c.nreq.DeviceType,
-		DeviceModel:       c.nreq.DeviceModel,
 		DeviceID:          c.nreq.DeviceID,
-		RequestType:       c.nreq.Type,
-		RequestTypeID:     c.nreq.MID.ID,
-		Latitude:          c.nreq.Latitude,
-		Longitude:         c.nreq.Longitude,
-		Description:       c.nreq.Description,
-		AuthorNameFirst:   c.nreq.FirstName,
-		AuthorNameLast:    c.nreq.LastName,
-		AuthorEmail:       c.nreq.Email,
-		AuthorTelephone:   c.nreq.Phone,
-		AuthorIsAnonymous: c.nreq.IsAnonymous,
+		MaxResults:        dfltMaxResults,
+		IncludeDetails:    dfltIncludeDetails,
+		DateRangeStart:    dfltDateRangeStart,
+		DateRangeEnd:      dfltDateRangeEnd,
 	}
 	return nil
 }
@@ -213,18 +205,63 @@ func (c *searchDIDMgr) process() error {
 	return err
 }
 
-func (c *searchDIDMgr) convertResponse() error {
+func (c *searchDIDMgr) convertResponse() (resultCount int, err error) {
+	route := c.nreq.GetRoute()
+	c.nresp.SetIDF(c.nreq.GetID)
+	c.nresp.SetRoute(route)
 	c.nresp.Message = c.resp.Message
-	c.nresp.ID = c.resp.ID
-	c.nresp.AuthorID = c.resp.AuthorID
-	return nil
+	c.nresp.ResponseTime = c.resp.ResponseTime
+	c.nresp.Reports = make([]structs.NSearchResponseReport, 0)
+
+	for _, rr := range c.resp.Reports.Reports {
+		c.nresp.Reports = append(c.nresp.Reports, structs.NSearchResponseReport{
+			RID:               structs.NewRID(route, rr.ID),
+			DateCreated:       rr.DateCreated,
+			DateUpdated:       rr.DateUpdated,
+			DeviceType:        rr.DeviceType,
+			DeviceModel:       rr.DeviceModel,
+			DeviceID:          rr.DeviceID,
+			RequestType:       rr.RequestType,
+			RequestTypeID:     rr.RequestTypeID,
+			ImageURL:          rr.ImageURL,
+			ImageURLXl:        rr.ImageURLXl,
+			ImageURLLg:        rr.ImageURLLg,
+			ImageURLMd:        rr.ImageURLMd,
+			ImageURLSm:        rr.ImageURLSm,
+			ImageURLXs:        rr.ImageURLXs,
+			City:              rr.City,
+			State:             rr.State,
+			ZipCode:           rr.ZipCode,
+			Latitude:          rr.Latitude,
+			Longitude:         rr.Longitude,
+			Directionality:    rr.Directionality,
+			Description:       rr.Description,
+			AuthorNameFirst:   rr.AuthorNameFirst,
+			AuthorNameLast:    rr.AuthorNameLast,
+			AuthorEmail:       rr.AuthorEmail,
+			AuthorTelephone:   rr.AuthorTelephone,
+			AuthorIsAnonymous: rr.AuthorIsAnonymous,
+			URLDetail:         rr.URLDetail,
+			URLShortened:      rr.URLShortened,
+			Votes:             rr.Votes,
+			StatusType:        rr.StatusType,
+			TicketSLA:         rr.TicketSLA,
+		})
+	}
+	return len(c.nresp.Reports), nil
 }
 
 func (c *searchDIDMgr) fail(err error) error {
 	c.nresp.Message = "Failed - " + err.Error()
-	c.nresp.ID = ""
-	c.nresp.AuthorID = ""
 	return err
+}
+
+func (c *searchDIDMgr) getIDS() string {
+	return c.nreq.GetIDS()
+}
+
+func (c *searchDIDMgr) getRoute() string {
+	return c.nreq.GetRoute().SString()
 }
 
 func (c *searchDIDMgr) String() string {
@@ -236,7 +273,6 @@ func (c *searchDIDMgr) String() string {
 	ls.AddS(c.nresp.String())
 	return ls.Box(90)
 }
-*/
 
 // ================================================================================================
 //                                      STRINGS

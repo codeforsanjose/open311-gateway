@@ -5,6 +5,8 @@ import (
 
 	"Gateway311/engine/structs"
 
+	"github.com/davecgh/go-spew/spew"
+
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -22,7 +24,7 @@ func init() {
 	serviceMap["Services.All"] = &serviceMapMethods{}
 	serviceMap["Services.Area"] = &serviceMapMethods{}
 	serviceMap["Report.Create"] = &serviceMapMethods{}
-	serviceMap["Report.SearchDeviceID"] = &serviceMapMethods{}
+	serviceMap["Report.SearchDID"] = &serviceMapMethods{}
 	serviceMap["Report.SearchLL"] = &serviceMapMethods{}
 
 	if err := initResponseStructs(); err != nil {
@@ -44,7 +46,7 @@ func initResponseStructs() error {
 	serviceMap["Services.All"].newResponse = func() interface{} { return new(structs.NServicesResponse) }
 	serviceMap["Services.Area"].newResponse = func() interface{} { return new(structs.NServicesResponse) }
 	serviceMap["Report.Create"].newResponse = func() interface{} { return new(structs.NCreateResponse) }
-	serviceMap["Report.SearchDeviceID"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
+	serviceMap["Report.SearchDID"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
 	serviceMap["Report.SearchLL"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
 
 	return nil
@@ -68,7 +70,7 @@ func initRPCList() error {
 			adpStatList[nroute] = rs
 			// log.Debug("adapters: %s", adpStatList)
 		}
-		// log.Debug(adpStatList.String())
+		log.Debug(adpStatList.String())
 		return adpStatList, nil
 	}
 
@@ -78,6 +80,7 @@ func initRPCList() error {
 	area := func(rt structs.NRouter, service string) (adapterRouteList, error) {
 		// log.Debug("[serviceMap: area] service: %q\nroutes: %s\n", service, rt.GetRoutes())
 		adpStatList := newAdapterRouteList()
+		log.Debug("Routes: %+v", rt.GetRoutes())
 		for i, nroute := range rt.GetRoutes() {
 			switch nroute.RouteType() {
 			case structs.NRtTypAllAdapters:
@@ -91,11 +94,12 @@ func initRPCList() error {
 					adpStatList[route] = adpStat
 				}
 			case structs.NRtTypArea:
-				log.Debug("Area route: %q", nroute.String())
+				log.Debug("Area route: %q", nroute.SString())
 				routes, err := GetAreaRoutes(nroute.AreaID)
 				if err != nil {
 					return nil, fmt.Errorf("Cannot create the Adapter List - no routes for area: %s", nroute.AreaID)
 				}
+				log.Debug("Routes: %s\n", spew.Sdump(routes))
 				for _, route := range routes {
 					adp, err := GetAdapter(route.AdpID)
 					if err != nil {
@@ -105,6 +109,7 @@ func initRPCList() error {
 					if err != nil {
 						return nil, fmt.Errorf("Error creating route list - %s", err)
 					}
+					log.Debug("adpStat: %s", spew.Sdump(adpStat))
 					adpStatList[route] = adpStat
 				}
 			case structs.NRtTypFull:
@@ -124,7 +129,7 @@ func initRPCList() error {
 				return nil, fmt.Errorf("Cannot create the Adapter List - invalid route: %s", nroute)
 			}
 		}
-		// log.Debug(adpStatList.String())
+		log.Debug(adpStatList.String())
 		return adpStatList, nil
 	}
 
@@ -137,8 +142,8 @@ func initRPCList() error {
 	serviceMap["Report.Create"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return adapter(r, "Report.Create")
 	}
-	serviceMap["Report.SearchDeviceID"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
-		return area(r, "Report.SearchDeviceID")
+	serviceMap["Report.SearchDID"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
+		return area(r, "Report.SearchDID")
 	}
 	serviceMap["Report.SearchLL"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return area(r, "Report.SearchLL")

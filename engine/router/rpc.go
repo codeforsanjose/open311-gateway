@@ -47,13 +47,13 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 		errs:    make([]error, 0),
 	}
 
-	// log.Debug("%+v", r)
+	log.Debug("%+v", request)
 	router, ok := request.(structs.NRouter)
-	// log.Debug("%+v  ok: %t", router, ok)
+	log.Debug("%+v  ok: %t", router, ok)
 	if !ok {
 		return nil, fmt.Errorf("The request (type: %s) does not implement structs.NRouter", reflect.TypeOf(request))
 	}
-	// log.Debug("Building adpList...")
+	log.Debug("Building adpList...")
 	routeMethods, ok := serviceMap[service]
 	if !ok {
 		return nil, fmt.Errorf("serviceMap does not exist for service: %s", service)
@@ -65,7 +65,7 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 
 	rpcCall.adpList = adpList
 
-	// log.Debug("RPCCall: %s", r)
+	log.Debug("RPCCall: %s", request)
 	return &rpcCall, nil
 }
 
@@ -128,7 +128,7 @@ func (r *RPCCall) Run() error {
 		if timedout {
 			for k, v := range r.adpList {
 				if v == nil {
-					log.Errorf("Adapter: %q timed out", k)
+					log.Errorf("Adapter: %q timed out", k.SString())
 				}
 			}
 		}
@@ -137,7 +137,7 @@ func (r *RPCCall) Run() error {
 		log.Info("RPC Call: %q took: %s", r.service, time.Since(sendTime))
 	}
 	if showResponse {
-		log.Debug("Response:%s", r)
+		log.Debug("Response:%v", r)
 	}
 	return nil
 }
@@ -178,7 +178,14 @@ func (r *RPCCall) send() error {
 					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
-					msgtype = "SearchRequest"
+					msgtype = "SearchRequestLL"
+					log.Debug("Sending: %s", rCopy.String())
+				case *structs.NSearchRequestDID:
+					rCopy := *v
+					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
+					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
+					rqstCopy = &rCopy
+					msgtype = "SearchRequestDID"
 					log.Debug("Sending: %s", rCopy.String())
 				default:
 					log.Errorf("Invalid type in send RPC: %T", rqst)
@@ -317,6 +324,9 @@ func (r rpcAdapterStatus) StringNHResp() string {
 }
 
 func stringResponse(r interface{}) string {
+	if r == nil {
+		return ""
+	}
 	switch v := r.(type) {
 	case *structs.NServicesResponse:
 		return v.String()
@@ -334,6 +344,10 @@ func (r adapterRouteList) String() string {
 	ls.AddS("adapterRouteList\n")
 	ls.AddF("    Route/Type/Address              Sent  Repl    ResponseType                     Route        (match)\n")
 	for route, adpStat := range r {
+		if adpStat == nil {
+			ls.AddF("ERROR!  Route: %v is missing the AdapterStatus\n", route.SString())
+			continue
+		}
 		routeMatch := color.GreenString("OK")
 		if route != adpStat.route {
 			routeMatch = color.RedString("Mismatch!")
