@@ -65,7 +65,7 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 
 	rpcCall.adpList = adpList
 
-	log.Debug("RPCCall: %s", request)
+	// log.Debug("RPCCall: %s", request)
 	return &rpcCall, nil
 }
 
@@ -186,6 +186,13 @@ func (r *RPCCall) send() error {
 					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
 					rqstCopy = &rCopy
 					msgtype = "SearchRequestDID"
+					log.Debug("Sending: %s", rCopy.String())
+				case *structs.NSearchRequestRID:
+					rCopy := *v
+					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
+					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
+					rqstCopy = &rCopy
+					msgtype = "SearchRequestRID"
 					log.Debug("Sending: %s", rCopy.String())
 				default:
 					log.Errorf("Invalid type in send RPC: %T", rqst)

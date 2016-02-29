@@ -79,6 +79,7 @@ func (c *searchLLMgr) process() error {
 }
 
 func (c *searchLLMgr) convertResponse() (resultCount int, err error) {
+	log.Debug("Resp: %s", c.nresp)
 	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(route)
@@ -148,6 +149,133 @@ func (c *searchLLMgr) String() string {
 }
 
 // ================================================================================================
+//                                      SEARCH RID
+// ================================================================================================
+
+// SearchRID fully processes the Search by DeviceID request.
+func (r *Report) SearchRID(rqst *structs.NSearchRequestRID, resp *structs.NSearchResponse) error {
+	log.Debug("Search - request: %p  resp: %p\n", rqst, resp)
+	// Make the Search Manager
+	cm := &searchRIDMgr{
+		nreq:  rqst,
+		nresp: resp,
+	}
+	log.Debug("searchRIDMgr: %#v\n", *cm)
+
+	return runRequest(processer(cm))
+}
+
+// searchRIDMgr conglomerates the Normal and Native structs and supervisor logic
+// for processing a request to Search for reports by Location.
+//  1. Validates and converts the request from the Normal form to the CitySourced native XML form.
+//  2. Calls the appropriate CitySourced REST interface with proper credentials.
+//  3. Converts the CitySourced reply back to Normal form.
+//  4. Returns the Normal Response, and any errors.
+type searchRIDMgr struct {
+	nreq  *structs.NSearchRequestRID
+	req   *search.RequestRID
+	url   string
+	resp  *search.Response
+	nresp *structs.NSearchResponse
+}
+
+func (c *searchRIDMgr) convertRequest() error {
+	provider, err := data.RouteProvider(c.nreq.Route)
+	if err != nil {
+		return err
+	}
+	c.url = provider.URL
+	c.req = &search.RequestRID{
+		APIAuthKey:        provider.Key,
+		APIRequestType:    "GetReport",
+		APIRequestVersion: provider.APIVersion,
+		ReportID:          c.nreq.RID.ID,
+		MaxResults:        dfltMaxResults,
+		IncludeDetails:    dfltIncludeDetails,
+		DateRangeStart:    dfltDateRangeStart,
+		DateRangeEnd:      dfltDateRangeEnd,
+	}
+	return nil
+}
+
+// Process executes the request to search for reports by location.
+func (c *searchRIDMgr) process() error {
+	resp, err := c.req.Process(c.url)
+	c.resp = resp
+	return err
+}
+
+func (c *searchRIDMgr) convertResponse() (resultCount int, err error) {
+	log.Debug("Resp: %s", c.nresp)
+	route := c.nreq.GetRoute()
+	c.nresp.SetIDF(c.nreq.GetID)
+	c.nresp.SetRoute(route)
+	c.nresp.Message = c.resp.Message
+	c.nresp.ResponseTime = c.resp.ResponseTime
+	c.nresp.Reports = make([]structs.NSearchResponseReport, 0)
+
+	for _, rr := range c.resp.Reports.Reports {
+		c.nresp.Reports = append(c.nresp.Reports, structs.NSearchResponseReport{
+			RID:               structs.NewRID(route, rr.ID),
+			DateCreated:       rr.DateCreated,
+			DateUpdated:       rr.DateUpdated,
+			DeviceType:        rr.DeviceType,
+			DeviceModel:       rr.DeviceModel,
+			DeviceID:          rr.DeviceID,
+			RequestType:       rr.RequestType,
+			RequestTypeID:     rr.RequestTypeID,
+			ImageURL:          rr.ImageURL,
+			ImageURLXl:        rr.ImageURLXl,
+			ImageURLLg:        rr.ImageURLLg,
+			ImageURLMd:        rr.ImageURLMd,
+			ImageURLSm:        rr.ImageURLSm,
+			ImageURLXs:        rr.ImageURLXs,
+			City:              rr.City,
+			State:             rr.State,
+			ZipCode:           rr.ZipCode,
+			Latitude:          rr.Latitude,
+			Longitude:         rr.Longitude,
+			Directionality:    rr.Directionality,
+			Description:       rr.Description,
+			AuthorNameFirst:   rr.AuthorNameFirst,
+			AuthorNameLast:    rr.AuthorNameLast,
+			AuthorEmail:       rr.AuthorEmail,
+			AuthorTelephone:   rr.AuthorTelephone,
+			AuthorIsAnonymous: rr.AuthorIsAnonymous,
+			URLDetail:         rr.URLDetail,
+			URLShortened:      rr.URLShortened,
+			Votes:             rr.Votes,
+			StatusType:        rr.StatusType,
+			TicketSLA:         rr.TicketSLA,
+		})
+	}
+	return len(c.nresp.Reports), nil
+}
+
+func (c *searchRIDMgr) fail(err error) error {
+	c.nresp.Message = "Failed - " + err.Error()
+	return err
+}
+
+func (c *searchRIDMgr) getIDS() string {
+	return c.nreq.GetIDS()
+}
+
+func (c *searchRIDMgr) getRoute() string {
+	return c.nreq.GetRoute().SString()
+}
+
+func (c *searchRIDMgr) String() string {
+	ls := new(common.LogString)
+	ls.AddS("SearchRID\n")
+	ls.AddS(c.nreq.String())
+	ls.AddS(c.req.String())
+	ls.AddS(c.resp.String())
+	ls.AddS(c.nresp.String())
+	return ls.Box(90)
+}
+
+/// ================================================================================================
 //                                      SEARCH DID
 // ================================================================================================
 
@@ -206,6 +334,7 @@ func (c *searchDIDMgr) process() error {
 }
 
 func (c *searchDIDMgr) convertResponse() (resultCount int, err error) {
+	log.Debug("Resp: %s", c.nresp)
 	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(route)

@@ -121,6 +121,7 @@ const (
 	NRTCreate
 	NRTSearchLL
 	NRTSearchDID
+	NRTSearchRID
 )
 
 // =======================================================================================
@@ -159,7 +160,8 @@ type NRouteType int
 
 // NRT* are constants enumerating the valid request types.
 const (
-	NRtTypInvalid NRouteType = iota
+	NRtTypEmpty NRouteType = iota
+	NRtTypInvalid
 	NRtTypFull
 	NRtTypArea
 	NRtTypAllAreas
@@ -169,6 +171,8 @@ const (
 // RouteType returns the validity and type of the NRoute.
 func (r NRoute) RouteType() NRouteType {
 	switch {
+	case r.AdpID == "" && r.AreaID == "" && r.ProviderID == 0:
+		return NRtTypEmpty
 	case r.AdpID > "" && r.AreaID > "" && r.ProviderID > 0:
 		return NRtTypFull
 	case r.AdpID > "" && r.AreaID == "all" && r.ProviderID == 0:
@@ -265,6 +269,7 @@ const (
 	NRspTCreate
 	NRspTSearchLL
 	NRspTSearchDID
+	NRspTSearchRID
 )
 
 // =======================================================================================
@@ -348,11 +353,6 @@ func NewRID(route NRoute, id string) ReportID {
 
 }
 
-// GetRoute returns the NRoute for the ReportID.
-func (r ReportID) String() string {
-	return fmt.Sprintf("%s-%s", r.NRoute, r.ID)
-}
-
 // =======================================================================================
 //                                      CREATE
 // =======================================================================================
@@ -413,7 +413,7 @@ func (r NSearchRequestLL) GetRoutes() NRoutes {
 	return NewNRoutes().add(NRoute{"", r.AreaID, 0})
 }
 
-// NSearchRequestDID represents the Normal struct for a request to search for all reports
+// NSearchRequestDID represents the Normal struct for a request to search for all Reports
 // authored by the specified Device ID.
 type NSearchRequestDID struct {
 	NRequestCommon
@@ -430,6 +430,23 @@ func (r NSearchRequestDID) GetRoutes() NRoutes {
 		return r.RouteList
 	}
 	return NewNRoutes().add(NRoute{"", r.AreaID, 0})
+}
+
+// NSearchRequestRID represents the Normal struct for a request to find a single,
+// specific Report.
+type NSearchRequestRID struct {
+	NRequestCommon
+	RID       ReportID
+	RouteList NRoutes
+	AreaID    string
+}
+
+// GetRoutes returns the routing data.
+func (r NSearchRequestRID) GetRoutes() NRoutes {
+	if len(r.RouteList) > 0 {
+		return r.RouteList
+	}
+	return NewNRoutes().add(NRoute{r.RID.AdpID, r.RID.AreaID, r.RID.ProviderID})
 }
 
 // NSearchResponse contains the search results.
@@ -477,7 +494,7 @@ type NSearchResponseReport struct {
 }
 
 // =======================================================================================
-//                                      MISC
+//                                      MID
 // =======================================================================================
 
 // SplitMID breaks down an MID, and returns all subfields.
@@ -556,6 +573,120 @@ func MidID(mid string) (int, error) {
 }
 
 // =======================================================================================
+//                                      RID
+// =======================================================================================
+
+// RIDFromString converts a reportID string to a new ReportID struct.
+func RIDFromString(rids string) (ReportID, NRoute, error) {
+	if rids == "" {
+		return ReportID{}, NRoute{}, fmt.Errorf("empty RID: %q", rids)
+	}
+	adpID, areaID, providerID, reportID, err := SplitRID(rids)
+	if err != nil {
+		return ReportID{}, NRoute{}, fmt.Errorf("invalid RID: %q", rids)
+	}
+	nr := NRoute{
+		AdpID:      adpID,
+		AreaID:     areaID,
+		ProviderID: providerID,
+	}
+
+	return ReportID{
+		NRoute: nr,
+		ID:     fmt.Sprintf("%v", reportID),
+	}, nr, nil
+}
+
+// NRouteFromString converts a reportID string to a new NRoute struct.
+func NRouteFromString(rids string) (NRoute, error) {
+	adpID, areaID, providerID, _, err := SplitRID(rids)
+	if err != nil {
+		return NRoute{}, fmt.Errorf("invalid RID: %q", rids)
+	}
+	return NRoute{
+		AdpID:      adpID,
+		AreaID:     areaID,
+		ProviderID: providerID,
+	}, nil
+
+}
+
+// SplitRID breaks down an RID, and returns all subfields.
+func SplitRID(rids string) (string, string, int, int, error) {
+	fail := func() (string, string, int, int, error) {
+		return "", "", 0, 0, fmt.Errorf("Invalid RID: %s", rids)
+	}
+	parts := strings.Split(rids, "-")
+	fmt.Printf("RID: %+v\n", parts)
+	if len(parts) != 4 {
+		fail()
+	}
+	pid, err := strconv.ParseInt(parts[2], 10, 64)
+	if err != nil {
+		fail()
+	}
+	id, err := strconv.ParseInt(parts[3], 10, 64)
+	if err != nil {
+		fail()
+	}
+	return parts[0], parts[1], int(pid), int(id), nil
+}
+
+// RidAdpID breaks down a RID, and returns the AdpID.
+func RidAdpID(rid string) (string, error) {
+	parts := strings.Split(rid, "-")
+	fmt.Printf("RID: %+v\n", parts)
+	if len(parts) != 4 {
+		return "", fmt.Errorf("Invalid RID: %s", rid)
+	}
+	return parts[0], nil
+}
+
+// RidAreaID breaks down a RID, and returns the AreaID.
+func RidAreaID(rid string) (string, error) {
+	parts := strings.Split(rid, "-")
+	fmt.Printf("RID: %+v\n", parts)
+	if len(parts) != 4 {
+		return "", fmt.Errorf("Invalid RID: %s", rid)
+	}
+	return parts[1], nil
+}
+
+// RidProviderID breaks down an RID, and returns the ProviderID.
+func RidProviderID(rid string) (int, error) {
+	fail := func() (int, error) {
+		return 0, fmt.Errorf("Invalid RID: %s", rid)
+	}
+	parts := strings.Split(rid, "-")
+	fmt.Printf("RID: %+v\n", parts)
+	if len(parts) != 4 {
+		return 0, fmt.Errorf("Invalid RID: %s", rid)
+	}
+	pid, err := strconv.ParseInt(parts[2], 10, 64)
+	if err != nil {
+		fail()
+	}
+	return int(pid), nil
+}
+
+// RidID breaks down an RID, and returns the Report ID.
+func RidID(rid string) (int, error) {
+	fail := func() (int, error) {
+		return 0, fmt.Errorf("Invalid RID: %s", rid)
+	}
+	parts := strings.Split(rid, "-")
+	fmt.Printf("RID: %+v\n", parts)
+	if len(parts) != 4 {
+		return 0, fmt.Errorf("Invalid RID: %s", rid)
+	}
+	id, err := strconv.ParseInt(parts[3], 10, 64)
+	if err != nil {
+		fail()
+	}
+	return int(id), nil
+}
+
+// =======================================================================================
 //                                      STRINGS
 // =======================================================================================
 
@@ -620,8 +751,15 @@ func (r ReportID) RID() string {
 	return fmt.Sprintf("%s-%s-%d-%s", r.AdpID, r.AreaID, r.ProviderID, r.ID)
 }
 
+// Display the string represenation of a ReportID.
+func (r ReportID) String() string {
+	return fmt.Sprintf("%s-%s", r.NRoute, r.ID)
+}
+
 func (r NRouteType) String() string {
 	switch r {
+	case NRtTypEmpty:
+		return color.BlueString("empty")
 	case NRtTypFull:
 		return color.GreenString("Full")
 	case NRtTypAllAdapters:
@@ -703,6 +841,16 @@ func (r NSearchRequestDID) String() string {
 	return ls.Box(80)
 }
 
+// Displays the NSearchRequestRID custom type.
+func (r NSearchRequestRID) String() string {
+	ls := new(common.LogString)
+	ls.AddF("NSearchRequestRID\n")
+	ls.AddS(r.NRequestCommon.String())
+	ls.AddF("ReportID: %v    AreaID: %q\n", r.RID.SString(), r.AreaID)
+	ls.AddF("RouteList: %v\n", r.RouteList.String())
+	return ls.Box(80)
+}
+
 // Displays the NSearchResponse custom type.
 func (r NSearchResponse) String() string {
 	ls := new(common.LogString)
@@ -715,7 +863,7 @@ func (r NSearchResponse) String() string {
 	return ls.Box(90)
 }
 
-// Displays the the NSearchRequestDID custom type.
+// Displays the the NSearchResponseReport custom type.
 func (r NSearchResponseReport) String() string {
 	ls := new(common.LogString)
 	ls.AddF("NSearchResponseReport %d\n", r.RID.RID())

@@ -3,10 +3,14 @@ package search
 import (
 	"bytes"
 	"encoding/xml"
-	"log"
 	"net/http"
 
+	"Gateway311/adapters/citysourced/logs"
 	"Gateway311/engine/common"
+)
+
+var (
+	log = logs.Log
 )
 
 // ================================================================================================
@@ -94,7 +98,56 @@ func (r *RequestDID) Process(url string) (*Response, error) {
 		enc.Indent("  ", "    ")
 		enc.Encode(r)
 	}
-	log.Printf("Payload:\n%v\n", payload.String())
+	log.Debug("Payload:\n%v\n", payload.String())
+
+	resp, err := http.Post(url, "application/xml", payload)
+	if err != nil {
+		return fail(err)
+	}
+
+	var response Response
+	err = xml.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return fail(err)
+	}
+
+	return &response, nil
+}
+
+// ================================================================================================
+//                                      SEARCH RID
+// ================================================================================================
+
+// RequestRID represents the XML payload for a report request to CitySourced.
+type RequestRID struct {
+	XMLName           xml.Name `xml:"CsRequest"`
+	APIAuthKey        string   `json:"ApiAuthKey" xml:"ApiAuthKey"`
+	APIRequestType    string   `json:"ApiRequestType" xml:"ApiRequestType"`
+	APIRequestVersion string   `json:"ApiRequestVersion" xml:"ApiRequestVersion"`
+	ReportID          string   `json:"ReportId" xml:"ReportId"`
+	MaxResults        int      `json:"MaxResults" xml:"MaxResults"`
+	IncludeDetails    bool     `json:"IncludeDetails" xml:"IncludeDetails"`
+	DateRangeStart    string   `json:"DateRangeStart" xml:"DateRangeStart"`
+	DateRangeEnd      string   `json:"DateRangeEnd" xml:"DateRangeEnd"`
+}
+
+// Process executes the request to create a new report.
+func (r *RequestRID) Process(url string) (*Response, error) {
+	// log.Printf("%s\n", r)
+	fail := func(err error) (*Response, error) {
+		response := Response{
+			Message: "Failed",
+		}
+		return &response, err
+	}
+
+	var payload = new(bytes.Buffer)
+	{
+		enc := xml.NewEncoder(payload)
+		enc.Indent("  ", "    ")
+		enc.Encode(r)
+	}
+	log.Debug("Payload:\n%v\n", payload.String())
 
 	resp, err := http.Post(url, "application/xml", payload)
 	if err != nil {
@@ -184,6 +237,16 @@ func (r RequestDID) String() string {
 	ls := new(common.LogString)
 	ls.AddS("RequestDID\n")
 	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
+	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
+	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
+	return ls.Box(80)
+}
+
+// Displays the contents of the Spec_Type custom type.
+func (r RequestRID) String() string {
+	ls := new(common.LogString)
+	ls.AddS("RequestRID\n")
+	ls.AddF("ReportID: %s\n", r.ReportID)
 	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
 	ls.AddF("Date Range - start: %v  end: %v\n", r.DateRangeStart, r.DateRangeEnd)
 	return ls.Box(80)

@@ -77,6 +77,14 @@ func (r *routeData) getAreaRoutes(areaID string) (structs.NRoutes, error) {
 	return l, nil
 }
 
+// getArea retrieves the ServiceList for the specified area.
+func (r *routeData) validateRoute(route structs.NRoute) bool {
+	r.RLock()
+	defer r.RUnlock()
+
+	return false
+}
+
 func (r *routeData) update(upd map[string]structs.NRoutes) {
 	r.routes[r.loadSet()] = upd
 	r.switchSet()
@@ -126,8 +134,8 @@ func (r routeData) String() string {
 type Adapters struct {
 	loaded   bool
 	loadedAt time.Time
-	Adapters map[string]*Adapter `json:"adapters"`
-	Areas    map[string]*Area    `json:"areas"`
+	Adapters map[string]*Adapter `json:"adapters"` // Index: AdpID
+	Areas    map[string]*Area    `json:"areas"`    // Index: AreaID
 	chUpdate chan map[string][]string
 
 	areaAlias    map[string]*Area      // Index: an alias for an area

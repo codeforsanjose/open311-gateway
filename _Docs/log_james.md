@@ -30,6 +30,13 @@ ___
 
 ## Log
 
+### 2016.02.29 - Mon
+
+* Search by ReportID working.
+* Added RID (ReportID) to structs.go.
+* Saved to GIT.
+* 
+
 ### 2016.02.24 - Wed
 
 * Search by DeviceID working.  Needs thorough testing.

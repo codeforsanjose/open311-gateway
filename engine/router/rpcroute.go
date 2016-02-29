@@ -25,6 +25,7 @@ func init() {
 	serviceMap["Services.Area"] = &serviceMapMethods{}
 	serviceMap["Report.Create"] = &serviceMapMethods{}
 	serviceMap["Report.SearchDID"] = &serviceMapMethods{}
+	serviceMap["Report.SearchRID"] = &serviceMapMethods{}
 	serviceMap["Report.SearchLL"] = &serviceMapMethods{}
 
 	if err := initResponseStructs(); err != nil {
@@ -47,6 +48,7 @@ func initResponseStructs() error {
 	serviceMap["Services.Area"].newResponse = func() interface{} { return new(structs.NServicesResponse) }
 	serviceMap["Report.Create"].newResponse = func() interface{} { return new(structs.NCreateResponse) }
 	serviceMap["Report.SearchDID"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
+	serviceMap["Report.SearchRID"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
 	serviceMap["Report.SearchLL"].newResponse = func() interface{} { return new(structs.NSearchResponse) }
 
 	return nil
@@ -78,7 +80,7 @@ func initRPCList() error {
 	// Area.
 	// area := func(areaID, service string) (adapterRouteList, error) {
 	area := func(rt structs.NRouter, service string) (adapterRouteList, error) {
-		// log.Debug("[serviceMap: area] service: %q\nroutes: %s\n", service, rt.GetRoutes())
+		log.Debug("[serviceMap: area] service: %q\nroutes: %s\n", service, rt.GetRoutes())
 		adpStatList := newAdapterRouteList()
 		log.Debug("Routes: %+v", rt.GetRoutes())
 		for i, nroute := range rt.GetRoutes() {
@@ -113,7 +115,7 @@ func initRPCList() error {
 					adpStatList[route] = adpStat
 				}
 			case structs.NRtTypFull:
-				log.Debug("Full route: %q", nroute)
+				log.Debug("Full route: %q", nroute.SString())
 				adp, err := GetAdapter(nroute.AdpID)
 				if err != nil {
 					return nil, fmt.Errorf("Invalid adpater id in route: %s", nroute)
@@ -126,7 +128,7 @@ func initRPCList() error {
 
 			default:
 				// log.Debug("Using only adapters for areaID: %s", areaID)
-				return nil, fmt.Errorf("Cannot create the Adapter List - invalid route: %s", nroute)
+				return nil, fmt.Errorf("Cannot create the Adapter List - invalid route: %s", nroute.SString())
 			}
 		}
 		log.Debug(adpStatList.String())
@@ -144,6 +146,9 @@ func initRPCList() error {
 	}
 	serviceMap["Report.SearchDID"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return area(r, "Report.SearchDID")
+	}
+	serviceMap["Report.SearchRID"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
+		return area(r, "Report.SearchRID")
 	}
 	serviceMap["Report.SearchLL"].buildAdapterList = func(r structs.NRouter) (adapterRouteList, error) {
 		return area(r, "Report.SearchLL")

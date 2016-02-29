@@ -45,22 +45,22 @@ const (
 type SearchRequest struct {
 	cType
 	cIface
-	RID         string  `json:"reportID" xml:"reportID"`
-	DeviceType  string  `json:"deviceType" xml:"deviceType"`
-	DeviceID    string  `json:"deviceId" xml:"deviceId"`
-	Latitude    string  `json:"latitude" xml:"latitude"`
-	LatitudeV   float64 //
-	Longitude   string  `json:"longitude" xml:"longitude"`
-	LongitudeV  float64 //
-	Radius      string  `json:"radius" xml:"radius"`
-	RadiusV     int     // in meters
-	Address     string  `json:"address" xml:"address"`
-	City        string  `json:"city" xml:"city"`
-	AreaID      string  //
-	State       string  `json:"state" xml:"state"`
-	Zip         string  `json:"zip" xml:"zip"`
-	MaxResults  string  `json:"MaxResultsV" xml:"MaxResultsV"`
-	MaxResultsV int     //
+	RID         structs.ReportID `json:"reportID" xml:"reportID"`
+	DeviceType  string           `json:"deviceType" xml:"deviceType"`
+	DeviceID    string           `json:"deviceId" xml:"deviceId"`
+	Latitude    string           `json:"latitude" xml:"latitude"`
+	LatitudeV   float64          //
+	Longitude   string           `json:"longitude" xml:"longitude"`
+	LongitudeV  float64          //
+	Radius      string           `json:"radius" xml:"radius"`
+	RadiusV     int              // in meters
+	Address     string           `json:"address" xml:"address"`
+	City        string           `json:"city" xml:"city"`
+	AreaID      string           //
+	State       string           `json:"state" xml:"state"`
+	Zip         string           `json:"zip" xml:"zip"`
+	MaxResults  string           `json:"MaxResultsV" xml:"MaxResultsV"`
+	MaxResultsV int              //
 	validRID    bool
 	validDID    bool
 	validLatLng bool
@@ -89,7 +89,7 @@ func (r *SearchRequest) setSearchType() error {
 
 func (r *SearchRequest) validate() error {
 	// ReportID (RID)
-	if len(r.RID) >= 10 {
+	if router.ValidateRID(r.RID) {
 		r.validRID = true
 		r.validRoute = true
 	}
@@ -156,7 +156,13 @@ func (r *SearchRequest) validate() error {
 }
 
 func (r *SearchRequest) parseQP(rqst *rest.Request) error {
-	r.RID = rqst.URL.Query().Get("rid")
+	// if rid, _, err := structs.RIDFromString(rqst.URL.Query().Get("rid")); err == nil {
+	// 	r.RID = rid
+	// }
+	rid, _, err := structs.RIDFromString(rqst.URL.Query().Get("rid"))
+	if err == nil {
+		r.RID = rid
+	}
 	r.DeviceType = rqst.URL.Query().Get("dtype")
 	r.DeviceID = rqst.URL.Query().Get("did")
 	r.Latitude = rqst.URL.Query().Get("lat")
@@ -181,7 +187,11 @@ func (r *SearchRequest) run() (interface{}, error) {
 	case srchtUnknown:
 		return nil, fmt.Errorf("unknown search type - invalid query parms")
 	case srchtReportID:
-		return nil, fmt.Errorf("Search by ReportID not implemented")
+		var err error
+		rpcCall, err = r.setSearchRID()
+		if err != nil {
+			return nil, err
+		}
 	case srchtDeviceID:
 		var err error
 		rpcCall, err = r.setSearchDID()
@@ -291,12 +301,45 @@ func (r *SearchRequest) newNSearchLL() (structs.NSearchRequestLL, error) {
 
 }
 
+// ---------------------------- ReportID --------------------------------------------
+
+func (r *SearchRequest) setSearchRID() (*router.RPCCall, error) {
+	rqst, err := r.newNSearchRID()
+	if err != nil {
+		log.Error(err.Error())
+		return nil, err
+	}
+	rpcCall, err := router.NewRPCCall("Report.SearchRID", &rqst, r.adapterReply)
+	if err != nil {
+		log.Error(err.Error())
+		return nil, err
+	}
+	return rpcCall, nil
+}
+
+func (r *SearchRequest) newNSearchRID() (structs.NSearchRequestRID, error) {
+	n := structs.NSearchRequestRID{
+		NRequestCommon: structs.NRequestCommon{
+			ID: structs.NID{
+				RqstID: r.id,
+			},
+			Rtype: structs.NRTSearchRID,
+		},
+		RID:    r.RID,
+		AreaID: r.AreaID,
+	}
+	log.Debug("Search: %s", n)
+	return n, nil
+
+}
+
 // ---------------------------- Strings --------------------------------------------
 
 // String displays the contents of the SearchRequest custom type.
 func (r SearchRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddF("SearchRequest - %d\n", r.id)
+	ls.AddF("RID: %s\n", r.RID)
 	ls.AddF("Device Type: %q    ID: %q\n", r.DeviceType, r.DeviceID)
 	ls.AddF("Lat: %v (%f)  Lng: %v (%f)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV)
 	ls.AddF("Radius: %v (%d) AreaID: %q\n", r.Radius, r.RadiusV, r.AreaID)

@@ -80,7 +80,7 @@ func RouteProvider(route structs.NRoute) (Provider, error) {
 func getProvider(AreaID string, ProviderID int) (Provider, error) {
 	log.Debug("AreaID: %v  ProviderID: %v\n", AreaID, ProviderID)
 	p, ok := configData.areaProvider[areaProvider{AreaID, ProviderID}]
-	log.Debug("Provider (%t): %s", ok, *p)
+	// log.Debug("Provider (%t): %s", ok, *p)
 	if !ok {
 		return Provider{}, fmt.Errorf("Unable to find Provider for %v-%v", AreaID, ProviderID)
 	}
