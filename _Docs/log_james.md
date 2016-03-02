@@ -1,10 +1,12 @@
 ## To Do.todo
 
 *  
-* Consider reworking engine/router/rpcroute.go - the map idea seemed like a good idea at the time, but it's difficult to understand and debug.
-* Implement report searches:
-	* Single ID (SearchID)
-	* DeviceID  (SearchDID)
+* Rework engine/router/rpcroute.go - the map idea seemed like a good idea at the time, but it's difficult to understand and debug.
+* Implement Report Upvote
+* Implement Report Comment
+* Implement report searches: @done(2016-02-29)
+	* Single ID (SearchID) @done(2016-02-29)
+	* DeviceID  (SearchDID) @done(2016-02-29)
 	* LatLng    (SearchLL) @done(2016-02-23)
 	* Address (converted to LatLng in engine... submitted to Adapter as SearchLL)
 * Update RAML file with JSON specs for input and output payloads.
@@ -29,6 +31,13 @@
 ___ 
 
 ## Log
+
+### 2016.03.01 - Tue
+
+* Cleaned up RequestID - all messages, including Service List Requests, now have a message ID.
+* Moved the Message ID (SID) mechanism to new file engine/router/sid.go. 
+* Minor fixes in the Monitor program.
+* Saved to GIT.
 
 ### 2016.02.29 - Mon
 

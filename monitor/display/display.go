@@ -47,7 +47,7 @@ func (r *displays) init() error {
 	r.newList("Adapter Calls", 0, 25, 15, 160, adpCalls01.display)
 
 	debugList := func() []string {
-		return telemetry.DebugListLast(20)
+		return telemetry.DebugListLast(18)
 	}
 
 	r.newList("DEBUG", 0, 40, 20, 240, debugList)

@@ -2,18 +2,17 @@ package request
 
 import (
 	"net/http"
-	"sync/atomic"
 	"time"
 
 	"Gateway311/engine/logs"
+	"Gateway311/engine/router"
 	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
 var (
-	log    = logs.Log
-	rqstID sidType
+	log = logs.Log
 )
 
 // Services looks up the service providers and services for the specified location.
@@ -29,7 +28,7 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 			rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
 		}
 	}()
-	rqstID := rqstID.get()
+	rqstID := router.GetSID()
 	sendTelemetry(rqstID, "Services", "open")
 	response, err := processServices(r, rqstID)
 	if err != nil {
@@ -48,7 +47,7 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 			rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
 		}
 	}()
-	rqstID := rqstID.get()
+	rqstID := router.GetSID()
 	sendTelemetry(rqstID, "Create", "open")
 	response, err := processCreate(r, rqstID)
 	if err != nil {
@@ -67,7 +66,7 @@ func Search(w rest.ResponseWriter, r *rest.Request) {
 	// 		rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
 	// 	}
 	// }()
-	rqstID := rqstID.get()
+	rqstID := router.GetSID()
 	sendTelemetry(rqstID, "Search", "open")
 	response, err := processSearch(r, rqstID)
 	if err != nil {
@@ -85,18 +84,4 @@ func Search(w rest.ResponseWriter, r *rest.Request) {
 
 func sendTelemetry(rqstID int64, op, status string) {
 	telemetry.SendRequest(rqstID, op, status, "", time.Now())
-}
-
-// =======================================================================================
-//                                      MESSAGE ID
-// =======================================================================================
-
-type sidType int64
-
-func (r *sidType) get() int64 {
-	return atomic.AddInt64((*int64)(r), 1)
-}
-
-func init() {
-	rqstID = 1000
 }

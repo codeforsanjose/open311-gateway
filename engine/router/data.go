@@ -106,11 +106,11 @@ func (r *routeData) switchSet() {
 	r.Lock()
 	defer r.Unlock()
 	if r.activeSet == 0 {
-		log.Debug("Switched from list 0 to 1")
+		log.Debug("[RouteData] Switched from list 0 to 1")
 		r.activeSet = 1
 		r.clearLoadSet(0)
 	} else {
-		log.Debug("Switched from list 1 to 0")
+		log.Debug("[RouteData] Switched from list 1 to 0")
 		r.activeSet = 0
 		r.clearLoadSet(1)
 	}

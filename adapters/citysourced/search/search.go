@@ -266,7 +266,7 @@ func (r Response) String() string {
 // Displays the NSearchRequestDID custom type.
 func (s Report) String() string {
 	ls := new(common.LogString)
-	ls.AddF("Report %d\n", s.ID)
+	ls.AddF("Report %v\n", s.ID)
 	ls.AddF("DateCreated \"%v\"\n", s.DateCreated)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", s.DeviceType, s.DeviceModel, s.DeviceID)
 	ls.AddF("Request - type: %q  id: %q\n", s.RequestType, s.RequestTypeID)

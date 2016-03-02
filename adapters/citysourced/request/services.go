@@ -24,6 +24,7 @@ func (c *Services) Area(rqst *structs.NServiceRequest, resp *structs.NServicesRe
 	x, err := data.ServicesArea(rqst.Area)
 	if err == nil {
 		fmt.Printf("  resp: %p", resp)
+		resp.SetIDF(rqst.GetID)
 		resp.AdpID = data.AdapterName()
 		resp.Message = "OK"
 		resp.Services = *x
@@ -41,6 +42,7 @@ func (c *Services) All(rqst *structs.NServiceRequest, resp *structs.NServicesRes
 	x, err := data.ServicesAll()
 	if err == nil {
 		fmt.Printf("  resp: %p", resp)
+		resp.SetIDF(rqst.GetID)
 		resp.AdpID = data.AdapterName()
 		resp.Message = "OK"
 		resp.Services = *x

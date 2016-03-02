@@ -195,6 +195,7 @@ func (c *searchRIDMgr) convertRequest() error {
 		DateRangeStart:    dfltDateRangeStart,
 		DateRangeEnd:      dfltDateRangeEnd,
 	}
+	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", c.url, 0, time.Now())
 	return nil
 }
 
@@ -323,6 +324,7 @@ func (c *searchDIDMgr) convertRequest() error {
 		DateRangeStart:    dfltDateRangeStart,
 		DateRangeEnd:      dfltDateRangeEnd,
 	}
+	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", c.url, 0, time.Now())
 	return nil
 }
 

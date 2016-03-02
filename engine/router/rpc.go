@@ -19,7 +19,6 @@ const (
 )
 
 var (
-	// msgID              sidType
 	showRunTimes       = true
 	showResponse       = true
 	showResponseDetail = false
@@ -47,6 +46,7 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 		errs:    make([]error, 0),
 	}
 
+	setRqstID(request.(structs.NRequester))
 	log.Debug("%+v", request)
 	router, ok := request.(structs.NRouter)
 	log.Debug("%+v  ok: %t", router, ok)
@@ -67,6 +67,15 @@ func NewRPCCall(service string, request interface{}, process func(interface{}) e
 
 	// log.Debug("RPCCall: %s", request)
 	return &rpcCall, nil
+}
+
+func setRqstID(r structs.NRequester) {
+	id, _ := r.GetID()
+	if id == 0 {
+		id = GetSID()
+		log.Debug("Setting ID to: %d", id)
+		r.SetID(id, 0)
+	}
 }
 
 // ResponseProcesser is the interface for
@@ -252,32 +261,6 @@ type adapterRouteList map[structs.NRoute]*rpcAdapterStatus
 func newAdapterRouteList() adapterRouteList {
 	return make(adapterRouteList)
 }
-
-/*
-// =======================================================================================
-//                                      MESSAGE ID
-// =======================================================================================
-
-type sidType struct {
-	id int64
-	sync.Mutex
-}
-
-func (r *sidType) Get() int64 {
-	r.Lock()
-	defer r.Unlock()
-	r.id++
-	return r.id
-}
-*/
-
-// ==============================================================================================================================
-//                                      init
-// ==============================================================================================================================
-
-// func init() {
-// 	msgID.id = 10000
-// }
 
 // ==============================================================================================================================
 //                                      STRINGS
