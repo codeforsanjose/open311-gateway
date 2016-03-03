@@ -38,7 +38,8 @@ ___
 * Built Validation and Conversion objects.
 * Replaced existing conversion routines with a single function (engine/request/common.go - conversion.convert()).
 * Saved to GIT.
-* 
+* Removed GetSID() call from engine/request/request.go, and moved to Create Mgr.  Also moved telemetry calls to CreatMgr.  This keeps the request.go concise and clean, and pushes all request processing to the Create Mgr where it belongs.  
+* Saved to GIT.
 
 ### 2016.03.02 - Wed
 

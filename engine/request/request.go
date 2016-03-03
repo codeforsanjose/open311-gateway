@@ -47,15 +47,11 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 			rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
 		}
 	}()
-	rqstID := router.GetSID()
-	sendTelemetry(rqstID, "Create", "open")
-	response, err := processCreate(r, rqstID)
+	response, err := processCreate(r)
 	if err != nil {
-		sendTelemetry(rqstID, "Create", "error")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	sendTelemetry(rqstID, "Create", "done")
 	w.WriteJson(&response)
 }
 

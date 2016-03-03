@@ -37,23 +37,27 @@ type createMgr struct {
 	resp  *CreateResp
 }
 
-func processCreate(rqst *rest.Request, rqstID int64) (interface{}, error) {
+func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	log.Debug("starting processCreate()")
 	mgr := createMgr{
 		rqst:  rqst,
-		id:    rqstID,
+		id:    router.GetSID(),
 		req:   &CreateReq{},
 		valid: newValidation(),
 		resp:  &CreateResp{Message: "Request failed"},
 	}
+	sendTelemetry(mgr.id, "Create", "open")
+	defer func() {
+		if ferr != nil {
+			sendTelemetry(mgr.id, "Create", "error")
+		} else {
+			sendTelemetry(mgr.id, "Create", "done")
+		}
+	}()
 
 	fail := func(err error) (interface{}, error) {
 		log.Errorf("processCreate failed - %s", err)
 		return mgr.resp, fmt.Errorf("Create request failed - %s", err.Error())
-	}
-
-	if rqstID == 0 {
-		mgr.id = router.GetSID()
 	}
 
 	if err := mgr.rqst.DecodeJsonPayload(mgr.req); err != nil {
