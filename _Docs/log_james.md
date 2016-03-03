@@ -32,6 +32,19 @@ ___
 
 ## Log
 
+### 2016.03.03 - Thu
+
+* Create request cleaned up, and using the "Manager" pattern.
+* Built Validation and Conversion objects.
+* Replaced existing conversion routines with a single function (engine/request/common.go - conversion.convert()).
+* Saved to GIT.
+* 
+
+### 2016.03.02 - Wed
+
+* Started cleaning up engine/request.  It will more closely follow the model used in the Adapters of using "Request Managers" to process requests.  
+*  
+
 ### 2016.03.01 - Tue
 
 * Cleaned up RequestID - all messages, including Service List Requests, now have a message ID.

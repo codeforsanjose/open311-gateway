@@ -41,8 +41,8 @@ func (r *displays) init() error {
 	r.newList("Engine Status", 0, 0, 10, 80, engStatuses.display)
 	r.newList("Adapter Status", 80, 0, 10, 80, adpStatuses.display)
 
-	r.newList("Eng01 Requests", 0, 10, 15, 80, engRequests.display)
-	r.newList("Eng01 Adapter Calls", 80, 10, 15, 80, engAdpCalls.display)
+	r.newList("Eng Requests", 0, 10, 15, 80, engRequests.display)
+	r.newList("Eng Adapter Calls", 80, 10, 15, 80, engAdpCalls.display)
 
 	r.newList("Adapter Calls", 0, 25, 15, 160, adpCalls01.display)
 

@@ -574,7 +574,7 @@
     </object>
     <object type="LMREQUEST" id="z148">
         <attribute name="uuid" type="string">CB3CA656-109F-4FE2-827D-E4F3C28E3EAB</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/requests?lat=37.125372\u2600lng=-121.662452\u2600radius=200</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/requests?lat=37.125372\u2600lng=-121.662452\u2600radius=200\u2600comments=0</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -589,7 +589,7 @@
     </object>
     <object type="LMREQUEST" id="z149">
         <attribute name="uuid" type="string">55F361D2-CB53-40BF-B45C-E7C5C193A4D0</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/requests?lat=37.350038\u2600lng=-121.946097\u2600radius=200</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/requests?lat=37.350038\u2600lng=-121.946097\u2600radius=200\u2600comments=1</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -666,7 +666,7 @@
     </object>
     <object type="LMREQUEST" id="z154">
         <attribute name="uuid" type="string">2BD71C0C-7B95-4FCE-B7D9-B9212528B94C</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/requests?lat=37.391009\u2600lng=-121.884839\u2600radius=200</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/requests?lat=37.391009\u2600lng=-121.884839\u2600radius=200\u2600comments=0</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -711,7 +711,7 @@
     </object>
     <object type="LMREQUEST" id="z157">
         <attribute name="uuid" type="string">A691EC63-CDC0-4465-934B-EB755C726F4B</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/requests?lat=37.339244\u2600lng=-121.883638\u2600radius=200</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/requests?lat=37.339244\u2600lng=-121.883638\u2600radius=200\u2600comments=1</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
