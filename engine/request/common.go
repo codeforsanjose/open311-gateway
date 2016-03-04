@@ -91,13 +91,25 @@ func (r Validation) Set(item, result string, isOK bool) {
 	v, ok := r[item]
 	if ok {
 		v.ok = isOK
-		v.result = result
+		if result > "" {
+			v.result = result
+		}
 	} else {
 		r[item] = &ValidationDetail{
 			ok:     isOK,
 			result: result,
 		}
 	}
+}
+
+// IsOK returns the state of the requested Validation.  If the Validation has
+// not been set, it will return FALSE.
+func (r Validation) IsOK(item string) bool {
+	v, ok := r[item]
+	if !ok {
+		return false
+	}
+	return v.ok
 }
 
 // Ok scans all validations - if all are true (i.e. they passed that validation
@@ -188,7 +200,7 @@ func (r *conversion) convert(name, val string) interface{} {
 	vp, vpOK := vparms[name]
 	fail := func(item, msg string) interface{} {
 		log.Debug("FAIL: %s", msg)
-		r.Validation[name] = &ValidationDetail{ok: false, result: msg}
+		r.Validation[item] = &ValidationDetail{ok: false, result: msg}
 		if !vpOK {
 			return nil
 		}
@@ -222,12 +234,14 @@ func (r *conversion) convert(name, val string) interface{} {
 		if err != nil {
 			return fail(name, err.Error())
 		}
+		r.Validation[name] = &ValidationDetail{ok: true}
 		return &out
 	case "int":
-		out, err := strconv.ParseInt(val, 10, 64)
+		out, err := strconv.Atoi(val)
 		if err != nil {
 			return fail(name, err.Error())
 		}
+		r.Validation[name] = &ValidationDetail{ok: true}
 		return &out
 	case "bool":
 		out, err := strconv.ParseBool(val)
@@ -235,6 +249,7 @@ func (r *conversion) convert(name, val string) interface{} {
 			return fail(name, err.Error())
 			// return fail(name, fmt.Sprintf("%s trying to convert: [%s] to float\n", err, val))
 		}
+		r.Validation[name] = &ValidationDetail{ok: true}
 		return &out
 	default:
 		return fail(name, fmt.Sprintf("unknown conversion type: %q", vp.vtype))
@@ -251,8 +266,9 @@ func init() {
 	vparms["Latitude"] = vparm{"float", true, "0.0"}
 	vparms["Longitude"] = vparm{"float", true, "0.0"}
 	vparms["IsAnonymous"] = vparm{"bool", false, "true"}
-	vparms["Radius"] = vparm{"float", false, "100.0"}
+	vparms["Radius"] = vparm{"int", false, "100"}
 	vparms["MaxResults"] = vparm{"int", false, "10"}
+
 	vparms["IncludeDetails"] = vparm{"bool", false, "false"}
 	vparms["IncludeComments"] = vparm{"bool", false, "false"}
 	vparms["IncludeVotes"] = vparm{"bool", false, "false"}

@@ -57,20 +57,16 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 
 // Search searches for Reports.
 func Search(w rest.ResponseWriter, r *rest.Request) {
-	// defer func() {
-	// 	if rcvr := recover(); rcvr != nil {
-	// 		rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
-	// 	}
-	// }()
-	rqstID := router.GetSID()
-	sendTelemetry(rqstID, "Search", "open")
-	response, err := processSearch(r, rqstID)
+	defer func() {
+		if rcvr := recover(); rcvr != nil {
+			rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
+		}
+	}()
+	response, err := processSearch(r)
 	if err != nil {
-		sendTelemetry(rqstID, "Search", "error")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	sendTelemetry(rqstID, "Search", "done")
 	w.WriteJson(&response)
 }
 

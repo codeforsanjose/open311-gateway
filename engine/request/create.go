@@ -27,14 +27,14 @@ type createMgr struct {
 
 	rqst *rest.Request
 
-	req  *CreateReq
+	req  *CreateRequest
 	nreq *structs.NCreateRequest
 
 	valid  Validation
 	routes structs.NRoutes
 
 	nresp *structs.NCreateResponse
-	resp  *CreateResp
+	resp  *CreateResponse
 }
 
 func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
@@ -42,9 +42,9 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	mgr := createMgr{
 		rqst:  rqst,
 		id:    router.GetSID(),
-		req:   &CreateReq{},
+		req:   &CreateRequest{},
 		valid: newValidation(),
-		resp:  &CreateResp{Message: "Request failed"},
+		resp:  &CreateResponse{Message: "Request failed"},
 	}
 	sendTelemetry(mgr.id, "Create", "open")
 	defer func() {
@@ -64,6 +64,11 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 		if err.Error() != "JSON payload is empty" {
 			return fail(err)
 		}
+	}
+
+	if err := mgr.parseQP(); err != nil {
+		log.Errorf("processCreate.parseQP() failed - %s", err)
+		return fail(err)
 	}
 
 	if err := mgr.validate(); err != nil {
@@ -89,7 +94,7 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 }
 
 // parseQP unloads any query parms in the request.
-func (r *createMgr) parseQP(rqst *rest.Request) error {
+func (r *createMgr) parseQP() error {
 	return nil
 }
 
@@ -136,14 +141,13 @@ func (r *createMgr) callRPC() error {
 	err = rpcCall.Run()
 	if err != nil {
 		log.Error(err.Error())
-		return err
 	}
 	return err
 }
 
-// convertResponse converts the NCreateResponse{} to a CreateResp{}
+// convertResponse converts the NCreateResponse{} to a CreateResponse{}
 func (r *createMgr) convertResponse() {
-	r.resp = &CreateResp{
+	r.resp = &CreateResponse{
 		Message:  r.nresp.Message,
 		ID:       r.nresp.RID.RID(),
 		AuthorID: r.nresp.AuthorID,
@@ -177,13 +181,8 @@ func (r *createMgr) convertRequest() {
 	}
 }
 
-// CreateReq represents a new Report.  The struct is composed of three anonymous structs:
-//
-// CreateReqBase - represents a new report.  Contains all fields to unmarshal a
-// a request to create a new report.
-// cType - defined in common.go, responsible for unmarshaling and parsing the request.
-// cIFace - defined in common.go, an interface type for parseQP() and validate() methods.
-type CreateReq struct {
+// CreateRequest represents a new Report
+type CreateRequest struct {
 	MID         structs.ServiceID `json:"srvId" xml:"srvId"`
 	ServiceName string            `json:"srvName" xml:"srvName"`
 	DeviceType  string            `json:"deviceType" xml:"deviceType"`
@@ -211,7 +210,7 @@ type CreateReq struct {
 }
 
 // convert the unmarshaled data.
-func (r *CreateReq) convert() error {
+func (r *CreateRequest) convert() error {
 	log.Debug("starting convert()")
 	c := newConversion()
 	r.LatitudeV = c.float("Latitude", r.Latitude)
@@ -224,8 +223,8 @@ func (r *CreateReq) convert() error {
 	return nil
 }
 
-// CreateResp is the response to creating or updating a report.
-type CreateResp struct {
+// CreateResponse is the response to creating or updating a report.
+type CreateResponse struct {
 	Message  string `json:"Message" xml:"Message"`
 	ID       string `json:"ReportId" xml:"ReportId"`
 	AuthorID string `json:"AuthorId" xml:"AuthorId"`
@@ -235,8 +234,8 @@ type CreateResp struct {
 //                                      STRINGS
 // =======================================================================================
 
-// String displays the contents of the CreateReqBase type.
-func (r CreateReq) String() string {
+// String displays the contents of the CreateRequest type.
+func (r CreateRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - id: %q  name: %q\n", r.MID.MID(), r.ServiceName)

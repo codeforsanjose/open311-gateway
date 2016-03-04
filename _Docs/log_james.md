@@ -40,6 +40,8 @@ ___
 * Saved to GIT.
 * Removed GetSID() call from engine/request/request.go, and moved to Create Mgr.  Also moved telemetry calls to CreatMgr.  This keeps the request.go concise and clean, and pushes all request processing to the Create Mgr where it belongs.  
 * Saved to GIT.
+* First round cleanup to Search complete.  Created Search Mgr.
+* Saved to GIT.
 
 ### 2016.03.02 - Wed
 
