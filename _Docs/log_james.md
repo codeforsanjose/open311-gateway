@@ -32,6 +32,18 @@ ___
 
 ## Log
 
+### 2016.03.04 - Fri
+
+* Cleaned up Search().  It's looking pretty good now.
+* Modified engine/router/data.go:
+	* In the routeData struct, changed "routes" to "indArea" - this is a more descriptive name for it's purpose.
+	* Added an "all" member that holds all active routes.
+	* Modified the routeData.update(), and the function cache.sendRoutes() in engine/requests/services.go.  This function now simply builds a list of unique routes and sends it to router/data.go, rather than building a map of routes indexed by AreaID.  
+	* router/data.go saves the full, unique route list, and then builds the indexed list of routes by AreaID.
+* Added new file router/routes.go.  This file returns route lists (all, by Area, and by ReportID).
+* Saved to GIT.
+* 
+
 ### 2016.03.03 - Thu
 
 * Create request cleaned up, and using the "Manager" pattern.

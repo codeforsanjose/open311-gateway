@@ -1,6 +1,7 @@
 package request
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -18,12 +19,22 @@ const (
 	searchRadiusDflt int = 100
 )
 
+//go:generate stringer -type=searchType
+
+// NResponseType enumerates the valid request types.
+type searchType int
+
+// Search types
 const (
-	srchtUnknown = iota
+	srchtUnknown searchType = iota
 	srchtReportID
 	srchtDeviceID
-	stchtLatLng
+	srchtLatLng
 )
+
+// =======================================================================================
+//                                      SEARCH MANAGER
+// =======================================================================================
 
 // searchMgr conglomerates the Normal and Native structs and supervisor logic
 // for processing a request to initiate a Search.
@@ -45,7 +56,7 @@ type searchMgr struct {
 	nreq interface{}
 
 	valid    Validation
-	srchType int
+	srchType searchType
 	routes   structs.NRoutes
 
 	nresp *structs.NSearchResponse
@@ -87,23 +98,13 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 	log.Debug(mgr.req.String())
 
-	if err := mgr.parseQP(); err != nil {
-		log.Errorf("processCreate.parseQP() failed - %s", err)
-		return fail(err)
-	}
-	log.Debug(mgr.req.String())
-
 	if err := mgr.validate(); err != nil {
 		log.Errorf("processSearch.validate() failed - %s", err)
 		return fail(err)
 	}
 	log.Debug(mgr.req.String())
 
-	if err := mgr.setRoute(); err != nil {
-		log.Errorf("processSearch.route() failed - %s", err)
-		return fail(err)
-	}
-
+	log.Debug("Before RPC Call:\n%s", mgr.String())
 	if err := mgr.callRPC(); err != nil {
 		log.Errorf("processSearch.callRPC() failed - %s", err)
 		return fail(err)
@@ -114,23 +115,19 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	return mgr.resp, nil
 }
 
-func (r *searchMgr) parseQP() error {
-	rid, _, err := structs.RIDFromString(r.rqst.URL.Query().Get("rid"))
-	if err == nil {
-		r.req.RID = rid
-	}
-	r.req.DeviceType = r.rqst.URL.Query().Get("dtype")
-	r.req.DeviceID = r.rqst.URL.Query().Get("did")
-	r.req.Latitude = r.rqst.URL.Query().Get("lat")
-	r.req.Longitude = r.rqst.URL.Query().Get("lng")
-	r.req.Radius = r.rqst.URL.Query().Get("radius")
-	return nil
-}
-
+// validate converts and verifies all input parameters.  It calls:
+//    setRoute() - determines if there are viable Adapter routes to process the search.
 func (r *searchMgr) validate() error {
-	log.Debug("Starting validate()")
-	v := r.valid
+	fail := func(msg string, err error) error {
+		if err != nil {
+			msg = msg + " - " + err.Error()
+		}
+		log.Errorf("Validation failed: %s", msg)
+		return errors.New(msg)
+	}
 
+	v := r.valid
+	v.Set("QP", "Query parms parsed and loaded ok", false)
 	v.Set("convert", "Type conversion of inputs is OK", false)
 	v.Set("RID", "Has a Report ID", false)
 	v.Set("DID", "Has a Device ID", false)
@@ -138,16 +135,21 @@ func (r *searchMgr) validate() error {
 	v.Set("city", "We have a serviced city", false)
 	v.Set("route", "Has a viable route", false)
 
+	// Load Query Parms.
+	if err := r.parseQP(); err != nil {
+		return fail("", err)
+	}
+	v.Set("QP", "", true)
+
+	// Convert all string inputs.
 	if err := r.req.convert(); err != nil {
-		log.Error(err.Error())
-		return err
+		return fail("", err)
 	}
 	v.Set("convert", "", true)
 
 	// ReportID (RID)
 	if router.ValidateRID(r.req.RID) {
 		v.Set("RID", "", true)
-		v.Set("route", "", true)
 	}
 
 	// DeviceID
@@ -158,35 +160,6 @@ func (r *searchMgr) validate() error {
 	// Location
 	v.Set("geo", "", validateLatLng(r.req.LatitudeV, r.req.LongitudeV))
 
-	// Do we have a valid request?  We must have a ReportID, DeviceID, OR a valid location.
-	// If none of those are present, then the request is invalid
-	log.Debug("RID: %t", v.IsOK("RID"))
-	log.Debug("geo: %t", v.IsOK("geo"))
-	log.Debug("DID: %t", v.IsOK("DID"))
-
-	if !(v.IsOK("RID") || v.IsOK("geo") || v.IsOK("DID")) {
-		return fmt.Errorf("invalid Search request")
-	}
-
-	// Is the Request routable?
-	if !v.IsOK("route") && v.IsOK("geo") {
-		if city, err := geo.CityForLatLng(r.req.LatitudeV, r.req.LongitudeV); err == nil {
-			log.Debug("City: %q", city)
-			r.req.City = city
-		}
-		var err error
-		r.req.AreaID, err = router.GetAreaID(r.req.City)
-		if err != nil {
-			return fmt.Errorf("the city: %q is not serviced by this gateway", r.req.City)
-		}
-		v.Set("city", "", true)
-		v.Set("route", "", true)
-	}
-	log.Debug(v.String())
-	if !v.IsOK("route") {
-		return fmt.Errorf("unable to determine the route for the request")
-	}
-
 	// Range-check the search radius.
 	switch {
 	case r.req.RadiusV < searchRadiusMin:
@@ -195,14 +168,21 @@ func (r *searchMgr) validate() error {
 		r.req.RadiusV = searchRadiusMax
 	}
 
+	// Do we have a valid request?  We must have a ReportID, DeviceID, OR a valid location.
+	// If none of those are present, then the request is invalid
+	if !(v.IsOK("RID") || v.IsOK("geo") || v.IsOK("DID")) {
+		return fail("invalid Search request", nil)
+	}
+
+	// Is the Request routable?
+	if err := r.setRoute(); err != nil {
+		return fail("", err)
+	}
+	log.Debug("After setRoute() - %s", v.String())
+
 	if err := r.setSearchType(); err != nil {
 		return err
 	}
-	return nil
-}
-
-// setRoute gets the route(s) to process the request.
-func (r *searchMgr) setRoute() error {
 	return nil
 }
 
@@ -226,7 +206,50 @@ func (r *searchMgr) callRPC() error {
 	return nil
 }
 
-func (r *searchMgr) convertRequest() {
+// parseQP parses the query parameters, and loads them into the searchMgr.req struct.
+func (r *searchMgr) parseQP() error {
+	rid, _, err := structs.RIDFromString(r.rqst.URL.Query().Get("rid"))
+	if err == nil {
+		r.req.RID = rid
+	}
+	r.req.DeviceType = r.rqst.URL.Query().Get("dtype")
+	r.req.DeviceID = r.rqst.URL.Query().Get("did")
+	r.req.Latitude = r.rqst.URL.Query().Get("lat")
+	r.req.Longitude = r.rqst.URL.Query().Get("lng")
+	r.req.Radius = r.rqst.URL.Query().Get("radius")
+	return nil
+}
+
+// setRoute gets the route(s) to process the request.
+// One of the following, in order, MUST be present to determine a route.
+//   1. If a RID is present, it is used.
+//   2. If we have a valid Lat/Lng ("geo"), then we use it to get a city.
+func (r *searchMgr) setRoute() error {
+	v := r.valid
+
+	switch {
+	case v.IsOK("RID"):
+		r.routes = structs.NRoutes{r.req.RID.NRoute}
+		v.Set("route", "", true)
+		return nil
+
+	case v.IsOK("geo"):
+		if city, err := geo.CityForLatLng(r.req.LatitudeV, r.req.LongitudeV); err == nil {
+			log.Debug("City: %q", city)
+			r.req.City = city
+		}
+		var err error
+		r.req.AreaID, err = router.GetAreaID(r.req.City)
+		if err != nil {
+			return fmt.Errorf("the city: %q is not serviced by this gateway", r.req.City)
+		}
+		v.Set("city", "", true)
+		v.Set("route", "", true)
+		return nil
+
+	default:
+		return fmt.Errorf("can't find a route")
+	}
 }
 
 func (r *searchMgr) setSearchType() error {
@@ -244,7 +267,7 @@ func (r *searchMgr) setSearchType() error {
 		return nil
 
 	case v.IsOK("geo") && v.IsOK("route"):
-		r.srchType = stchtLatLng
+		r.srchType = srchtLatLng
 		r.nreq = r.setLL()
 		return nil
 
@@ -255,8 +278,19 @@ func (r *searchMgr) setSearchType() error {
 }
 
 func (r *searchMgr) prepRPC() (*router.RPCCall, error) {
+
+	adapterReply := func(ndata interface{}) error {
+		reply, ok := ndata.(*structs.NSearchResponse)
+		log.Debug("reply: %p  ok: %t  size: %v", reply, ok, len(reply.Reports))
+		if !ok {
+			return fmt.Errorf("invalid type of return data received: %T", ndata)
+		}
+		r.nresp.Reports = append(r.nresp.Reports, reply.Reports...)
+		return nil
+	}
+
 	setRPC := func(rpcName string) (*router.RPCCall, error) {
-		rpcCall, err := router.NewRPCCall(rpcName, r.nreq, r.adapterReply)
+		rpcCall, err := router.NewRPCCall(rpcName, r.nreq, adapterReply)
 		if err != nil {
 			log.Error(err.Error())
 			return nil, err
@@ -271,25 +305,12 @@ func (r *searchMgr) prepRPC() (*router.RPCCall, error) {
 	case srchtDeviceID:
 		return setRPC("Report.SearchDID")
 
-	case stchtLatLng:
+	case srchtLatLng:
 		return setRPC("Report.SearchLL")
 
 	default:
 		return nil, fmt.Errorf("cannot prep RPC call - unknown search type: %d", r.srchType)
 	}
-}
-
-// adapterReply processes the reply returned from the RPC call, by placing a
-// pointer to the response in CreateReq.response.
-func (r *searchMgr) adapterReply(ndata interface{}) error {
-	reply, ok := ndata.(*structs.NSearchResponse)
-	log.Debug("reply: %p  ok: %t  size: %v", reply, ok, len(reply.Reports))
-	if !ok {
-		return fmt.Errorf("invalid interface received: %T", ndata)
-	}
-	log.Debug("r.nresp.Reports: %T", r.nresp.Reports)
-	r.nresp.Reports = append(r.nresp.Reports, reply.Reports...)
-	return nil
 }
 
 func (r *searchMgr) convertResponse() {
@@ -384,7 +405,31 @@ func (r *searchMgr) setRID() *structs.NSearchRequestRID {
 	}
 }
 
-// ---------------------------- SearchRequest --------------------------------------------
+// String displays the contents of the SearchRequest custom type.
+func (r searchMgr) String() string {
+	ls := new(common.LogString)
+	ls.AddF("searchMgr - %d\n", r.id)
+	ls.AddS(r.req.String())
+	if s, ok := r.nreq.(fmt.Stringer); ok {
+		ls.AddS(s.String())
+	}
+	ls.AddS(r.valid.String())
+	ls.AddF("Search type: %v\n", r.srchType)
+	if r.routes != nil {
+		ls.AddS(r.routes.String())
+	}
+	if r.nresp != nil {
+		ls.AddS(r.nresp.String())
+	}
+	if r.resp != nil {
+		ls.AddS(r.resp.String())
+	}
+	return ls.Box(120)
+}
+
+// =======================================================================================
+//                                      SEARCH REQUEST
+// =======================================================================================
 
 // SearchRequest represents the Search request (Normal form).
 type SearchRequest struct {
@@ -440,12 +485,27 @@ func (r SearchRequest) String() string {
 	return ls.Box(80)
 }
 
+// =======================================================================================
+//                                      SEARCH RESPONSE
+// =======================================================================================
+
 // SearchResponse contains the search results.
 type SearchResponse struct {
 	Message      string                 `json:"Message" xml:"Message"`
 	ReportCount  int                    `json:"ReportCount" xml:"ReportCount"`
 	ResponseTime string                 `json:"ResponseTime" xml:"ResponseTime"`
 	Reports      []SearchResponseReport `json:"Reports,omitempty" xml:"Reports,omitempty"`
+}
+
+// Displays the SearchResponse custom type.
+func (r SearchResponse) String() string {
+	ls := new(common.LogString)
+	ls.AddS("SearchResponse\n")
+	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.ReportCount, r.ResponseTime, r.Message)
+	for _, x := range r.Reports {
+		ls.AddS(x.String())
+	}
+	return ls.Box(90)
 }
 
 // SearchResponseReport represents a report.
@@ -481,4 +541,36 @@ type SearchResponseReport struct {
 	Votes             string           `json:"Votes" xml:"Votes"`
 	StatusType        string           `json:"StatusType" xml:"StatusType"`
 	TicketSLA         string           `json:"TicketSLA" xml:"TicketSLA"`
+}
+
+// Displays the the SearchResponseReport custom type.
+func (r SearchResponseReport) String() string {
+	ls := new(common.LogString)
+	ls.AddF("SearchResponseReport %d\n", r.RID.RID())
+	ls.AddF("DateCreated \"%v\"\n", r.DateCreated)
+	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
+	ls.AddF("Request - type: %q  id: %q\n", r.RequestType, r.RequestTypeID)
+	ls.AddF("Location - lat: %v  lon: %v  directionality: %q\n", r.Latitude, r.Longitude, r.Directionality)
+	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.ZipCode)
+	ls.AddF("Votes: %v\n", r.Votes)
+	ls.AddF("Description: %q\n", r.Description)
+	ls.AddF("Images - std: %s\n", r.ImageURL)
+	if len(r.ImageURLXs) > 0 {
+		ls.AddF("          XS: %s\n", r.ImageURLXs)
+	}
+	if len(r.ImageURLSm) > 0 {
+		ls.AddF("          SM: %s\n", r.ImageURLSm)
+	}
+	if len(r.ImageURLMd) > 0 {
+		ls.AddF("          XS: %s\n", r.ImageURLMd)
+	}
+	if len(r.ImageURLLg) > 0 {
+		ls.AddF("          XS: %s\n", r.ImageURLLg)
+	}
+	if len(r.ImageURLXl) > 0 {
+		ls.AddF("          XS: %s\n", r.ImageURLXl)
+	}
+	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
+	ls.AddF("SLA: %s\n", r.TicketSLA)
+	return ls.Box(80)
 }

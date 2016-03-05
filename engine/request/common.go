@@ -131,7 +131,7 @@ func (r Validation) String() string {
 	for k, v := range r {
 		ls.AddF("%-15s %-5t  %-90.90s\n", k, v.ok, v.result)
 	}
-	return ls.Box(120)
+	return ls.Box(110)
 }
 
 // Error is a standard error interface, returning a string listing any failed

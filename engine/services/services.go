@@ -98,17 +98,8 @@ func (r *cache) indexRoutes() error {
 			allRoutes[nservice.GetRoute()] = true
 		}
 	}
-
-	routeMap := make(map[string]structs.NRoutes)
-	for route := range allRoutes {
-		if _, ok := routeMap[route.AreaID]; !ok {
-			routeMap[route.AreaID] = make(structs.NRoutes, 0)
-		}
-		routeMap[route.AreaID] = append(routeMap[route.AreaID], route)
-	}
-
-	router.GetChRouteUpd() <- routeMap
-
+	log.Debug("Sending ALL route data")
+	router.GetChRouteUpd() <- allRoutes
 	return nil
 }
 

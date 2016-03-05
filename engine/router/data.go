@@ -23,8 +23,8 @@ func GetChAreaAdp() chan map[string][]string {
 	return adapters.chUpdate
 }
 
-// GetChRouteUpd returns the channel used to update the Route Data (received from Services).
-func GetChRouteUpd() chan map[string]structs.NRoutes {
+// GetChRouteUpd returns the channel used to update the Route Data indexed by AreaID (received from Services).
+func GetChRouteUpd() chan map[structs.NRoute]bool {
 	return routes.chUpdate
 }
 
@@ -54,23 +54,36 @@ func GetAreaRoutes(areaID string) (structs.NRoutes, error) {
 	return routes.getAreaRoutes(areaID)
 }
 
+// GetAllRoutes returns a list of Routes (structs.NRoutes) for the specified Area.
+func GetAllRoutes() structs.NRoutes {
+	return routes.getAllRoutes()
+}
+
 // ==============================================================================================================================
 //                                      ROUTES
 // ==============================================================================================================================
 
 // routeData is the list of currently active Routes.
 type routeData struct {
-	routes    [2]map[string]structs.NRoutes // Index: AreaID
+	indArea   [2]map[string]structs.NRoutes // Index: AreaID
+	all       [2][]structs.NRoute           // Index: All Routes
 	activeSet int
-	chUpdate  chan map[string]structs.NRoutes // Channel to receive updates from Services.
+	chUpdate  chan map[structs.NRoute]bool // Channel to receive Area indexed updates from Services.
 	sync.RWMutex
 }
 
-// getArea retrieves the ServiceList for the specified area.
+// getArea retrieves the RouteList for the specified area.
+func (r *routeData) getAllRoutes() structs.NRoutes {
+	r.RLock()
+	defer r.RUnlock()
+	return r.all[r.activeSet]
+}
+
+// getArea retrieves the RouteList for the specified area.
 func (r *routeData) getAreaRoutes(areaID string) (structs.NRoutes, error) {
 	r.RLock()
 	defer r.RUnlock()
-	l, ok := r.routes[r.activeSet][areaID]
+	l, ok := r.indArea[r.activeSet][areaID]
 	if !ok {
 		return nil, fmt.Errorf("There are no routes for AreaID: %q", areaID)
 	}
@@ -85,10 +98,25 @@ func (r *routeData) validateRoute(route structs.NRoute) bool {
 	return false
 }
 
-func (r *routeData) update(upd map[string]structs.NRoutes) {
-	r.routes[r.loadSet()] = upd
+func (r *routeData) update(upd map[structs.NRoute]bool) {
+	r.Lock()
+	defer r.Unlock()
+
+	ls := r.loadSet()
+
+	r.clearLoadSet(ls)
+
+	for route := range upd {
+		log.Debug("Route: %v", route)
+		r.all[ls] = append(r.all[ls], route)
+		if _, ok := r.indArea[ls][route.AreaID]; !ok {
+			r.indArea[ls][route.AreaID] = make(structs.NRoutes, 0)
+		}
+		r.indArea[ls][route.AreaID] = append(r.indArea[ls][route.AreaID], route)
+	}
+
 	r.switchSet()
-	log.Debug("Updated routeData!%s", r)
+	log.Debug("Updated routeData!%s", r.String())
 }
 
 func (r *routeData) loadSet() (ls int) {
@@ -99,20 +127,17 @@ func (r *routeData) loadSet() (ls int) {
 }
 
 func (r *routeData) clearLoadSet(ds int) {
-	r.routes[r.loadSet()] = make(map[string]structs.NRoutes)
+	r.all[r.loadSet()] = make([]structs.NRoute, 0)
+	r.indArea[r.loadSet()] = make(map[string]structs.NRoutes)
 }
 
 func (r *routeData) switchSet() {
-	r.Lock()
-	defer r.Unlock()
 	if r.activeSet == 0 {
 		log.Debug("[RouteData] Switched from list 0 to 1")
 		r.activeSet = 1
-		r.clearLoadSet(0)
 	} else {
 		log.Debug("[RouteData] Switched from list 1 to 0")
 		r.activeSet = 0
-		r.clearLoadSet(1)
 	}
 }
 
@@ -120,7 +145,8 @@ func (r *routeData) switchSet() {
 func (r routeData) String() string {
 	ls := new(common.LogString)
 	ls.AddF("routeData [%d]\n", r.activeSet)
-	for k, v := range r.routes[r.activeSet] {
+	ls.AddF("All Routes: %v\n", r.all[r.activeSet])
+	for k, v := range r.indArea[r.activeSet] {
 		ls.AddF("<<<<<Area: %s >>>>>%s", k, v)
 	}
 	return ls.Box(90)
@@ -319,7 +345,7 @@ func init() {
 		}
 	}()
 
-	routes.chUpdate = make(chan map[string]structs.NRoutes, 1)
+	routes.chUpdate = make(chan map[structs.NRoute]bool, 1)
 	go func() {
 		for {
 			select {
