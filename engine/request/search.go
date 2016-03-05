@@ -47,17 +47,17 @@ const (
 //  7. Converts Normal form to response.
 //  8. Returns response.
 type searchMgr struct {
-	id    int64
-	start time.Time
+	id      int64
+	start   time.Time
+	reqType structs.NRequestType
 
 	rqst *rest.Request
 
 	req  *SearchRequest
 	nreq interface{}
 
-	valid    Validation
-	srchType searchType
-	routes   structs.NRoutes
+	valid  Validation
+	routes structs.NRoutes
 
 	nresp *structs.NSearchResponse
 	resp  *SearchResponse
@@ -257,22 +257,22 @@ func (r *searchMgr) setSearchType() error {
 
 	switch {
 	case v.IsOK("RID") && v.IsOK("route"):
-		r.srchType = srchtReportID
+		r.reqType = structs.NRTSearchRID
 		r.nreq = r.setRID()
 		return nil
 
 	case v.IsOK("DID") && v.IsOK("route"):
-		r.srchType = srchtDeviceID
+		r.reqType = structs.NRTSearchDID
 		r.nreq = r.setDID()
 		return nil
 
 	case v.IsOK("geo") && v.IsOK("route"):
-		r.srchType = srchtLatLng
+		r.reqType = structs.NRTSearchLL
 		r.nreq = r.setLL()
 		return nil
 
 	default:
-		r.srchType = srchtUnknown
+		r.reqType = structs.NRTUnknown
 		return fmt.Errorf("invalid query parameters for Search request")
 	}
 }
@@ -298,18 +298,18 @@ func (r *searchMgr) prepRPC() (*router.RPCCall, error) {
 		return rpcCall, nil
 	}
 
-	switch r.srchType {
-	case srchtReportID:
+	switch r.reqType {
+	case structs.NRTSearchRID:
 		return setRPC("Report.SearchRID")
 
-	case srchtDeviceID:
+	case structs.NRTSearchDID:
 		return setRPC("Report.SearchDID")
 
-	case srchtLatLng:
+	case structs.NRTSearchLL:
 		return setRPC("Report.SearchLL")
 
 	default:
-		return nil, fmt.Errorf("cannot prep RPC call - unknown search type: %d", r.srchType)
+		return nil, fmt.Errorf("cannot prep RPC call - unknown search type")
 	}
 }
 
@@ -409,12 +409,12 @@ func (r *searchMgr) setRID() *structs.NSearchRequestRID {
 func (r searchMgr) String() string {
 	ls := new(common.LogString)
 	ls.AddF("searchMgr - %d\n", r.id)
+	ls.AddF("Request type: %v\n", r.reqType.String())
 	ls.AddS(r.req.String())
 	if s, ok := r.nreq.(fmt.Stringer); ok {
 		ls.AddS(s.String())
 	}
 	ls.AddS(r.valid.String())
-	ls.AddF("Search type: %v\n", r.srchType)
 	if r.routes != nil {
 		ls.AddS(r.routes.String())
 	}
@@ -451,7 +451,6 @@ type SearchRequest struct {
 	Zip         string           `json:"zip" xml:"zip"`
 	MaxResults  string           `json:"MaxResultsV" xml:"MaxResultsV"`
 	MaxResultsV int              //
-	srchType    int
 	response    struct {
 		cRType
 		*structs.NSearchResponse

@@ -32,6 +32,15 @@ ___
 
 ## Log
 
+### 2016.03.05 - Sat
+
+* In engine/request/search.go:
+	* In searchMgr type:
+		* Added reqType structs.NRequestType
+		* Removed srchType
+		* This will make the request managers more uniform.
+* Saved to GIT.
+
 ### 2016.03.04 - Fri
 
 * Cleaned up Search().  It's looking pretty good now.

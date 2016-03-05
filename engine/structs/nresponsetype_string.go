@@ -4,9 +4,9 @@ package structs
 
 import "fmt"
 
-const _NResponseType_name = "NRspTUnknownNRspTServicesNRspTServicesAreaNRspTCreateNRspTSearchLLNRspTSearchDID"
+const _NResponseType_name = "NRspTUnknownNRspTServicesNRspTServicesAreaNRspTCreateNRspTSearchLLNRspTSearchDIDNRspTSearchRID"
 
-var _NResponseType_index = [...]uint8{0, 12, 25, 42, 53, 66, 80}
+var _NResponseType_index = [...]uint8{0, 12, 25, 42, 53, 66, 80, 94}
 
 func (i NResponseType) String() string {
 	if i < 0 || i >= NResponseType(len(_NResponseType_index)-1) {

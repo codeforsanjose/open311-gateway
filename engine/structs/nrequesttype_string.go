@@ -4,9 +4,9 @@ package structs
 
 import "fmt"
 
-const _NRequestType_name = "NRTUnknownNRTServicesAllNRTServicesAreaNRTCreateNRTSearchLLNRTSearchDID"
+const _NRequestType_name = "NRTUnknownNRTServicesAllNRTServicesAreaNRTCreateNRTSearchLLNRTSearchDIDNRTSearchRID"
 
-var _NRequestType_index = [...]uint8{0, 10, 24, 39, 48, 59, 71}
+var _NRequestType_index = [...]uint8{0, 10, 24, 39, 48, 59, 71, 83}
 
 func (i NRequestType) String() string {
 	if i < 0 || i >= NRequestType(len(_NRequestType_index)-1) {
