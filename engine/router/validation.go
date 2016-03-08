@@ -8,7 +8,7 @@ import "Gateway311/engine/structs"
 func ValidateRID(rid structs.ReportID) bool {
 	_, adpOK := adapters.getAdapter(rid.AdpID)
 	_, areaOK := adapters.getAreaAdapters(rid.AreaID)
-	log.Debug("adpOK: %t  areaOK: %t")
+	// log.Debug("adpOK: %s  areaOK: %s", adpOK, areaOK)
 	if adpOK != nil || areaOK != nil {
 		return false
 	}

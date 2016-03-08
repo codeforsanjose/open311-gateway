@@ -59,7 +59,7 @@ func init() {
 	}
 
 	go func() {
-		log.Debug("Telemetry sender starting...")
+		// log.Debug("Telemetry sender starting...")
 		defer conn.Close()
 		for m := range chTQue {
 			msg, err := m.Marshal()
@@ -67,7 +67,7 @@ func init() {
 				log.Warning("unable to send message - %s", err.Error())
 				continue
 			}
-			log.Debug(string(msg))
+			// log.Debug(string(msg))
 			if _, err := conn.Write(msg); err != nil {
 				log.Warning(err.Error())
 			}

@@ -32,6 +32,15 @@ ___
 
 ## Log
 
+### 2016.03.08 - Tue
+
+* RPC system cleaned up.  First draft - needs testing.  Old code is still mixed in.
+* Saved to GIT.
+
+### 2016.03.07 - Mon
+
+* Started clean up of engine/router RPC system.
+
 ### 2016.03.05 - Sat
 
 * In engine/request/search.go:

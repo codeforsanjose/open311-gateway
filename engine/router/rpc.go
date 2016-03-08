@@ -11,6 +11,8 @@ import (
 	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
 	"Gateway311/engine/telemetry"
+
+	// "github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -156,7 +158,8 @@ func (r *RPCCall) send() error {
 	for k, v := range r.adpList {
 		i++
 		v.id = i
-		if v.adapter.Connected {
+		var adpRPC AdpRPCer = v.adapter
+		if adpRPC.Connected() {
 			// Give the pointer to the AdapterStatus to the go routine.
 			var pAdpStat *rpcAdapterStatus
 			pAdpStat, r.adpList[k] = v, nil
@@ -210,7 +213,8 @@ func (r *RPCCall) send() error {
 
 				log.Debug("Request type: %s", msgtype)
 				telemetry.SendRPC(rqstCopy.(structs.NRequester).GetIDS(), "open", pAdpStat.route.SString(), time.Now())
-				pAdpStat.err = pAdpStat.adapter.Client.Call(r.service, rqstCopy, pAdpStat.response)
+				var pAdpRPC AdpRPCer = pAdpStat.adapter
+				pAdpStat.err = pAdpRPC.Call(r.service, rqstCopy, pAdpStat.response)
 				r.results <- pAdpStat
 			}(pAdpStat, r.request)
 		} else {
@@ -220,6 +224,18 @@ func (r *RPCCall) send() error {
 
 	// log.Debug("After Run():\n%s\n", r)
 	return nil
+}
+
+// =======================================================================================
+//                                      ADAPTER ROUTE MAP
+// =======================================================================================
+
+// adapterRouteMap is used in the RPC system to keep track of what is being sent to each Adapter
+// Route, and the reply status and content.  Each RPCCall has an adpaterRouteMap instance.
+type adapterRouteList map[structs.NRoute]*rpcAdapterStatus
+
+func newAdapterRouteList() adapterRouteList {
+	return make(adapterRouteList)
 }
 
 // =======================================================================================
@@ -248,18 +264,6 @@ func newAdapterStatus(adp *Adapter, service string, route structs.NRoute, id int
 	aStat.response = rs
 	// log.Debug("aStat: %s", aStat)
 	return aStat, nil
-}
-
-// =======================================================================================
-//                                      ADAPTER ROUTE MAP
-// =======================================================================================
-
-// adapterRouteMap is used in the RPC system to keep track of what is being sent to each Adapter
-// Route, and the reply status and content.  Each RPCCall has an adpaterRouteMap instance.
-type adapterRouteList map[structs.NRoute]*rpcAdapterStatus
-
-func newAdapterRouteList() adapterRouteList {
-	return make(adapterRouteList)
 }
 
 // ==============================================================================================================================

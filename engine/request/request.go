@@ -57,11 +57,11 @@ func Create(w rest.ResponseWriter, r *rest.Request) {
 
 // Search searches for Reports.
 func Search(w rest.ResponseWriter, r *rest.Request) {
-	defer func() {
-		if rcvr := recover(); rcvr != nil {
-			rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
-		}
-	}()
+	// defer func() {
+	// 	if rcvr := recover(); rcvr != nil {
+	// 		rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
+	// 	}
+	// }()
 	response, err := processSearch(r)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

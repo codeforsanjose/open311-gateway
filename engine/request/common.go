@@ -196,7 +196,7 @@ func (r conversion) String() string {
 }
 
 func (r *conversion) convert(name, val string) interface{} {
-	log.Debug("Converting %q val: %q", name, val)
+	// log.Debug("Converting %q val: %q", name, val)
 	vp, vpOK := vparms[name]
 	fail := func(item, msg string) interface{} {
 		log.Debug("FAIL: %s", msg)

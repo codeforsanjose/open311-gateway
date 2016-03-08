@@ -53,11 +53,13 @@ type searchMgr struct {
 
 	rqst *rest.Request
 
+	valid Validation
+
+	routes structs.NRoutes
+	rpc    *router.RPCCallMgr
+
 	req  *SearchRequest
 	nreq interface{}
-
-	valid  Validation
-	routes structs.NRoutes
 
 	nresp *structs.NSearchResponse
 	resp  *SearchResponse
@@ -96,16 +98,14 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 			return fail(err)
 		}
 	}
-	log.Debug(mgr.req.String())
 
 	if err := mgr.validate(); err != nil {
 		log.Errorf("processSearch.validate() failed - %s", err)
 		return fail(err)
 	}
-	log.Debug(mgr.req.String())
 
 	log.Debug("Before RPC Call:\n%s", mgr.String())
-	if err := mgr.callRPC(); err != nil {
+	if err := mgr.callRPC2(); err != nil {
 		log.Errorf("processSearch.callRPC() failed - %s", err)
 		return fail(err)
 	}
@@ -114,6 +114,29 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 
 	return mgr.resp, nil
 }
+
+// -------------------------------------------------------------------------------
+//                        ROUTER.REQUESTER INTERFACE
+// -------------------------------------------------------------------------------
+func (r *searchMgr) RType() structs.NRequestType {
+	return r.reqType
+}
+
+func (r *searchMgr) Routes() structs.NRoutes {
+	return r.routes
+}
+
+func (r *searchMgr) Data() interface{} {
+	return r.nreq
+}
+
+func (r *searchMgr) Processer() func(ndata interface{}) error {
+	return r.processReply
+}
+
+// -------------------------------------------------------------------------------
+//                        VALIDATION
+// -------------------------------------------------------------------------------
 
 // validate converts and verifies all input parameters.  It calls:
 //    setRoute() - determines if there are viable Adapter routes to process the search.
@@ -186,26 +209,6 @@ func (r *searchMgr) validate() error {
 	return nil
 }
 
-// callRPC runs the calls to the Adapter(s).
-func (r *searchMgr) callRPC() error {
-	rpcCall, err := r.prepRPC()
-	if err != nil {
-		return err
-	}
-
-	if err := rpcCall.Run(); err != nil {
-		log.Error(err.Error())
-		return err
-	}
-	r.nresp.ReportCount = len(r.nresp.Reports)
-	if r.nresp.ReportCount > 0 {
-		r.nresp.Message = "OK"
-	} else {
-		r.nresp.Message = "No reports found"
-	}
-	return nil
-}
-
 // parseQP parses the query parameters, and loads them into the searchMgr.req struct.
 func (r *searchMgr) parseQP() error {
 	rid, _, err := structs.RIDFromString(r.rqst.URL.Query().Get("rid"))
@@ -244,6 +247,11 @@ func (r *searchMgr) setRoute() error {
 			return fmt.Errorf("the city: %q is not serviced by this gateway", r.req.City)
 		}
 		v.Set("city", "", true)
+		routes, err := router.GetAreaRoutes(r.req.AreaID)
+		if err != nil {
+			return err
+		}
+		r.routes = routes
 		v.Set("route", "", true)
 		return nil
 
@@ -259,22 +267,69 @@ func (r *searchMgr) setSearchType() error {
 	case v.IsOK("RID") && v.IsOK("route"):
 		r.reqType = structs.NRTSearchRID
 		r.nreq = r.setRID()
-		return nil
-
 	case v.IsOK("DID") && v.IsOK("route"):
 		r.reqType = structs.NRTSearchDID
 		r.nreq = r.setDID()
-		return nil
-
 	case v.IsOK("geo") && v.IsOK("route"):
 		r.reqType = structs.NRTSearchLL
 		r.nreq = r.setLL()
-		return nil
-
 	default:
 		r.reqType = structs.NRTUnknown
 		return fmt.Errorf("invalid query parameters for Search request")
 	}
+	r.nreq.(structs.NRequester).SetID(r.id, 0)
+	return nil
+}
+
+// -------------------------------------------------------------------------------
+//                        RPC
+// -------------------------------------------------------------------------------
+
+// callRPC runs the calls to the Adapter(s).
+func (r *searchMgr) callRPC2() error {
+	err := r.prepRPC2()
+	if err != nil {
+		return err
+	}
+
+	if err := r.rpc.Run(); err != nil {
+		log.Error(err.Error())
+		return err
+	}
+	r.nresp.ReportCount = len(r.nresp.Reports)
+	if r.nresp.ReportCount > 0 {
+		r.nresp.Message = "OK"
+	} else {
+		r.nresp.Message = "No reports found"
+	}
+	return nil
+}
+
+func (r *searchMgr) prepRPC2() (err error) {
+	r.rpc, err = router.NewRPCCallMgr(r)
+	return err
+}
+
+// -------------------------------- OLD --------------------------------------------
+
+// callRPC runs the calls to the Adapter(s).
+func (r *searchMgr) callRPC() error {
+	rpcCall, err := r.prepRPC()
+	if err != nil {
+		return err
+	}
+	log.Debug("%s", r)
+	if err := rpcCall.Run(); err != nil {
+		log.Error(err.Error())
+		return err
+	}
+	r.nresp.ReportCount = len(r.nresp.Reports)
+	if r.nresp.ReportCount > 0 {
+		r.nresp.Message = "OK"
+	} else {
+		r.nresp.Message = "No reports found"
+	}
+	return nil
 }
 
 func (r *searchMgr) prepRPC() (*router.RPCCall, error) {
@@ -283,7 +338,7 @@ func (r *searchMgr) prepRPC() (*router.RPCCall, error) {
 		reply, ok := ndata.(*structs.NSearchResponse)
 		log.Debug("reply: %p  ok: %t  size: %v", reply, ok, len(reply.Reports))
 		if !ok {
-			return fmt.Errorf("invalid type of return data received: %T", ndata)
+			return fmt.Errorf("wrong type of data: %T returned by RPC call", ndata)
 		}
 		r.nresp.Reports = append(r.nresp.Reports, reply.Reports...)
 		return nil
@@ -312,6 +367,20 @@ func (r *searchMgr) prepRPC() (*router.RPCCall, error) {
 		return nil, fmt.Errorf("cannot prep RPC call - unknown search type")
 	}
 }
+
+func (r *searchMgr) processReply(ndata interface{}) error {
+	reply, ok := ndata.(*structs.NSearchResponse)
+	log.Debug("reply: %p  ok: %t  size: %v", reply, ok, len(reply.Reports))
+	if !ok {
+		return fmt.Errorf("wrong type of data: %T returned by RPC call", ndata)
+	}
+	r.nresp.Reports = append(r.nresp.Reports, reply.Reports...)
+	return nil
+}
+
+// -------------------------------------------------------------------------------
+//                        RESPONSE
+// -------------------------------------------------------------------------------
 
 func (r *searchMgr) convertResponse() {
 	var rpts []SearchResponseReport
@@ -410,7 +479,13 @@ func (r searchMgr) String() string {
 	ls := new(common.LogString)
 	ls.AddF("searchMgr - %d\n", r.id)
 	ls.AddF("Request type: %v\n", r.reqType.String())
+	ls.AddS(r.routes.String())
 	ls.AddS(r.req.String())
+	if r.rpc != nil {
+		ls.AddS(r.rpc.String())
+	} else {
+		ls.AddS("*****RPC uninitialized*****\n")
+	}
 	if s, ok := r.nreq.(fmt.Stringer); ok {
 		ls.AddS(s.String())
 	}
@@ -424,7 +499,7 @@ func (r searchMgr) String() string {
 	if r.resp != nil {
 		ls.AddS(r.resp.String())
 	}
-	return ls.Box(120)
+	return ls.Box(120) + "\n\n"
 }
 
 // =======================================================================================
@@ -459,13 +534,11 @@ type SearchRequest struct {
 
 // convert the unmarshaled data.
 func (r *SearchRequest) convert() error {
-	log.Debug("starting convert()")
 	c := newConversion()
 	r.LatitudeV = c.float("Latitude", r.Latitude)
 	r.LongitudeV = c.float("Longitude", r.Longitude)
 	r.RadiusV = c.int("Radius", r.Radius)
 	r.MaxResultsV = c.int("MaxResults", r.MaxResults)
-	log.Debug("After convert: %s\n%s", c.String(), r.String())
 	if !c.Ok() {
 		return c
 	}

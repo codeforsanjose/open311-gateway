@@ -59,6 +59,11 @@ func GetAllRoutes() structs.NRoutes {
 	return routes.getAllRoutes()
 }
 
+// GetRouteAdapter gets a pointer to the Adapter for the specified route.
+func GetRouteAdapter(route structs.NRoute) (AdpRPCer, error) {
+	return adapters.getRouteAdapter(route)
+}
+
 // ==============================================================================================================================
 //                                      ROUTES
 // ==============================================================================================================================
@@ -169,21 +174,32 @@ type Adapters struct {
 	sync.RWMutex
 }
 
-func (adps *Adapters) areaID(alias string) (string, error) {
-	adps.RLock()
-	defer adps.RUnlock()
-	area, ok := adps.areaAlias[strings.ToLower(alias)]
+func (r *Adapters) areaID(alias string) (string, error) {
+	r.RLock()
+	defer r.RUnlock()
+	area, ok := r.areaAlias[strings.ToLower(alias)]
 	if !ok {
 		return "", fmt.Errorf("Cannot find area: %q", alias)
 	}
 	return area.ID, nil
 }
 
+// getRouteAdapter gets a pointer to the Adapter servicing the specifed NRoute.
+func (r *Adapters) getRouteAdapter(route structs.NRoute) (*Adapter, error) {
+	r.RLock()
+	defer r.RUnlock()
+	adp, ok := r.Adapters[route.AdpID]
+	if !ok {
+		return nil, fmt.Errorf("cannot find the Adapter for route: %s", route.SString())
+	}
+	return adp, nil
+}
+
 // getArea retrieves the ServiceList for the specified area.
-func (adps *Adapters) getAreaAdapters(areaID string) ([]*Adapter, error) {
-	adps.RLock()
-	defer adps.RUnlock()
-	l, ok := adps.areaAdapters[areaID]
+func (r *Adapters) getAreaAdapters(areaID string) ([]*Adapter, error) {
+	r.RLock()
+	defer r.RUnlock()
+	l, ok := r.areaAdapters[areaID]
 	if !ok {
 		return nil, fmt.Errorf("The requested AreaID: %q is not serviced by this gateway.", areaID)
 	}
@@ -191,10 +207,10 @@ func (adps *Adapters) getAreaAdapters(areaID string) ([]*Adapter, error) {
 }
 
 // getAdapterid retrieves the Adapterid from a Mid.
-func (adps *Adapters) getAdapter(id string) (*Adapter, error) {
-	adps.RLock()
-	defer adps.RUnlock()
-	a, ok := adps.Adapters[id]
+func (r *Adapters) getAdapter(id string) (*Adapter, error) {
+	r.RLock()
+	defer r.RUnlock()
+	a, ok := r.Adapters[id]
 	// log.Debug("a: %s-%s  ok: %t\n", a.ID, a.Type, ok)
 	if !ok {
 		return nil, fmt.Errorf("Adapter: %q was not found.", id)
@@ -203,16 +219,16 @@ func (adps *Adapters) getAdapter(id string) (*Adapter, error) {
 }
 
 // getAdapterID retrieves the AdapterID from a MID.
-func (adps *Adapters) getAdapterID(MID string) (string, error) {
-	adps.RLock()
-	defer adps.RUnlock()
+func (r *Adapters) getAdapterID(MID string) (string, error) {
+	r.RLock()
+	defer r.RUnlock()
 	AdpID, _, _, _, err := structs.SplitMID(MID)
 	if err != nil {
 		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
 	}
-	// a, ok := adps.Adapters[AdpID]
+	// a, ok := r.Adapters[AdpID]
 	// log.Debug("AdpID: %q  a: %s-%s  ok: %t\n", AdpID, a.ID, a.Type, ok)
-	_, ok := adps.Adapters[AdpID]
+	_, ok := r.Adapters[AdpID]
 	if !ok {
 		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
 	}
@@ -220,10 +236,10 @@ func (adps *Adapters) getAdapterID(MID string) (string, error) {
 }
 
 // Load loads the specified byte slice into the adapters structures.
-func (adps *Adapters) load(file []byte) error {
-	adps.Lock()
-	defer adps.Unlock()
-	err := json.Unmarshal(file, adps)
+func (r *Adapters) load(file []byte) error {
+	r.Lock()
+	defer r.Unlock()
+	err := json.Unmarshal(file, r)
 	if err != nil {
 		msg := fmt.Sprintf("Unable to unmarshal config data file.\nError: %v", err)
 		log.Error(msg)
@@ -231,59 +247,59 @@ func (adps *Adapters) load(file []byte) error {
 	}
 
 	// Denormalize the Adapters.
-	for k, v := range adps.Adapters {
+	for k, v := range r.Adapters {
 		v.ID = k
 	}
 
 	// Denormalize the Areas.
-	for k, v := range adps.Areas {
+	for k, v := range r.Areas {
 		v.ID = k
 	}
 
-	adps.indexAreaAlias()
+	r.indexAreaAlias()
 
-	adps.loaded = true
-	adps.loadedAt = time.Now()
+	r.loaded = true
+	r.loadedAt = time.Now()
 
-	// log.Debug("=================== Adapters ===============\n%s\n\n\n", spew.Sdump(*adps))
+	// log.Debug("=================== Adapters ===============\n%s\n\n\n", spew.Sdump(*r))
 	// log.Debug("")
 	return nil
 }
 
 // indexAreaAdapters builds the areaAlias index.
-func (adps *Adapters) indexAreaAlias() error {
-	adps.areaAlias = make(map[string]*Area)
-	for _, v := range adps.Areas {
+func (r *Adapters) indexAreaAlias() error {
+	r.areaAlias = make(map[string]*Area)
+	for _, v := range r.Areas {
 		for _, alias := range v.Aliases {
-			adps.areaAlias[alias] = v
+			r.areaAlias[alias] = v
 		}
 	}
 	return nil
 }
 
-func (adps *Adapters) updateAreaAdapters(input map[string][]string) error {
-	adps.Lock()
-	defer adps.Unlock()
-	adps.areaAdapters = make(map[string][]*Adapter)
+func (r *Adapters) updateAreaAdapters(input map[string][]string) error {
+	r.Lock()
+	defer r.Unlock()
+	r.areaAdapters = make(map[string][]*Adapter)
 
 	for areaID, adpList := range input {
 		for _, adpID := range adpList {
 			// log.Debug("AreaID: %q  AdapterID: %q", areaID, adpID)
-			if _, ok := adps.areaAdapters[areaID]; !ok {
-				adps.areaAdapters[areaID] = make([]*Adapter, 0)
+			if _, ok := r.areaAdapters[areaID]; !ok {
+				r.areaAdapters[areaID] = make([]*Adapter, 0)
 			}
-			adps.areaAdapters[areaID] = append(adps.areaAdapters[areaID], adps.Adapters[adpID])
+			r.areaAdapters[areaID] = append(r.areaAdapters[areaID], r.Adapters[adpID])
 		}
 	}
 
-	log.Debug("After updateAreaAdapters...\n%s\n", adps)
+	log.Debug("After updateAreaAdapters...\n%s\n", r)
 
 	return nil
 }
 
 // Connect asks each adapter to Dial it's Server.
-func (adps *Adapters) connect() error {
-	for _, v := range adps.Adapters {
+func (r *Adapters) connect() error {
+	for _, v := range r.Adapters {
 		v.connect()
 	}
 	return nil
@@ -300,8 +316,8 @@ type Adapter struct {
 	Address   string `json:"address"`
 	File      string `json:"file"`
 	Config    string `json:"config"`
-	Connected bool
-	Client    *rpc.Client
+	connected bool
+	client    *rpc.Client
 }
 
 func (adp *Adapter) connect() error {
@@ -311,9 +327,33 @@ func (adp *Adapter) connect() error {
 		return err
 	}
 	log.Info("Connection to: %q OK!\n", adp.ID)
-	adp.Client = client
-	adp.Connected = true
+	adp.client = client
+	adp.connected = true
 	return nil
+}
+
+// --------------------------- AdpRPCer Interface ----------------------------------------
+
+// AdpRPCer is an interface to the Adapter RPC status and Client.
+type AdpRPCer interface {
+	AdpID() string
+	Connected() bool
+	Call(serviceMethod string, args interface{}, reply interface{}) error
+}
+
+// GetID returns the Adapter ID
+func (adp *Adapter) AdpID() string {
+	return adp.ID
+}
+
+// Connected returns the current connection status of the adapter RPC connection.
+func (adp *Adapter) Connected() bool {
+	return adp.connected
+}
+
+// Call invokes the RPC Client.Call() function (see https://golang.org/pkg/net/rpc/#Client)
+func (adp *Adapter) Call(serviceMethod string, args interface{}, reply interface{}) error {
+	return adp.client.Call(serviceMethod, args, reply)
 }
 
 // ==============================================================================================================================
@@ -364,23 +404,23 @@ func init() {
 // ==============================================================================================================================
 
 // String returns a formatted representation of Adapters.
-func (adps Adapters) String() string {
+func (r Adapters) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Adapters\n")
-	for _, v := range adps.Adapters {
+	for _, v := range r.Adapters {
 		ls.AddS(v.String())
 	}
 	ls.AddS("\n-------Areas---------------\n")
-	for _, v := range adps.Areas {
+	for _, v := range r.Areas {
 		// ls.AddS("   %5s %-7s  %-25s  [%s]\n", k, fmt.Sprintf("(%s)", v.ID), v.Name, fmt.Sprintf("\"%s\"", strings.Join(v.Aliases, "\", \"")))
 		ls.AddF("%s\n", v)
 	}
 	ls.AddS("\n-------AreaAlias-----------\n")
-	for k, v := range adps.areaAlias {
+	for k, v := range r.areaAlias {
 		ls.AddF("   %-20s  %s\n", k, v.ID)
 	}
 	ls.AddS("\n-------AreaAdapters--------\n")
-	for k, v := range adps.areaAdapters {
+	for k, v := range r.areaAdapters {
 		var s []string
 		for _, a := range v {
 			s = append(s, a.ID)
@@ -395,7 +435,7 @@ func (adp Adapter) String() string {
 	// ls := new(common.LogString)
 	ls := common.NewLogString()
 	ls.AddF("%s\n", adp.ID)
-	ls.AddF("%-17s   Type: %s  Address: %s\n", ls.ColorBool(adp.Connected, "CONNECTED  ", "UNCONNECTED", "green", "red"), adp.Type, adp.Address)
+	ls.AddF("%-17s   Type: %s  Address: %s\n", ls.ColorBool(adp.connected, "CONNECTED  ", "UNCONNECTED", "green", "red"), adp.Type, adp.Address)
 	ls.AddF("File: %s\n", adp.File)
 	ls.AddF("Config: %s\n", adp.Config)
 	return ls.Box(80)
