@@ -11,6 +11,11 @@ func RoutesRID(rid structs.ReportID) (routes structs.NRoutes, err error) {
 	return structs.NRoutes{rid.NRoute}, nil
 }
 
+// RoutesMID returns the route list for a ReportID.
+func RoutesMID(mid structs.ServiceID) (routes structs.NRoutes, err error) {
+	return structs.NRoutes{mid.GetRoute()}, nil
+}
+
 // RoutesArea returns the route list for an AreaID (i.e. City).
 func RoutesArea(areaID string) (routes structs.NRoutes, err error) {
 	return nil, nil

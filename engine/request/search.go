@@ -19,19 +19,6 @@ const (
 	searchRadiusDflt int = 100
 )
 
-//go:generate stringer -type=searchType
-
-// NResponseType enumerates the valid request types.
-type searchType int
-
-// Search types
-const (
-	srchtUnknown searchType = iota
-	srchtReportID
-	srchtDeviceID
-	srchtLatLng
-)
-
 // =======================================================================================
 //                                      SEARCH MANAGER
 // =======================================================================================
@@ -47,19 +34,18 @@ const (
 //  7. Converts Normal form to response.
 //  8. Returns response.
 type searchMgr struct {
-	id      int64
-	start   time.Time
-	reqType structs.NRequestType
+	id    int64
+	start time.Time
 
-	rqst *rest.Request
+	reqType structs.NRequestType
+	rqst    *rest.Request
+	req     *SearchRequest
+	nreq    interface{}
 
 	valid Validation
 
 	routes structs.NRoutes
 	rpc    *router.RPCCallMgr
-
-	req  *SearchRequest
-	nreq interface{}
 
 	nresp *structs.NSearchResponse
 	resp  *SearchResponse
@@ -73,10 +59,10 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 		start: time.Now(),
 		req:   &SearchRequest{},
 		valid: newValidation(),
+		resp:  &SearchResponse{Message: "Request failed"},
 		nresp: &structs.NSearchResponse{
 			Reports: make([]structs.NSearchResponseReport, 0),
 		},
-		resp: &SearchResponse{Message: "Request failed"},
 	}
 
 	sendTelemetry(mgr.id, "Search", "open")
@@ -105,7 +91,7 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	log.Debug("Before RPC Call:\n%s", mgr.String())
-	if err := mgr.callRPC2(); err != nil {
+	if err := mgr.callRPC(); err != nil {
 		log.Errorf("processSearch.callRPC() failed - %s", err)
 		return fail(err)
 	}
@@ -286,40 +272,13 @@ func (r *searchMgr) setSearchType() error {
 // -------------------------------------------------------------------------------
 
 // callRPC runs the calls to the Adapter(s).
-func (r *searchMgr) callRPC2() error {
-	err := r.prepRPC2()
-	if err != nil {
-		return err
-	}
-
-	if err := r.rpc.Run(); err != nil {
-		log.Error(err.Error())
-		return err
-	}
-	r.nresp.ReportCount = len(r.nresp.Reports)
-	if r.nresp.ReportCount > 0 {
-		r.nresp.Message = "OK"
-	} else {
-		r.nresp.Message = "No reports found"
-	}
-	return nil
-}
-
-func (r *searchMgr) prepRPC2() (err error) {
+func (r *searchMgr) callRPC() (err error) {
 	r.rpc, err = router.NewRPCCallMgr(r)
-	return err
-}
-
-// -------------------------------- OLD --------------------------------------------
-
-// callRPC runs the calls to the Adapter(s).
-func (r *searchMgr) callRPC() error {
-	rpcCall, err := r.prepRPC()
 	if err != nil {
 		return err
 	}
-	log.Debug("%s", r)
-	if err := rpcCall.Run(); err != nil {
+
+	if err = r.rpc.Run(); err != nil {
 		log.Error(err.Error())
 		return err
 	}
@@ -330,42 +289,6 @@ func (r *searchMgr) callRPC() error {
 		r.nresp.Message = "No reports found"
 	}
 	return nil
-}
-
-func (r *searchMgr) prepRPC() (*router.RPCCall, error) {
-
-	adapterReply := func(ndata interface{}) error {
-		reply, ok := ndata.(*structs.NSearchResponse)
-		log.Debug("reply: %p  ok: %t  size: %v", reply, ok, len(reply.Reports))
-		if !ok {
-			return fmt.Errorf("wrong type of data: %T returned by RPC call", ndata)
-		}
-		r.nresp.Reports = append(r.nresp.Reports, reply.Reports...)
-		return nil
-	}
-
-	setRPC := func(rpcName string) (*router.RPCCall, error) {
-		rpcCall, err := router.NewRPCCall(rpcName, r.nreq, adapterReply)
-		if err != nil {
-			log.Error(err.Error())
-			return nil, err
-		}
-		return rpcCall, nil
-	}
-
-	switch r.reqType {
-	case structs.NRTSearchRID:
-		return setRPC("Report.SearchRID")
-
-	case structs.NRTSearchDID:
-		return setRPC("Report.SearchDID")
-
-	case structs.NRTSearchLL:
-		return setRPC("Report.SearchLL")
-
-	default:
-		return nil, fmt.Errorf("cannot prep RPC call - unknown search type")
-	}
 }
 
 func (r *searchMgr) processReply(ndata interface{}) error {

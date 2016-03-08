@@ -36,6 +36,9 @@ ___
 
 * RPC system cleaned up.  First draft - needs testing.  Old code is still mixed in.
 * Saved to GIT.
+* Deleted old code from engine/request/search.go
+* Cleaned up engine/request/create.go, and converted to new RPC calls.
+* Saved to GIT.
 
 ### 2016.03.07 - Mon
 

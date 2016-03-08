@@ -41,7 +41,7 @@ func init() {
 }
 
 // =======================================================================================
-//                                      RPC CALL MANAGER
+//                                      MANAGER
 // =======================================================================================
 
 // RPCCallMgr manages the RPC call(s) to service a request.
@@ -53,23 +53,6 @@ type RPCCallMgr struct {
 
 	calls map[structs.NRoute]*RPCCall2
 	errs  []error
-}
-
-func (r RPCCallMgr) String() string {
-	ls := new(common.LogString)
-	ls.AddS("RPCCallMgr\n")
-	ls.AddF("ReqMgr: %p  type: %v\n", r.reqmgr, r.reqmgr.RType().String())
-	ls.AddF("Pending: %v\n", r.pending)
-	for _, v := range r.calls {
-		ls.AddS(v.String())
-	}
-	for i, e := range r.errs {
-		if i == 0 {
-			ls.AddS("--Errors--\n")
-		}
-		ls.AddS(e.Error())
-	}
-	return ls.Box(90)
 }
 
 type requester interface {
@@ -165,7 +148,6 @@ func (r *RPCCallMgr) receive() {
 func (r *RPCCallMgr) Run() error {
 	startTime := time.Now()
 
-	// Send all RPC requests
 	r.send()
 
 	r.receive()
@@ -216,6 +198,24 @@ func (r *RPCCallMgr) decPending() int64 {
 
 func (r *RPCCallMgr) processer() func(ndata interface{}) error {
 	return r.reqmgr.Processer()
+}
+
+// -------------------------------- String ---------------------------------
+func (r RPCCallMgr) String() string {
+	ls := new(common.LogString)
+	ls.AddS("RPCCallMgr\n")
+	ls.AddF("ReqMgr: %p  type: %v\n", r.reqmgr, r.reqmgr.RType().String())
+	ls.AddF("Pending: %v\n", r.pending)
+	for _, v := range r.calls {
+		ls.AddS(v.String())
+	}
+	for i, e := range r.errs {
+		if i == 0 {
+			ls.AddS("--Errors--\n")
+		}
+		ls.AddS(e.Error())
+	}
+	return ls.Box(90)
 }
 
 // =======================================================================================

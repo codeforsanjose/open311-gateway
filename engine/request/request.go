@@ -42,11 +42,11 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 
 // Create creates a new report.
 func Create(w rest.ResponseWriter, r *rest.Request) {
-	defer func() {
-		if rcvr := recover(); rcvr != nil {
-			rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
-		}
-	}()
+	// defer func() {
+	// 	if rcvr := recover(); rcvr != nil {
+	// 		rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
+	// 	}
+	// }()
 	response, err := processCreate(r)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

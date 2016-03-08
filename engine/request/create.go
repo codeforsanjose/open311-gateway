@@ -1,9 +1,10 @@
 package request
 
 import (
+	"errors"
 	"fmt"
 	"math"
-	"strconv"
+	"time"
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/router"
@@ -23,15 +24,18 @@ import (
 //  7. Converts Normal form to response.
 //  8. Returns response.
 type createMgr struct {
-	id int64
+	id    int64
+	start time.Time
 
-	rqst *rest.Request
+	reqType structs.NRequestType
+	rqst    *rest.Request
+	req     *CreateRequest
+	nreq    *structs.NCreateRequest
 
-	req  *CreateRequest
-	nreq *structs.NCreateRequest
+	valid Validation
 
-	valid  Validation
 	routes structs.NRoutes
+	rpc    *router.RPCCallMgr
 
 	nresp *structs.NCreateResponse
 	resp  *CreateResponse
@@ -40,11 +44,13 @@ type createMgr struct {
 func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	log.Debug("starting processCreate()")
 	mgr := createMgr{
-		rqst:  rqst,
-		id:    router.GetSID(),
-		req:   &CreateRequest{},
-		valid: newValidation(),
-		resp:  &CreateResponse{Message: "Request failed"},
+		id:      router.GetSID(),
+		start:   time.Now(),
+		reqType: structs.NRTCreate,
+		rqst:    rqst,
+		req:     &CreateRequest{},
+		valid:   newValidation(),
+		resp:    &CreateResponse{Message: "Request failed"},
 	}
 	sendTelemetry(mgr.id, "Create", "open")
 	defer func() {
@@ -66,22 +72,12 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 		}
 	}
 
-	if err := mgr.parseQP(); err != nil {
-		log.Errorf("processCreate.parseQP() failed - %s", err)
-		return fail(err)
-	}
-
 	if err := mgr.validate(); err != nil {
 		log.Errorf("processCreate.validate() failed - %s", err)
 		return fail(err)
 	}
 
 	mgr.convertRequest()
-
-	if err := mgr.setRoute(); err != nil {
-		log.Errorf("processCreate.route() failed - %s", err)
-		return fail(err)
-	}
 
 	if err := mgr.callRPC(); err != nil {
 		log.Errorf("processCreate.callRPC() failed - %s", err)
@@ -93,22 +89,65 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	return mgr.resp, nil
 }
 
-// parseQP unloads any query parms in the request.
-func (r *createMgr) parseQP() error {
-	return nil
+// -------------------------------------------------------------------------------
+//                        ROUTER.REQUESTER INTERFACE
+// -------------------------------------------------------------------------------
+func (r *createMgr) RType() structs.NRequestType {
+	return r.reqType
 }
 
+func (r *createMgr) Routes() structs.NRoutes {
+	return r.routes
+}
+
+func (r *createMgr) Data() interface{} {
+	return r.nreq
+}
+
+func (r *createMgr) Processer() func(ndata interface{}) error {
+	return r.processReply
+}
+
+// -------------------------------------------------------------------------------
+//                        VALIDATION
+// -------------------------------------------------------------------------------
 // validate the unmarshaled data.
 func (r *createMgr) validate() error {
 	log.Debug("Starting validate()")
-	if err := r.req.convert(); err != nil {
-		return err
+	fail := func(msg string, err error) error {
+		if err != nil {
+			msg = msg + " - " + err.Error()
+		}
+		log.Errorf("Validation failed: %s", msg)
+		return errors.New(msg)
 	}
-	r.valid.Set("location", "Location must be in continental US", validateLatLng(r.req.LatitudeV, r.req.LongitudeV))
 
-	if x, err := strconv.ParseBool(r.req.IsAnonymous); err == nil {
-		r.req.isAnonymous = x
+	v := r.valid
+	v.Set("QP", "Query parms parsed and loaded ok", false)
+	v.Set("convert", "Type conversion of inputs is OK", false)
+	v.Set("geo", "Location coordinates are within the continental US", false)
+
+	// Load Query Parms.
+	if err := r.parseQP(); err != nil {
+		return fail("", err)
 	}
+	v.Set("QP", "", true)
+
+	// Convert all string inputs.
+	if err := r.req.convert(); err != nil {
+		return fail("", err)
+	}
+	v.Set("convert", "", true)
+
+	// Location
+	r.valid.Set("geo", "", validateLatLng(r.req.LatitudeV, r.req.LongitudeV))
+
+	// Is the Request routable?
+	if err := r.setRoute(); err != nil {
+		return fail("", err)
+	}
+	log.Debug("After setRoute() - %s", v.String())
+
 	log.Debug(r.valid.String())
 	if !r.valid.Ok() {
 		return r.valid
@@ -116,70 +155,77 @@ func (r *createMgr) validate() error {
 	return nil
 }
 
+// parseQP unloads any query parms in the request.
+func (r *createMgr) parseQP() error {
+	return nil
+}
+
 // setRoute gets the route(s) to process the request.
 func (r *createMgr) setRoute() error {
-	var router structs.NRouter = r.nreq
-	r.routes = router.GetRoutes()
-	if len(r.routes) == 0 {
-		return fmt.Errorf("no routes found")
+	routes, err := router.RoutesMID(r.req.MID)
+	log.Debug("Routes: %v", routes.String())
+	if err != nil {
+		return fmt.Errorf("no routes found - %s", err.Error())
+	}
+	r.routes = routes
+	return nil
+}
+
+// -------------------------------------------------------------------------------
+//                        RPC
+// -------------------------------------------------------------------------------
+
+// callRPC runs the calls to the Adapter(s).
+func (r *createMgr) callRPC() (err error) {
+	r.rpc, err = router.NewRPCCallMgr(r)
+	if err != nil {
+		return err
+	}
+
+	log.Debug("Before RPC\n%s", r.String())
+	if err = r.rpc.Run(); err != nil {
+		log.Error(err.Error())
+		return err
 	}
 	return nil
 }
 
-// callRPC runs the calls to the Adapter(s).
-func (r *createMgr) callRPC() error {
-	loadData := func(ndata interface{}) error {
-		r.nresp = ndata.(*structs.NCreateResponse)
-		return nil
-	}
-
-	rpcCall, err := router.NewRPCCall("Report.Create", r.nreq, loadData)
-	if err != nil {
-		log.Error(err.Error())
-		return err
-	}
-	err = rpcCall.Run()
-	if err != nil {
-		log.Error(err.Error())
-	}
-	return err
+func (r *createMgr) processReply(ndata interface{}) error {
+	r.nresp = ndata.(*structs.NCreateResponse)
+	return nil
 }
 
-// convertResponse converts the NCreateResponse{} to a CreateResponse{}
-func (r *createMgr) convertResponse() {
-	r.resp = &CreateResponse{
-		Message:  r.nresp.Message,
-		ID:       r.nresp.RID.RID(),
-		AuthorID: r.nresp.AuthorID,
+// ------------------------------ String -------------------------------------------------
+
+// String displays the contents of the SearchRequest custom type.
+func (r createMgr) String() string {
+	ls := new(common.LogString)
+	ls.AddF("searchMgr - %d\n", r.id)
+	ls.AddF("Request type: %v\n", r.reqType.String())
+	ls.AddS(r.routes.String())
+	ls.AddS(r.req.String())
+	if r.rpc != nil {
+		ls.AddS(r.rpc.String())
+	} else {
+		ls.AddS("*****RPC uninitialized*****\n")
 	}
+	ls.AddS(r.nreq.String())
+	ls.AddS(r.valid.String())
+	if r.routes != nil {
+		ls.AddS(r.routes.String())
+	}
+	if r.nresp != nil {
+		ls.AddS(r.nresp.String())
+	}
+	if r.resp != nil {
+		ls.AddS(r.resp.String())
+	}
+	return ls.Box(120) + "\n\n"
 }
 
-func (r *createMgr) convertRequest() {
-	r.nreq = &structs.NCreateRequest{
-		NRequestCommon: structs.NRequestCommon{
-			ID: structs.NID{
-				RqstID: r.id,
-			},
-			Rtype: structs.NRTCreate,
-		},
-		MID:         r.req.MID,
-		Type:        r.req.ServiceName,
-		DeviceType:  r.req.DeviceType,
-		DeviceModel: r.req.DeviceModel,
-		DeviceID:    r.req.DeviceID,
-		Latitude:    r.req.LatitudeV,
-		Longitude:   r.req.LongitudeV,
-		Address:     r.req.Address,
-		State:       r.req.State,
-		Zip:         r.req.Zip,
-		FirstName:   r.req.FirstName,
-		LastName:    r.req.LastName,
-		Email:       r.req.Email,
-		Phone:       r.req.Phone,
-		IsAnonymous: r.req.isAnonymous,
-		Description: r.req.Description,
-	}
-}
+// -------------------------------------------------------------------------------
+//                        REQUEST
+// -------------------------------------------------------------------------------
 
 // CreateRequest represents a new Report
 type CreateRequest struct {
@@ -223,20 +269,37 @@ func (r *CreateRequest) convert() error {
 	return nil
 }
 
-// CreateResponse is the response to creating or updating a report.
-type CreateResponse struct {
-	Message  string `json:"Message" xml:"Message"`
-	ID       string `json:"ReportId" xml:"ReportId"`
-	AuthorID string `json:"AuthorId" xml:"AuthorId"`
+func (r *createMgr) convertRequest() {
+	r.nreq = &structs.NCreateRequest{
+		NRequestCommon: structs.NRequestCommon{
+			ID: structs.NID{
+				RqstID: r.id,
+			},
+			Rtype: structs.NRTCreate,
+		},
+		MID:         r.req.MID,
+		Type:        r.req.ServiceName,
+		DeviceType:  r.req.DeviceType,
+		DeviceModel: r.req.DeviceModel,
+		DeviceID:    r.req.DeviceID,
+		Latitude:    r.req.LatitudeV,
+		Longitude:   r.req.LongitudeV,
+		Address:     r.req.Address,
+		State:       r.req.State,
+		Zip:         r.req.Zip,
+		FirstName:   r.req.FirstName,
+		LastName:    r.req.LastName,
+		Email:       r.req.Email,
+		Phone:       r.req.Phone,
+		IsAnonymous: r.req.isAnonymous,
+		Description: r.req.Description,
+	}
 }
-
-// =======================================================================================
-//                                      STRINGS
-// =======================================================================================
 
 // String displays the contents of the CreateRequest type.
 func (r CreateRequest) String() string {
 	ls := new(common.LogString)
+	ls.AddF("CreateRequest\n")
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - id: %q  name: %q\n", r.MID.MID(), r.ServiceName)
 	if math.Abs(r.LatitudeV) > 1 {
@@ -249,3 +312,36 @@ func (r CreateRequest) String() string {
 	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", r.isAnonymous, r.FirstName, r.LastName, r.Email, r.Phone)
 	return ls.Box(80)
 }
+
+// -------------------------------------------------------------------------------
+//                        RESPONSE
+// -------------------------------------------------------------------------------
+
+// CreateResponse is the response to creating or updating a report.
+type CreateResponse struct {
+	Message  string `json:"Message" xml:"Message"`
+	ID       string `json:"ReportId" xml:"ReportId"`
+	AuthorID string `json:"AuthorId" xml:"AuthorId"`
+}
+
+// convertResponse converts the NCreateResponse{} to a CreateResponse{}
+func (r *createMgr) convertResponse() {
+	r.resp = &CreateResponse{
+		Message:  r.nresp.Message,
+		ID:       r.nresp.RID.RID(),
+		AuthorID: r.nresp.AuthorID,
+	}
+}
+
+// String displays the contents of the CreateRequest type.
+func (r CreateResponse) String() string {
+	ls := new(common.LogString)
+	ls.AddF("CreateResponse - %d\n", r.ID)
+	ls.AddF("Message: %s\n", r.Message)
+	ls.AddF("AuthorID: %s\n", r.AuthorID)
+	return ls.Box(80)
+}
+
+// =======================================================================================
+//                                      STRINGS
+// =======================================================================================
