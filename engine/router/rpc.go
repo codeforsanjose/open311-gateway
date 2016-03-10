@@ -3,16 +3,13 @@ package router
 import (
 	"errors"
 	"fmt"
-	"reflect"
+	"sync"
+	"sync/atomic"
 	"time"
-
-	"github.com/fatih/color"
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
 	"Gateway311/engine/telemetry"
-
-	// "github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -21,229 +18,227 @@ const (
 )
 
 var (
-	showRunTimes       = true
-	showResponse       = true
-	showResponseDetail = false
+	showRunTimes               = true
+	showResponse               = true
+	showResponseDetail         = false
+	rpcSID             sidType = 1
 )
 
+func getRPCID() int64 {
+	return rpcSID.get()
+}
+
+var serviceMethods = map[structs.NRequestType]string{
+	structs.NRTUnknown:      "",
+	structs.NRTServicesAll:  "Services.All",
+	structs.NRTServicesArea: "Services.Area",
+	structs.NRTCreate:       "Report.Create",
+	structs.NRTSearchLL:     "Report.SearchLL",
+	structs.NRTSearchDID:    "Report.SearchDID",
+	structs.NRTSearchRID:    "Report.SearchRID",
+}
+
+var newResponse map[structs.NRequestType]func() interface{}
+
+func init() {
+	newResponse = make(map[structs.NRequestType]func() interface{})
+	newResponse[structs.NRTServicesAll] = func() interface{} { return new(structs.NServicesResponse) }
+	newResponse[structs.NRTServicesArea] = func() interface{} { return new(structs.NServicesResponse) }
+	newResponse[structs.NRTCreate] = func() interface{} { return new(structs.NCreateResponse) }
+	newResponse[structs.NRTSearchLL] = func() interface{} { return new(structs.NSearchResponse) }
+	newResponse[structs.NRTSearchDID] = func() interface{} { return new(structs.NSearchResponse) }
+	newResponse[structs.NRTSearchRID] = func() interface{} { return new(structs.NSearchResponse) }
+}
+
 // =======================================================================================
-//                                      RPC
+//                                      MANAGER
 // =======================================================================================
 
-// NewRPCCall creates a new RPCCall.  RPCCall holds all information about an RPC call,
-// including which Adapters are called, request, response status, etc.
-//
-// This call will set up an RPC call for a specific Adapter, or for any Adapter servicing
-// the specified Area. Only one of the following should be used - the other parameter
-// should be set to an empty string.
-// adpID: adapter ID
-// areaID: Area ID
-func NewRPCCall(service string, request interface{}, process func(interface{}) error) (*RPCCall, error) {
-	rpcCall := RPCCall{
-		service: service,
-		request: request,
-		results: make(chan *rpcAdapterStatus, rpcChanSize),
-		adpList: make(adapterRouteList),
-		process: process,
-		errs:    make([]error, 0),
-	}
+// RPCCallMgr manages the RPC call(s) to service a request.
+type RPCCallMgr struct {
+	reqmgr        requester
+	serviceMethod string
+	results       chan structs.NRoute
+	pending       int64 // The count of pending RPC calls.
 
-	setRqstID(request.(structs.NRequester))
-	log.Debug("%+v", request)
-	router, ok := request.(structs.NRouter)
-	log.Debug("%+v  ok: %t", router, ok)
-	if !ok {
-		return nil, fmt.Errorf("The request (type: %s) does not implement structs.NRouter", reflect.TypeOf(request))
-	}
-	log.Debug("Building adpList...")
-	routeMethods, ok := serviceMap[service]
-	if !ok {
-		return nil, fmt.Errorf("serviceMap does not exist for service: %s", service)
-	}
-	adpList, err := routeMethods.buildAdapterList(router)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to prep RPCCall for request: %s - %s", reflect.TypeOf(request), err)
-	}
-
-	rpcCall.adpList = adpList
-
-	// log.Debug("RPCCall: %s", request)
-	return &rpcCall, nil
+	calls map[structs.NRoute]*rpcCall
+	errs  []error
 }
 
-func setRqstID(r structs.NRequester) {
-	id, _ := r.GetID()
-	if id == 0 {
-		id = GetSID()
-		log.Debug("Setting ID to: %d", id)
-		r.SetID(id, 0)
+type requester interface {
+	Routes() structs.NRoutes
+	RType() structs.NRequestType
+	Data() interface{}
+	Processer() func(ndata interface{}) error
+}
+
+// NewRPCCallMgr returns a RPCCallMgr instance, with routes as per the requester interface.
+func NewRPCCallMgr(reqmgr requester) (*RPCCallMgr, error) {
+	if len(reqmgr.Routes()) == 0 {
+		return nil, fmt.Errorf("no routes")
+	}
+	r := &RPCCallMgr{
+		reqmgr:        reqmgr,
+		serviceMethod: serviceMethods[reqmgr.RType()],
+		results:       make(chan structs.NRoute, 5),
+		calls:         make(map[structs.NRoute]*rpcCall),
+	}
+
+	for _, route := range reqmgr.Routes() {
+		rpccall, err := newrpcCall(r, route)
+		if err != nil {
+			log.Errorf("%s", err.Error())
+			return nil, err
+		}
+		r.calls[route] = rpccall
+	}
+	// log.Debug("New RPC Call Mgr:\n%s", r)
+
+	return r, nil
+}
+
+func (r *RPCCallMgr) send() {
+	for _, call := range r.calls {
+		err := call.run()
+		if err != nil {
+			r.errs = append(r.errs, err)
+			continue
+		}
+		r.incPending()
 	}
 }
 
-// ResponseProcesser is the interface for
-type ResponseProcesser interface {
-	Process(interface{}) error
-}
-
-// RPCCall represents an RPC call.  This may be calls to multiple Adapters.
-type RPCCall struct {
-	service   string
-	request   interface{}
-	results   chan *rpcAdapterStatus
-	processes int
-	adpList   adapterRouteList // Key: AdapterID
-	process   func(interface{}) error
-	errs      []error
-}
-
-// Run executes the RPC call(s).  It is synchronous - it will wait for all requestrs
-// to return or timeout.
-func (r *RPCCall) Run() error {
-	// Send all the RPC calls in go routines.
-	var sendTime time.Time
-	if showRunTimes {
-		sendTime = time.Now()
-	}
-	err := r.send()
-	if err != nil {
-		msg := fmt.Sprintf("Error starting RPC calls.")
-		log.Error(msg)
-		return errors.New(msg)
-	}
-
+func (r *RPCCallMgr) receive() {
+	// Responses are serialized via the results channel
 	// Collect responses via the "r.results" channel.
-	if r.processes > 0 {
+	if r.pending > 0 {
 		var timedout bool
 		timeout := common.TimeoutChan(rpcTimeout)
 		for !timedout {
 			select {
-			case answer := <-r.results:
-				r.adpList[answer.route] = answer
+			case respKey := <-r.results:
+				answer := r.calls[respKey]
+				r.decPending()
+				// log.Debug("%s", answer.String())
 				telemetry.SendRPC(answer.response.(structs.NResponser).GetIDS(), "done", "", time.Now())
-				r.processes--
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)
-					log.Errorf("RPC call to: %q failed - %s", answer.adapter.ID, answer.err)
+					log.Errorf("RPC call to: %q failed - %s", respKey, answer.err)
 					break
 				}
 				// log.Debug("Answer: %s", answer.response)
-				r.process(answer.response)
+				err := r.reqmgr.Processer()(answer.response)
+				if err != nil {
+					r.errs = append(r.errs, answer.err)
+					log.Errorf("RPC call to: %q failed - %s", respKey, answer.err)
+					break
+				}
 
 			case timedout = <-timeout:
 			}
 
-			if r.processes == 0 {
+			if r.pending == 0 {
 				break
 			}
 		}
 		if timedout {
-			for k, v := range r.adpList {
-				if v == nil {
-					log.Errorf("Adapter: %q timed out", k.SString())
+			for route, call := range r.calls {
+				if !call.replied {
+					log.Errorf("Adapter: %q timed out", route.SString())
 				}
 			}
 		}
 	}
-	if showRunTimes {
-		log.Info("RPC Call: %q took: %s", r.service, time.Since(sendTime))
-	}
 	if showResponse {
-		log.Debug("Response:%v", r)
+		log.Debug("RPC Manager:%v", r)
 	}
-	return nil
 }
 
-func (r *RPCCall) send() error {
-	var i int64
-	for k, v := range r.adpList {
-		i++
-		v.id = i
-		var adpRPC AdpRPCer = v.adapter
-		if adpRPC.Connected() {
-			// Give the pointer to the AdapterStatus to the go routine.
-			var pAdpStat *rpcAdapterStatus
-			pAdpStat, r.adpList[k] = v, nil
-			r.processes++
-			go func(pAdpStat *rpcAdapterStatus, rqst interface{}) {
-				// log.Debug("Calling adapter:\n%s\n", pAdpStat)
-				// log.Debug("Request type: %T", rqst)
-				var rqstCopy interface{}
-				var msgtype string
+// Run executes all RPC calls.
+func (r *RPCCallMgr) Run() error {
+	startTime := time.Now()
 
-				switch v := rqst.(type) {
-				case *structs.NServiceRequest:
-					rCopy := *v
-					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
-					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
-					rqstCopy = &rCopy
-					msgtype = "ServiceRequest"
-					log.Debug("Sending: %s", rCopy.String())
-				case *structs.NCreateRequest:
-					rCopy := *v
-					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
-					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
-					rqstCopy = &rCopy
-					msgtype = "CreateRequest"
-					log.Debug("Sending: %s", rCopy.String())
-				case *structs.NSearchRequestLL:
-					rCopy := *v
-					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
-					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
-					rqstCopy = &rCopy
-					msgtype = "SearchRequestLL"
-					log.Debug("Sending: %s", rCopy.String())
-				case *structs.NSearchRequestDID:
-					rCopy := *v
-					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
-					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
-					rqstCopy = &rCopy
-					msgtype = "SearchRequestDID"
-					log.Debug("Sending: %s", rCopy.String())
-				case *structs.NSearchRequestRID:
-					rCopy := *v
-					structs.NRequester(&rCopy).SetID(0, pAdpStat.id)
-					structs.NRequester(&rCopy).SetRoute(pAdpStat.route)
-					rqstCopy = &rCopy
-					msgtype = "SearchRequestRID"
-					log.Debug("Sending: %s", rCopy.String())
-				default:
-					log.Errorf("Invalid type in send RPC: %T", rqst)
-					return
-				}
+	r.send()
 
-				log.Debug("Request type: %s", msgtype)
-				telemetry.SendRPC(rqstCopy.(structs.NRequester).GetIDS(), "open", pAdpStat.route.SString(), time.Now())
-				var pAdpRPC AdpRPCer = pAdpStat.adapter
-				pAdpStat.err = pAdpRPC.Call(r.service, rqstCopy, pAdpStat.response)
-				r.results <- pAdpStat
-			}(pAdpStat, r.request)
-		} else {
-			log.Warning("Skipping: %s - not connected!", v.adapter.ID)
+	r.receive()
+
+	if showRunTimes {
+		log.Info("RPC Call: %q took: %s", r.serviceMethod, time.Since(startTime))
+	}
+
+	if len(r.errs) > 0 {
+		var errs string
+		for i, e := range r.errs {
+			log.Errorf(e.Error())
+			if i > 0 {
+				errs = errs + "; "
+			}
+			errs = errs + e.Error()
 		}
+		return errors.New(errs)
 	}
-
-	// log.Debug("After Run():\n%s\n", r)
 	return nil
 }
 
-// =======================================================================================
-//                                      ADAPTER ROUTE MAP
-// =======================================================================================
+// -------------------------------- rpcmanager Interface ---------------------------------
 
-// adapterRouteMap is used in the RPC system to keep track of what is being sent to each Adapter
-// Route, and the reply status and content.  Each RPCCall has an adpaterRouteMap instance.
-type adapterRouteList map[structs.NRoute]*rpcAdapterStatus
+func (r *RPCCallMgr) rType() structs.NRequestType {
+	return r.reqmgr.RType()
+}
 
-func newAdapterRouteList() adapterRouteList {
-	return make(adapterRouteList)
+func (r *RPCCallMgr) data() interface{} {
+	return r.reqmgr.Data()
+}
+
+func (r *RPCCallMgr) service() string {
+	return r.serviceMethod
+}
+
+func (r *RPCCallMgr) resultChan() chan structs.NRoute {
+	return r.results
+}
+
+func (r *RPCCallMgr) incPending() int64 {
+	return atomic.AddInt64((&r.pending), 1)
+}
+
+func (r *RPCCallMgr) decPending() int64 {
+	return atomic.AddInt64((&r.pending), -1)
+}
+
+func (r *RPCCallMgr) processer() func(ndata interface{}) error {
+	return r.reqmgr.Processer()
+}
+
+// -------------------------------- String ---------------------------------
+func (r RPCCallMgr) String() string {
+	ls := new(common.LogString)
+	ls.AddS("RPCCallMgr\n")
+	ls.AddF("ReqMgr: %p  type: %v\n", r.reqmgr, r.reqmgr.RType().String())
+	ls.AddF("Pending: %v\n", r.pending)
+	for _, v := range r.calls {
+		ls.AddS(v.String())
+	}
+	for i, e := range r.errs {
+		if i == 0 {
+			ls.AddS("--Errors--\n")
+		}
+		ls.AddS(e.Error())
+	}
+	return ls.Box(90)
 }
 
 // =======================================================================================
-//                                      ADAPTER STATUS
+//                                      RPC CALL
 // =======================================================================================
-type rpcAdapterStatus struct {
+
+// rpcCall manages the data for each RPC call.
+type rpcCall struct {
+	rpc rpcmanager
+	adp AdpRPCer
+
+	sync.Mutex
 	id       int64
-	adapter  *Adapter
 	route    structs.NRoute
 	response interface{}
 	sent     bool
@@ -251,105 +246,108 @@ type rpcAdapterStatus struct {
 	err      error
 }
 
-func newAdapterStatus(adp *Adapter, service string, route structs.NRoute, id int) (*rpcAdapterStatus, error) {
-	aStat := &rpcAdapterStatus{
-		id:      int64(id),
-		adapter: adp,
-		route:   route,
-		sent:    false,
-		replied: false,
-	}
-
-	rs := serviceMap[service].newResponse()
-	aStat.response = rs
-	// log.Debug("aStat: %s", aStat)
-	return aStat, nil
-}
-
-// ==============================================================================================================================
-//                                      STRINGS
-// ==============================================================================================================================
-
-func (r RPCCall) String() string {
+// String returns a representation of an rpcCall instance.
+func (r rpcCall) String() string {
 	ls := new(common.LogString)
-	ls.AddS("RPC Call\n")
-	ls.AddF("Service: %s\n", r.service)
-	ls.AddF("%s", r.request)
-	ls.AddS(r.adpList.String())
-	ls.AddF("Processes: %d\n", r.processes)
-	ls.AddF("Process interface: (%p)\n", r.process)
-	if len(r.errs) == 0 {
-		ls.AddS("Error: NONE!\n")
-	} else {
-		ls.AddS("Errors\n")
-		for _, e := range r.errs {
-			ls.AddF("\t%s\n", e.Error())
-		}
+	ls.AddF("rpcCall - %d\n", r.id)
+	ls.AddF("Service: %v\n", r.rpc.service())
+	ls.AddF("Adapter: %v  Route: %v\n", r.adp.AdpID(), r.route.String())
+	ls.AddF("Sent: %t  replied: %t\n", r.sent, r.replied)
+	if r.err != nil {
+		ls.AddF("Error: %v\n", r.err.Error())
 	}
-	return ls.Box(120)
+	return ls.Box(70)
 }
 
-func (r rpcAdapterStatus) String() string {
-	ls := new(common.LogString)
-	ls.AddS("rpcAdapterStatus\n")
-	ls.AddS(" Name/Type/Address                 Sent  Repl    ResponseType                     Route\n")
-	ls.AddF("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
-	return ls.Box(100)
+type rpcmanager interface {
+	rType() structs.NRequestType
+	data() interface{}
+	service() string
+	resultChan() chan structs.NRoute
+	incPending() int64
+	decPending() int64
+	processer() func(ndata interface{}) error
 }
 
-func (r rpcAdapterStatus) StringResp() string {
-	ls := new(common.LogString)
-	ls.AddS("rpcAdapterStatus\n")
-	ls.AddS(" Name/Type/Address                 Sent  Repl    ResponseType                     Route\n")
-	ls.AddF("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
-	ls.AddF("%s", r.response)
-	return ls.Box(100)
-}
-
-func (r rpcAdapterStatus) StringNH() string {
-	s := fmt.Sprintf("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
-	return s
-}
-
-func (r rpcAdapterStatus) StringNHResp() string {
-	s := fmt.Sprintf("%-30s     %5t %5t   %-30s  %s", fmt.Sprintf("%s (%s @%s)\n", r.adapter.ID, r.adapter.Type, r.adapter.Address), r.sent, r.replied, fmt.Sprintf("(%T)", r.response), r.route.String())
-	s += stringResponse(r.response)
-	return s
-}
-
-func stringResponse(r interface{}) string {
-	if r == nil {
-		return ""
+func newrpcCall(rpcmgr rpcmanager, route structs.NRoute) (*rpcCall, error) {
+	r := &rpcCall{
+		id:    getRPCID(),
+		rpc:   rpcmgr,
+		route: route,
 	}
-	switch v := r.(type) {
-	case *structs.NServicesResponse:
-		return v.String()
-	case *structs.NCreateResponse:
-		return v.String()
-	case *structs.NSearchResponse:
-		return v.String()
+	// log.Debug("Route: %v", route.String())
+	adp, err := GetRouteAdapter(r.route)
+	if err != nil {
+		return nil, err
+	}
+	r.adp = adp
+	// log.Debug(r.String())
+	return r, nil
+}
+
+func (r *rpcCall) setSent() {
+	r.Lock()
+	defer r.Unlock()
+	r.sent = true
+}
+
+func (r *rpcCall) prepRPC() (rqstCopy interface{}, err error) {
+	prep := func(d structs.NRequester) {
+		d.SetID(0, r.id)
+		d.SetRoute(r.route)
+	}
+	switch v := r.rpc.data().(type) {
+	case *structs.NServiceRequest:
+		rCopy := *v
+		prep(&rCopy)
+		rqstCopy = &rCopy
+		log.Debug("Sending: %s", rCopy.String())
+	case *structs.NCreateRequest:
+		rCopy := *v
+		prep(&rCopy)
+		rqstCopy = &rCopy
+		log.Debug("Sending: %s", rCopy.String())
+	case *structs.NSearchRequestLL:
+		rCopy := *v
+		prep(&rCopy)
+		rqstCopy = &rCopy
+		log.Debug("Sending: %s", rCopy.String())
+	case *structs.NSearchRequestDID:
+		rCopy := *v
+		prep(&rCopy)
+		rqstCopy = &rCopy
+		log.Debug("Sending: %s", rCopy.String())
+	case *structs.NSearchRequestRID:
+		rCopy := *v
+		prep(&rCopy)
+		rqstCopy = &rCopy
+		log.Debug("Sending: %s", rCopy.String())
 	default:
-		return fmt.Sprintf("Cannot show type: %T\n", r)
+		msg := fmt.Sprintf("Invalid type in send RPC: %T", r.rpc.data())
+		log.Errorf(msg)
+		return nil, errors.New(msg)
 	}
+	return rqstCopy, nil
 }
 
-func (r adapterRouteList) String() string {
-	ls := new(common.LogString)
-	ls.AddS("adapterRouteList\n")
-	ls.AddF("    Route/Type/Address              Sent  Repl    ResponseType                     Route        (match)\n")
-	for route, adpStat := range r {
-		if adpStat == nil {
-			ls.AddF("ERROR!  Route: %v is missing the AdapterStatus\n", route.SString())
-			continue
+func (r *rpcCall) run() error {
+	if r.adp.Connected() {
+		// log.Debug("{%s::%v} Calling prepRPC...", r.route.String(), r.id)
+		payload, err := r.prepRPC()
+		if err != nil {
+			return err
 		}
-		routeMatch := color.GreenString("OK")
-		if route != adpStat.route {
-			routeMatch = color.RedString("Mismatch!")
-		}
-		ls.AddF("%s %s\n", adpStat.StringNH(), routeMatch)
-		if showResponseDetail {
-			ls.AddS(stringResponse(adpStat.response))
-		}
+		r.setSent()
+		telemetry.SendRPC(payload.(structs.NRequester).GetIDS(), "open", r.route.SString(), time.Now())
+		go func() {
+			response := newResponse[r.rpc.rType()]()
+			r.err = r.adp.Call(r.rpc.service(), payload, response)
+			r.Lock()
+			defer r.Unlock()
+			r.response = response
+			r.replied = true
+			r.rpc.resultChan() <- r.route
+		}()
 	}
-	return ls.Box(110)
+	return nil
 }

@@ -39,6 +39,8 @@ ___
 * Cleaned up "common" files.
 * Added timeout to http.Post calls in Adapters.
 * Saved to GIT.
+* New, cleaner, lighter RPC/Mgr method in place.  Old RPC code deleted.
+* Saved to GIT.
 
 ### 2016.03.08 - Tue
 
