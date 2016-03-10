@@ -45,7 +45,7 @@ type createMgr struct {
 func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	log.Debug("starting processCreate()")
 	mgr := createMgr{
-		id:      router.GetSID(),
+		id:      common.RequestID(),
 		start:   time.Now(),
 		reqType: structs.NRTCreate,
 		rqst:    rqst,
@@ -249,10 +249,6 @@ type CreateRequest struct {
 	IsAnonymous string            `json:"isAnonymous" xml:"isAnonymous"`
 	isAnonymous bool              //
 	Description string            `json:"Description" xml:"Description"`
-	response    struct {
-		cRType
-		*structs.NCreateResponse
-	}
 }
 
 // convert the unmarshaled data.

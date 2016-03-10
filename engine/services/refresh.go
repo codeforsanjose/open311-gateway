@@ -8,6 +8,7 @@ import (
 	"Gateway311/engine/common"
 	"Gateway311/engine/router"
 	"Gateway311/engine/structs"
+	"Gateway311/engine/telemetry"
 )
 
 // refreshMgr conglomerates the Normal and Native structs and supervisor logic
@@ -26,17 +27,31 @@ type refreshMgr struct {
 }
 
 func refresh(area string) (reterr error) {
+	tid := "SrvRrsh"
 	log.Debug("starting Refresh() for area: %q", area)
+	rqstID := common.RequestID()
 	mgr := refreshMgr{
-		id:    router.GetSID(),
+		id:    rqstID,
 		start: time.Now(),
 		nreq: &structs.NServiceRequest{
 			NRequestCommon: structs.NRequestCommon{
+				ID: structs.NID{
+					RqstID: rqstID,
+				},
 				Rtype: structs.NRTServicesAll,
 			},
 			Area: "all",
 		},
 	}
+
+	telemetry.SendTelemetry(mgr.id, tid, "open")
+	defer func() {
+		if reterr != nil {
+			telemetry.SendTelemetry(mgr.id, tid, "error")
+		} else {
+			telemetry.SendTelemetry(mgr.id, tid, "done")
+		}
+	}()
 
 	area = strings.ToUpper(area)
 	switch {
@@ -49,7 +64,6 @@ func refresh(area string) (reterr error) {
 		return fmt.Errorf("Invalid Area %q specified for Services Refresh", area)
 	}
 
-	log.Debug("Calling router.RoutesAll()")
 	routes, err := router.RoutesAll()
 	log.Debug("router.RoutesAll(): %T: %#[1]v  len: %d", routes, len(routes))
 	switch {

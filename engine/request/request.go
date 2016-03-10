@@ -4,8 +4,6 @@ import (
 	"net/http"
 
 	"Gateway311/engine/logs"
-	"Gateway311/engine/router"
-	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -33,15 +31,11 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 			}
 		}()
 	}
-	rqstID := router.GetSID()
-	telemetry.SendTelemetry(rqstID, "Services", "open")
 	response, err := processServices(r)
 	if err != nil {
-		telemetry.SendTelemetry(rqstID, "Services", "error")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	telemetry.SendTelemetry(rqstID, "Services", "done")
 	w.WriteJson(&response)
 }
 

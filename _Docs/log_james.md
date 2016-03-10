@@ -41,6 +41,8 @@ ___
 * Saved to GIT.
 * New, cleaner, lighter RPC/Mgr method in place.  Old RPC code deleted.
 * Saved to GIT.
+* Cleaned up Service Cache refresh().  Converted to "Mgr" style.
+* Saved to GIT.
 
 ### 2016.03.08 - Tue
 

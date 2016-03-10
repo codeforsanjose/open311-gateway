@@ -41,7 +41,7 @@ type serviceMgr struct {
 func processServices(rqst *rest.Request) (fresp interface{}, ferr error) {
 	log.Debug("starting processServices()")
 	mgr := serviceMgr{
-		id:      router.GetSID(),
+		id:      common.RequestID(),
 		start:   time.Now(),
 		reqType: structs.NRTServicesArea,
 		rqst:    rqst,
@@ -168,8 +168,6 @@ func (r *serviceMgr) run() error {
 
 // ServicesReq represents a request to .
 type ServicesReq struct {
-	// cType              //
-	// cIface             //
 	Latitude   string  `json:"Latitude" xml:"Latitude"`
 	LatitudeV  float64 //
 	Longitude  string  `json:"Longitude" xml:"Longitude"`

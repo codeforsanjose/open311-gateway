@@ -18,15 +18,10 @@ const (
 )
 
 var (
-	showRunTimes               = true
-	showResponse               = true
-	showResponseDetail         = false
-	rpcSID             sidType = 1
+	showRunTimes       = true
+	showResponse       = true
+	showResponseDetail = false
 )
-
-func getRPCID() int64 {
-	return rpcSID.get()
-}
 
 var serviceMethods = map[structs.NRequestType]string{
 	structs.NRTUnknown:      "",
@@ -271,7 +266,7 @@ type rpcmanager interface {
 
 func newrpcCall(rpcmgr rpcmanager, route structs.NRoute) (*rpcCall, error) {
 	r := &rpcCall{
-		id:    getRPCID(),
+		id:    common.RpcID(),
 		rpc:   rpcmgr,
 		route: route,
 	}

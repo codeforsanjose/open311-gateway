@@ -56,7 +56,7 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	log.Debug("starting processSearch()")
 	mgr := searchMgr{
 		rqst:  rqst,
-		id:    router.GetSID(),
+		id:    common.RequestID(),
 		start: time.Now(),
 		req:   &SearchRequest{},
 		valid: common.NewValidation(),
@@ -372,7 +372,7 @@ func (r *searchMgr) setLL() *structs.NSearchRequestLL {
 	return &structs.NSearchRequestLL{
 		NRequestCommon: structs.NRequestCommon{
 			ID: structs.NID{
-				RqstID: r.req.id,
+				RqstID: r.id,
 			},
 			Rtype: structs.NRTSearchLL,
 		},
@@ -389,7 +389,7 @@ func (r *searchMgr) setRID() *structs.NSearchRequestRID {
 	return &structs.NSearchRequestRID{
 		NRequestCommon: structs.NRequestCommon{
 			ID: structs.NID{
-				RqstID: r.req.id,
+				RqstID: r.id,
 			},
 			Rtype: structs.NRTSearchRID,
 		},
@@ -432,8 +432,6 @@ func (r searchMgr) String() string {
 
 // SearchRequest represents the Search request (Normal form).
 type SearchRequest struct {
-	cType
-	cIface
 	RID         structs.ReportID `json:"reportID" xml:"reportID"`
 	DeviceType  string           `json:"deviceType" xml:"deviceType"`
 	DeviceID    string           `json:"deviceId" xml:"deviceId"`
@@ -450,10 +448,6 @@ type SearchRequest struct {
 	Zip         string           `json:"zip" xml:"zip"`
 	MaxResults  string           `json:"MaxResultsV" xml:"MaxResultsV"`
 	MaxResultsV int              //
-	response    struct {
-		cRType
-		*structs.NSearchResponse
-	}
 }
 
 // convert the unmarshaled data.
@@ -472,7 +466,7 @@ func (r *SearchRequest) convert() error {
 // String displays the contents of the SearchRequest custom type.
 func (r SearchRequest) String() string {
 	ls := new(common.LogString)
-	ls.AddF("SearchRequest - %d\n", r.id)
+	ls.AddF("SearchRequest\n")
 	ls.AddF("RID: %s\n", r.RID)
 	ls.AddF("Device Type: %q    ID: %q\n", r.DeviceType, r.DeviceID)
 	ls.AddF("Lat: %v (%f)  Lng: %v (%f)\n", r.Latitude, r.LatitudeV, r.Longitude, r.LongitudeV)
