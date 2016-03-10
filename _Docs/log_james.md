@@ -32,6 +32,14 @@ ___
 
 ## Log
 
+### 2016.03.10 - Thu
+
+* Started code for Email Adapter.  
+* Email send via Gmail working.
+* Create email template working with Send().
+* Saved to GIT.
+
+
 ### 2016.03.09 - Wed
 
 * Saved to GIT.

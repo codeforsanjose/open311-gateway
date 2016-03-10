@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"Gateway311/adapters/citysourced/common"
-	"Gateway311/adapters/citysourced/logs"
-	"Gateway311/adapters/citysourced/structs"
+	"Gateway311/adapters/email/common"
+	"Gateway311/adapters/email/logs"
+	"Gateway311/adapters/email/structs"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -344,18 +344,18 @@ func (a Area) String() string {
 
 // Provider is the data for each Service Provider.  It contains an index list of all of the Services provided by this Provider.
 type Provider struct {
-	ID         int                 //
-	Name       string              `json:"name"`
-	URL        string              `json:"url"`
-	APIVersion string              `json:"apiVersion"`
-	Key        string              `json:"key"`
-	Services   []*structs.NService `json:"services"`
+	ID   int    //
+	Name string `json:"name"`
+	URL  string `json:"address"`
+	// APIVersion string              `json:"apiVersion"`
+	// Key        string              `json:"key"`
+	Services []*structs.NService `json:"services"`
 }
 
 func (p Provider) String() string {
 	ls := new(common.LogString)
 	ls.AddF("%s (ID: %d)\n", p.Name, p.ID)
-	ls.AddF("URL: %s  ver: %s  Key: %s\n", p.URL, p.APIVersion, p.Key)
+	ls.AddF("URL: %s\n", p.URL)
 	ls.AddS("---SERVICES:\n")
 	for _, v := range p.Services {
 		ls.AddF("   %s\n", v)

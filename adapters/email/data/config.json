@@ -1,0 +1,151 @@
+{
+	"adapter": {
+		"name": "EM1",
+		"type": "Email",
+		"address": ""
+	},
+	"serviceCategories": [
+		"Abandoned",
+		"Eyesore",
+		"Graffiti",
+		"Street",
+		"Trash"
+	],
+	"serviceAreas": {
+		"CU": {
+			"name": "Cupertino",
+			"providers": [{
+				"id": 1,
+				"name": "City of Cupertino - Gang & Graffiti",
+				"address": "mailto:jameskhaskell+CU1@gmail.com",
+				"services": [{
+					"id": 10,
+					"name": "Gang Activity",
+					"catg": []
+				}, {
+					"id": 20,
+					"name": "Graffiti",
+					"catg": ["Graffiti"]
+				}]
+			}, {
+				"id": 2,
+				"name": "City of Cupertino - Other",
+				"address": "mailto:jameskhaskell+CU2@gmail.com",
+				"services": [{
+					"id": 30,
+					"name": "Illegal Dumping / Trash",
+					"catg": ["Trash"]
+				}, {
+					"id": 40,
+					"name": "Illegally Parked Car",
+					"catg": []
+				}, {
+					"id": 50,
+					"name": "Parks General Issue",
+					"catg": []
+				}, {
+					"id": 60,
+					"name": "Plants & Trees",
+					"catg": []
+				}, {
+					"id": 70,
+					"name": "Potholes",
+					"catg": ["Streets"]
+				}, {
+					"id": 80,
+					"name": "Sidewalks",
+					"catg": ["Streets"]
+				}, {
+					"id": 90,
+					"name": "Street Light",
+					"catg": ["Streets"]
+				}, {
+					"id": 100,
+					"name": "Streets & Roads",
+					"catg": ["Streets"]
+				}, {
+					"id": 110,
+					"name": "Trash / Waste / Dumping",
+					"catg": ["Trash"]
+				}, {
+					"id": 120,
+					"name": "Vehicle Issue",
+					"catg": []
+				}, {
+					"id": 130,
+					"name": "Water Waste",
+					"catg": []
+				}, {
+					"id": 140,
+					"name": "Yard Waste Removal",
+					"catg": []
+				}]
+			}]
+		},
+		"SUN": {
+			"name": "Sunnyvale",
+			"providers": [{
+				"id": 1,
+				"name": "City of Sunnyvale",
+				"address": "mailto:jameskhaskell+SUN1@gmail.com",
+				"services": [{
+					"id": 10,
+					"name": "Gang Activity",
+					"catg": []
+				}, {
+					"id": 20,
+					"name": "Graffiti",
+					"catg": ["Graffiti"]
+				}, {
+					"id": 30,
+					"name": "Illegal Dumping / Trash",
+					"catg": ["Trash"]
+				}, {
+					"id": 40,
+					"name": "Illegally Parked Car",
+					"catg": []
+				}, {
+					"id": 50,
+					"name": "Parks General Issue",
+					"catg": []
+				}, {
+					"id": 60,
+					"name": "Plants & Trees",
+					"catg": []
+				}, {
+					"id": 70,
+					"name": "Potholes",
+					"catg": ["Streets"]
+				}, {
+					"id": 80,
+					"name": "Sidewalks",
+					"catg": ["Streets"]
+				}, {
+					"id": 90,
+					"name": "Street Light",
+					"catg": ["Streets"]
+				}, {
+					"id": 100,
+					"name": "Streets & Roads",
+					"catg": ["Streets"]
+				}, {
+					"id": 110,
+					"name": "Trash / Waste / Dumping",
+					"catg": ["Trash"]
+				}, {
+					"id": 120,
+					"name": "Vehicle Issue",
+					"catg": []
+				}, {
+					"id": 130,
+					"name": "Water Waste",
+					"catg": []
+				}, {
+					"id": 140,
+					"name": "Yard Waste Removal",
+					"catg": []
+				}]
+			}]
+		}
+	}
+}
