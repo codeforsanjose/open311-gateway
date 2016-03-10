@@ -1,10 +1,11 @@
 package create
 
 import (
-	"Gateway311/engine/common"
 	"bytes"
 	"encoding/xml"
 	"net/http"
+
+	"Gateway311/adapters/citysourced/common"
 )
 
 // ================================================================================================
@@ -59,7 +60,8 @@ func (r *Request) Process(url string) (*Response, error) {
 		enc.Encode(r)
 	}
 
-	resp, err := http.Post(url, "application/xml", payload)
+	client := http.Client{Timeout: common.HttpClientTimeout}
+	resp, err := client.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
 	}

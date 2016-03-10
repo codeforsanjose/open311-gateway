@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 type (
@@ -31,6 +32,8 @@ const (
 	/* Routing URLs */
 	YOURS        = "http://www.yournavigation.org/api/1.0/gosmore.php"
 	YOURS_HEADER = "github.com/talmai/geocode" // change this to your website!
+
+	REQUEST_TIMEOUT = time.Duration(10 * time.Second)
 )
 
 type Point struct {
@@ -160,7 +163,7 @@ func (r *Request) SendAPIRequest(transport http.RoundTripper) (*Response, error)
 
 	c := r.HTTPClient
 	if c == nil {
-		c = &http.Client{Transport: transport}
+		c = &http.Client{Transport: transport, Timeout: REQUEST_TIMEOUT}
 	}
 	u := fmt.Sprintf("%s?%s", r.Provider, r.Values().Encode())
 

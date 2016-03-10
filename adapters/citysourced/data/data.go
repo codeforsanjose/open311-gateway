@@ -10,7 +10,7 @@ import (
 
 	"Gateway311/adapters/citysourced/logs"
 	"Gateway311/adapters/citysourced/structs"
-	"Gateway311/engine/common"
+	"Gateway311/adapters/citysourced/common"
 
 	"github.com/davecgh/go-spew/spew"
 )

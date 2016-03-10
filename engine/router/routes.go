@@ -21,7 +21,12 @@ func RoutesArea(areaID string) (routes structs.NRoutes, err error) {
 	return nil, nil
 }
 
-// RoutesAll returns all routes.
+// RoutesAll returns all routes from all CONFIG'ured adapters.  This call does not
+// use the Services cache for this list - it uses the config.json file.
 func RoutesAll() (routes structs.NRoutes, err error) {
-	return GetAllRoutes(), nil
+	log.Debug("Using ALL adapters")
+	for _, adp := range adapters.Adapters {
+		routes = append(routes, structs.NRoute{AdpID: adp.ID, AreaID: "all", ProviderID: 0})
+	}
+	return routes, nil
 }

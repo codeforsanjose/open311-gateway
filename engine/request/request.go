@@ -2,7 +2,6 @@ package request
 
 import (
 	"net/http"
-	"time"
 
 	"Gateway311/engine/logs"
 	"Gateway311/engine/router"
@@ -35,14 +34,14 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 		}()
 	}
 	rqstID := router.GetSID()
-	sendTelemetry(rqstID, "Services", "open")
+	telemetry.SendTelemetry(rqstID, "Services", "open")
 	response, err := processServices(r)
 	if err != nil {
-		sendTelemetry(rqstID, "Services", "error")
+		telemetry.SendTelemetry(rqstID, "Services", "error")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	sendTelemetry(rqstID, "Services", "done")
+	telemetry.SendTelemetry(rqstID, "Services", "done")
 	w.WriteJson(&response)
 }
 
@@ -78,12 +77,4 @@ func Search(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 	w.WriteJson(&response)
-}
-
-// =======================================================================================
-//                                      TELEMETRY
-// =======================================================================================
-
-func sendTelemetry(rqstID int64, op, status string) {
-	telemetry.SendRequest(rqstID, op, status, "", time.Now())
 }

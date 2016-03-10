@@ -12,6 +12,7 @@ import (
 	"Gateway311/engine/router"
 	"Gateway311/engine/services"
 	"Gateway311/engine/structs"
+	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -30,7 +31,7 @@ type serviceMgr struct {
 	rqst    *rest.Request
 	req     *ServicesReq
 
-	valid Validation
+	valid common.Validation
 
 	routes structs.NRoutes
 
@@ -45,15 +46,15 @@ func processServices(rqst *rest.Request) (fresp interface{}, ferr error) {
 		reqType: structs.NRTServicesArea,
 		rqst:    rqst,
 		req:     &ServicesReq{},
-		valid:   newValidation(),
+		valid:   common.NewValidation(),
 		resp:    &ServicesResp{Message: "Request failed"},
 	}
-	sendTelemetry(mgr.id, "Services", "open")
+	telemetry.SendTelemetry(mgr.id, "Services", "open")
 	defer func() {
 		if ferr != nil {
-			sendTelemetry(mgr.id, "Services", "error")
+			telemetry.SendTelemetry(mgr.id, "Services", "error")
 		} else {
-			sendTelemetry(mgr.id, "Services", "done")
+			telemetry.SendTelemetry(mgr.id, "Services", "done")
 		}
 	}()
 
@@ -115,7 +116,7 @@ func (r *serviceMgr) validate() error {
 	// Location
 
 	switch {
-	case validateLatLng(r.req.LatitudeV, r.req.LongitudeV):
+	case common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV):
 		r.req.City, _ = geo.CityForLatLng(r.req.LatitudeV, r.req.LongitudeV)
 		fallthrough
 
@@ -188,9 +189,9 @@ func (r *ServicesReq) validate() error {
 }
 
 func (r *ServicesReq) convert() error {
-	c := newConversion()
-	r.LatitudeV = c.float("Latitude", r.Latitude)
-	r.LongitudeV = c.float("Longitude", r.Longitude)
+	c := common.NewConversion()
+	r.LatitudeV = c.Float("Latitude", r.Latitude)
+	r.LongitudeV = c.Float("Longitude", r.Longitude)
 	log.Debug("After convert: %s\n%s", c.String(), r.String())
 	return nil
 }

@@ -35,7 +35,10 @@ ___
 ### 2016.03.09 - Wed
 
 * Saved to GIT.
-* 
+* Cleaned up engine/services to use new "Mgr" style requests, with new RPC system.
+* Cleaned up "common" files.
+* Added timeout to http.Post calls in Adapters.
+* Saved to GIT.
 
 ### 2016.03.08 - Tue
 

@@ -9,6 +9,7 @@ import (
 	"Gateway311/engine/common"
 	"Gateway311/engine/router"
 	"Gateway311/engine/structs"
+	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -32,7 +33,7 @@ type createMgr struct {
 	req     *CreateRequest
 	nreq    *structs.NCreateRequest
 
-	valid Validation
+	valid common.Validation
 
 	routes structs.NRoutes
 	rpc    *router.RPCCallMgr
@@ -49,15 +50,15 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 		reqType: structs.NRTCreate,
 		rqst:    rqst,
 		req:     &CreateRequest{},
-		valid:   newValidation(),
+		valid:   common.NewValidation(),
 		resp:    &CreateResponse{Message: "Request failed"},
 	}
-	sendTelemetry(mgr.id, "Create", "open")
+	telemetry.SendTelemetry(mgr.id, "Create", "open")
 	defer func() {
 		if ferr != nil {
-			sendTelemetry(mgr.id, "Create", "error")
+			telemetry.SendTelemetry(mgr.id, "Create", "error")
 		} else {
-			sendTelemetry(mgr.id, "Create", "done")
+			telemetry.SendTelemetry(mgr.id, "Create", "done")
 		}
 	}()
 
@@ -140,7 +141,7 @@ func (r *createMgr) validate() error {
 	v.Set("convert", "", true)
 
 	// Location
-	r.valid.Set("geo", "", validateLatLng(r.req.LatitudeV, r.req.LongitudeV))
+	r.valid.Set("geo", "", common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
 
 	// Is the Request routable?
 	if err := r.setRoute(); err != nil {
@@ -202,8 +203,10 @@ func (r createMgr) String() string {
 	ls := new(common.LogString)
 	ls.AddF("searchMgr - %d\n", r.id)
 	ls.AddF("Request type: %v\n", r.reqType.String())
-	ls.AddS(r.routes.String())
 	ls.AddS(r.req.String())
+	if r.routes != nil {
+		ls.AddS(r.routes.String())
+	}
 	if r.rpc != nil {
 		ls.AddS(r.rpc.String())
 	} else {
@@ -211,9 +214,6 @@ func (r createMgr) String() string {
 	}
 	ls.AddS(r.nreq.String())
 	ls.AddS(r.valid.String())
-	if r.routes != nil {
-		ls.AddS(r.routes.String())
-	}
 	if r.nresp != nil {
 		ls.AddS(r.nresp.String())
 	}
@@ -258,10 +258,10 @@ type CreateRequest struct {
 // convert the unmarshaled data.
 func (r *CreateRequest) convert() error {
 	log.Debug("starting convert()")
-	c := newConversion()
-	r.LatitudeV = c.float("Latitude", r.Latitude)
-	r.LongitudeV = c.float("Longitude", r.Longitude)
-	r.isAnonymous = c.bool("IsAnonymous", r.IsAnonymous)
+	c := common.NewConversion()
+	r.LatitudeV = c.Float("Latitude", r.Latitude)
+	r.LongitudeV = c.Float("Longitude", r.Longitude)
+	r.isAnonymous = c.Bool("IsAnonymous", r.IsAnonymous)
 	log.Debug("After convert: %s\n%s", c.String(), r.String())
 	if !c.Ok() {
 		return c

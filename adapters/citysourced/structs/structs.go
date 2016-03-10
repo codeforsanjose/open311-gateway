@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"Gateway311/engine/common"
+	"Gateway311/adapters/citysourced/common"
 )
 
 // =======================================================================================

@@ -14,6 +14,11 @@ var (
 	monitorAddr = "127.0.0.1:5051"
 )
 
+// SendTelemetry sends a telemetry message.
+func SendTelemetry(rqstID int64, op, status string) {
+	SendRequest(rqstID, op, status, "", time.Now())
+}
+
 // SendRequest queues an Engine REST Request message onto the send channel.
 func SendRequest(msgID int64, rType, status, areaID string, at time.Time) {
 	statusMsg := EngRequestMsgType{

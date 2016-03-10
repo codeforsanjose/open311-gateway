@@ -7,7 +7,7 @@ import (
 	"Gateway311/adapters/citysourced/search"
 	"Gateway311/adapters/citysourced/structs"
 	"Gateway311/adapters/citysourced/telemetry"
-	"Gateway311/engine/common"
+	"Gateway311/adapters/citysourced/common"
 )
 
 const (

@@ -5,8 +5,8 @@ import (
 	"encoding/xml"
 	"net/http"
 
+	"Gateway311/adapters/citysourced/common"
 	"Gateway311/adapters/citysourced/logs"
-	"Gateway311/engine/common"
 )
 
 var (
@@ -50,7 +50,8 @@ func (r *RequestLL) Process(url string) (*Response, error) {
 	}
 	// log.Printf("Payload:\n%v\n", payload.String())
 
-	resp, err := http.Post(url, "application/xml", payload)
+	client := http.Client{Timeout: common.HttpClientTimeout}
+	resp, err := client.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
 	}
@@ -100,7 +101,8 @@ func (r *RequestDID) Process(url string) (*Response, error) {
 	}
 	log.Debug("Payload:\n%v\n", payload.String())
 
-	resp, err := http.Post(url, "application/xml", payload)
+	client := http.Client{Timeout: common.HttpClientTimeout}
+	resp, err := client.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
 	}
@@ -149,7 +151,8 @@ func (r *RequestRID) Process(url string) (*Response, error) {
 	}
 	log.Debug("Payload:\n%v\n", payload.String())
 
-	resp, err := http.Post(url, "application/xml", payload)
+	client := http.Client{Timeout: common.HttpClientTimeout}
+	resp, err := client.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
 	}

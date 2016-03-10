@@ -28,7 +28,12 @@ func GetArea(areaID string) (structs.NServices, error) {
 
 // Refresh initiates a refresh of the Services Cache.
 func Refresh() {
-	servicesData.refresh()
+	refresh("all")
+
+	servicesData.indexAreaAdapters()
+	servicesData.sendRoutes()
+	servicesData.switchSet()
+
 }
 
 // Shutdown should be called at system shutdown.  It will terminate the update channel, and
@@ -61,29 +66,6 @@ func (r *cache) getArea(areaID string) (structs.NServices, error) {
 		return nil, fmt.Errorf("The requested AreaID: %q is not serviced by this gateway.", areaID)
 	}
 	return l, nil
-}
-
-func (r *cache) processRefresh() {
-	rqst := &structs.NServiceRequest{
-		NRequestCommon: structs.NRequestCommon{
-			Rtype: structs.NRTServicesAll,
-		},
-		Area: "all",
-	}
-	rpcCall, err := router.NewRPCCall("Services.All", rqst, servicesData.merge)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-	err = rpcCall.Run()
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-	r.indexAreaAdapters()
-	r.sendRoutes()
-	r.switchSet()
-	// log.Debug("Cache%s", r)
 }
 
 // sendRoutes builds a unique list of all NRoutes and posts it to the
@@ -208,7 +190,7 @@ func (r *cache) init() {
 				break
 			} else {
 				log.Debug("Running Services refresh...")
-				r.processRefresh()
+				r.refresh()
 			}
 		}
 	}()
@@ -224,7 +206,7 @@ func (r *cache) shutdown() {
 //                                      STRINGS
 // ==============================================================================================================================
 
-// Displays the contents of the Spec_Type custom type.
+// String returns a string representation of the cache type.
 func (r cache) String() string {
 	ls := new(common.LogString)
 	ls.AddF("cache [%d]\n", r.activeSet)

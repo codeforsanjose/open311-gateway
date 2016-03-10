@@ -54,9 +54,15 @@ func GetAreaRoutes(areaID string) (structs.NRoutes, error) {
 	return routes.getAreaRoutes(areaID)
 }
 
-// GetAllRoutes returns a list of Routes (structs.NRoutes) for the specified Area.
-func GetAllRoutes() structs.NRoutes {
+// GetAllActiveRoutes returns a list of Routes that have been returned by the Service Cache
+// queries - hence all "active" routes.
+func GetAllActiveRoutes() structs.NRoutes {
 	return routes.getAllRoutes()
+}
+
+// GetAllRoutes returns a list of all configured routes.
+func GetAllRoutes() structs.NRoutes {
+	return adapters.getAllRoutes()
 }
 
 // GetRouteAdapter gets a pointer to the Adapter for the specified route.
@@ -81,6 +87,8 @@ type routeData struct {
 func (r *routeData) getAllRoutes() structs.NRoutes {
 	r.RLock()
 	defer r.RUnlock()
+	log.Debug("getAllRoutes: activeSet: %d", r.activeSet)
+	log.Debug("len(r.all): %d", len(r.all[r.activeSet]))
 	return r.all[r.activeSet]
 }
 
@@ -172,6 +180,17 @@ type Adapters struct {
 	areaAlias    map[string]*Area      // Index: an alias for an area
 	areaAdapters map[string][]*Adapter // Index: AreaID
 	sync.RWMutex
+}
+
+func (r *Adapters) getAllRoutes() (routes structs.NRoutes) {
+	for _, adp := range r.Adapters {
+		routes = append(routes, structs.NRoute{
+			AdpID:      adp.ID,
+			AreaID:     "all",
+			ProviderID: 0,
+		})
+	}
+	return
 }
 
 func (r *Adapters) areaID(alias string) (string, error) {
@@ -341,7 +360,7 @@ type AdpRPCer interface {
 	Call(serviceMethod string, args interface{}, reply interface{}) error
 }
 
-// GetID returns the Adapter ID
+// AdpID returns the Adapter ID
 func (adp *Adapter) AdpID() string {
 	return adp.ID
 }

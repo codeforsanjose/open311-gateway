@@ -3,11 +3,11 @@ package request
 import (
 	"time"
 
+	"Gateway311/adapters/citysourced/common"
 	"Gateway311/adapters/citysourced/create"
 	"Gateway311/adapters/citysourced/data"
 	"Gateway311/adapters/citysourced/structs"
 	"Gateway311/adapters/citysourced/telemetry"
-	"Gateway311/engine/common"
 )
 
 // ================================================================================================

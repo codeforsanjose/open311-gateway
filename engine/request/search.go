@@ -9,6 +9,7 @@ import (
 	"Gateway311/engine/geo"
 	"Gateway311/engine/router"
 	"Gateway311/engine/structs"
+	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -42,7 +43,7 @@ type searchMgr struct {
 	req     *SearchRequest
 	nreq    interface{}
 
-	valid Validation
+	valid common.Validation
 
 	routes structs.NRoutes
 	rpc    *router.RPCCallMgr
@@ -58,19 +59,19 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 		id:    router.GetSID(),
 		start: time.Now(),
 		req:   &SearchRequest{},
-		valid: newValidation(),
+		valid: common.NewValidation(),
 		resp:  &SearchResponse{Message: "Request failed"},
 		nresp: &structs.NSearchResponse{
 			Reports: make([]structs.NSearchResponseReport, 0),
 		},
 	}
 
-	sendTelemetry(mgr.id, "Search", "open")
+	telemetry.SendTelemetry(mgr.id, "Search", "open")
 	defer func() {
 		if ferr != nil {
-			sendTelemetry(mgr.id, "Search", "error")
+			telemetry.SendTelemetry(mgr.id, "Search", "error")
 		} else {
-			sendTelemetry(mgr.id, "Search", "done")
+			telemetry.SendTelemetry(mgr.id, "Search", "done")
 		}
 	}()
 
@@ -167,7 +168,7 @@ func (r *searchMgr) validate() error {
 	}
 
 	// Location
-	v.Set("geo", "", validateLatLng(r.req.LatitudeV, r.req.LongitudeV))
+	v.Set("geo", "", common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
 
 	// Range-check the search radius.
 	switch {
@@ -457,11 +458,11 @@ type SearchRequest struct {
 
 // convert the unmarshaled data.
 func (r *SearchRequest) convert() error {
-	c := newConversion()
-	r.LatitudeV = c.float("Latitude", r.Latitude)
-	r.LongitudeV = c.float("Longitude", r.Longitude)
-	r.RadiusV = c.int("Radius", r.Radius)
-	r.MaxResultsV = c.int("MaxResults", r.MaxResults)
+	c := common.NewConversion()
+	r.LatitudeV = c.Float("Latitude", r.Latitude)
+	r.LongitudeV = c.Float("Longitude", r.Longitude)
+	r.RadiusV = c.Int("Radius", r.Radius)
+	r.MaxResultsV = c.Int("MaxResults", r.MaxResults)
 	if !c.Ok() {
 		return c
 	}
