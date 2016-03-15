@@ -3,18 +3,17 @@ package create
 import (
 	"CitySourcedAPI/logs"
 	"bytes"
-	"encoding/xml"
-	"errors"
-	"net/http"
+	"fmt"
 	"text/template"
 
 	"Gateway311/adapters/email/common"
+	"Gateway311/adapters/email/data"
 	"Gateway311/adapters/email/mail"
+	"Gateway311/adapters/email/structs"
 )
 
 var (
-	tmpl *template.Template
-	log  = logs.Log
+	log = logs.Log
 )
 
 // ================================================================================================
@@ -23,9 +22,7 @@ var (
 
 // Request represents the XML payload for a report request to CitySourced.
 type Request struct {
-	To                string  //
-	From              string  //
-	Subject           string  //
+	Sender            data.EmailSender
 	RequestType       string  `json:"RequestType" xml:"RequestType"`
 	RequestTypeID     int     `json:"RequestTypeId" xml:"RequestTypeId"`
 	ImageURL          string  `json:"ImageUrl" xml:"ImageUrl"`
@@ -40,102 +37,71 @@ type Request struct {
 }
 
 // Process executes the request to create a new report.
-func (r *Request) Process(url string) (*Response, error) {
+func (r *Request) Process() (*Response, error) {
 	fail := func(err error) (*Response, error) {
 		response := Response{
-			Message:  "Failed",
-			ID:       "",
-			AuthorID: "",
+			Message: fmt.Sprintf("unable to send email - %s", err),
 		}
 		return &response, err
 	}
 
-	var payload = new(bytes.Buffer)
-	{
-		enc := xml.NewEncoder(payload)
-		enc.Indent("  ", "    ")
-		enc.Encode(r)
-	}
-
-	client := http.Client{Timeout: common.HttpClientTimeout}
-	resp, err := client.Post(url, "application/xml", payload)
+	to, from, subject := r.Sender.Address()
+	body, err := r.createEmail(r.Sender.Template())
 	if err != nil {
-		return fail(err)
+		fail(err)
 	}
 
-	var response Response
-	err = xml.NewDecoder(resp.Body).Decode(&response)
-	if err != nil {
-		return fail(err)
+	address := &structs.Address{
+		To:   to,
+		From: from,
+	}
+	payload := structs.NewPayloadString(subject, &body)
+
+	if err := mail.Send(address, payload); err != nil {
+		fail(err)
 	}
 
-	return &response, nil
+	return &Response{"Success"}, nil
 }
 
 // ------------------------------------------------------------------------------------------------
 
 // Response is the response to creating or updating a report.
 type Response struct {
-	Message  string `json:"Message" xml:"Message"`
-	ID       string `json:"ReportId" xml:"ReportId"`
-	AuthorID string `json:"AuthorId" xml:"AuthorId"`
+	Message string `json:"Message" xml:"Message"`
 }
 
 // ================================================================================================
 //                                      TEMPLATES
 // ================================================================================================
 
-func (r *Request) SendEmail(recipients []string) error {
-	fail := func(err error) error {
-		errmsg := "unable to send email - " + err.Error()
-		log.Errorf(errmsg)
-		return errors.New(errmsg)
-	}
-	doc, err := r.createEmail()
-	if err != nil {
-		return fail(err)
-	}
-
-	mail.Send(recipients, doc)
-
-	return nil
-}
-
-// createEmail creates an email message from the request using the standard email
-// template (tmplCreateStd).
-func (r *Request) createEmail() (doc bytes.Buffer, err error) {
+// func (r *Request) SendEmail(recipients []string) error {
+// 	fail := func(err error) error {
+// 		errmsg := "unable to send email - " + err.Error()
+// 		log.Errorf(errmsg)
+// 		return errors.New(errmsg)
+// 	}
+// 	doc, err := r.createEmail()
+// 	if err != nil {
+// 		return fail(err)
+// 	}
+//
+// 	mail.Send(recipients, doc)
+//
+// 	return nil
+// }
+//
+// createEmail creates an email message from the request using the specified template
+func (r *Request) createEmail(tmpl *template.Template) (string, error) {
+	var doc bytes.Buffer
 	// Apply the values we have initialized in our struct context to the template.
-	if err = tmpl.Execute(&doc, r); err != nil {
+	if err := tmpl.Execute(&doc, r); err != nil {
 		log.Error("error trying to execute email template ", err)
+		return "", err
 	}
 	log.Debug("Doc:\n%s", doc.String())
-	return doc, nil
+	return doc.String(), nil
 }
-
-func init() {
-	var err error
-	// Create a new template for our SMTP message.
-	tmpl = template.New("emailTemplate")
-	if tmpl, err = tmpl.Parse(tmplCreateStd); err != nil {
-		log.Error("error trying to parse mail template ", err)
-	}
-}
-
-const tmplCreateStd = `From: {{.From}}
-To: {{.To}}
-Subject: {{.Subject}}
-
-Request Type: {{.RequestType}}
-
-Description: {{.Description}}
-
-Location: {{.Latitude}}, {{.Longitude}}
-
----Author---
-{{.AuthorNameLast}}, {{.AuthorNameFirst}}
-Email: {{.AuthorEmail}}
-Phone: {{.AuthorTelephone}}
-`
 
 // ================================================================================================
 //                                      STRINGS
@@ -157,6 +123,5 @@ func (r Response) String() string {
 	ls := new(common.LogString)
 	ls.AddS("create.Response\n")
 	ls.AddF("Message: %v\n", r.Message)
-	ls.AddF("ID: %v  AuthorID: %v\n", r.ID, r.AuthorID)
 	return ls.Box(80)
 }

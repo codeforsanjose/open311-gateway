@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"Gateway311/adapters/email/common"
 	"Gateway311/adapters/email/logs"
@@ -55,8 +56,8 @@ func ServicesAll() (*structs.NServices, error) {
 }
 
 // Adapter returns the adapter configuration.
-func Adapter() (name, atype, address string) {
-	return configData.Adapter.Name, configData.Adapter.Type, configData.Adapter.Address
+func Adapter() (name, atype string) {
+	return configData.Adapter.Name, configData.Adapter.Type
 }
 
 // AdapterName returns the adapter name.
@@ -74,6 +75,11 @@ func MIDProvider(MID structs.ServiceID) (Provider, error) {
 func RouteProvider(route structs.NRoute) (Provider, error) {
 	log.Debug("Route: %s", route)
 	return getProvider(route.AreaID, route.ProviderID)
+}
+
+// GetEmailAuth returns the full path and filename of the Email Auth data.
+func GetEmailAuth() EmailAuthData {
+	return configData.Email.Auth
 }
 
 // getProvider returns the Provider data for the specified Area and Provider.
@@ -96,6 +102,13 @@ func Init(configFile string) error {
 	if err := readConfig(configFile); err != nil {
 		return err
 	}
+
+	if err := readEmail(); err != nil {
+		return err
+	}
+
+	log.Debug(configData.String())
+
 	return nil
 }
 
@@ -116,6 +129,31 @@ func readConfig(filePath string) error {
 	return configData.Load(file)
 }
 
+func readEmail() error {
+	// Read Auth
+	configData.Email.Auth.Read(&configData.Email.Auth, configData.Email.AuthFile)
+
+	for areaID, areaData := range configData.Areas {
+		fmt.Printf("\n\n---------- Area: %q ----------\n", areaID)
+		for _, prov := range areaData.Providers {
+			fmt.Printf("\nProvider: %v - %v\n%s", prov.ID, prov.Name, prov.Email.String())
+			tmplFile, err := ioutil.ReadFile(prov.Email.TemplateFile)
+			if err != nil {
+				msg := fmt.Sprintf("Unable to access the template file - %v.", err)
+				log.Error(msg)
+				return errors.New(msg)
+			}
+			tmpl := template.New("emailTemplate")
+			if tmpl, err = tmpl.Parse(string(tmplFile)); err != nil {
+				log.Error("error trying to parse mail template ", err)
+			}
+			prov.Email.template = tmpl
+		}
+	}
+
+	return nil
+}
+
 // ==============================================================================================================================
 //                                      ROUTE DATA
 // ==============================================================================================================================
@@ -130,6 +168,8 @@ type ConfigData struct {
 	Loaded  bool
 	Adapter AdapterData `json:"adapter"`
 
+	Email EmailAuth `json:"email"`
+
 	Categories []string         `json:"serviceCategories"`
 	Areas      map[string]*Area `json:"serviceAreas"`
 
@@ -142,11 +182,12 @@ type ConfigData struct {
 	areaServices map[string]structs.NServices // City Code (lowercase) -> List of Services
 }
 
+// ------------------------------- Adapter -------------------------------
+
 // AdapterData contains all of the config data.
 type AdapterData struct {
-	Name    string `json:"name"`
-	Type    string `json:"type"`
-	Address string `json:"address"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type dataIndex struct {
@@ -154,6 +195,42 @@ type dataIndex struct {
 	provider *Provider
 	service  *structs.NService
 }
+
+// ------------------------------- Email -------------------------------
+
+// EmailAuth contains the file path and EmailAuthData.
+type EmailAuth struct {
+	AuthFile string `json:"auth"`
+	Auth     EmailAuthData
+}
+
+func (r EmailAuth) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Email Auth\n")
+	ls.AddF("File: %q\n", r.AuthFile)
+	ls.AddS(r.Auth.String())
+	return ls.Box(80)
+}
+
+// EmailAuthData contains the config and keys to access the server used to send emails.
+type EmailAuthData struct {
+	common.JSONConfig
+	Account  string `json:"account"`
+	Password string `json:"password"`
+	Server   string `json:"server"`
+	Port     int    `json:"port"`
+}
+
+func (r EmailAuthData) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Email Auth Data\n")
+	ls.AddF("Account: %q\n", r.Account)
+	ls.AddS("Password: ******\n")
+	ls.AddF("Server: %v:%v\n", r.Server, r.Port)
+	return ls.Box(80)
+}
+
+// ------------------------------- Config -------------------------------
 
 // Load loads the specified byte slice into the ConfigData structures.
 func (pd *ConfigData) Load(file []byte) error {
@@ -276,7 +353,8 @@ func (pd ConfigData) String() string {
 	ls := new(common.LogString)
 	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
-	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
+	ls.AddF("Adapter: %s   Type: %s\n", pd.Adapter.Name, pd.Adapter.Type)
+	ls.AddS(pd.Email.String())
 	ls.AddS("\n-----------INDEX: serviceID-----------\n")
 	for k, v := range pd.serviceID {
 		ls.AddF("   %-4d %s\n", k, v.Name)
@@ -288,7 +366,7 @@ func (pd ConfigData) String() string {
 	}
 	ls.AddS("\n-----------INDEX: providerID-----------\n")
 	for k, v := range pd.providerID {
-		ls.AddF("   %-4d  %-40s %s\n", k, v.Name, v.URL)
+		ls.AddF("   %-4d  %-40s %q\n", k, v.Name, v.Email.To)
 	}
 	ls.AddS("\n-----------INDEX: areaCode-----------\n")
 	for k, v := range pd.areaCode {
@@ -296,7 +374,7 @@ func (pd ConfigData) String() string {
 	}
 	ls.AddS("\n-----------INDEX: areaProvider-----------\n")
 	for k, v := range pd.areaProvider {
-		ls.AddF("   %-20s  %-40s %s\n", fmt.Sprintf("%s-%d", k.areaID, k.providerID), v.Name, v.URL)
+		ls.AddF("   %-20s  %-40s %q\n", fmt.Sprintf("%s-%d", k.areaID, k.providerID), v.Name, v.Email.To)
 	}
 	ls.AddS("\n-----------INDEX: areaServices-----------\n")
 	for k, v := range pd.areaServices {
@@ -344,9 +422,9 @@ func (a Area) String() string {
 
 // Provider is the data for each Service Provider.  It contains an index list of all of the Services provided by this Provider.
 type Provider struct {
-	ID   int    //
-	Name string `json:"name"`
-	URL  string `json:"address"`
+	ID    int         //
+	Name  string      `json:"name"`
+	Email EmailConfig `json:"email"`
 	// APIVersion string              `json:"apiVersion"`
 	// Key        string              `json:"key"`
 	Services []*structs.NService `json:"services"`
@@ -355,11 +433,49 @@ type Provider struct {
 func (p Provider) String() string {
 	ls := new(common.LogString)
 	ls.AddF("%s (ID: %d)\n", p.Name, p.ID)
-	ls.AddF("URL: %s\n", p.URL)
+	ls.AddS(p.Email.String())
 	ls.AddS("---SERVICES:\n")
 	for _, v := range p.Services {
 		ls.AddF("   %s\n", v)
 	}
+	return ls.Box(80)
+}
+
+// ------------------------------- Email Config -------------------------------
+
+// EmailSender is an interface to the EmailConfig information.
+type EmailSender interface {
+	Address() (to, from []string, subject string)
+	Template() (tmpl *template.Template)
+}
+
+// EmailConfig contains the data used to send email to a Provider.  It also includes
+// the parsed email template used to format all emails sent to this Provider.
+type EmailConfig struct {
+	To           []string `json:"to"`
+	From         []string `json:"from"`
+	Subject      string   `json:"subject"`
+	TemplateFile string   `json:"template"`
+	template     *template.Template
+}
+
+// Address returns the EmailConfig parameters necessary to send an email.
+func (r EmailConfig) Address() (to, from []string, subject string) {
+	return r.To, r.From, r.Subject
+}
+
+// Template returns a pointer to the parsed Template object.
+func (r EmailConfig) Template() (tmpl *template.Template) {
+	return r.template
+}
+
+func (r EmailConfig) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Email Config\n")
+	ls.AddF("To: %#v   From: %#v\n", r.To, r.From)
+	ls.AddF("Subject: %q\n", r.Subject)
+	ls.AddF("Template File: %q\n", r.TemplateFile)
+	ls.AddF("Template: %p\n", r.Template)
 	return ls.Box(80)
 }
 

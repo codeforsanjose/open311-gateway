@@ -32,6 +32,11 @@ ___
 
 ## Log
 
+### 2016.03.14 - Mon
+
+* Email adapter working at the unit test level.  
+* Saved to GIT.
+
 ### 2016.03.10 - Thu
 
 * Started code for Email Adapter.  

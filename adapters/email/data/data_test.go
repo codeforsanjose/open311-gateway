@@ -69,8 +69,8 @@ func TestAdapter(t *testing.T) {
 	fmt.Printf("\n\n\n\n============================= [TestAdapter] =============================\n\n")
 
 	fmt.Printf("----------------------------- [Adapter] -----------------------------\n\n")
-	if name, atype, address := Adapter(); name != "EM1" || atype != "Email" || address != "" {
-		t.Errorf("Adapter() failed - name: %q  atype: %q  address: %q", name, atype, address)
+	if name, atype := Adapter(); name != "EM1" || atype != "Email" {
+		t.Errorf("Adapter() failed - name: %q  atype: %q", name, atype)
 	} else {
 		fmt.Println("OK!")
 	}
@@ -129,6 +129,19 @@ func TestAdapter(t *testing.T) {
 			t.Errorf("ServicesArea() failed for: %q", tt.n.SString())
 		case !tt.isOK && err == nil:
 			t.Errorf("ServicesArea() should have failed for: %q", tt.n)
+		}
+	}
+}
+
+func TestEmail(t *testing.T) {
+	fmt.Printf("\n\n\n\n============================= [DisplayEmail] =============================\n\n")
+
+	fmt.Print(configData.Email)
+
+	for areaID, areaData := range configData.Areas {
+		fmt.Printf("\n\n---------- Area: %q ----------\n", areaID)
+		for _, prov := range areaData.Providers {
+			fmt.Printf("\nProvider: %v - %v\n%s", prov.ID, prov.Name, prov.Email.String())
 		}
 	}
 }

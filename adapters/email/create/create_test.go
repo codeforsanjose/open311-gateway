@@ -6,6 +6,9 @@ import (
 
 	"Gateway311/adapters/email/data"
 	"Gateway311/adapters/email/logs"
+	"Gateway311/adapters/email/structs"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 var Debug = true
@@ -34,10 +37,16 @@ func isOK(e error) bool {
 func TestCreateEmail(t *testing.T) {
 	fmt.Printf("\n\n\n\n============================= [TestCreateEmail] =============================\n\n")
 
+	var tests = []struct {
+		n    structs.NRoute // input
+		isOK bool           // expected result
+	}{
+		{structs.NRoute{"EM1", "CU", 1}, true},
+		{structs.NRoute{"EM1", "CU", 2}, true},
+		{structs.NRoute{"EM1", "SUN", 1}, true},
+	}
+
 	c := Request{
-		To:                "jameskhaskell@gmail.com",
-		From:              "Code for San Jose",
-		Subject:           "New Report",
 		RequestType:       "Graffiti",
 		RequestTypeID:     10,
 		ImageURL:          "",
@@ -51,9 +60,16 @@ func TestCreateEmail(t *testing.T) {
 		AuthorIsAnonymous: false,
 	}
 
-	err := c.SendEmail([]string{"jameskhaskell@gmail.com"})
-	if err != nil {
-		t.Errorf(err.Error())
+	for _, tr := range tests {
+		prov, err := data.RouteProvider(tr.n)
+		if err != nil {
+			t.Errorf("RouteProvider failed - %s", err)
+		}
+		c.Sender = prov.Email
+		resp, err := c.Process()
+		if err != nil {
+			t.Errorf("Process failed - %s", err)
+		}
+		fmt.Print(spew.Sdump(resp))
 	}
-
 }

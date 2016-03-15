@@ -46,8 +46,8 @@ func (c *createMgr) convertRequest() error {
 	if err != nil {
 		return err
 	}
-	c.url = provider.URL
 	c.req = &create.Request{
+		Sender:            provider.Email,
 		RequestType:       c.nreq.Type,
 		RequestTypeID:     c.nreq.MID.ID,
 		Latitude:          c.nreq.Latitude,
@@ -65,7 +65,7 @@ func (c *createMgr) convertRequest() error {
 
 // Process executes the request to create a new report.
 func (c *createMgr) process() error {
-	resp, err := c.req.Process(c.url)
+	resp, err := c.req.Process()
 	c.resp = resp
 	return err
 }
@@ -74,9 +74,7 @@ func (c *createMgr) convertResponse() (int, error) {
 	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(route)
-	c.nresp.RID = structs.NewRID(route, c.resp.ID)
 	c.nresp.Message = c.resp.Message
-	c.nresp.AuthorID = c.resp.AuthorID
 	return 1, nil
 }
 

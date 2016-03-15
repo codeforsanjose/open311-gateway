@@ -4,6 +4,9 @@
 		"type": "Email",
 		"address": ""
 	},
+	"email": {
+		"auth": "/Users/james/Dropbox/Development/Keys/CFSJ/Gateway311/email.config"
+	},
 	"serviceCategories": [
 		"Abandoned",
 		"Eyesore",
@@ -17,7 +20,12 @@
 			"providers": [{
 				"id": 1,
 				"name": "City of Cupertino - Gang & Graffiti",
-				"address": "mailto:jameskhaskell+CU1@gmail.com",
+				"email": {
+					"to": ["jameskhaskell+cu1@gmail.com"],
+					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
+					"subject": "Cupertino: Gang/Graffiti Issue",
+					"template": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/email/data/cupertino1.tmpl"
+				},
 				"services": [{
 					"id": 10,
 					"name": "Gang Activity",
@@ -30,7 +38,12 @@
 			}, {
 				"id": 2,
 				"name": "City of Cupertino - Other",
-				"address": "mailto:jameskhaskell+CU2@gmail.com",
+				"email": {
+					"to": ["jameskhaskell+cu2@gmail.com"],
+					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
+					"subject": "Cupertino: General Issue",
+					"template": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/email/data/cupertino2.tmpl"
+				},
 				"services": [{
 					"id": 30,
 					"name": "Illegal Dumping / Trash",
@@ -87,7 +100,12 @@
 			"providers": [{
 				"id": 1,
 				"name": "City of Sunnyvale",
-				"address": "mailto:jameskhaskell+SUN1@gmail.com",
+				"email": {
+					"to": ["jameskhaskell+su1@gmail.com"],
+					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
+					"subject": "Sunnyvale: General Issue",
+					"template": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/email/data/sunnyvale1.tmpl"
+				},
 				"services": [{
 					"id": 10,
 					"name": "Gang Activity",

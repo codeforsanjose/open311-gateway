@@ -13,13 +13,18 @@ import (
 //                                      LOGS
 // ==============================================================================================================================
 var (
-	modulename = "gateway311"
-	Log        = logging.MustGetLogger(modulename)
-	LogPrinter *logPrinter
+	modulename  string
+	Log         = logging.MustGetLogger(modulename)
+	LogPrinter  *logPrinter
+	initialized bool
 )
 
 // Init configures the logging system.
 func Init(debug bool) {
+	if initialized {
+		return
+	}
+	initialized = true
 	var syslogfmtstr, logfmtstr string
 	if debug {
 		syslogfmtstr = "[%{shortpkg}: %{shortfile}: %{shortfunc}] %{message}"
