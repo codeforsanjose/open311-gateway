@@ -5,7 +5,7 @@
     <databaseInfo>
         <version>134481920</version>
         <UUID>79FF009B-1429-4490-9897-02371F4E78B2</UUID>
-        <nextObjectID>169</nextObjectID>
+        <nextObjectID>173</nextObjectID>
         <metadata>
             <plist version="1.0">
                 <dict>
@@ -306,7 +306,7 @@
         <attribute name="order" type="int64">1</attribute>
         <attribute name="name" type="string">Create</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z165 z144 z140 z138 z158"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z172 z158 z165 z140 z171 z138 z144"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -812,7 +812,7 @@
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">[{"data":{"json":"{\\"srvId\\":\\"EM1-CU-1-10\\",\\"srvName\\":\\"Gang Activity\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":\\"37.350038\\",\\"longitude\\":\\"-121.946097\\",\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":\\"true\\",\\"description\\":\\"Please take care of this Gang Activity!!!\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="order" type="int64">4</attribute>
-        <attribute name="name" type="string">Create Request - CU1 Email</attribute>
+        <attribute name="name" type="string">Create Request - CU-1 Email</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z127"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z166"></relationship>
@@ -856,5 +856,57 @@
         <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z158"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z170">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z171"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z171">
+        <attribute name="uuid" type="string">E1054FDD-4BE2-4D75-87E1-CFC7F8ADD322</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/requests</attribute>
+        <attribute name="storecookies" type="bool">1</attribute>
+        <attribute name="sendcookies" type="bool">1</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">POST</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"srvId\\":\\"EM1-SUN-1-80\\",\\"srvName\\":\\"Gang Activity\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":\\"37.350038\\",\\"longitude\\":\\"-121.946097\\",\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":\\"true\\",\\"description\\":\\"The sidewalk in front of my house is cracked and dangerous.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="order" type="int64">6</attribute>
+        <attribute name="name" type="string">Create Request - SUN-1 Email</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z127"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z170"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z172">
+        <attribute name="uuid" type="string">BD0B78B5-BEB1-4809-9D33-8EDB1A4D1FDE</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/requests</attribute>
+        <attribute name="storecookies" type="bool">1</attribute>
+        <attribute name="sendcookies" type="bool">1</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">POST</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"srvId\\":\\"EM1-CU-2-30\\",\\"srvName\\":\\"Illegal Dumping\\",\\"deviceID\\":\\"123456789\\",\\"deviceType\\":\\"iPhone\\",\\"deviceModel\\":\\"6\\",\\"latitude\\":\\"37.350038\\",\\"longitude\\":\\"-121.946097\\",\\"firstName\\":\\"James\\",\\"lastName\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"isAnonymous\\":\\"true\\",\\"description\\":\\"There's a big pile of trash at the end of my block.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="order" type="int64">5</attribute>
+        <attribute name="name" type="string">Create Request - CU-2 Email</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z127"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z173"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z173">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z172"></relationship>
     </object>
 </database>

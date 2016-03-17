@@ -55,22 +55,6 @@ func (r *Request) Process() (*Response, error) {
 		fail(err)
 	}
 
-	// to, from, subject := r.Sender.Address()
-	// body, err := r.createEmail(r.Sender.Template())
-	// if err != nil {
-	// 	fail(err)
-	// }
-	//
-	// address := &structs.Address{
-	// 	To:   to,
-	// 	From: from,
-	// }
-	// payload := structs.NewPayloadString(subject, &body)
-	//
-	// if err := mail.Send(address, payload); err != nil {
-	// 	fail(err)
-	// }
-
 	return &Response{"Success"}, nil
 }
 

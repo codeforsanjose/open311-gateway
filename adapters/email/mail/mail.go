@@ -31,6 +31,7 @@ func Init() {
 	)
 }
 
+// Send sends an email.
 func Send(a data.EmailSender, p structs.Payloader) error {
 	if dialer == nil {
 		Init()
@@ -38,33 +39,33 @@ func Send(a data.EmailSender, p structs.Payloader) error {
 	var msg string
 	to, from, subject := a.Address()
 	log.Debug("to: %#v  from: %#v  subject: %q", to, from, subject)
-	ptype, c := p.Get()
-	log.Debug("ptype: %v  c: %v (%T)", ptype, c, c)
+	ptype, content := p.Get()
+	log.Debug("ptype: %v  content: %v (%[2]T)", ptype, content)
 	// log.Debug("dialer:\n%s\n", spew.Sdump(dialer))
 
 	fail := func() error {
-		return fmt.Errorf("invalid payload (type: %T) received by Send() - must be either string or []byte", c)
+		return fmt.Errorf("invalid payload (type: %T) received by Send() - must be either string or []byte", content)
 	}
 
 	// Validate the Payload - if it's []byte, convert it to a string.
-	switch tcontents := c.(type) {
+	switch content := content.(type) {
 	case *string:
 		if ptype != structs.PTString {
 			return fail()
 		}
-		msg = *tcontents
+		msg = *content
 
 	case string:
 		if ptype != structs.PTString {
 			return fail()
 		}
-		msg = tcontents
+		msg = content
 
 	case []byte:
 		if ptype != structs.PTByte {
 			return fail()
 		}
-		msg = common.ByteToString(tcontents, 0)
+		msg = common.ByteToString(content, 0)
 	default:
 		return fmt.Errorf("invalid Payload received by Send() - must be either string or []byte")
 
@@ -81,8 +82,11 @@ func Send(a data.EmailSender, p structs.Payloader) error {
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/plain", msg)
 
-	if err := dialer.DialAndSend(m); err != nil {
-		panic(err)
-	}
+	go func() {
+		if err := dialer.DialAndSend(m); err != nil {
+			panic(err)
+		}
+	}()
+
 	return nil
 }

@@ -291,29 +291,29 @@ func (r *rpcCall) prepRPC() (rqstCopy interface{}, err error) {
 		d.SetID(0, r.id)
 		d.SetRoute(r.route)
 	}
-	switch v := r.rpc.data().(type) {
+	switch data := r.rpc.data().(type) {
 	case *structs.NServiceRequest:
-		rCopy := *v
+		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
 		log.Debug("Sending: %s", rCopy.String())
 	case *structs.NCreateRequest:
-		rCopy := *v
+		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
 		log.Debug("Sending: %s", rCopy.String())
 	case *structs.NSearchRequestLL:
-		rCopy := *v
+		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
 		log.Debug("Sending: %s", rCopy.String())
 	case *structs.NSearchRequestDID:
-		rCopy := *v
+		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
 		log.Debug("Sending: %s", rCopy.String())
 	case *structs.NSearchRequestRID:
-		rCopy := *v
+		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
 		log.Debug("Sending: %s", rCopy.String())

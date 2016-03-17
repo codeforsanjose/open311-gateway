@@ -35,6 +35,10 @@ ___
 ### 2016.03.17 - Thu
 
 * Email adapter working end to end.  
+* Saved to GIT.
+* In email/mail/send.go, change Send() function to launch a go routine to send email (speed and performance).
+* Cleanup.
+* Saved to GIT.
 
 ### 2016.03.14 - Mon
 
