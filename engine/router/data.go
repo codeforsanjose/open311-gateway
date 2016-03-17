@@ -209,7 +209,7 @@ func (r *Adapters) getRouteAdapter(route structs.NRoute) (*Adapter, error) {
 	defer r.RUnlock()
 	adp, ok := r.Adapters[route.AdpID]
 	if !ok {
-		return nil, fmt.Errorf("cannot find the Adapter for route: %s", route.SString())
+		return nil, fmt.Errorf("cannot find the Adapter for route: %s", route)
 	}
 	return adp, nil
 }
@@ -333,8 +333,6 @@ type Adapter struct {
 	ID        string //
 	Type      string `json:"type"`
 	Address   string `json:"address"`
-	File      string `json:"file"`
-	Config    string `json:"config"`
 	connected bool
 	client    *rpc.Client
 }
@@ -455,8 +453,6 @@ func (adp Adapter) String() string {
 	ls := common.NewLogString()
 	ls.AddF("%s\n", adp.ID)
 	ls.AddF("%-17s   Type: %s  Address: %s\n", ls.ColorBool(adp.connected, "CONNECTED  ", "UNCONNECTED", "green", "red"), adp.Type, adp.Address)
-	ls.AddF("File: %s\n", adp.File)
-	ls.AddF("Config: %s\n", adp.Config)
 	return ls.Box(80)
 }
 

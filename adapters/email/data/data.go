@@ -56,8 +56,8 @@ func ServicesAll() (*structs.NServices, error) {
 }
 
 // Adapter returns the adapter configuration.
-func Adapter() (name, atype string) {
-	return configData.Adapter.Name, configData.Adapter.Type
+func Adapter() (name, atype, address string) {
+	return configData.Adapter.Name, configData.Adapter.Type, configData.Adapter.Address
 }
 
 // AdapterName returns the adapter name.
@@ -186,8 +186,9 @@ type ConfigData struct {
 
 // AdapterData contains all of the config data.
 type AdapterData struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Address string `json:"address"`
 }
 
 type dataIndex struct {
@@ -353,7 +354,7 @@ func (pd ConfigData) String() string {
 	ls := new(common.LogString)
 	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
-	ls.AddF("Adapter: %s   Type: %s\n", pd.Adapter.Name, pd.Adapter.Type)
+	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
 	ls.AddS(pd.Email.String())
 	ls.AddS("\n-----------INDEX: serviceID-----------\n")
 	for k, v := range pd.serviceID {
@@ -422,9 +423,9 @@ func (a Area) String() string {
 
 // Provider is the data for each Service Provider.  It contains an index list of all of the Services provided by this Provider.
 type Provider struct {
-	ID    int         //
-	Name  string      `json:"name"`
-	Email EmailConfig `json:"email"`
+	ID    int          //
+	Name  string       `json:"name"`
+	Email *EmailConfig `json:"email"`
 	// APIVersion string              `json:"apiVersion"`
 	// Key        string              `json:"key"`
 	Services []*structs.NService `json:"services"`

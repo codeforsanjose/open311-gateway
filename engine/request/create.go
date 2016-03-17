@@ -43,7 +43,6 @@ type createMgr struct {
 }
 
 func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
-	log.Debug("starting processCreate()")
 	mgr := createMgr{
 		id:      common.RequestID(),
 		start:   time.Now(),

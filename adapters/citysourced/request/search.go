@@ -135,7 +135,7 @@ func (c *searchLLMgr) getIDS() string {
 }
 
 func (c *searchLLMgr) getRoute() string {
-	return c.nreq.GetRoute().SString()
+	return c.nreq.GetRoute().String()
 }
 
 func (c *searchLLMgr) String() string {
@@ -263,7 +263,7 @@ func (c *searchRIDMgr) getIDS() string {
 }
 
 func (c *searchRIDMgr) getRoute() string {
-	return c.nreq.GetRoute().SString()
+	return c.nreq.GetRoute().String()
 }
 
 func (c *searchRIDMgr) String() string {
@@ -392,7 +392,7 @@ func (c *searchDIDMgr) getIDS() string {
 }
 
 func (c *searchDIDMgr) getRoute() string {
-	return c.nreq.GetRoute().SString()
+	return c.nreq.GetRoute().String()
 }
 
 func (c *searchDIDMgr) String() string {

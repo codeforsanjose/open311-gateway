@@ -17,6 +17,7 @@ var (
 	dialer *gomail.Dialer
 )
 
+// Init should be called at program startup to initialize
 func Init() {
 	logs.Init(true)
 	auth = data.GetEmailAuth()
@@ -30,15 +31,15 @@ func Init() {
 	)
 }
 
-func Send(a structs.Addresser, p structs.Payloader) error {
+func Send(a data.EmailSender, p structs.Payloader) error {
 	if dialer == nil {
 		Init()
 	}
 	var msg string
-	recipients, from := a.Get()
-	log.Debug("recipients: %#v  from: %#v", recipients, from)
-	ptype, subject, c := p.Get()
-	log.Debug("ptype: %v  subject: %v  c: %v (%T)", ptype, subject, c, c)
+	to, from, subject := a.Address()
+	log.Debug("to: %#v  from: %#v  subject: %q", to, from, subject)
+	ptype, c := p.Get()
+	log.Debug("ptype: %v  c: %v (%T)", ptype, c, c)
 	// log.Debug("dialer:\n%s\n", spew.Sdump(dialer))
 
 	fail := func() error {
@@ -73,10 +74,10 @@ func Send(a structs.Addresser, p structs.Payloader) error {
 		return fmt.Errorf("no message")
 	}
 
-	fmt.Printf("recipients: %v  subject: %v  body: %v\n", recipients, subject, msg)
+	fmt.Printf("to: %v  subject: %v  body: %v\n", to, subject, msg)
 	m := gomail.NewMessage()
 	m.SetAddressHeader("From", from[0], from[1])
-	m.SetHeader("To", recipients...)
+	m.SetHeader("To", to...)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/plain", msg)
 

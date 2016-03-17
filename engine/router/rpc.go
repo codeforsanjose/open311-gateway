@@ -139,7 +139,7 @@ func (r *RPCCallMgr) receive() {
 		if timedout {
 			for route, call := range r.calls {
 				if !call.replied {
-					log.Errorf("Adapter: %q timed out", route.SString())
+					log.Errorf("Adapter: %q timed out", route.String())
 				}
 			}
 		}
@@ -333,7 +333,7 @@ func (r *rpcCall) run() error {
 			return err
 		}
 		r.setSent()
-		telemetry.SendRPC(payload.(structs.NRequester).GetIDS(), "open", r.route.SString(), time.Now())
+		telemetry.SendRPC(payload.(structs.NRequester).GetIDS(), "open", r.route.String(), time.Now())
 		go func() {
 			response := newResponse[r.rpc.rType()]()
 			r.err = r.adp.Call(r.rpc.service(), payload, response)

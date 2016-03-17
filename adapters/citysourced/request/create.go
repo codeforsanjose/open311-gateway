@@ -98,7 +98,7 @@ func (c *createMgr) getIDS() string {
 }
 
 func (c *createMgr) getRoute() string {
-	return c.nreq.GetRoute().SString()
+	return c.nreq.GetRoute().String()
 }
 
 func (c *createMgr) String() string {

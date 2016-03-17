@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"Gateway311/adapters/email/common"
+	"Gateway311/adapters/citysourced/common"
 )
 
 // =======================================================================================
@@ -773,13 +773,13 @@ func (r NRouteType) String() string {
 	}
 }
 
-// SString returns a short representation of a Route.
-func (r NRoute) SString() string {
+// String returns a short representation of a Route.
+func (r NRoute) String() string {
 	return fmt.Sprintf("%s-%s-%d", r.AdpID, r.AreaID, r.ProviderID)
 }
 
 // String displays a Route.
-func (r NRoute) String() string {
+func (r NRoute) SString() string {
 	// fmtEmpty := color.New(color.BgRed, color.FgWhite, color.Bold).SprintFunc()
 	// empty := fmtEmpty("\u2205")
 	// empty := color.RedString("\u2205")
@@ -846,7 +846,7 @@ func (r NSearchRequestRID) String() string {
 	ls := new(common.LogString)
 	ls.AddF("NSearchRequestRID\n")
 	ls.AddS(r.NRequestCommon.String())
-	ls.AddF("ReportID: %v    AreaID: %q\n", r.RID.SString(), r.AreaID)
+	ls.AddF("ReportID: %v    AreaID: %q\n", r.RID.String(), r.AreaID)
 	ls.AddF("RouteList: %v\n", r.RouteList.String())
 	return ls.Box(80)
 }

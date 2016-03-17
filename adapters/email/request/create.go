@@ -1,6 +1,9 @@
 package request
 
 import (
+	"bytes"
+	"fmt"
+	"text/template"
 	"time"
 
 	"Gateway311/adapters/email/common"
@@ -36,30 +39,34 @@ func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateRespo
 type createMgr struct {
 	nreq  *structs.NCreateRequest
 	req   *create.Request
-	url   string
 	resp  *create.Response
 	nresp *structs.NCreateResponse
 }
 
 func (c *createMgr) convertRequest() error {
+	fail := func(err string) error {
+		return fmt.Errorf("Unable to create the email - %s", err)
+	}
+	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", "", 0, time.Now())
+
+	// Get the EmailSender interface.
 	provider, err := data.MIDProvider(c.nreq.MID)
 	if err != nil {
-		return err
+		return fail(fmt.Sprintf("unable to determine route/sender for the Create request - %s", err))
 	}
+	sender := provider.Email
+
+	// Execute the template
+	body, err := c.createBody(sender.Template())
+	if err != nil {
+		fail(err.Error())
+	}
+
 	c.req = &create.Request{
-		Sender:            provider.Email,
-		RequestType:       c.nreq.Type,
-		RequestTypeID:     c.nreq.MID.ID,
-		Latitude:          c.nreq.Latitude,
-		Longitude:         c.nreq.Longitude,
-		Description:       c.nreq.Description,
-		AuthorNameFirst:   c.nreq.FirstName,
-		AuthorNameLast:    c.nreq.LastName,
-		AuthorEmail:       c.nreq.Email,
-		AuthorTelephone:   c.nreq.Phone,
-		AuthorIsAnonymous: c.nreq.IsAnonymous,
+		Sender: sender,
+		Body:   structs.NewPayloadString(&body),
 	}
-	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", c.url, 0, time.Now())
+
 	return nil
 }
 
@@ -90,7 +97,19 @@ func (c *createMgr) getIDS() string {
 }
 
 func (c *createMgr) getRoute() string {
-	return c.nreq.GetRoute().SString()
+	return c.nreq.GetRoute().String()
+}
+
+// createEmail creates an email message from the request using the specified template
+func (c *createMgr) createBody(tmpl *template.Template) (string, error) {
+	var doc bytes.Buffer
+	// Apply the values we have initialized in our struct context to the template.
+	if err := tmpl.Execute(&doc, c.nreq); err != nil {
+		log.Error("error trying to execute email template ", err)
+		return "", err
+	}
+	log.Debug("Doc:\n%s", doc.String())
+	return doc.String(), nil
 }
 
 func (c *createMgr) String() string {

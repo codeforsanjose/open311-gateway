@@ -39,13 +39,13 @@ func init() {
 
 	tlmtryServer, err := net.ResolveUDPAddr("udp", monitorAddr)
 	if err != nil {
-		log.Errorf("Cannot start telemetry - %s", err.Error())
+		log.Errorf("Cannot start telemetry - %s", err)
 		return
 	}
 
 	conn, err := net.DialUDP("udp", nil, tlmtryServer)
 	if err != nil {
-		log.Errorf("Cannot start telemetry - %s", err.Error())
+		log.Errorf("Cannot start telemetry - %s", err)
 		return
 	}
 
@@ -55,7 +55,7 @@ func init() {
 		for m := range chTQue {
 			msg, err := m.Marshal()
 			if err != nil {
-				log.Warning("unable to send message - %s", err.Error())
+				log.Warning("unable to send message - %s", err)
 				continue
 			}
 			log.Debug(string(msg))

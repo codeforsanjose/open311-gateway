@@ -6,6 +6,7 @@ import (
 	"Gateway311/engine/logs"
 
 	"github.com/ant0ine/go-json-rest/rest"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -41,6 +42,7 @@ func Services(w rest.ResponseWriter, r *rest.Request) {
 
 // Create creates a new report.
 func Create(w rest.ResponseWriter, r *rest.Request) {
+	log.Debug("Create request: \n%s\n", spew.Sdump(r))
 	if debugRecover {
 		defer func() {
 			if rcvr := recover(); rcvr != nil {

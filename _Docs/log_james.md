@@ -32,6 +32,10 @@ ___
 
 ## Log
 
+### 2016.03.17 - Thu
+
+* Email adapter working end to end.  
+
 ### 2016.03.14 - Mon
 
 * Email adapter working at the unit test level.  

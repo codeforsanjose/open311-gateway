@@ -69,10 +69,10 @@ func TestAdapter(t *testing.T) {
 	fmt.Printf("\n\n\n\n============================= [TestAdapter] =============================\n\n")
 
 	fmt.Printf("----------------------------- [Adapter] -----------------------------\n\n")
-	if name, atype := Adapter(); name != "EM1" || atype != "Email" {
+	if name, atype, address := Adapter(); name != "EM1" || atype != "Email" {
 		t.Errorf("Adapter() failed - name: %q  atype: %q", name, atype)
 	} else {
-		fmt.Println("OK!")
+		fmt.Printf("OK - address: %s\n", address)
 	}
 
 	fmt.Printf("----------------------------- [AdapterName] -----------------------------\n\n")
@@ -124,9 +124,9 @@ func TestAdapter(t *testing.T) {
 		prov, err := RouteProvider(tt.n)
 		switch {
 		case tt.isOK && err == nil:
-			fmt.Printf("\nsvcs for %q:\n%s", tt.n.SString(), prov.String())
+			fmt.Printf("\nsvcs for %q:\n%s", tt.n.String(), prov.String())
 		case tt.isOK && err != nil:
-			t.Errorf("ServicesArea() failed for: %q", tt.n.SString())
+			t.Errorf("ServicesArea() failed for: %q", tt.n.String())
 		case !tt.isOK && err == nil:
 			t.Errorf("ServicesArea() should have failed for: %q", tt.n)
 		}

@@ -18,12 +18,7 @@ const (
 
 // Payloader is an interface to a Payload object to retrieve the Payload contents.
 type Payloader interface {
-	Get() (ptype PayloadType, subject string, contents interface{})
-}
-
-// Addresser retrieves the Addressing information for a call to a Provider.
-type Addresser interface {
-	Get() (to []string, from []string)
+	Get() (ptype PayloadType, contents interface{})
 }
 
 // ------------------------------------ Payload ------------------------------------
@@ -31,42 +26,26 @@ type Addresser interface {
 // Payload represents the payload for a call to a Provider.
 type Payload struct {
 	ptype   PayloadType
-	subject string
 	content interface{}
 }
 
 // NewPayloadString returns a new Payload struct for the specified body of type string.
-func NewPayloadString(subject string, body *string) *Payload {
+func NewPayloadString(body *string) *Payload {
 	return &Payload{
 		ptype:   PTString,
-		subject: subject,
 		content: body,
 	}
 }
 
 // NewPayloadByte returns a new Payload struct for the specified body of type string.
-func NewPayloadByte(subject string, body []byte) *Payload {
+func NewPayloadByte(body []byte) *Payload {
 	return &Payload{
 		ptype:   PTByte,
-		subject: subject,
 		content: body,
 	}
 }
 
-// Get returns the type. subject and contents of a Payload.
-func (r Payload) Get() (ptype PayloadType, subject string, contents interface{}) {
-	return r.ptype, r.subject, r.content
-}
-
-// ------------------------------------ Address ------------------------------------
-
-// Address represents the addressing information for a call to a Provider.
-type Address struct {
-	To   []string
-	From []string
-}
-
-// Get returns the "To, From and Subject address info for a call to a Provider
-func (r Address) Get() (to []string, from []string) {
-	return r.To, r.From
+// Get returns the type and contents of a Payload.
+func (r Payload) Get() (ptype PayloadType, contents interface{}) {
+	return r.ptype, r.content
 }

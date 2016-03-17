@@ -60,7 +60,7 @@ func processServices(rqst *rest.Request) (fresp interface{}, ferr error) {
 
 	fail := func(err error) (interface{}, error) {
 		log.Errorf("processServices failed - %s", err)
-		return mgr.resp, fmt.Errorf("Create request failed - %s", err.Error())
+		return mgr.resp, fmt.Errorf("Services request failed - %s", err.Error())
 	}
 
 	if err := mgr.rqst.DecodeJsonPayload(mgr.req); err != nil {

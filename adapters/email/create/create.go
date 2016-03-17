@@ -21,19 +21,25 @@ var (
 // ================================================================================================
 
 // Request represents the XML payload for a report request to CitySourced.
+// type Request struct {
+// 	Sender            data.EmailSender
+// 	RequestType       string  `json:"RequestType" xml:"RequestType"`
+// 	RequestTypeID     int     `json:"RequestTypeId" xml:"RequestTypeId"`
+// 	ImageURL          string  `json:"ImageUrl" xml:"ImageUrl"`
+// 	Latitude          float64 `json:"Latitude" xml:"Latitude"`
+// 	Longitude         float64 `json:"Longitude" xml:"Longitude"`
+// 	Description       string  `json:"Description" xml:"Description"`
+// 	AuthorNameFirst   string  `json:"AuthorNameFirst" xml:"AuthorNameFirst"`
+// 	AuthorNameLast    string  `json:"AuthorNameLast" xml:"AuthorNameLast"`
+// 	AuthorEmail       string  `json:"AuthorEmail" xml:"AuthorEmail"`
+// 	AuthorTelephone   string  `json:"AuthorTelephone" xml:"AuthorTelephone"`
+// 	AuthorIsAnonymous bool    `json:"AuthorIsAnonymous" xml:"AuthorIsAnonymous"`
+// }
+
+// Request represents the XML payload for a report request to CitySourced.
 type Request struct {
-	Sender            data.EmailSender
-	RequestType       string  `json:"RequestType" xml:"RequestType"`
-	RequestTypeID     int     `json:"RequestTypeId" xml:"RequestTypeId"`
-	ImageURL          string  `json:"ImageUrl" xml:"ImageUrl"`
-	Latitude          float64 `json:"Latitude" xml:"Latitude"`
-	Longitude         float64 `json:"Longitude" xml:"Longitude"`
-	Description       string  `json:"Description" xml:"Description"`
-	AuthorNameFirst   string  `json:"AuthorNameFirst" xml:"AuthorNameFirst"`
-	AuthorNameLast    string  `json:"AuthorNameLast" xml:"AuthorNameLast"`
-	AuthorEmail       string  `json:"AuthorEmail" xml:"AuthorEmail"`
-	AuthorTelephone   string  `json:"AuthorTelephone" xml:"AuthorTelephone"`
-	AuthorIsAnonymous bool    `json:"AuthorIsAnonymous" xml:"AuthorIsAnonymous"`
+	Sender data.EmailSender
+	Body   *structs.Payload
 }
 
 // Process executes the request to create a new report.
@@ -45,21 +51,25 @@ func (r *Request) Process() (*Response, error) {
 		return &response, err
 	}
 
-	to, from, subject := r.Sender.Address()
-	body, err := r.createEmail(r.Sender.Template())
-	if err != nil {
+	if err := mail.Send(r.Sender, r.Body); err != nil {
 		fail(err)
 	}
 
-	address := &structs.Address{
-		To:   to,
-		From: from,
-	}
-	payload := structs.NewPayloadString(subject, &body)
-
-	if err := mail.Send(address, payload); err != nil {
-		fail(err)
-	}
+	// to, from, subject := r.Sender.Address()
+	// body, err := r.createEmail(r.Sender.Template())
+	// if err != nil {
+	// 	fail(err)
+	// }
+	//
+	// address := &structs.Address{
+	// 	To:   to,
+	// 	From: from,
+	// }
+	// payload := structs.NewPayloadString(subject, &body)
+	//
+	// if err := mail.Send(address, payload); err != nil {
+	// 	fail(err)
+	// }
 
 	return &Response{"Success"}, nil
 }
@@ -75,22 +85,6 @@ type Response struct {
 //                                      TEMPLATES
 // ================================================================================================
 
-// func (r *Request) SendEmail(recipients []string) error {
-// 	fail := func(err error) error {
-// 		errmsg := "unable to send email - " + err.Error()
-// 		log.Errorf(errmsg)
-// 		return errors.New(errmsg)
-// 	}
-// 	doc, err := r.createEmail()
-// 	if err != nil {
-// 		return fail(err)
-// 	}
-//
-// 	mail.Send(recipients, doc)
-//
-// 	return nil
-// }
-//
 // createEmail creates an email message from the request using the specified template
 func (r *Request) createEmail(tmpl *template.Template) (string, error) {
 	var doc bytes.Buffer
@@ -111,10 +105,9 @@ func (r *Request) createEmail(tmpl *template.Template) (string, error) {
 func (r Request) String() string {
 	ls := new(common.LogString)
 	ls.AddS("create.Request\n")
-	ls.AddF("Request - type: %q  id: %d\n", r.RequestType, r.RequestTypeID)
-	ls.AddF("Location - lat: %v  lon: %v\n", r.Latitude, r.Longitude)
-	ls.AddF("Description: %q\n", r.Description)
-	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
+	t, f, s := r.Sender.Address()
+	ls.AddF("Sender - to: %#v  from: %#v  subject: %q\n", t, f, s)
+	ls.AddF("Message:\n%s\n", r.Body)
 	return ls.Box(80)
 }
 

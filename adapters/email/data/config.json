@@ -2,7 +2,7 @@
 	"adapter": {
 		"name": "EM1",
 		"type": "Email",
-		"address": ""
+		"address": ":5003"
 	},
 	"email": {
 		"auth": "/Users/james/Dropbox/Development/Keys/CFSJ/Gateway311/email.config"
