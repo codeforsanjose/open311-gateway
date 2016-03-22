@@ -22,7 +22,7 @@ func RequestID() int64 {
 	return requestID.Get()
 }
 
-// RpcID retrieves the next RPC ID.
-func RpcID() int64 {
+// RPCID retrieves the next RPC ID.
+func RPCID() int64 {
 	return rpcID.Get()
 }

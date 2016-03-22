@@ -266,7 +266,7 @@ type rpcmanager interface {
 
 func newrpcCall(rpcmgr rpcmanager, route structs.NRoute) (*rpcCall, error) {
 	r := &rpcCall{
-		id:    common.RpcID(),
+		id:    common.RPCID(),
 		rpc:   rpcmgr,
 		route: route,
 	}

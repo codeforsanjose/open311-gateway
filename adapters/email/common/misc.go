@@ -66,36 +66,6 @@ func BoxIt(str []string, width int) string {
 }
 
 // ==============================================================================================================================
-//                                      INTERFACE TYPE
-// ==============================================================================================================================
-
-// GetInterfacePtrType returns the type of the specified interface.  NOTE:
-// this is only for generic, "native" types.
-func GetInterfacePtrType(interfacePtr interface{}) string {
-	if _, ok := interfacePtr.(*int); ok {
-		return "int"
-	}
-	if _, ok := interfacePtr.(*int32); ok {
-		return "int32"
-	}
-	if _, ok := interfacePtr.(*int64); ok {
-		return "int64"
-	}
-
-	if _, ok := interfacePtr.(*float32); ok {
-		return "float32"
-	}
-	if _, ok := interfacePtr.(*float64); ok {
-		return "float64"
-	}
-
-	if _, ok := interfacePtr.(*string); ok {
-		return "string"
-	}
-	return "unknown"
-}
-
-// ==============================================================================================================================
 //                                      TIMESTAMP
 // ==============================================================================================================================
 

@@ -55,13 +55,12 @@ func (l *LogString) Color(s, color string) string {
 	return f(s)
 }
 
-// Color applies the specified color to the string.
+// ColorBool returns a colored string depending on whether the specified value is true or false.
 func (l *LogString) ColorBool(v bool, strue, sfalse, ctrue, cfalse string) string {
 	if v {
 		return l.Color(strue, ctrue)
-	} else {
-		return l.Color(sfalse, cfalse)
 	}
+	return l.Color(sfalse, cfalse)
 }
 
 // Box draws a box around the LogString with the specified line width, with a leading line return.

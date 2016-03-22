@@ -1,5 +1,5 @@
 // From: https://github.com/nf/geocode/blob/master/geocode.go, by Jonathan Ingram
-//
+
 // Package geocode is an interface to mapping APIs. This includes geocoding as well as routing.
 //  == Google: http://code.google.com/apis/maps/documentation/geocoding/
 //  == OSM: http://wiki.openstreetmap.org/wiki/Nominatim

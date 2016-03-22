@@ -1,7 +1,11 @@
 ## To Do.todo
 
-*  
-* Rework engine/router/rpcroute.go - the map idea seemed like a good idea at the time, but it's difficult to understand and debug.
+*  Allow logs to be configured to go to the System Logger (MacOS & Linux).
+* Stress tester.
+* Remove ant0ine REST library.
+* Fix dates on Searches.
+* Run race detector.  _Ran OK!  Will start running with "-race" flag for all testing._ @done(2016-03-18)
+* Rework engine/router/rpcroute.go - the map idea seemed like a good idea at the time, but it's difficult to understand and debug. @done(2016-03-18)
 * Implement Report Upvote
 * Implement Report Comment
 * Implement report searches: @done(2016-02-29)
@@ -9,7 +13,7 @@
 	* DeviceID  (SearchDID) @done(2016-02-29)
 	* LatLng    (SearchLL) @done(2016-02-23)
 	* Address (converted to LatLng in engine... submitted to Adapter as SearchLL)
-* Update RAML file with JSON specs for input and output payloads.
+* Update RAML file for all current Query Parms.
 * On the engine, search needs an index of CityCode -> Providers.  When the ServiceList is loaded, we need to create that index. @done(2016-02-04)
 * * Get Create working again. @done(2016-01-25)
 * Update Services cache on Engine. @done(2016-01-22)
@@ -31,6 +35,12 @@
 ___ 
 
 ## Log
+
+### 2016.03.21 - Mon
+
+* Revised ServiceList to closely match Open311-GeoReportV2 spec.
+* Code cleanup (metalinter).
+* Saved to GIT.
 
 ### 2016.03.17 - Thu
 

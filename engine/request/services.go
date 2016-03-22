@@ -64,7 +64,7 @@ func processServices(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	if err := mgr.rqst.DecodeJsonPayload(mgr.req); err != nil {
-		if err.Error() != "JSON payload is empty" {
+		if err.Error() != greEmpty {
 			return fail(err)
 		}
 	}
@@ -198,33 +198,43 @@ func (r *ServicesReq) convert() error {
 //                                      ServicesResp
 // =======================================================================================
 
-// newServiceResp translates structs.NServices to ServicesResp and ServicesRespS.
-func newServiceResp(msg string, ns structs.NServices) (*ServicesResp, error) {
-	newSR := ServicesResp{
-		Message:  msg,
-		Services: make(map[string]ServicesRespS),
-	}
-
-	for _, v := range ns {
-		newSR.Services[v.ServiceID.MID()] = ServicesRespS{
-			Name:       v.Name,
-			Categories: v.Categories,
-		}
-	}
-
-	return &newSR, nil
-}
-
 // ServicesResp represents a list of services.
 type ServicesResp struct {
-	Message  string                   `json:"message" xml:"Message"`
-	Services map[string]ServicesRespS `json:"services" xml:"Services"`
+	Message  string          `json:"message" xml:"Message"`
+	Services []ServicesRespS `json:"services" xml:"Services"`
 }
 
 // ServicesRespS represents a service in a service list.
 type ServicesRespS struct {
-	Name       string   `json:"name"`
-	Categories []string `json:"catg"`
+	ID          string `json:"service_code" xml:"service_code"`
+	Name        string `json:"service_name" xml:"service_name"`
+	Description string `json:"description" xml:"description"`
+	Metadata    bool   `json:"metadata" xml:"metadata"`
+	Stype       string `json:"type" xml:"type"`
+	Keywords    string `json:"keywords" xml:"keywords"`
+	Group       string `json:"group" xml:"group"`
+}
+
+// newServiceResp translates structs.NServices to ServicesResp and ServicesRespS.
+func newServiceResp(msg string, ns structs.NServices) (*ServicesResp, error) {
+	newSR := ServicesResp{
+		Message:  msg,
+		Services: make([]ServicesRespS, 0),
+	}
+
+	for _, v := range ns {
+		newSR.Services = append(newSR.Services, ServicesRespS{
+			ID:          v.ServiceID.MID(),
+			Name:        v.Name,
+			Description: v.Name,
+			Metadata:    false,
+			Stype:       "realtime",
+			Keywords:    strings.Join(v.Keywords, ","),
+			Group:       v.Group,
+		})
+	}
+
+	return &newSR, nil
 }
 
 // =======================================================================================
@@ -244,8 +254,8 @@ func (r ServicesResp) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services Response\n")
 	ls.AddF("Message: %v\n", r.Message)
-	for k, v := range r.Services {
-		ls.AddF("%-18s %-30s [%s]\n", k, v.Name, strings.Join(v.Categories, ", "))
+	for _, v := range r.Services {
+		ls.AddF("%-18s %-30s %-10s [%s] %s\n", v.ID, v.Name, v.Stype, v.Group, v.Keywords)
 	}
 
 	return ls.Box(80)

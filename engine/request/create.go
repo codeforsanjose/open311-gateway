@@ -67,7 +67,7 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	if err := mgr.rqst.DecodeJsonPayload(mgr.req); err != nil {
-		if err.Error() != "JSON payload is empty" {
+		if err.Error() != greEmpty {
 			return fail(err)
 		}
 	}

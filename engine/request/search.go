@@ -15,9 +15,8 @@ import (
 )
 
 const (
-	searchRadiusMin  int = 50
-	searchRadiusMax  int = 250
-	searchRadiusDflt int = 100
+	searchRadiusMin int = 50
+	searchRadiusMax int = 250
 )
 
 // =======================================================================================
@@ -81,7 +80,7 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	if err := mgr.rqst.DecodeJsonPayload(mgr.req); err != nil {
-		if err.Error() != "JSON payload is empty" {
+		if err.Error() != greEmpty {
 			return fail(err)
 		}
 	}
@@ -191,7 +190,7 @@ func (r *searchMgr) validate() error {
 	log.Debug("After setRoute() - %s", v.String())
 
 	if err := r.setSearchType(); err != nil {
-		return err
+		return fail("", err)
 	}
 	return nil
 }

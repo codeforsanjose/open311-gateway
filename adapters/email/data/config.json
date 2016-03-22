@@ -29,11 +29,15 @@
 				"services": [{
 					"id": 10,
 					"name": "Gang Activity",
-					"catg": []
+					"description": "Gang Activity",
+					"type": "blackbox",
+					"group": "Gangs"
 				}, {
 					"id": 20,
 					"name": "Graffiti",
-					"catg": ["Graffiti"]
+					"description": "Graffiti",
+					"type": "blackbox",
+					"group": "Graffiti"
 				}]
 			}, {
 				"id": 2,
@@ -47,51 +51,75 @@
 				"services": [{
 					"id": 30,
 					"name": "Illegal Dumping / Trash",
-					"catg": ["Trash"]
+					"description": "Illegal Dumping / Trash",
+					"type": "blackbox",
+					"group": "Trash"
 				}, {
 					"id": 40,
 					"name": "Illegally Parked Car",
-					"catg": []
+					"description": "Illegally Parked Car",
+					"type": "blackbox",
+					"group": "Parking"
 				}, {
 					"id": 50,
 					"name": "Parks General Issue",
-					"catg": []
+					"description": "Parks General Issue",
+					"type": "blackbox",
+					"group": "Parks"
 				}, {
 					"id": 60,
 					"name": "Plants & Trees",
-					"catg": []
+					"description": "Plants & Trees",
+					"type": "blackbox",
+					"group": "Trees"
 				}, {
 					"id": 70,
 					"name": "Potholes",
-					"catg": ["Streets"]
+					"description": "Potholes",
+					"type": "blackbox",
+					"group": "Streets"
 				}, {
 					"id": 80,
 					"name": "Sidewalks",
-					"catg": ["Streets"]
+					"description": "Sidewalks",
+					"type": "blackbox",
+					"group": "Streets"
 				}, {
 					"id": 90,
 					"name": "Street Light",
-					"catg": ["Streets"]
+					"description": "Street Light",
+					"type": "blackbox",
+					"group": "Streets"
 				}, {
 					"id": 100,
 					"name": "Streets & Roads",
-					"catg": ["Streets"]
+					"description": "Streets & Roads",
+					"type": "blackbox",
+					"group": "Streets"
 				}, {
 					"id": 110,
 					"name": "Trash / Waste / Dumping",
-					"catg": ["Trash"]
+					"description": "Trash / Waste / Dumping",
+					"type": "blackbox",
+					"group": "Trash"
 				}, {
 					"id": 120,
 					"name": "Vehicle Issue",
-					"catg": []
+					"description": "Vehicle Issue",
+					"type": "blackbox",
+					"group": "Cars"
 				}, {
 					"id": 130,
 					"name": "Water Waste",
-					"catg": []
+					"description": "Water Waste",
+					"type": "blackbox",
+					"group": "Water"
 				}, {
 					"id": 140,
 					"name": "Yard Waste Removal",
-					"catg": []
+					"description": "Yard Waste Removal",
+					"type": "blackbox",
+					"group": "Garbage"
 				}]
 			}]
 		},
@@ -109,59 +137,87 @@
 				"services": [{
 					"id": 10,
 					"name": "Gang Activity",
-					"catg": []
+					"description": "Gang Activity",
+					"type": "blackbox",
+					"group": "Gangs"
 				}, {
 					"id": 20,
 					"name": "Graffiti",
-					"catg": ["Graffiti"]
+					"description": "Graffiti",
+					"type": "blackbox",
+					"group": "Graffiti"
 				}, {
 					"id": 30,
 					"name": "Illegal Dumping / Trash",
-					"catg": ["Trash"]
+					"description": "Illegal Dumping / Trash",
+					"type": "blackbox",
+					"group": "Trash"
 				}, {
 					"id": 40,
 					"name": "Illegally Parked Car",
-					"catg": []
+					"description": "Illegally Parked Car",
+					"type": "blackbox",
+					"group": "Parking"
 				}, {
 					"id": 50,
 					"name": "Parks General Issue",
-					"catg": []
+					"description": "Parks General Issue",
+					"type": "blackbox",
+					"group": "Parks"
 				}, {
 					"id": 60,
 					"name": "Plants & Trees",
-					"catg": []
+					"description": "Plants & Trees",
+					"type": "blackbox",
+					"group": "Trees"
 				}, {
 					"id": 70,
 					"name": "Potholes",
-					"catg": ["Streets"]
+					"description": "Potholes",
+					"type": "blackbox",
+					"group": "Streets"
 				}, {
 					"id": 80,
 					"name": "Sidewalks",
-					"catg": ["Streets"]
+					"description": "Sidewalks",
+					"type": "blackbox",
+					"group": "Streets"
 				}, {
 					"id": 90,
 					"name": "Street Light",
-					"catg": ["Streets"]
+					"description": "Street Light",
+					"type": "blackbox",
+					"group": "Streets"
 				}, {
 					"id": 100,
 					"name": "Streets & Roads",
-					"catg": ["Streets"]
+					"description": "Streets & Roads",
+					"type": "blackbox",
+					"group": "Streets"
 				}, {
 					"id": 110,
 					"name": "Trash / Waste / Dumping",
-					"catg": ["Trash"]
+					"description": "Trash / Waste / Dumping",
+					"type": "blackbox",
+					"group": "Trash"
 				}, {
 					"id": 120,
 					"name": "Vehicle Issue",
-					"catg": []
+					"description": "Vehicle Issue",
+					"type": "blackbox",
+					"group": "Cars"
 				}, {
 					"id": 130,
 					"name": "Water Waste",
-					"catg": []
+					"description": "Water Waste",
+					"type": "blackbox",
+					"group": "Water"
 				}, {
 					"id": 140,
 					"name": "Yard Waste Removal",
-					"catg": []
+					"description": "Yard Waste Removal",
+					"type": "blackbox",
+					"group": "Garbage"
 				}]
 			}]
 		}

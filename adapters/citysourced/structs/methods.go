@@ -7,9 +7,10 @@ import "encoding/json"
 // UnmarshalJSON implements the conversion from the JSON "ID" to the ServiceID struct.
 func (srv *NService) UnmarshalJSON(value []byte) error {
 	type T struct {
-		ID         int
-		Name       string
-		Categories []string `json:"catg"`
+		ID          int
+		Name        string
+		Description string
+		Group       string
 	}
 	var t T
 	err := json.Unmarshal(value, &t)
@@ -18,6 +19,7 @@ func (srv *NService) UnmarshalJSON(value []byte) error {
 	}
 	srv.ID = t.ID
 	srv.Name = t.Name
-	srv.Categories = t.Categories
+	srv.Description = t.Description
+	srv.Group = t.Group
 	return nil
 }

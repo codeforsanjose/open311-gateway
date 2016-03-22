@@ -1,27 +1,51 @@
 #%RAML 1.0
 title: gw311
-version: 0.1
+version: 0.2
 baseUri: http://api.gateway311.com/{version}
 types:
-  Jurisdiction:
-    type: object
-    properties:
-      id:
-        description: Unique identifier for the Jurisdiction (e.g. City).  This will be our internal ID.
-        type: number
-      name:
-        description: The public name for the Jurisdiction (e.g. 'San Jose').
-        type: string
+  RequestID:
+    type: string
+    description: |
+      The ServiceID is a compound string element composed of 4 parts, each separated by a "-".
+      1. AdapterID - the unique ID of the Adapter servicing the request.  E.g. "CS1" is the primary CitySourced Adapter.
+      2. AreaID - the ID of the geographic area.  E.g. "SJ" is San Jose.
+      3. ProviderID - some geographic areas may have multiple service providers.  This will typically be "1".
+      4. Provider's Request ID - the ID given by the Provider to the individual request/report.
+  ServiceID:
+    type: string
+    description: |
+      The ServiceID is a compound string element composed of 4 parts, each separated by a "-".
+      1. AdapterID - the unique ID of the Adapter servicing the request.  E.g. "CS1" is the primary CitySourced Adapter.
+      2. AreaID - the ID of the geographic area.  E.g. "SJ" is San Jose.
+      3. ProviderID - some geographic areas may have multiple service providers.  This will typically be "1".
+      4. Provider's Service ID - the ID given by the Provider to the service.  E.g., for CitySourced in San Jose, Graffiti might be 18.
+  Date:
+    type: string
+    description:
+      All dates are in ISO-8601 / RFC3339 format
+    example:
+      "2016-03-10T17:43:10"
   Service:
     type: object
     properties:
-      id:
-        description: This ID uniquely maps to a specific Authority (e.g. City, Organization, etc.).
-        type: integer
-      name: string
-      categories:
-        description: This is an array of category tags.  This places a service into a larger, more general category.
-        type: string[]
+      service_code:
+        description: |
+          The ServiceID is a compound string element composed of 4 parts, each separated by a "-".
+          1. AdapterID - the unique ID of the Adapter servicing the request.  E.g. "CS1" is the primary CitySourced Adapter.
+          2. AreaID - the ID of the geographic area.  E.g. "SJ" is San Jose.
+          3. ProviderID - some geographic areas may have multiple service providers.  This will typically be "1".
+          4. Provider's Service ID - the ID given by the Provider to the service.  E.g., for CitySourced in San Jose, Graffiti might be 18.
+        type: string
+      service_name: string
+      description: string
+      metadata: boolean
+      type:
+        type: string
+        description: Must be "realtime", "batch", or "blackbox".
+      keywords:
+        description: List of comma separated keywords.
+        type: string
+      group: string
   Device:
     type: object
     properties:
@@ -67,10 +91,11 @@ types:
   Request:
     type: object
     properties:
-      id: string
-      type: string
-      created: date
-      updated: date
+      id: RequestID
+      srvID: ServiceID
+      srvName: string
+      created: Date
+      updated: Date
       device: Device
       latlng: LatLng
       address: Address
@@ -88,8 +113,8 @@ types:
   SrchParms:
     type: object
     properties:
-      start: date
-      end: date
+      start: Date
+      end: Date
       max: integer
 
   SrchLatLng:
@@ -142,16 +167,26 @@ types:
           description: Other failure.
         404:
           description: Invalid ID.
-
+          body:
+            application/json:
+              example: |
+                {"Error": "Resource not found"}
     /upvote/{id}:
       description: Add a single upvote for the specified request.
       put:
+        queryParameters:
+          requestID:
+            type: RequestID
         responses:
           200:
           400:
             description: Other failure.
           404:
             description: Invalid ID.
+            body:
+              application/json:
+                example: |
+                  {"Error": "Resource not found"}
     /comment/{id}:
       description: Add a comment to the specified request.
       put:
@@ -165,6 +200,10 @@ types:
             description: Other failure.
           404:
             description: Invalid ID.
+            body:
+              application/json:
+                example: |
+                  {"Error": "Resource not found"}
   get:
     description: Get a list of zero or more requests, based on the query parameters.  At least one query parameter must be specified - if no query parameters are specified, the request will fail with a 404 response.  More than one query parameter can be specified.  If more than one query parameter is specified, then the query parameters will be AND'ed - i.e. only requests meeting all of the query parameters will be returned.
     queryParameters:

@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"Gateway311/adapters/citysourced/common"
+	"Gateway311/engine/common"
 )
 
 // =======================================================================================
@@ -17,7 +17,7 @@ import (
 // NID represents the full ID for any Normalized Request or Response.
 type NID struct {
 	RqstID int64
-	RpcID  int64
+	RPCID  int64
 }
 
 // SetNID sets the NID.
@@ -27,19 +27,19 @@ func (r *NID) SetNID(rqstID, rpcID int64) {
 		r.RqstID = rqstID
 	}
 	if rpcID > 0 {
-		fmt.Printf("Setting RpcID: %d\n", rpcID)
-		r.RpcID = rpcID
+		fmt.Printf("Setting RPCID: %d\n", rpcID)
+		r.RPCID = rpcID
 	}
 }
 
 // GetNID gets the NID.
 func (r NID) GetNID() (int64, int64) {
-	return r.RqstID, r.RpcID
+	return r.RqstID, r.RPCID
 }
 
 // String returns the string representation NID.
 func (r NID) String() string {
-	return fmt.Sprintf("%d-%d", r.RqstID, r.RpcID)
+	return fmt.Sprintf("%d-%d", r.RqstID, r.RPCID)
 }
 
 // =======================================================================================
@@ -309,9 +309,13 @@ type NServices []NService
 // the AreaID (i.e. the Area id), ProviderID (in case the provider has multiple interfaces),
 // and the Service ID.
 type NService struct {
-	ServiceID  `json:"id"`
-	Name       string   `json:"name"`
-	Categories []string `json:"catg"`
+	ServiceID
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Metadata    bool     `json:"metadata"`
+	Stype       string   `json:"type"`
+	Keywords    []string `json:"keywords"`
+	Group       string   `json:"group"`
 }
 
 // ------------------------------- ServiceID -------------------------------
@@ -497,84 +501,79 @@ type NSearchResponseReport struct {
 //                                      MID
 // =======================================================================================
 
-// SplitMID breaks down an MID, and returns all subfields.
-func SplitMID(mid string) (string, string, int, int, error) {
+// SplitRMID breaks down an MID or RID, and returns all subfields.
+func SplitRMID(mid string) (string, string, int, int, error) {
 	fail := func() (string, string, int, int, error) {
-		return "", "", 0, 0, fmt.Errorf("Invalid MID: %s", mid)
+		return "", "", 0, 0, fmt.Errorf("Invalid RMID: %q", mid)
 	}
 	parts := strings.Split(mid, "-")
 	fmt.Printf("MID: %+v\n", parts)
 	if len(parts) != 4 {
 		fail()
 	}
-	pid, err := strconv.ParseInt(parts[2], 10, 64)
+	pid, err := strconv.Atoi(parts[2])
 	if err != nil {
 		fail()
 	}
-	id, err := strconv.ParseInt(parts[2], 10, 64)
+	id, err := strconv.Atoi(parts[3])
 	if err != nil {
 		fail()
 	}
-	return parts[0], parts[1], int(pid), int(id), nil
+	return parts[0], parts[1], pid, id, nil
+}
+
+const emInvalidMid = "Invalid MID: %q"
+
+// SplitMID breaks down an MID, and returns all subfields.
+func SplitMID(mid string) (string, string, int, int, error) {
+	adpID, areaID, provID, id, err := SplitRMID(mid)
+	if err != nil {
+		return "", "", 0, 0, fmt.Errorf(emInvalidMid, mid)
+	}
+	return adpID, areaID, provID, id, nil
 }
 
 // MidAdpID breaks down a MID, and returns the AdpID.
 func MidAdpID(mid string) (string, error) {
-	parts := strings.Split(mid, "-")
-	fmt.Printf("MID: %+v\n", parts)
-	if len(parts) != 4 {
-		return "", fmt.Errorf("Invalid MID: %s", mid)
+	adpID, _, _, _, err := SplitRMID(mid)
+	if err != nil {
+		return "", fmt.Errorf(emInvalidMid, mid)
 	}
-	return parts[0], nil
+	return adpID, nil
 }
 
 // MidAreaID breaks down a MID, and returns the AreaID.
 func MidAreaID(mid string) (string, error) {
-	parts := strings.Split(mid, "-")
-	fmt.Printf("MID: %+v\n", parts)
-	if len(parts) != 4 {
-		return "", fmt.Errorf("Invalid MID: %s", mid)
+	_, areaID, _, _, err := SplitRMID(mid)
+	if err != nil {
+		return "", fmt.Errorf(emInvalidMid, mid)
 	}
-	return parts[1], nil
+	return areaID, nil
 }
 
 // MidProviderID breaks down an MID, and returns the ProviderID.
 func MidProviderID(mid string) (int, error) {
-	fail := func() (int, error) {
-		return 0, fmt.Errorf("Invalid MID: %s", mid)
-	}
-	parts := strings.Split(mid, "-")
-	fmt.Printf("MID: %+v\n", parts)
-	if len(parts) != 4 {
-		return 0, fmt.Errorf("Invalid MID: %s", mid)
-	}
-	pid, err := strconv.ParseInt(parts[2], 10, 64)
+	_, _, provID, _, err := SplitRMID(mid)
 	if err != nil {
-		fail()
+		return 0, fmt.Errorf(emInvalidMid, mid)
 	}
-	return int(pid), nil
+	return provID, nil
 }
 
 // MidID breaks down an MID, and returns the Service ID.
 func MidID(mid string) (int, error) {
-	fail := func() (int, error) {
-		return 0, fmt.Errorf("Invalid MID: %s", mid)
-	}
-	parts := strings.Split(mid, "-")
-	fmt.Printf("MID: %+v\n", parts)
-	if len(parts) != 4 {
-		return 0, fmt.Errorf("Invalid MID: %s", mid)
-	}
-	id, err := strconv.ParseInt(parts[3], 10, 64)
+	_, _, _, id, err := SplitRMID(mid)
 	if err != nil {
-		fail()
+		return 0, fmt.Errorf(emInvalidMid, mid)
 	}
-	return int(id), nil
+	return id, nil
 }
 
 // =======================================================================================
 //                                      RID
 // =======================================================================================
+
+const emInvalidRid = "Invalid RID: %q"
 
 // RIDFromString converts a reportID string to a new ReportID struct.
 func RIDFromString(rids string) (ReportID, NRoute, error) {
@@ -583,7 +582,7 @@ func RIDFromString(rids string) (ReportID, NRoute, error) {
 	}
 	adpID, areaID, providerID, reportID, err := SplitRID(rids)
 	if err != nil {
-		return ReportID{}, NRoute{}, fmt.Errorf("invalid RID: %q", rids)
+		return ReportID{}, NRoute{}, fmt.Errorf(emInvalidRid, rids)
 	}
 	nr := NRoute{
 		AdpID:      adpID,
@@ -612,78 +611,48 @@ func NRouteFromString(rids string) (NRoute, error) {
 }
 
 // SplitRID breaks down an RID, and returns all subfields.
-func SplitRID(rids string) (string, string, int, int, error) {
-	fail := func() (string, string, int, int, error) {
-		return "", "", 0, 0, fmt.Errorf("Invalid RID: %s", rids)
-	}
-	parts := strings.Split(rids, "-")
-	fmt.Printf("RID: %+v\n", parts)
-	if len(parts) != 4 {
-		fail()
-	}
-	pid, err := strconv.ParseInt(parts[2], 10, 64)
+func SplitRID(rid string) (string, string, int, int, error) {
+	adpID, areaID, provID, id, err := SplitRMID(rid)
 	if err != nil {
-		fail()
+		return "", "", 0, 0, fmt.Errorf(emInvalidRid, rid)
 	}
-	id, err := strconv.ParseInt(parts[3], 10, 64)
-	if err != nil {
-		fail()
-	}
-	return parts[0], parts[1], int(pid), int(id), nil
+	return adpID, areaID, provID, id, nil
 }
 
 // RidAdpID breaks down a RID, and returns the AdpID.
 func RidAdpID(rid string) (string, error) {
-	parts := strings.Split(rid, "-")
-	fmt.Printf("RID: %+v\n", parts)
-	if len(parts) != 4 {
-		return "", fmt.Errorf("Invalid RID: %s", rid)
+	adpID, _, _, _, err := SplitRMID(rid)
+	if err != nil {
+		return "", fmt.Errorf(emInvalidRid, rid)
 	}
-	return parts[0], nil
+	return adpID, nil
 }
 
 // RidAreaID breaks down a RID, and returns the AreaID.
 func RidAreaID(rid string) (string, error) {
-	parts := strings.Split(rid, "-")
-	fmt.Printf("RID: %+v\n", parts)
-	if len(parts) != 4 {
-		return "", fmt.Errorf("Invalid RID: %s", rid)
+	_, areaID, _, _, err := SplitRMID(rid)
+	if err != nil {
+		return "", fmt.Errorf(emInvalidRid, rid)
 	}
-	return parts[1], nil
+	return areaID, nil
 }
 
 // RidProviderID breaks down an RID, and returns the ProviderID.
 func RidProviderID(rid string) (int, error) {
-	fail := func() (int, error) {
-		return 0, fmt.Errorf("Invalid RID: %s", rid)
-	}
-	parts := strings.Split(rid, "-")
-	fmt.Printf("RID: %+v\n", parts)
-	if len(parts) != 4 {
-		return 0, fmt.Errorf("Invalid RID: %s", rid)
-	}
-	pid, err := strconv.ParseInt(parts[2], 10, 64)
+	_, _, provID, _, err := SplitRMID(rid)
 	if err != nil {
-		fail()
+		return 0, fmt.Errorf(emInvalidRid, rid)
 	}
-	return int(pid), nil
+	return provID, nil
 }
 
 // RidID breaks down an RID, and returns the Report ID.
 func RidID(rid string) (int, error) {
-	fail := func() (int, error) {
-		return 0, fmt.Errorf("Invalid RID: %s", rid)
-	}
-	parts := strings.Split(rid, "-")
-	fmt.Printf("RID: %+v\n", parts)
-	if len(parts) != 4 {
-		return 0, fmt.Errorf("Invalid RID: %s", rid)
-	}
-	id, err := strconv.ParseInt(parts[3], 10, 64)
+	_, _, _, id, err := SplitRMID(rid)
 	if err != nil {
-		fail()
+		return 0, fmt.Errorf(emInvalidRid, rid)
 	}
-	return int(id), nil
+	return id, nil
 }
 
 // =======================================================================================
@@ -727,7 +696,7 @@ func (r NServicesResponse) String() string {
 
 // Displays the NService custom type.
 func (s NService) String() string {
-	r := fmt.Sprintf("  %-20s  %-40s  %v", s.MID(), s.Name, s.Categories)
+	r := fmt.Sprintf("  %-20s  %-40s  %-14s %v", s.MID(), s.Name, s.Group, s.Keywords)
 	return r
 }
 
@@ -778,7 +747,7 @@ func (r NRoute) String() string {
 	return fmt.Sprintf("%s-%s-%d", r.AdpID, r.AreaID, r.ProviderID)
 }
 
-// String displays a Route.
+// SString displays a Route.
 func (r NRoute) SString() string {
 	// fmtEmpty := color.New(color.BgRed, color.FgWhite, color.Bold).SprintFunc()
 	// empty := fmtEmpty("\u2205")

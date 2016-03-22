@@ -6,11 +6,12 @@ import (
 	"Gateway311/engine/logs"
 
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/davecgh/go-spew/spew"
 )
 
 const (
 	debugRecover = false
+
+	greEmpty = "JSON payload is empty"
 )
 
 var (
@@ -25,41 +26,20 @@ var (
 //  http;//xyz.com/api/services?lat=34.236144&lon=-118.604794
 //  http;//xyz.com/api/services?city=san+jose
 func Services(w rest.ResponseWriter, r *rest.Request) {
-	if debugRecover {
-		defer func() {
-			if rcvr := recover(); rcvr != nil {
-				rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
-			}
-		}()
-	}
-	response, err := processServices(r)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.WriteJson(&response)
+	runRequest(w, r, processServices)
 }
 
 // Create creates a new report.
 func Create(w rest.ResponseWriter, r *rest.Request) {
-	log.Debug("Create request: \n%s\n", spew.Sdump(r))
-	if debugRecover {
-		defer func() {
-			if rcvr := recover(); rcvr != nil {
-				rest.Error(w, rcvr.(error).Error(), http.StatusInternalServerError)
-			}
-		}()
-	}
-	response, err := processCreate(r)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.WriteJson(&response)
+	runRequest(w, r, processCreate)
 }
 
 // Search searches for Reports.
 func Search(w rest.ResponseWriter, r *rest.Request) {
+	runRequest(w, r, processSearch)
+}
+
+func runRequest(w rest.ResponseWriter, r *rest.Request, f func(*rest.Request) (interface{}, error)) {
 	if debugRecover {
 		defer func() {
 			if rcvr := recover(); rcvr != nil {
@@ -67,10 +47,12 @@ func Search(w rest.ResponseWriter, r *rest.Request) {
 			}
 		}()
 	}
-	response, err := processSearch(r)
+	response, err := f(r)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteJson(&response)
+	if err := w.WriteJson(&response); err != nil {
+		log.Error(err.Error())
+	}
 }
