@@ -41,6 +41,8 @@ ___
 * Revised ServiceList to closely match Open311-GeoReportV2 spec.
 * Code cleanup (metalinter).
 * Saved to GIT.
+* Modified Create to match Open311/GeoReport2 spec RE: JSON names.
+* Saved to GIT.
 
 ### 2016.03.17 - Thu
 

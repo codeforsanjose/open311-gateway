@@ -228,26 +228,30 @@ func (r createMgr) String() string {
 
 // CreateRequest represents a new Report
 type CreateRequest struct {
-	MID         structs.ServiceID `json:"srvId" xml:"srvId"`
-	ServiceName string            `json:"srvName" xml:"srvName"`
-	DeviceType  string            `json:"deviceType" xml:"deviceType"`
-	DeviceModel string            `json:"deviceModel" xml:"deviceModel"`
-	DeviceID    string            `json:"deviceID" xml:"deviceID"`
-	Latitude    string            `json:"latitude" xml:"latitude"`
-	LatitudeV   float64           //
-	Longitude   string            `json:"longitude" xml:"longitude"`
-	LongitudeV  float64           //
-	Address     string            `json:"address" xml:"address"`
-	City        string            `json:"city" xml:"city"`
-	State       string            `json:"state" xml:"state"`
-	Zip         string            `json:"zip" xml:"zip"`
-	FirstName   string            `json:"firstName" xml:"firstName"`
-	LastName    string            `json:"lastName" xml:"lastName"`
+	MID         structs.ServiceID `json:"service_code" xml:"service_code"`
+	Latitude    string            `json:"lat" xml:"lat"`
+	Longitude   string            `json:"long" xml:"long"`
+	FullAddress string            `json:"address_string" xml:"address_string"`
 	Email       string            `json:"email" xml:"email"`
+	DeviceID    string            `json:"device_id" xml:"device_id"`
+	FirstName   string            `json:"first_name" xml:"first_name"`
+	LastName    string            `json:"last_name" xml:"last_name"`
 	Phone       string            `json:"phone" xml:"phone"`
-	IsAnonymous string            `json:"isAnonymous" xml:"isAnonymous"`
-	isAnonymous bool              //
-	Description string            `json:"Description" xml:"Description"`
+	Description string            `json:"description" xml:"description"`
+	ImageURL    string            `json:"media_url" xml:"media_url"`
+
+	LatitudeV  float64 //
+	LongitudeV float64 //
+
+	Address     string `json:"address" xml:"address"`
+	City        string `json:"city" xml:"city"`
+	State       string `json:"state" xml:"state"`
+	Zip         string `json:"zip" xml:"zip"`
+	IsAnonymous string `json:"isAnonymous" xml:"isAnonymous"`
+	isAnonymous bool   //
+
+	DeviceType  string `json:"device_type" xml:"device_type"`
+	DeviceModel string `json:"device_model" xml:"device_model"`
 }
 
 // convert the unmarshaled data.
@@ -273,21 +277,23 @@ func (r *createMgr) convertRequest() {
 			Rtype: structs.NRTCreate,
 		},
 		MID:         r.req.MID,
-		Type:        r.req.ServiceName,
-		DeviceType:  r.req.DeviceType,
-		DeviceModel: r.req.DeviceModel,
-		DeviceID:    r.req.DeviceID,
 		Latitude:    r.req.LatitudeV,
 		Longitude:   r.req.LongitudeV,
+		FullAddress: r.req.FullAddress,
+		Email:       r.req.Email,
+		DeviceID:    r.req.DeviceID,
+		FirstName:   r.req.FirstName,
+		LastName:    r.req.LastName,
+		Phone:       r.req.Phone,
+		Description: r.req.Description,
+		ImageURL:    r.req.ImageURL,
+
+		DeviceType:  r.req.DeviceType,
+		DeviceModel: r.req.DeviceModel,
 		Address:     r.req.Address,
 		State:       r.req.State,
 		Zip:         r.req.Zip,
-		FirstName:   r.req.FirstName,
-		LastName:    r.req.LastName,
-		Email:       r.req.Email,
-		Phone:       r.req.Phone,
 		IsAnonymous: r.req.isAnonymous,
-		Description: r.req.Description,
 	}
 }
 
@@ -296,7 +302,7 @@ func (r CreateRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddF("CreateRequest\n")
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
-	ls.AddF("Request - id: %q  name: %q\n", r.MID.MID(), r.ServiceName)
+	ls.AddF("Request - id: %q\n", r.MID.MID())
 	if math.Abs(r.LatitudeV) > 1 {
 		ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", r.LatitudeV, r.Latitude, r.LongitudeV, r.Longitude)
 	}

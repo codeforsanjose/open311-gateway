@@ -366,12 +366,12 @@ func NewRID(route NRoute, id string) ReportID {
 type NCreateRequest struct {
 	NRequestCommon
 	MID         ServiceID
-	Type        string
 	DeviceType  string
 	DeviceModel string
 	DeviceID    string
 	Latitude    float64
 	Longitude   float64
+	FullAddress string
 	Address     string
 	Area        string
 	State       string
@@ -382,6 +382,7 @@ type NCreateRequest struct {
 	Phone       string
 	IsAnonymous bool
 	Description string
+	ImageURL    string
 }
 
 // GetRoutes returns the routing data.
@@ -771,8 +772,8 @@ func (r NCreateRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddF("NCreateRequest\n")
 	ls.AddS(r.NRequestCommon.String())
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
-	ls.AddF("Request - %s:  %s\n", r.MID.MID(), r.Type)
+	ls.AddF("Device - ID: %s  type: %s  model: %s\n", r.DeviceID, r.DeviceType, r.DeviceModel)
+	ls.AddF("Request - %s\n", r.MID.MID())
 	ls.AddF("Location - lat: %v lon: %v\n", r.Latitude, r.Longitude)
 	ls.AddF("          %s, %s   %s\n", r.Area, r.State, r.Zip)
 	ls.AddF("Description: %q\n", r.Description)
