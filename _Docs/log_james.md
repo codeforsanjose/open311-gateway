@@ -1,6 +1,7 @@
 ## To Do.todo
 
-*  Allow logs to be configured to go to the System Logger (MacOS & Linux).
+*  Improve error handling.
+* Allow logs to be configured to go to the System Logger (MacOS & Linux).
 * Stress tester.
 * Remove ant0ine REST library.
 * Fix dates on Searches.
@@ -42,6 +43,10 @@ ___
 * Code cleanup (metalinter).
 * Saved to GIT.
 * Modified Create to match Open311/GeoReport2 spec RE: JSON names.
+* Saved to GIT.
+* Modified Error returns to match Open311/GeoReport2.
+* Modified Service query to more closely match Open311/GeoReport2.  Full address string and addr, city, state query parms all working.
+* Removed multiple image resolution ImageURLxxx.
 * Saved to GIT.
 
 ### 2016.03.17 - Thu

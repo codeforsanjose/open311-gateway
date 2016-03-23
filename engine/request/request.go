@@ -1,6 +1,7 @@
 package request
 
 import (
+	"errors"
 	"net/http"
 
 	"Gateway311/engine/logs"
@@ -49,10 +50,18 @@ func runRequest(w rest.ResponseWriter, r *rest.Request, f func(*rest.Request) (i
 	}
 	response, err := f(r)
 	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		errorResp(w, newErrorsResponseJ().errorJ(400, err.Error()), http.StatusBadRequest)
 		return
 	}
 	if err := w.WriteJson(&response); err != nil {
 		log.Error(err.Error())
+	}
+}
+
+func errorResp(w rest.ResponseWriter, errResp ErrorsResponseJ, code int) {
+	w.WriteHeader(code)
+	err := w.WriteJson(errResp)
+	if err != nil {
+		panic(errors.New("invalid error response"))
 	}
 }

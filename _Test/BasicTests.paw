@@ -5,7 +5,7 @@
     <databaseInfo>
         <version>134481920</version>
         <UUID>79FF009B-1429-4490-9897-02371F4E78B2</UUID>
-        <nextObjectID>183</nextObjectID>
+        <nextObjectID>189</nextObjectID>
         <metadata>
             <plist version="1.0">
                 <dict>
@@ -191,16 +191,6 @@
         <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z158"></relationship>
     </object>
-    <object type="LMKEYVALUE" id="z121">
-        <attribute name="value" type="string"></attribute>
-        <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string"></attribute>
-        <attribute name="enabled" type="bool">1</attribute>
-        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
-        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
-        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
-        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z139"></relationship>
-    </object>
     <object type="LMKEYVALUE" id="z123">
         <attribute name="value" type="string">application/json; charset=utf-8</attribute>
         <attribute name="order" type="int64">0</attribute>
@@ -256,7 +246,7 @@
         <attribute name="order" type="int64">0</attribute>
         <attribute name="name" type="string">ServiceList</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z155 z146 z150 z142 z139"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z155 z146 z142 z186 z150 z184 z188"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -274,7 +264,7 @@
     <object type="LMREQUESTGROUP" id="z131">
         <attribute name="uuid" type="string">AADAFC9B-9817-4696-9062-AAD5CE21E3F2</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">LatLng</attribute>
+        <attribute name="name" type="string">LatLong</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z130"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z154 z157 z149 z148"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -327,21 +317,6 @@
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z108"></relationship>
     </object>
-    <object type="LMREQUEST" id="z139">
-        <attribute name="uuid" type="string">0D8CC5E4-58B8-4428-AA47-BD7DF3F6FEC4</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/1/services?address=1000 Hill St.\u2600city=Morgan Hill\u2600state=CA</attribute>
-        <attribute name="storecookies" type="bool">1</attribute>
-        <attribute name="sendcookies" type="bool">1</attribute>
-        <attribute name="redirectmethod" type="bool">0</attribute>
-        <attribute name="redirectauthorization" type="bool">0</attribute>
-        <attribute name="method" type="string">GET</attribute>
-        <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">4</attribute>
-        <attribute name="name" type="string">FAIL: Get Service / Address Duplicate</attribute>
-        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z121"></relationship>
-    </object>
     <object type="LMREQUEST" id="z140">
         <attribute name="uuid" type="string">D4EA5424-48A7-4A08-B6B8-0209ECC75F3A</attribute>
         <attribute name="url" type="string">http://127.0.0.1:8080/1/requests</attribute>
@@ -360,7 +335,7 @@
     </object>
     <object type="LMREQUEST" id="z142">
         <attribute name="uuid" type="string">509699AE-F7CB-4C2C-BF71-B73603D68650</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:8080/1/services?lat=37.339244\u2600lng=-121.883638</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/1/services?lat=37.339244\u2600long=-121.883638</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -429,7 +404,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">2</attribute>
+        <attribute name="order" type="int64">5</attribute>
         <attribute name="name" type="string">Get Service / Address SC</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -489,7 +464,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">3</attribute>
+        <attribute name="order" type="int64">6</attribute>
         <attribute name="name" type="string">FAIL: Get Service / Address MH</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -841,5 +816,80 @@
         <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z181"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z184">
+        <attribute name="uuid" type="string">6765F948-9B77-4FDA-B4B5-92A2EA80D79E</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/1/services?address_string=100%20First%20St.%2C%20San%20Jose%2C%20CA%2092222</attribute>
+        <attribute name="storecookies" type="bool">1</attribute>
+        <attribute name="sendcookies" type="bool">1</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">GET</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="order" type="int64">2</attribute>
+        <attribute name="name" type="string">Get Service / address_string</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z185"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z185">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z184"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z186">
+        <attribute name="uuid" type="string">EE827676-97B8-40D4-B6ED-9444493CEE98</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/1/services?address_string=100%20First%20St.%2C%20San%20Jose%2C%20CA%20922222</attribute>
+        <attribute name="storecookies" type="bool">1</attribute>
+        <attribute name="sendcookies" type="bool">1</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">GET</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="order" type="int64">4</attribute>
+        <attribute name="name" type="string">FAIL: Get Service / address_string</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z187"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z187">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z186"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z188">
+        <attribute name="uuid" type="string">218A9B66-05DB-4FC3-B308-283B1127F8D4</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:8080/1/services?address_string=100%20First%20St.%2C%20San%20Jose%2C%20CA</attribute>
+        <attribute name="storecookies" type="bool">1</attribute>
+        <attribute name="sendcookies" type="bool">1</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">GET</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="order" type="int64">3</attribute>
+        <attribute name="name" type="string">Get Service / address_string</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z189"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z189">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z188"></relationship>
     </object>
 </database>

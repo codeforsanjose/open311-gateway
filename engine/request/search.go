@@ -86,7 +86,7 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	if err := mgr.validate(); err != nil {
-		log.Errorf("processSearch.validate() failed - %s", err)
+		log.Warningf("processSearch.validate() failed - %s", err)
 		return fail(err)
 	}
 
@@ -131,7 +131,7 @@ func (r *searchMgr) validate() error {
 		if err != nil {
 			msg = msg + " - " + err.Error()
 		}
-		log.Errorf("Validation failed: %s", msg)
+		log.Warningf("Validation failed: %s", msg)
 		return errors.New(msg)
 	}
 
@@ -318,11 +318,6 @@ func (r *searchMgr) convertResponse() {
 			RequestType:       rpt.RequestType,
 			RequestTypeID:     rpt.RequestTypeID,
 			ImageURL:          rpt.ImageURL,
-			ImageURLXl:        rpt.ImageURLXl,
-			ImageURLLg:        rpt.ImageURLLg,
-			ImageURLMd:        rpt.ImageURLMd,
-			ImageURLSm:        rpt.ImageURLSm,
-			ImageURLXs:        rpt.ImageURLXs,
 			City:              rpt.City,
 			State:             rpt.State,
 			ZipCode:           rpt.ZipCode,
@@ -434,9 +429,9 @@ type SearchRequest struct {
 	RID         structs.ReportID `json:"reportID" xml:"reportID"`
 	DeviceType  string           `json:"deviceType" xml:"deviceType"`
 	DeviceID    string           `json:"deviceId" xml:"deviceId"`
-	Latitude    string           `json:"latitude" xml:"latitude"`
+	Latitude    string           `json:"lat" xml:"lat"`
 	LatitudeV   float64          //
-	Longitude   string           `json:"longitude" xml:"longitude"`
+	Longitude   string           `json:"long" xml:"long"`
 	LongitudeV  float64          //
 	Radius      string           `json:"radius" xml:"radius"`
 	RadiusV     int              // in meters
@@ -508,16 +503,11 @@ type SearchResponseReport struct {
 	RequestType       string           `json:"RequestType" xml:"RequestType"`
 	RequestTypeID     string           `json:"RequestTypeID" xml:"RequestTypeID"`
 	ImageURL          string           `json:"ImageURL" xml:"ImageURL"`
-	ImageURLXl        string           `json:"ImageURLXl" xml:"ImageURLXl"`
-	ImageURLLg        string           `json:"ImageURLLg" xml:"ImageURLLg"`
-	ImageURLMd        string           `json:"ImageURLMd" xml:"ImageURLMd"`
-	ImageURLSm        string           `json:"ImageURLSm" xml:"ImageURLSm"`
-	ImageURLXs        string           `json:"ImageURLXs" xml:"ImageURLXs"`
 	City              string           `json:"City" xml:"City"`
 	State             string           `json:"State" xml:"State"`
 	ZipCode           string           `json:"ZipCode" xml:"ZipCode"`
-	Latitude          string           `json:"Latitude" xml:"Latitude"`
-	Longitude         string           `json:"Longitude" xml:"Longitude"`
+	Latitude          string           `json:"lat" xml:"lat"`
+	Longitude         string           `json:"long" xml:"long"`
 	Directionality    string           `json:"Directionality" xml:"Directionality"`
 	Description       string           `json:"Description" xml:"Description"`
 	AuthorNameFirst   string           `json:"AuthorNameFirst" xml:"AuthorNameFirst"`
@@ -544,21 +534,6 @@ func (r SearchResponseReport) String() string {
 	ls.AddF("Votes: %v\n", r.Votes)
 	ls.AddF("Description: %q\n", r.Description)
 	ls.AddF("Images - std: %s\n", r.ImageURL)
-	if len(r.ImageURLXs) > 0 {
-		ls.AddF("          XS: %s\n", r.ImageURLXs)
-	}
-	if len(r.ImageURLSm) > 0 {
-		ls.AddF("          SM: %s\n", r.ImageURLSm)
-	}
-	if len(r.ImageURLMd) > 0 {
-		ls.AddF("          XS: %s\n", r.ImageURLMd)
-	}
-	if len(r.ImageURLLg) > 0 {
-		ls.AddF("          XS: %s\n", r.ImageURLLg)
-	}
-	if len(r.ImageURLXl) > 0 {
-		ls.AddF("          XS: %s\n", r.ImageURLXl)
-	}
 	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
 	ls.AddF("SLA: %s\n", r.TicketSLA)
 	return ls.Box(80)

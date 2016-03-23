@@ -52,7 +52,7 @@ types:
       id: string
       type: string
       model: string
-  LatLng:
+  LatLong:
     type: object
     properties:
       latitude: number
@@ -97,7 +97,7 @@ types:
       created: Date
       updated: Date
       device: Device
-      latlng: LatLng
+      latlong: LatLong
       address: Address
       author: Author
       image: Image
@@ -117,17 +117,17 @@ types:
       end: Date
       max: integer
 
-  SrchLatLng:
+  SrchLatLong:
     type: object
     properties:
       lat: number
-      lng: number
+      long: number
       radius: integer
       parms: SrchParms
   SrchAddress:
     type: object
     properties:
-      address: string
+      addr: string
       city: string
       state: string
       radius: integer
@@ -137,13 +137,29 @@ types:
   get:
     description: Get a list of services available for the current location.
     queryParameters:
-      latLng:
+      latLong:
         description: Find services available for the specifed location.
-        type: SrchLatLng
+        type: SrchLatLong
         required: false
-      address:
-        description: Find services available for the specified street address.
-        type: SrchAddress
+      address_string:
+        description: The full street address, delimited by commas.  This includes the city, state and zip.
+        type: string
+        required: false
+      addr:
+        description: Street address ONLY.  City, state and zip must be separate query parms.
+        type: string
+        required: false
+      city:
+        description: The city name.
+        type: string
+        required: false
+      state:
+        description: Two letter standard state abbreviation.
+        type: string
+        required: false
+      zip:
+        description: Zip code.  This can be either a 5 or 9 digit zip, with either a dash or space separator.
+        type: string
         required: false
     responses:
       201:
@@ -211,9 +227,9 @@ types:
         description: Find requests for the specified deviceID.
         type: string
         required: false
-      latLng:
+      latLong:
         description: Find requests for the specified coordinates
-        type: SrchLatLng
+        type: SrchLatLong
         required: false
       address:
         description: Find requests for the specified street addres.

@@ -474,11 +474,6 @@ type NSearchResponseReport struct {
 	RequestType       string
 	RequestTypeID     string
 	ImageURL          string
-	ImageURLXl        string
-	ImageURLLg        string
-	ImageURLMd        string
-	ImageURLSm        string
-	ImageURLXs        string
 	City              string
 	State             string
 	ZipCode           string
@@ -845,21 +840,6 @@ func (r NSearchResponseReport) String() string {
 	ls.AddF("Votes: %v\n", r.Votes)
 	ls.AddF("Description: %q\n", r.Description)
 	ls.AddF("Images - std: %s\n", r.ImageURL)
-	if len(r.ImageURLXs) > 0 {
-		ls.AddF("          XS: %s\n", r.ImageURLXs)
-	}
-	if len(r.ImageURLSm) > 0 {
-		ls.AddF("          SM: %s\n", r.ImageURLSm)
-	}
-	if len(r.ImageURLMd) > 0 {
-		ls.AddF("          XS: %s\n", r.ImageURLMd)
-	}
-	if len(r.ImageURLLg) > 0 {
-		ls.AddF("          XS: %s\n", r.ImageURLLg)
-	}
-	if len(r.ImageURLXl) > 0 {
-		ls.AddF("          XS: %s\n", r.ImageURLXl)
-	}
 	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
 	ls.AddF("SLA: %s\n", r.TicketSLA)
 	return ls.Box(80)

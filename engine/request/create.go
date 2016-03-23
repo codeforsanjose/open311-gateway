@@ -73,7 +73,7 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	if err := mgr.validate(); err != nil {
-		log.Errorf("processCreate.validate() failed - %s", err)
+		log.Warningf("processCreate.validate() failed - %s", err)
 		return fail(err)
 	}
 
@@ -118,7 +118,7 @@ func (r *createMgr) validate() error {
 		if err != nil {
 			msg = msg + " - " + err.Error()
 		}
-		log.Errorf("Validation failed: %s", msg)
+		log.Warningf("Validation failed: %s", msg)
 		return errors.New(msg)
 	}
 
