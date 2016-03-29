@@ -56,7 +56,6 @@
 					"description": "Illegal Dumping / Trash",
 					"type": "blackbox",
 					"service_notice": "Your request regarding %s has been submitted.",
-
 					"group": "Trash"
 				}, {
 					"id": 40,

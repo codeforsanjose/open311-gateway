@@ -76,6 +76,19 @@ func RouteProvider(route structs.NRoute) (Provider, error) {
 	return getProvider(route.AreaID, route.ProviderID)
 }
 
+// ServiceFromID returns the NService data for the specified ServiceID.
+func ServiceFromID(srvID structs.ServiceID) (nsrv structs.NService, err error) {
+	log.Debug("ServiceID: %s", srvID.MID())
+	sm, ok := configData.serviceMID[srvID.MID()]
+	if !ok {
+		err = fmt.Errorf("invalid ServiceID: %s", srvID.MID())
+		return
+	}
+	nsrv = *sm.service
+	log.Debug("Returning: %s", nsrv.String())
+	return
+}
+
 // getProvider returns the Provider data for the specified Area and Provider.
 func getProvider(AreaID string, ProviderID int) (Provider, error) {
 	log.Debug("AreaID: %v  ProviderID: %v\n", AreaID, ProviderID)

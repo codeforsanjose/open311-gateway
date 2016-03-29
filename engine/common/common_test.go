@@ -10,6 +10,7 @@ import (
 type addressTest struct {
 }
 
+/*
 func TestParse(t *testing.T) {
 
 	fmt.Printf("\n\n======================================================== TestParse ========================================================\n\n")
@@ -170,6 +171,7 @@ func TestLatLong(t *testing.T) {
 		}
 	}
 }
+*/
 
 func TestAddress(t *testing.T) {
 
@@ -189,6 +191,7 @@ func TestAddress(t *testing.T) {
 			{"322 E Santa Clara St, San Jose, CA, 95112-1111", []float64{37.3391629, -121.8836029}, true},
 			{"322 E Santa Clara St, San Jose, CA, 95112-111", []float64{0.0, 0.0}, false},
 			{"322 E Santa Clara St, San Jose, CA, 95112-11111", []float64{0.0, 0.0}, false},
+			{"10630 S De Anza Blvd, Cupertino, CA 95014", []float64{0.0, 0.0}, true},
 		}
 
 		for i, nt := range tests {

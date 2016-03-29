@@ -71,6 +71,7 @@ func NewAddr(fullAddr string, looseZip bool) (addr Address, err error) {
 	if err != nil {
 		return
 	}
+	fmt.Printf("NewAddr:\n%s", addr.String())
 
 	addr.Lat, addr.Long, err = geo.LatLngForAddr(addr.FullAddr())
 	if err == nil {

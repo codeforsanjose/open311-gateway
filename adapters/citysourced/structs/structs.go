@@ -310,12 +310,13 @@ type NServices []NService
 // and the Service ID.
 type NService struct {
 	ServiceID
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Metadata    bool     `json:"metadata"`
-	Stype       string   `json:"type"`
-	Keywords    []string `json:"keywords"`
-	Group       string   `json:"group"`
+	Name          string   `json:"name"`
+	Description   string   `json:"description"`
+	Metadata      bool     `json:"metadata"`
+	Stype         string   `json:"type"`
+	ServiceNotice string   `json:"service_notice"`
+	Keywords      []string `json:"keywords"`
+	Group         string   `json:"group"`
 }
 
 // ------------------------------- ServiceID -------------------------------
@@ -695,6 +696,16 @@ func (r NServicesResponse) String() string {
 func (s NService) String() string {
 	r := fmt.Sprintf("  %-20s  %-40s  %-14s %v", s.MID(), s.Name, s.Group, s.Keywords)
 	return r
+}
+
+// SString should be used to display one NService struct.
+func (s NService) SString() string {
+	ls := new(common.LogString)
+	ls.AddS("NService\n")
+	ls.AddF("MID: %s    Name: %s\n", s.MID(), s.Name)
+	ls.AddF("Group: %s   Keywords: %v\n", s.Group, s.Keywords)
+	ls.AddF("ServiceNotice: %v\n", s.ServiceNotice)
+	return ls.Box(70)
 }
 
 // Displays the NServices custom type.

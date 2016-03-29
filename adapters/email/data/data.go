@@ -23,7 +23,13 @@ var (
 
 // ShowConfigData dumps configData using spew.
 func ShowConfigData() string {
-	return spew.Sdump(configData)
+	cd := spew.Sdump(configData)
+	cd += "\n"
+	for _, v := range configData.serviceMID {
+		cd += fmt.Sprintf("%s", v.service.SString())
+	}
+	log.Debug("%s", cd)
+	return cd
 }
 
 // ServicesArea returns a list of all services available for the specified Area.
@@ -65,7 +71,7 @@ func AdapterName() string {
 	return configData.Adapter.Name
 }
 
-// MIDProvider returns the Provider data for the specified MidAdpID.
+// MIDProvider returns the Provider data for the specified ServiceID.
 func MIDProvider(MID structs.ServiceID) (Provider, error) {
 	log.Debug("MID: %s", MID.MID())
 	return getProvider(MID.AreaID, MID.ProviderID)
@@ -75,6 +81,19 @@ func MIDProvider(MID structs.ServiceID) (Provider, error) {
 func RouteProvider(route structs.NRoute) (Provider, error) {
 	log.Debug("Route: %s", route)
 	return getProvider(route.AreaID, route.ProviderID)
+}
+
+// ServiceFromID returns the NService data for the specified ServiceID.
+func ServiceFromID(srvID structs.ServiceID) (nsrv structs.NService, err error) {
+	log.Debug("ServiceID: %s", srvID.MID())
+	sm, ok := configData.serviceMID[srvID.MID()]
+	if !ok {
+		err = fmt.Errorf("invalid ServiceID: %s", srvID.MID())
+		return
+	}
+	nsrv = *sm.service
+	log.Debug("Returning: %s", nsrv.String())
+	return
 }
 
 // GetEmailAuth returns the full path and filename of the Email Auth data.

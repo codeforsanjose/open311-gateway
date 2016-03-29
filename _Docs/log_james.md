@@ -40,7 +40,10 @@ ___
 ### 2016.03.29 - Tue
 
 * Address validation (in engine/common) working well, including ServiceArea validation.
-* 
+* Saved to GIT.
+* Create requests working with all validations, both CitySourced and email.
+* Added a service list to the engine/services system.  This allows quick checks on ServiceID's.
+* Saved to GIT.
 
 ### 2016.03.28 - Mon
 

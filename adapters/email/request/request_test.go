@@ -38,11 +38,11 @@ func TestCreate(t *testing.T) {
 	rqsts := []*structs.NCreateRequest{
 		&structs.NCreateRequest{
 			NRequestCommon: structs.NRequestCommon{
-				ID:    structs.NID{1000, 1},
-				Route: structs.NRoute{"EM1", "CU", 1},
+				ID:    structs.NID{RqstID: 1000, RPCID: 1},
+				Route: structs.NRoute{AdpID: "EM1", AreaID: "CU", ProviderID: 1},
 				Rtype: structs.NRTCreate,
 			},
-			MID:         structs.ServiceID{"EM1", "CU", 1, 10},
+			MID:         structs.ServiceID{AdpID: "EM1", AreaID: "CU", ProviderID: 1, ID: 10},
 			Type:        "Gang Activity",
 			DeviceType:  "~~~DeviceType~~~",
 			DeviceModel: "~~~DeviceModel~~~",
@@ -62,11 +62,11 @@ func TestCreate(t *testing.T) {
 		},
 		&structs.NCreateRequest{
 			NRequestCommon: structs.NRequestCommon{
-				ID:    structs.NID{2000, 2},
-				Route: structs.NRoute{"EM1", "CU", 2},
+				ID:    structs.NID{RqstID: 2000, RPCID: 2},
+				Route: structs.NRoute{AdpID: "EM1", AreaID: "CU", ProviderID: 2},
 				Rtype: structs.NRTCreate,
 			},
-			MID:         structs.ServiceID{"EM1", "CU", 2, 30},
+			MID:         structs.ServiceID{AdpID: "EM1", AreaID: "CU", ProviderID: 2, ID: 30},
 			Type:        "Illegal Dumping / Trash",
 			DeviceType:  "~~~DeviceType~~~",
 			DeviceModel: "~~~DeviceModel~~~",
@@ -86,11 +86,11 @@ func TestCreate(t *testing.T) {
 		},
 		&structs.NCreateRequest{
 			NRequestCommon: structs.NRequestCommon{
-				ID:    structs.NID{3000, 3},
-				Route: structs.NRoute{"EM1", "SUN", 1},
+				ID:    structs.NID{RqstID: 3000, RPCID: 3},
+				Route: structs.NRoute{AdpID: "EM1", AreaID: "SUN", ProviderID: 1},
 				Rtype: structs.NRTCreate,
 			},
-			MID:         structs.ServiceID{"EM1", "SUN", 1, 10},
+			MID:         structs.ServiceID{AdpID: "EM1", AreaID: "SUN", ProviderID: 1, ID: 10},
 			Type:        "Gang Activity",
 			DeviceType:  "~~~DeviceType~~~",
 			DeviceModel: "~~~DeviceModel~~~",

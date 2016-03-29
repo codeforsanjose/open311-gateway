@@ -4,16 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"sync"
-	"time"
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/logs"
 	"Gateway311/engine/router"
 	"Gateway311/engine/structs"
-)
-
-const (
-	startupDelay = time.Second * 5
 )
 
 var (
@@ -28,12 +23,24 @@ func GetArea(areaID string) (structs.NServices, error) {
 
 // Refresh initiates a refresh of the Services Cache.
 func Refresh() {
-	refresh("all")
+	if err := refresh("all"); err != nil {
+		log.Errorf("service cache refresh failed - %s", err.Error())
+	}
 
-	servicesData.indexAreaAdapters()
-	servicesData.sendRoutes()
+	if err := servicesData.indexAreaAdapters(); err != nil {
+		log.Errorf("service cache indexAreaAdapters() failed - %s", err.Error())
+	}
+	if err := servicesData.sendRoutes(); err != nil {
+		log.Errorf("service cache sendRoutes() failed - %s", err.Error())
+	}
+
 	servicesData.switchSet()
 
+}
+
+// ValidateServiceID determines if a ServicID is present in the Services cache, and hence "valid".
+func ValidateServiceID(srvID structs.ServiceID) bool {
+	return servicesData.validateService(srvID)
 }
 
 // Shutdown should be called at system shutdown.  It will terminate the update channel, and
@@ -52,6 +59,7 @@ func Shutdown() {
 // is cleared and is available for loading.  Vice versa for activeSet1.
 type cache struct {
 	list      [2]map[string]structs.NServices // Index: AreaID
+	services  [2]map[string]bool
 	activeSet int
 	update    chan bool // Update request queue
 	sync.RWMutex
@@ -66,6 +74,16 @@ func (r *cache) getArea(areaID string) (structs.NServices, error) {
 		return nil, fmt.Errorf("The requested AreaID: %q is not serviced by this gateway.", areaID)
 	}
 	return l, nil
+}
+
+// getArea retrieves the ServiceList for the specified area.
+func (r *cache) validateService(srvID structs.ServiceID) bool {
+	r.RLock()
+	defer r.RUnlock()
+	if _, ok := r.services[r.activeSet][srvID.MID()]; !ok {
+		return false
+	}
+	return true
 }
 
 // sendRoutes builds a unique list of all NRoutes and posts it to the
@@ -124,6 +142,7 @@ func (r *cache) loadSet() (ls int) {
 
 func (r *cache) clearLoadSet(ds int) {
 	r.list[r.loadSet()] = make(map[string]structs.NServices)
+	r.services[r.loadSet()] = make(map[string]bool)
 }
 
 // refresh initiates a service list update - that is, it requests the current service lists
@@ -169,6 +188,7 @@ func (r *cache) merge(ndata interface{}) error {
 		}
 		r.list[loadSet][ns.AreaID] = append(r.list[loadSet][ns.AreaID], ns)
 		// log.Debug("   Appending: %s - %s", ns.MID(), ns.Name)
+		r.services[loadSet][ns.MID()] = true
 	}
 	return nil
 }
@@ -178,6 +198,9 @@ func (r *cache) init() {
 	defer r.Unlock()
 	r.list[0] = make(map[string]structs.NServices)
 	r.list[1] = make(map[string]structs.NServices)
+
+	r.services[0] = make(map[string]bool)
+	r.services[1] = make(map[string]bool)
 
 	r.update = make(chan bool, 1)
 	r.activeSet = 0
@@ -210,9 +233,13 @@ func (r *cache) shutdown() {
 func (r cache) String() string {
 	ls := new(common.LogString)
 	ls.AddF("cache [%d]\n", r.activeSet)
-	ls.AddS("------- Service List --------\n")
+	ls.AddS("------- Area Service List --------\n")
 	for k, v := range r.list[r.activeSet] {
 		ls.AddF("<<<<<Area: %s >>>>>%s", k, v)
+	}
+	ls.AddS("------- Service List --------\n")
+	for k := range r.services[r.activeSet] {
+		ls.AddF("%s\n", k)
 	}
 	return ls.Box(90)
 }

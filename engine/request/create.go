@@ -7,6 +7,7 @@ import (
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/router"
+	"Gateway311/engine/services"
 	"Gateway311/engine/structs"
 	"Gateway311/engine/telemetry"
 
@@ -142,6 +143,7 @@ func (r *createMgr) validate() error {
 	v := r.valid
 	v.Set("QP", "Query parms parsed and loaded ok", false)
 	v.Set("convert", "Type conversion of inputs is OK", false)
+	v.Set("SrvID", "The ServiceID is valid", false)
 	v.Set("geo", "Location coordinates are within the continental US", false)
 	v.Set("city", "We have a city", false)
 	v.Set("SrvArea", "The Service ID corresponds to the location", false)
@@ -151,6 +153,11 @@ func (r *createMgr) validate() error {
 		return fail("", err)
 	}
 	v.Set("QP", "", true)
+
+	// Check the ServiceID
+	if err := r.req.validateServiceID(); err != nil {
+		return fail("", err)
+	}
 
 	// Convert all string inputs.
 	if err := r.req.convert(); err != nil {
@@ -173,6 +180,7 @@ func (r *createMgr) validate() error {
 	if err := r.req.validateLocationMID(); err == nil {
 		v.Set("SrvArea", "", true)
 	}
+	v.Set("SrvID", "", true)
 
 	// Location - the AreaID in the MID must match the location specified by the address
 	// or the lat/long.
@@ -378,6 +386,14 @@ func (r *CreateRequest) convert() error {
 	return nil
 }
 
+func (r *CreateRequest) validateServiceID() (err error) {
+	// Check the ServiceID
+	if !services.ValidateServiceID(r.MID) {
+		return fmt.Errorf("The requested ServiceID: %s is invalid", r.MID.MID())
+	}
+	return nil
+}
+
 // validateLocation does the following:
 // 1. If there is a non-blank full address, attempt to use it by calling validateAddress()
 // 2. If validateAddress() is successful, set the Lat/Long to the address' location and return.
@@ -486,6 +502,7 @@ type CreateResponse struct {
 func (r *createMgr) convertResponse() {
 	r.resp = &CreateResponse{
 		ID:        r.nresp.RID.RID(),
+		Notice:    r.nresp.Message,
 		AccountID: r.nresp.AccountID,
 	}
 }

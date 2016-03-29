@@ -3,6 +3,7 @@ package request
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"text/template"
 	"time"
 
@@ -13,18 +14,25 @@ import (
 	"Gateway311/adapters/email/telemetry"
 )
 
+var successMessages map[string]bool
+
 // ================================================================================================
 //                                      CREATE
 // ================================================================================================
 
 // Create fully processes the Create request.
-func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
+func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) (err error) {
 	log.Debug("Create - request: %p  resp: %p\n", rqst, resp)
 	// Make the Create Manager
 	cm := &createMgr{
 		nreq:  rqst,
 		nresp: resp,
 	}
+
+	if cm.nsrv, err = data.ServiceFromID(cm.nreq.MID); err != nil {
+		return fmt.Errorf("unable to process Create request - %s", err.Error())
+	}
+
 	log.Debug("createMgr: %#v\n", *cm)
 
 	return runRequest(processer(cm))
@@ -37,8 +45,11 @@ func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateRespo
 //  3. Converts the CitySourced reply back to Normal form.
 //  4. Returns the Normal Response, and any errors.
 type createMgr struct {
-	nreq  *structs.NCreateRequest
-	req   *create.Request
+	nreq *structs.NCreateRequest
+	req  *create.Request
+
+	nsrv structs.NService
+
 	resp  *create.Response
 	nresp *structs.NCreateResponse
 }
@@ -48,6 +59,9 @@ func (c *createMgr) convertRequest() error {
 		return fmt.Errorf("Unable to create the email - %s", err)
 	}
 	telemetry.SendRPC(c.nreq.GetIDS(), "open", "", "", 0, time.Now())
+
+	// Fill in the Service Name
+	c.nreq.ServiceName = c.nsrv.Name
 
 	// Get the EmailSender interface.
 	provider, err := data.MIDProvider(c.nreq.MID)
@@ -78,10 +92,25 @@ func (c *createMgr) process() error {
 }
 
 func (c *createMgr) convertResponse() (int, error) {
+	rspOK := func(msg string) bool {
+		_, ok := successMessages[strings.ToLower(msg)]
+		log.Debug("successMessages: %#v", successMessages)
+		log.Debug("Msg: %q / %q result: %t", msg, strings.ToLower(msg), ok)
+		return ok
+	}
 	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(route)
-	c.nresp.Message = c.resp.Message
+
+	if !rspOK(c.resp.Message) {
+		log.Errorf("Returning response message: %s", c.resp.Message)
+		c.nresp.Message = c.resp.Message
+		return 1, nil
+	}
+
+	log.Debug("Service: %s", c.nsrv.SString())
+
+	c.nresp.Message = fmt.Sprintf(c.nsrv.ServiceNotice, c.nsrv.Name)
 	return 1, nil
 }
 
@@ -118,7 +147,15 @@ func (c *createMgr) String() string {
 	ls.AddS("Create\n")
 	ls.AddS(c.nreq.String())
 	ls.AddS(c.req.String())
+	ls.AddS(c.nsrv.String())
 	ls.AddS(c.resp.String())
 	ls.AddS(c.nresp.String())
 	return ls.Box(90)
+}
+
+func init() {
+	successMessages = map[string]bool{
+		"success": true,
+		"ok":      true,
+	}
 }
