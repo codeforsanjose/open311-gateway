@@ -88,7 +88,7 @@ func (c *createMgr) convertResponse() (int, error) {
 func (c *createMgr) fail(err error) error {
 	c.nresp.Message = "Failed - " + err.Error()
 	c.nresp.RID = structs.ReportID{}
-	c.nresp.AuthorID = ""
+	c.nresp.AccountID = ""
 	return err
 }
 
@@ -104,6 +104,7 @@ func (c *createMgr) getRoute() string {
 func (c *createMgr) createBody(tmpl *template.Template) (string, error) {
 	var doc bytes.Buffer
 	// Apply the values we have initialized in our struct context to the template.
+	log.Debug("Executing template: %p", tmpl)
 	if err := tmpl.Execute(&doc, c.nreq); err != nil {
 		log.Error("error trying to execute email template ", err)
 		return "", err

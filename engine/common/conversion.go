@@ -22,7 +22,7 @@ func init() {
 
 	vparms["Latitude"] = vparm{"float", true, "0.0"}
 	vparms["Longitude"] = vparm{"float", true, "0.0"}
-	vparms["IsAnonymous"] = vparm{"bool", false, "true"}
+	vparms["IsAnonymous"] = vparm{"bool", false, "false"}
 	vparms["Radius"] = vparm{"int", false, "100"}
 	vparms["MaxResults"] = vparm{"int", false, "10"}
 

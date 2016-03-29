@@ -13,14 +13,13 @@ import (
 )
 
 const (
-	rpcChanSize = 10
+	rpcChanSize = 5
 	rpcTimeout  = time.Second * 3 // 3 seconds
 )
 
 var (
-	showRunTimes       = true
-	showResponse       = true
-	showResponseDetail = false
+	showRunTimes = true
+	showResponse = true
 )
 
 var serviceMethods = map[structs.NRequestType]string{
@@ -75,7 +74,7 @@ func NewRPCCallMgr(reqmgr requester) (*RPCCallMgr, error) {
 	r := &RPCCallMgr{
 		reqmgr:        reqmgr,
 		serviceMethod: serviceMethods[reqmgr.RType()],
-		results:       make(chan structs.NRoute, 5),
+		results:       make(chan structs.NRoute, rpcChanSize),
 		calls:         make(map[structs.NRoute]*rpcCall),
 	}
 
@@ -242,7 +241,9 @@ type rpcCall struct {
 }
 
 // String returns a representation of an rpcCall instance.
-func (r rpcCall) String() string {
+func (r *rpcCall) String() string {
+	r.Lock()
+	defer r.Unlock()
 	ls := new(common.LogString)
 	ls.AddF("rpcCall - %d\n", r.id)
 	ls.AddF("Service: %v\n", r.rpc.service())

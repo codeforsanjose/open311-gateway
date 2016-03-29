@@ -27,9 +27,9 @@ func main() {
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
-		rest.Get("/1/services", request.Services),
-		rest.Post("/1/requests", request.Create),
-		rest.Get("/1/requests", request.Search),
+		rest.Get("/v1/services.json", request.Services),
+		rest.Post("/v1/requests.json", request.Create),
+		rest.Get("/v1/requests.json", request.Search),
 		// rest.Get("/:jid/requests", rpt.GetAll),
 		// rest.Get("/:jid/requests/:id", rpt.Get),
 		// rest.Put("/:jid/requests/:id", rpt.Update),

@@ -54,8 +54,9 @@ func (c *createMgr) convertRequest() error {
 		DeviceType:        c.nreq.DeviceType,
 		DeviceModel:       c.nreq.DeviceModel,
 		DeviceID:          c.nreq.DeviceID,
-		RequestType:       c.nreq.Type,
+		RequestType:       c.nreq.ServiceName,
 		RequestTypeID:     c.nreq.MID.ID,
+		ImageURL:          c.nreq.MediaURL,
 		Latitude:          c.nreq.Latitude,
 		Longitude:         c.nreq.Longitude,
 		Description:       c.nreq.Description,
@@ -82,14 +83,14 @@ func (c *createMgr) convertResponse() (int, error) {
 	c.nresp.SetRoute(route)
 	c.nresp.RID = structs.NewRID(route, c.resp.ID)
 	c.nresp.Message = c.resp.Message
-	c.nresp.AuthorID = c.resp.AuthorID
+	c.nresp.AccountID = c.resp.AuthorID
 	return 1, nil
 }
 
 func (c *createMgr) fail(err error) error {
 	c.nresp.Message = "Failed - " + err.Error()
 	c.nresp.RID = structs.ReportID{}
-	c.nresp.AuthorID = ""
+	c.nresp.AccountID = ""
 	return err
 }
 

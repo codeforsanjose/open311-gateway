@@ -120,13 +120,13 @@ func (r *serviceMgr) validate() error {
 		fallthrough
 
 	case len(r.req.FullAddress) > 0:
-		addr, city, state, zip, err := common.ParseAddress(r.req.FullAddress, true)
-		log.Debug("Parsed full address - addr: %q  city: %q  state: %q  zip: %q", addr, city, state, zip)
+		addr, err := common.ParseAddress(r.req.FullAddress, true)
+		log.Debug("Parsed full address - addr: %+v", addr)
 		if err == nil {
-			r.req.Address = addr
-			r.req.City = city
-			r.req.State = state
-			r.req.Zip = zip
+			r.req.Address = addr.Addr
+			r.req.City = addr.City
+			r.req.State = addr.State
+			r.req.Zip = addr.Zip
 		} else {
 			log.Warningf("ParseAddress failed - %s", err.Error())
 		}
@@ -205,12 +205,12 @@ func (r *ServicesReq) validate() error {
 		r.LongitudeV = x
 	}
 	if len(r.FullAddress) > 0 {
-		addr, city, state, zip, err := common.ParseAddress(r.FullAddress, true)
+		addr, err := common.ParseAddress(r.FullAddress, true)
 		if err == nil {
-			r.Address = addr
-			r.City = city
-			r.State = state
-			r.Zip = zip
+			r.Address = addr.Addr
+			r.City = addr.City
+			r.State = addr.State
+			r.Zip = addr.Zip
 		}
 	}
 	return nil

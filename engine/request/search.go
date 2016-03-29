@@ -317,7 +317,7 @@ func (r *searchMgr) convertResponse() {
 			DeviceID:          rpt.DeviceID,
 			RequestType:       rpt.RequestType,
 			RequestTypeID:     rpt.RequestTypeID,
-			ImageURL:          rpt.ImageURL,
+			MediaURL:          rpt.MediaURL,
 			City:              rpt.City,
 			State:             rpt.State,
 			ZipCode:           rpt.ZipCode,
@@ -502,7 +502,7 @@ type SearchResponseReport struct {
 	DeviceID          string           `json:"DeviceID" xml:"DeviceID"`
 	RequestType       string           `json:"RequestType" xml:"RequestType"`
 	RequestTypeID     string           `json:"RequestTypeID" xml:"RequestTypeID"`
-	ImageURL          string           `json:"ImageURL" xml:"ImageURL"`
+	MediaURL          string           `json:"MediaURL" xml:"MediaURL"`
 	City              string           `json:"City" xml:"City"`
 	State             string           `json:"State" xml:"State"`
 	ZipCode           string           `json:"ZipCode" xml:"ZipCode"`
@@ -533,7 +533,7 @@ func (r SearchResponseReport) String() string {
 	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.ZipCode)
 	ls.AddF("Votes: %v\n", r.Votes)
 	ls.AddF("Description: %q\n", r.Description)
-	ls.AddF("Images - std: %s\n", r.ImageURL)
+	ls.AddF("Images - std: %s\n", r.MediaURL)
 	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
 	ls.AddF("SLA: %s\n", r.TicketSLA)
 	return ls.Box(80)

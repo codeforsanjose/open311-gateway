@@ -2,9 +2,8 @@ package create
 
 import (
 	"CitySourcedAPI/logs"
-	"bytes"
 	"fmt"
-	"text/template"
+	"strings"
 
 	"Gateway311/adapters/email/common"
 	"Gateway311/adapters/email/data"
@@ -20,23 +19,7 @@ var (
 //                                      CREATE
 // ================================================================================================
 
-// Request represents the XML payload for a report request to CitySourced.
-// type Request struct {
-// 	Sender            data.EmailSender
-// 	RequestType       string  `json:"RequestType" xml:"RequestType"`
-// 	RequestTypeID     int     `json:"RequestTypeId" xml:"RequestTypeId"`
-// 	ImageURL          string  `json:"ImageUrl" xml:"ImageUrl"`
-// 	Latitude          float64 `json:"Latitude" xml:"Latitude"`
-// 	Longitude         float64 `json:"Longitude" xml:"Longitude"`
-// 	Description       string  `json:"Description" xml:"Description"`
-// 	AuthorNameFirst   string  `json:"AuthorNameFirst" xml:"AuthorNameFirst"`
-// 	AuthorNameLast    string  `json:"AuthorNameLast" xml:"AuthorNameLast"`
-// 	AuthorEmail       string  `json:"AuthorEmail" xml:"AuthorEmail"`
-// 	AuthorTelephone   string  `json:"AuthorTelephone" xml:"AuthorTelephone"`
-// 	AuthorIsAnonymous bool    `json:"AuthorIsAnonymous" xml:"AuthorIsAnonymous"`
-// }
-
-// Request represents the XML payload for a report request to CitySourced.
+// Request represents the Sender and Body for the email.
 type Request struct {
 	Sender data.EmailSender
 	Body   *structs.Payload
@@ -69,6 +52,7 @@ type Response struct {
 //                                      TEMPLATES
 // ================================================================================================
 
+/*
 // createEmail creates an email message from the request using the specified template
 func (r *Request) createEmail(tmpl *template.Template) (string, error) {
 	var doc bytes.Buffer
@@ -81,6 +65,8 @@ func (r *Request) createEmail(tmpl *template.Template) (string, error) {
 	return doc.String(), nil
 }
 
+*/
+
 // ================================================================================================
 //                                      STRINGS
 // ================================================================================================
@@ -89,8 +75,9 @@ func (r *Request) createEmail(tmpl *template.Template) (string, error) {
 func (r Request) String() string {
 	ls := new(common.LogString)
 	ls.AddS("create.Request\n")
-	t, f, s := r.Sender.Address()
-	ls.AddF("Sender - to: %#v  from: %#v  subject: %q\n", t, f, s)
+	to, from, subject := r.Sender.Address()
+	ls.AddF("Sender - to: %#v  from: %#v\n", strings.Join(to, ", "), strings.Join(from, ", "))
+	ls.AddF("Subject: %q\n", subject)
 	ls.AddF("Message:\n%s\n", r.Body)
 	return ls.Box(80)
 }

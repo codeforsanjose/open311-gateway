@@ -1,5 +1,7 @@
 package structs
 
+import "Gateway311/adapters/email/common"
+
 //go:generate stringer -type=PayloadType
 
 // PayloadType enumerates the valid payload types.
@@ -48,4 +50,22 @@ func NewPayloadByte(body []byte) *Payload {
 // Get returns the type and contents of a Payload.
 func (r Payload) Get() (ptype PayloadType, contents interface{}) {
 	return r.ptype, r.content
+}
+
+func (r Payload) String() string {
+	ls := new(common.LogString)
+	ls.AddF("Payload\n")
+	ls.AddF("Type: %v\n", r.ptype)
+	switch content := r.content.(type) {
+	case string:
+		ls.AddF("Contents: %s\n", content)
+	case *string:
+		ls.AddF("Contents: %s\n", *content)
+	case []byte:
+		ls.AddF("Contents: %s\n", string(content[:]))
+	default:
+		ls.AddF("Unknown payload contents type: %T\n", r.content)
+
+	}
+	return ls.Box(80)
 }

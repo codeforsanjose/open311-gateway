@@ -3,7 +3,6 @@ package request
 import (
 	"errors"
 	"fmt"
-	"math"
 	"time"
 
 	"Gateway311/engine/common"
@@ -50,7 +49,7 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 		rqst:    rqst,
 		req:     &CreateRequest{},
 		valid:   common.NewValidation(),
-		resp:    &CreateResponse{Message: "Request failed"},
+		// resp:    &CreateResponse{Message: "Request failed"},
 	}
 	telemetry.SendTelemetry(mgr.id, "Create", "open")
 	defer func() {
@@ -111,6 +110,24 @@ func (r *createMgr) Processer() func(ndata interface{}) error {
 // -------------------------------------------------------------------------------
 //                        VALIDATION
 // -------------------------------------------------------------------------------
+
+/* ----- NOTES ------
+
+Route Validation
+
+1. If there is a full address string:
+  a. Parse it.
+  b. Get lat/long.
+  c. Overwrite input lat/long.
+2. If there is a lat/long:
+  a. Validate it is in the US.
+  b. Overwrite the address
+
+
+
+
+--------------------- */
+
 // validate the unmarshaled data.
 func (r *createMgr) validate() error {
 	log.Debug("Starting validate()")
@@ -126,6 +143,8 @@ func (r *createMgr) validate() error {
 	v.Set("QP", "Query parms parsed and loaded ok", false)
 	v.Set("convert", "Type conversion of inputs is OK", false)
 	v.Set("geo", "Location coordinates are within the continental US", false)
+	v.Set("city", "We have a city", false)
+	v.Set("SrvArea", "The Service ID corresponds to the location", false)
 
 	// Load Query Parms.
 	if err := r.parseQP(); err != nil {
@@ -139,16 +158,34 @@ func (r *createMgr) validate() error {
 	}
 	v.Set("convert", "", true)
 
-	// Location
+	// Is it anonymous:
+	if r.req.Email == "" && r.req.FirstName == "" && r.req.LastName == "" {
+		r.req.isAnonymous = true
+	}
+
+	// A request currently MUST have a location.
+	if err := r.req.validateLocation(); err != nil {
+		return fail("", err)
+	}
+	v.Set("city", "", true)
+
+	// Verify the ServiceID (MID) matches the location.
+	if err := r.req.validateLocationMID(); err == nil {
+		v.Set("SrvArea", "", true)
+	}
+
+	// Location - the AreaID in the MID must match the location specified by the address
+	// or the lat/long.
 	r.valid.Set("geo", "", common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
+	log.Debug("After ValidateLatLng: %s%s", v.String(), r.req.String())
 
 	// Is the Request routable?
 	if err := r.setRoute(); err != nil {
 		return fail("", err)
 	}
-	log.Debug("After setRoute() - %s", v.String())
 
 	log.Debug(r.valid.String())
+
 	if !r.valid.Ok() {
 		return r.valid
 	}
@@ -157,7 +194,80 @@ func (r *createMgr) validate() error {
 
 // parseQP unloads any query parms in the request.
 func (r *createMgr) parseQP() error {
+
+	for key, values := range r.rqst.URL.Query() {
+		for i, value := range values {
+			if i > 0 {
+				return fmt.Errorf("Invalid query parms")
+			}
+			switch key {
+			case "lat":
+				r.req.Latitude = value
+			case "long":
+				r.req.Longitude = value
+			case "address_string":
+				r.req.FullAddress = value
+
+			case "email":
+				r.req.Email = value
+			case "device_id":
+				r.req.DeviceID = value
+			case "account_id":
+				r.req.AccountID = value
+			case "first_name":
+				r.req.FirstName = value
+			case "last_name":
+				r.req.LastName = value
+			case "phone":
+				r.req.Phone = value
+			case "description":
+				r.req.Description = value
+			case "media_url":
+				r.req.MediaURL = value
+
+			case "addr":
+				r.req.Address = value
+			case "city":
+				r.req.City = value
+			case "state":
+				r.req.State = value
+			case "zip":
+				r.req.Zip = value
+			}
+		}
+	}
+
 	return nil
+}
+
+func (r *createMgr) convertRequest() {
+	r.nreq = &structs.NCreateRequest{
+		NRequestCommon: structs.NRequestCommon{
+			ID: structs.NID{
+				RqstID: r.id,
+			},
+			Rtype: structs.NRTCreate,
+		},
+		MID:         r.req.MID,
+		Latitude:    r.req.LatitudeV,
+		Longitude:   r.req.LongitudeV,
+		FullAddress: r.req.FullAddress,
+		Email:       r.req.Email,
+		DeviceID:    r.req.DeviceID,
+		FirstName:   r.req.FirstName,
+		LastName:    r.req.LastName,
+		Phone:       r.req.Phone,
+		Description: r.req.Description,
+		MediaURL:    r.req.MediaURL,
+
+		DeviceType:  r.req.DeviceType,
+		DeviceModel: r.req.DeviceModel,
+		Address:     r.req.Address,
+		Area:        r.req.City,
+		State:       r.req.State,
+		Zip:         r.req.Zip,
+		IsAnonymous: r.req.isAnonymous,
+	}
 }
 
 // setRoute gets the route(s) to process the request.
@@ -228,27 +338,31 @@ func (r createMgr) String() string {
 
 // CreateRequest represents a new Report
 type CreateRequest struct {
-	MID         structs.ServiceID `json:"service_code" xml:"service_code"`
-	Latitude    string            `json:"lat" xml:"lat"`
-	Longitude   string            `json:"long" xml:"long"`
-	FullAddress string            `json:"address_string" xml:"address_string"`
-	Email       string            `json:"email" xml:"email"`
-	DeviceID    string            `json:"device_id" xml:"device_id"`
-	FirstName   string            `json:"first_name" xml:"first_name"`
-	LastName    string            `json:"last_name" xml:"last_name"`
-	Phone       string            `json:"phone" xml:"phone"`
-	Description string            `json:"description" xml:"description"`
-	ImageURL    string            `json:"media_url" xml:"media_url"`
+	MID            structs.ServiceID `json:"service_code" xml:"service_code"`
+	APIKey         string            `json:"api_key" xml:"api_key"`
+	JurisdictionID string            `json:"jurisdiction_id" xml:"jurisdiction_id"`
+	Latitude       string            `json:"lat" xml:"lat"`
+	Longitude      string            `json:"long" xml:"long"`
+	FullAddress    string            `json:"address_string" xml:"address_string"`
+	Email          string            `json:"email" xml:"email"`
+	DeviceID       string            `json:"device_id" xml:"device_id"`
+	AccountID      string            `json:"account_id" xml:"account_id"`
+	FirstName      string            `json:"first_name" xml:"first_name"`
+	LastName       string            `json:"last_name" xml:"last_name"`
+	Phone          string            `json:"phone" xml:"phone"`
+	Description    string            `json:"description" xml:"description"`
+	MediaURL       string            `json:"media_url" xml:"media_url"`
 
 	LatitudeV  float64 //
 	LongitudeV float64 //
+	AreaID     string  //
 
-	Address     string `json:"address" xml:"address"`
-	City        string `json:"city" xml:"city"`
-	State       string `json:"state" xml:"state"`
-	Zip         string `json:"zip" xml:"zip"`
-	IsAnonymous string `json:"isAnonymous" xml:"isAnonymous"`
-	isAnonymous bool   //
+	Address string `json:"address" xml:"address"`
+	City    string `json:"city" xml:"city"`
+	State   string `json:"state" xml:"state"`
+	Zip     string `json:"zip" xml:"zip"`
+
+	isAnonymous bool //
 
 	DeviceType  string `json:"device_type" xml:"device_type"`
 	DeviceModel string `json:"device_model" xml:"device_model"`
@@ -260,57 +374,100 @@ func (r *CreateRequest) convert() error {
 	c := common.NewConversion()
 	r.LatitudeV = c.Float("Latitude", r.Latitude)
 	r.LongitudeV = c.Float("Longitude", r.Longitude)
-	r.isAnonymous = c.Bool("IsAnonymous", r.IsAnonymous)
-	log.Debug("After convert: %s\n%s", c.String(), r.String())
-	if !c.Ok() {
-		return c
-	}
+	log.Debug("After convert: %s%s", c.String(), r.String())
 	return nil
 }
 
-func (r *createMgr) convertRequest() {
-	r.nreq = &structs.NCreateRequest{
-		NRequestCommon: structs.NRequestCommon{
-			ID: structs.NID{
-				RqstID: r.id,
-			},
-			Rtype: structs.NRTCreate,
-		},
-		MID:         r.req.MID,
-		Latitude:    r.req.LatitudeV,
-		Longitude:   r.req.LongitudeV,
-		FullAddress: r.req.FullAddress,
-		Email:       r.req.Email,
-		DeviceID:    r.req.DeviceID,
-		FirstName:   r.req.FirstName,
-		LastName:    r.req.LastName,
-		Phone:       r.req.Phone,
-		Description: r.req.Description,
-		ImageURL:    r.req.ImageURL,
+// validateLocation does the following:
+// 1. If there is a non-blank full address, attempt to use it by calling validateAddress()
+// 2. If validateAddress() is successful, set the Lat/Long to the address' location and return.
+// 3. If validateAddress() fails, then try to find the location using the LongitudeV and LatitudeV.
+// 4. If LongitudeV and LatitudeV are invalid, return error.
+// 5. If the lodation can be found using LongitudeV and LatitudeV, then set the address and return.
+func (r *CreateRequest) validateLocation() (err error) {
+	var addr common.Address
+	success := func() error {
 
-		DeviceType:  r.req.DeviceType,
-		DeviceModel: r.req.DeviceModel,
-		Address:     r.req.Address,
-		State:       r.req.State,
-		Zip:         r.req.Zip,
-		IsAnonymous: r.req.isAnonymous,
+		r.LatitudeV = addr.Lat
+		r.LongitudeV = addr.Long
+		r.FullAddress = addr.FullAddr()
+		r.Address = addr.Addr
+		r.City = addr.City
+		r.State = addr.State
+		r.Zip = addr.Zip
+		log.Debug("validateLocation SUCCESS - %s\n%s", r.String(), addr.String())
+		return nil
 	}
+	fail := func(e string) error {
+		log.Debug("validateLocation FAIL: %s\n%s", e, r.String())
+		return fmt.Errorf(e)
+	}
+
+	// Try the FullAddress first.
+	if len(r.FullAddress) > 0 {
+		log.Debug("Trying FullAddress...")
+		addr, err = common.NewAddr(r.FullAddress, true)
+		if err == nil {
+			return success()
+		}
+	}
+
+	// Try the address parts next.
+	log.Debug("Trying AddressParts...")
+	addr, err = common.NewAddrP(r.Address, r.City, r.State, r.Zip, true)
+	if err == nil {
+		return success()
+	}
+
+	// Finally, try reversing the Lat/Long to an address.
+	log.Debug("Validate LatLong...")
+	if !common.ValidateLatLng(r.LatitudeV, r.LongitudeV) {
+		return fail("unable to determine the request location")
+	}
+
+	log.Debug("Getting Address for Lat/Long...")
+	addr, err = common.AddrForLatLng(r.LatitudeV, r.LongitudeV)
+	if err == nil {
+		return success()
+	}
+
+	return nil
+}
+
+func (r *CreateRequest) validateLocationMID() error {
+	if err := r.setAreaID(); err != nil {
+		return err
+	}
+
+	if r.AreaID != r.MID.AreaID {
+		log.Warning("Address area ID: %q does not match the ServiceID area ID: %q", r.AreaID, r.MID.AreaID)
+		return fmt.Errorf("the ServiceID: %s is outside the specified location: %s", r.MID.MID(), r.City)
+	}
+
+	return nil
+}
+
+func (r *CreateRequest) setAreaID() error {
+	areaID, err := router.GetAreaID(r.City)
+	if err != nil {
+		return err
+	}
+	r.AreaID = areaID
+	return nil
 }
 
 // String displays the contents of the CreateRequest type.
 func (r CreateRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddF("CreateRequest\n")
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
-	ls.AddF("Request - id: %q\n", r.MID.MID())
-	if math.Abs(r.LatitudeV) > 1 {
-		ls.AddF("Location - lat: %v(%q)  lon: %v(%q)\n", r.LatitudeV, r.Latitude, r.LongitudeV, r.Longitude)
-	}
-	if len(r.City) > 1 {
-		ls.AddF("          %s, %s   %s\n", r.City, r.State, r.Zip)
-	}
+	ls.AddF("Request - id: %q   JurisdictionID: %q\n", r.MID.MID(), r.JurisdictionID)
+	ls.AddF("Device - ID: %s  type %s  model: %s\n", r.DeviceID, r.DeviceType, r.DeviceModel)
+	ls.AddF("Location - lat: %v(%q)  lon: %v(%q)  AreaID: %q\n", r.LatitudeV, r.Latitude, r.LongitudeV, r.Longitude, r.AreaID)
+	ls.AddF("          %s\n", r.FullAddress)
+	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.Zip)
 	ls.AddF("Description: %q\n", r.Description)
-	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", r.isAnonymous, r.FirstName, r.LastName, r.Email, r.Phone)
+	ls.AddF("Author (anon: %t) %s %s  Email: %s  Phone: %s  AcctID: %s\n", r.isAnonymous, r.FirstName, r.LastName, r.Email, r.Phone, r.AccountID)
+	ls.AddF("MediaURL: %s\n", r.MediaURL)
 	return ls.Box(80)
 }
 
@@ -320,17 +477,16 @@ func (r CreateRequest) String() string {
 
 // CreateResponse is the response to creating or updating a report.
 type CreateResponse struct {
-	Message  string `json:"Message" xml:"Message"`
-	ID       string `json:"ReportId" xml:"ReportId"`
-	AuthorID string `json:"AuthorId" xml:"AuthorId"`
+	ID        string `json:"service_request_id" xml:"service_request_id"`
+	Notice    string `json:"service_notice" xml:"service_notice"`
+	AccountID string `json:"account_id" xml:"account_id"`
 }
 
 // convertResponse converts the NCreateResponse{} to a CreateResponse{}
 func (r *createMgr) convertResponse() {
 	r.resp = &CreateResponse{
-		Message:  r.nresp.Message,
-		ID:       r.nresp.RID.RID(),
-		AuthorID: r.nresp.AuthorID,
+		ID:        r.nresp.RID.RID(),
+		AccountID: r.nresp.AccountID,
 	}
 }
 
@@ -338,8 +494,7 @@ func (r *createMgr) convertResponse() {
 func (r CreateResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddF("CreateResponse - %d\n", r.ID)
-	ls.AddF("Message: %s\n", r.Message)
-	ls.AddF("AuthorID: %s\n", r.AuthorID)
+	ls.AddF("AccountID: %s\n", r.AccountID)
 	return ls.Box(80)
 }
 

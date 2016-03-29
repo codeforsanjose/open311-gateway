@@ -37,6 +37,15 @@ ___
 
 ## Log
 
+### 2016.03.29 - Tue
+
+* Address validation (in engine/common) working well, including ServiceArea validation.
+* 
+
+### 2016.03.28 - Mon
+
+* Updated Address validation.
+
 ### 2016.03.21 - Mon
 
 * Revised ServiceList to closely match Open311-GeoReportV2 spec.

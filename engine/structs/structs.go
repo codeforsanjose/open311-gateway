@@ -366,6 +366,7 @@ func NewRID(route NRoute, id string) ReportID {
 type NCreateRequest struct {
 	NRequestCommon
 	MID         ServiceID
+	ServiceName string
 	DeviceType  string
 	DeviceModel string
 	DeviceID    string
@@ -382,7 +383,7 @@ type NCreateRequest struct {
 	Phone       string
 	IsAnonymous bool
 	Description string
-	ImageURL    string
+	MediaURL    string
 }
 
 // GetRoutes returns the routing data.
@@ -396,7 +397,7 @@ type NCreateResponse struct {
 	Message         string   `json:"Message" xml:"Message"`
 	RID             ReportID `json:"ReportId" xml:"ReportId"`
 	// ID              string `json:"ReportId" xml:"ReportId"`
-	AuthorID string `json:"AuthorId" xml:"AuthorId"`
+	AccountID string `json:"AuthorId" xml:"AuthorId"`
 }
 
 // =======================================================================================
@@ -473,7 +474,7 @@ type NSearchResponseReport struct {
 	DeviceID          string
 	RequestType       string
 	RequestTypeID     string
-	ImageURL          string
+	MediaURL          string
 	City              string
 	State             string
 	ZipCode           string
@@ -708,11 +709,17 @@ func (r NServices) String() string {
 
 // MID creates the Master ID string for the Service.
 func (r ServiceID) MID() string {
+	if r.AdpID == "" && r.AreaID == "" && r.ProviderID == 0 && r.ID == 0 {
+		return ""
+	}
 	return fmt.Sprintf("%s-%s-%d-%d", r.AdpID, r.AreaID, r.ProviderID, r.ID)
 }
 
 // RID creates the Master ID string for the Service.
 func (r ReportID) RID() string {
+	if r.AdpID == "" && r.AreaID == "" && r.ProviderID == 0 && r.ID == "" {
+		return ""
+	}
 	return fmt.Sprintf("%s-%s-%d-%s", r.AdpID, r.AreaID, r.ProviderID, r.ID)
 }
 
@@ -767,9 +774,11 @@ func (r NCreateRequest) String() string {
 	ls := new(common.LogString)
 	ls.AddF("NCreateRequest\n")
 	ls.AddS(r.NRequestCommon.String())
+	ls.AddF("Request: %s\n", r.ServiceName)
 	ls.AddF("Device - ID: %s  type: %s  model: %s\n", r.DeviceID, r.DeviceType, r.DeviceModel)
 	ls.AddF("Request - %s\n", r.MID.MID())
 	ls.AddF("Location - lat: %v lon: %v\n", r.Latitude, r.Longitude)
+	ls.AddF("          %s\n", r.Address)
 	ls.AddF("          %s, %s   %s\n", r.Area, r.State, r.Zip)
 	ls.AddF("Description: %q\n", r.Description)
 	ls.AddF("Author(anon: %t) %s %s  Email: %s  Tel: %s\n", r.IsAnonymous, r.FirstName, r.LastName, r.Email, r.Phone)
@@ -782,7 +791,7 @@ func (r NCreateResponse) String() string {
 	ls.AddS("NCreateResponse\n")
 	ls.AddS(r.NResponseCommon.String())
 	ls.AddF("Message: %s\n", r.Message)
-	ls.AddF("ID: %v  AuthorID: %v\n", r.ID, r.AuthorID)
+	ls.AddF("ID: %v  AccountID: %v\n", r.ID, r.AccountID)
 	return ls.Box(80)
 }
 
@@ -839,7 +848,7 @@ func (r NSearchResponseReport) String() string {
 	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.ZipCode)
 	ls.AddF("Votes: %v\n", r.Votes)
 	ls.AddF("Description: %q\n", r.Description)
-	ls.AddF("Images - std: %s\n", r.ImageURL)
+	ls.AddF("Images - std: %s\n", r.MediaURL)
 	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
 	ls.AddF("SLA: %s\n", r.TicketSLA)
 	return ls.Box(80)

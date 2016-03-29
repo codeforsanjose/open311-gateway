@@ -3,11 +3,11 @@ package request
 import (
 	"time"
 
+	"Gateway311/adapters/citysourced/common"
 	"Gateway311/adapters/citysourced/data"
 	"Gateway311/adapters/citysourced/search"
 	"Gateway311/adapters/citysourced/structs"
 	"Gateway311/adapters/citysourced/telemetry"
-	"Gateway311/adapters/citysourced/common"
 )
 
 const (
@@ -97,12 +97,7 @@ func (c *searchLLMgr) convertResponse() (resultCount int, err error) {
 			DeviceID:          rr.DeviceID,
 			RequestType:       rr.RequestType,
 			RequestTypeID:     rr.RequestTypeID,
-			ImageURL:          rr.ImageURL,
-			ImageURLXl:        rr.ImageURLXl,
-			ImageURLLg:        rr.ImageURLLg,
-			ImageURLMd:        rr.ImageURLMd,
-			ImageURLSm:        rr.ImageURLSm,
-			ImageURLXs:        rr.ImageURLXs,
+			MediaURL:          rr.ImageURL,
 			City:              rr.City,
 			State:             rr.State,
 			ZipCode:           rr.ZipCode,
@@ -225,12 +220,7 @@ func (c *searchRIDMgr) convertResponse() (resultCount int, err error) {
 			DeviceID:          rr.DeviceID,
 			RequestType:       rr.RequestType,
 			RequestTypeID:     rr.RequestTypeID,
-			ImageURL:          rr.ImageURL,
-			ImageURLXl:        rr.ImageURLXl,
-			ImageURLLg:        rr.ImageURLLg,
-			ImageURLMd:        rr.ImageURLMd,
-			ImageURLSm:        rr.ImageURLSm,
-			ImageURLXs:        rr.ImageURLXs,
+			MediaURL:          rr.ImageURL,
 			City:              rr.City,
 			State:             rr.State,
 			ZipCode:           rr.ZipCode,
@@ -354,12 +344,7 @@ func (c *searchDIDMgr) convertResponse() (resultCount int, err error) {
 			DeviceID:          rr.DeviceID,
 			RequestType:       rr.RequestType,
 			RequestTypeID:     rr.RequestTypeID,
-			ImageURL:          rr.ImageURL,
-			ImageURLXl:        rr.ImageURLXl,
-			ImageURLLg:        rr.ImageURLLg,
-			ImageURLMd:        rr.ImageURLMd,
-			ImageURLSm:        rr.ImageURLSm,
-			ImageURLXs:        rr.ImageURLXs,
+			MediaURL:          rr.ImageURL,
 			City:              rr.City,
 			State:             rr.State,
 			ZipCode:           rr.ZipCode,

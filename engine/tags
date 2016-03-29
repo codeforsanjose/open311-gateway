@@ -1,0 +1,1096 @@
+!_TAG_FILE_FORMAT	2
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted/
+!_TAG_PROGRAM_AUTHOR	Joel Stemmer	/stemmertech@gmail.com/
+!_TAG_PROGRAM_NAME	gotags
+!_TAG_PROGRAM_URL	https://github.com/jstemmer/gotags
+!_TAG_PROGRAM_VERSION	1.3.0	/go1.5.1/
+*GoogleResponse	geo/geocode.go	220;"	e	access:private	ctype:Response	language:Go	line:220	type:*GoogleResponse
+*OSMResponse	geo/geocode.go	221;"	e	access:private	ctype:Response	language:Go	line:221	type:*OSMResponse
+*YOURSResponse	geo/geocode.go	222;"	e	access:private	ctype:Response	language:Go	line:222	type:*YOURSResponse
+ACS/iDirectStat/logs	logs/logs_test.go	4;"	i	language:Go	line:4
+APIKey	request/create.go	301;"	w	access:public	ctype:CreateRequest	language:Go	line:301	type:string
+AccountID	request/create.go	308;"	w	access:public	ctype:CreateRequest	language:Go	line:308	type:string
+AccountID	request/create.go	391;"	w	access:public	ctype:CreateResponse	language:Go	line:391	type:string
+AccountID	structs/structs.go	400;"	w	access:public	ctype:NCreateResponse	language:Go	line:400	type:string
+Adapter	router/data.go	332;"	t	access:public	language:Go	line:332	type:struct
+Adapters	router/data.go	173;"	t	access:public	language:Go	line:173	type:struct
+Adapters	router/data.go	176;"	w	access:public	ctype:Adapters	language:Go	line:176	type:map[string]*Adapter
+Adapters	telemetry/message.go	119;"	w	access:public	ctype:EngStatusMsgType	language:Go	line:119	type:string
+AddF	common/logformat.go	35;"	m	access:public	ctype:LogString	language:Go	line:35	signature:(format string, args )
+AddF	logs/logs.go	98;"	m	access:public	ctype:LogString	language:Go	line:98	signature:(format string, args )
+AddS	common/logformat.go	40;"	m	access:public	ctype:LogString	language:Go	line:40	signature:(s string)
+AddS	logs/logs.go	103;"	m	access:public	ctype:LogString	language:Go	line:103	signature:(s string)
+AddSR	common/logformat.go	45;"	m	access:public	ctype:LogString	language:Go	line:45	signature:(s string)
+AddSR	logs/logs.go	108;"	m	access:public	ctype:LogString	language:Go	line:108	signature:(s string)
+Addr	common/address.go	25;"	w	access:public	ctype:Address	language:Go	line:25	type:string
+Addr	telemetry/message.go	120;"	w	access:public	ctype:EngStatusMsgType	language:Go	line:120	type:string
+Addr	telemetry/message.go	253;"	w	access:public	ctype:AdpStatusMsgType	language:Go	line:253	type:string
+AddrDetailForLatLng	geo/mygeocode.go	45;"	f	access:public	language:Go	line:45	signature:(lat, lng float64)	type:string, error
+AddrForLatLng	common/address.go	86;"	f	access:public	ctype:Address	language:Go	line:86	signature:(lat, lng float64)	type:Address, error
+AddrForLatLng	geo/mygeocode.go	22;"	f	access:public	language:Go	line:22	signature:(lat, lng float64)	type:string, error
+Address	common/address.go	24;"	t	access:public	language:Go	line:24	type:struct
+Address	geo/geocode.go	295;"	w	access:public	ctype:GoogleResult	language:Go	line:295	type:string
+Address	geo/geocode.go	337;"	w	access:public	ctype:OSMResponse	language:Go	line:337	type:string
+Address	geo/geocode.go	61;"	w	access:public	ctype:Request	language:Go	line:61	type:string
+Address	request/create.go	318;"	w	access:public	ctype:CreateRequest	language:Go	line:318	type:string
+Address	request/search.go	438;"	w	access:public	ctype:SearchRequest	language:Go	line:438	type:string
+Address	request/services.go	192;"	w	access:public	ctype:ServicesReq	language:Go	line:192	type:string
+Address	router/data.go	335;"	w	access:public	ctype:Adapter	language:Go	line:335	type:string
+Address	structs/structs.go	376;"	w	access:public	ctype:NCreateRequest	language:Go	line:376	type:string
+AddressParts	geo/geocode.go	296;"	w	access:public	ctype:GoogleResult	language:Go	line:296	type:[]*GoogleAddressPart
+AddressParts	geo/geocode.go	338;"	w	access:public	ctype:OSMResponse	language:Go	line:338	type:*OSMAddressPart
+AdpID	router/data.go	356;"	m	access:public	language:Go	line:356	ntype:AdpRPCer	signature:()	type:string
+AdpID	router/data.go	362;"	m	access:public	ctype:Adapter	language:Go	line:362	signature:()	type:string
+AdpID	structs/structs.go	153;"	w	access:public	ctype:NRoute	language:Go	line:153	type:string
+AdpID	structs/structs.go	296;"	w	access:public	ctype:NServicesResponse	language:Go	line:296	type:string
+AdpID	structs/structs.go	326;"	w	access:public	ctype:ServiceID	language:Go	line:326	type:string
+AdpID	telemetry/message.go	288;"	w	access:public	ctype:AdpRPCMsgType	language:Go	line:288	type:string
+AdpRPCMsgType	telemetry/message.go	287;"	t	access:public	language:Go	line:287	type:struct
+AdpRPCer	router/data.go	355;"	n	access:public	language:Go	line:355	type:interface
+AdpStatusMsgType	telemetry/message.go	250;"	t	access:public	language:Go	line:250	type:struct
+Aliases	router/data.go	384;"	w	access:public	ctype:Area	language:Go	line:384	type:[]string
+Area	router/data.go	381;"	t	access:public	language:Go	line:381	type:struct
+Area	structs/structs.go	282;"	w	access:public	ctype:NServiceRequest	language:Go	line:282	type:string
+Area	structs/structs.go	377;"	w	access:public	ctype:NCreateRequest	language:Go	line:377	type:string
+AreaID	request/search.go	440;"	w	access:public	ctype:SearchRequest	language:Go	line:440	type:string
+AreaID	structs/structs.go	154;"	w	access:public	ctype:NRoute	language:Go	line:154	type:string
+AreaID	structs/structs.go	327;"	w	access:public	ctype:ServiceID	language:Go	line:327	type:string
+AreaID	structs/structs.go	413;"	w	access:public	ctype:NSearchRequestLL	language:Go	line:413	type:string
+AreaID	structs/structs.go	430;"	w	access:public	ctype:NSearchRequestDID	language:Go	line:430	type:string
+AreaID	structs/structs.go	447;"	w	access:public	ctype:NSearchRequestRID	language:Go	line:447	type:string
+AreaID	telemetry/message.go	160;"	w	access:public	ctype:EngRequestMsgType	language:Go	line:160	type:string
+Areas	router/data.go	177;"	w	access:public	ctype:Adapters	language:Go	line:177	type:map[string]*Area
+At	telemetry/message.go	161;"	w	access:public	ctype:EngRequestMsgType	language:Go	line:161	type:time.Time
+At	telemetry/message.go	208;"	w	access:public	ctype:EngRPCMsgType	language:Go	line:208	type:time.Time
+At	telemetry/message.go	294;"	w	access:public	ctype:AdpRPCMsgType	language:Go	line:294	type:time.Time
+AuthorEmail	request/search.go	515;"	w	access:public	ctype:SearchResponseReport	language:Go	line:515	type:string
+AuthorEmail	structs/structs.go	487;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:487	type:string
+AuthorIsAnonymous	request/search.go	517;"	w	access:public	ctype:SearchResponseReport	language:Go	line:517	type:string
+AuthorIsAnonymous	structs/structs.go	489;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:489	type:string
+AuthorNameFirst	request/search.go	513;"	w	access:public	ctype:SearchResponseReport	language:Go	line:513	type:string
+AuthorNameFirst	structs/structs.go	485;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:485	type:string
+AuthorNameLast	request/search.go	514;"	w	access:public	ctype:SearchResponseReport	language:Go	line:514	type:string
+AuthorNameLast	structs/structs.go	486;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:486	type:string
+AuthorTelephone	request/search.go	516;"	w	access:public	ctype:SearchResponseReport	language:Go	line:516	type:string
+AuthorTelephone	structs/structs.go	488;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:488	type:string
+BCon	logs/logs.go	146;"	m	access:public	ctype:LogString	language:Go	line:146	signature:(w int)
+Bool	common/conversion.go	64;"	m	access:public	ctype:Conversion	language:Go	line:64	signature:(name, val string)	type:bool
+Bounds	geo/geocode.go	308;"	w	access:public	ctype:Geometry	language:Go	line:308	type:Bounds
+Bounds	geo/geocode.go	47;"	t	access:public	language:Go	line:47	type:struct
+Bounds	geo/geocode.go	65;"	w	access:public	ctype:Request	language:Go	line:65	type:*Bounds
+Box	common/logformat.go	67;"	m	access:public	ctype:LogString	language:Go	line:67	signature:(w int)	type:string
+Box	logs/logs.go	113;"	m	access:public	ctype:LogString	language:Go	line:113	signature:(w int)	type:string
+BoxC	common/logformat.go	72;"	m	access:public	ctype:LogString	language:Go	line:72	signature:(w int)	type:string
+BoxC	logs/logs.go	118;"	m	access:public	ctype:LogString	language:Go	line:118	signature:(w int)	type:string
+BoxIt	common/misc.go	54;"	f	access:public	language:Go	line:54	signature:(str []string, width int)	type:string
+ByteToString	common/misc.go	93;"	f	access:public	language:Go	line:93	signature:(input []byte, length int)	type:string
+Call	router/data.go	358;"	m	access:public	language:Go	line:358	ntype:AdpRPCer	signature:(serviceMethod string, args interface{}, reply interface{})	type:error
+Call	router/data.go	372;"	m	access:public	ctype:Adapter	language:Go	line:372	signature:(serviceMethod string, args interface{}, reply interface{})	type:error
+City	common/address.go	26;"	w	access:public	ctype:Address	language:Go	line:26	type:string
+City	geo/geocode.go	346;"	w	access:public	ctype:OSMAddressPart	language:Go	line:346	type:string
+City	request/create.go	319;"	w	access:public	ctype:CreateRequest	language:Go	line:319	type:string
+City	request/search.go	439;"	w	access:public	ctype:SearchRequest	language:Go	line:439	type:string
+City	request/search.go	506;"	w	access:public	ctype:SearchResponseReport	language:Go	line:506	type:string
+City	request/services.go	193;"	w	access:public	ctype:ServicesReq	language:Go	line:193	type:string
+City	structs/structs.go	478;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:478	type:string
+CityForLatLng	geo/mygeocode.go	68;"	f	access:public	language:Go	line:68	signature:(lat, lng float64)	type:string, error
+Code	request/error.go	10;"	w	access:public	ctype:ErrorResponseJ	language:Go	line:10	type:int
+Color	common/logformat.go	50;"	m	access:public	ctype:LogString	language:Go	line:50	signature:(s, color string)	type:string
+Color	logs/logs.go	89;"	m	access:public	ctype:LogString	language:Go	line:89	signature:(color, s string)	type:string
+ColorBool	common/logformat.go	59;"	m	access:public	ctype:LogString	language:Go	line:59	signature:(v bool, strue, sfalse, ctrue, cfalse string)	type:string
+Connected	router/data.go	357;"	m	access:public	language:Go	line:357	ntype:AdpRPCer	signature:()	type:bool
+Connected	router/data.go	367;"	m	access:public	ctype:Adapter	language:Go	line:367	signature:()	type:bool
+Conversion	common/conversion.go	49;"	t	access:public	language:Go	line:49	type:struct
+Coordinates	geo/geocode.go	376;"	w	access:public	ctype:YOURSResponse	language:Go	line:376	type:[][]float64
+Count	geo/geocode.go	219;"	w	access:public	ctype:Response	language:Go	line:219	type:int
+Create	request/request.go	34;"	f	access:public	language:Go	line:34	signature:(w rest.ResponseWriter, r *rest.Request)
+CreateRequest	request/create.go	299;"	t	access:public	language:Go	line:299	type:struct
+CreateResponse	request/create.go	388;"	t	access:public	language:Go	line:388	type:struct
+Data	request/create.go	102;"	m	access:public	ctype:createMgr	language:Go	line:102	signature:()	type:interface{}
+Data	request/search.go	115;"	m	access:public	ctype:searchMgr	language:Go	line:115	signature:()	type:interface{}
+Data	router/rpc.go	65;"	m	access:public	language:Go	line:65	ntype:requester	signature:()	type:interface{}
+Data	services/refresh.go	97;"	m	access:public	ctype:refreshMgr	language:Go	line:97	signature:()	type:interface{}
+Data	telemetry/message.go	105;"	m	access:public	ctype:Message	language:Go	line:105	signature:()	type:[]string
+DateCreated	request/search.go	498;"	w	access:public	ctype:SearchResponseReport	language:Go	line:498	type:string
+DateCreated	structs/structs.go	470;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:470	type:string
+DateUpdated	request/search.go	499;"	w	access:public	ctype:SearchResponseReport	language:Go	line:499	type:string
+DateUpdated	structs/structs.go	471;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:471	type:string
+Debug	gateway.go	22;"	v	access:public	language:Go	line:22
+Debug	router/router_test.go	12;"	v	access:public	language:Go	line:12
+Debug	services/services_test.go	14;"	v	access:public	language:Go	line:14
+Description	request/create.go	312;"	w	access:public	ctype:CreateRequest	language:Go	line:312	type:string
+Description	request/error.go	11;"	w	access:public	ctype:ErrorResponseJ	language:Go	line:11	type:string
+Description	request/search.go	512;"	w	access:public	ctype:SearchResponseReport	language:Go	line:512	type:string
+Description	request/services.go	238;"	w	access:public	ctype:ServicesRespS	language:Go	line:238	type:string
+Description	structs/structs.go	314;"	w	access:public	ctype:NService	language:Go	line:314	type:string
+Description	structs/structs.go	385;"	w	access:public	ctype:NCreateRequest	language:Go	line:385	type:string
+Description	structs/structs.go	484;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:484	type:string
+DeviceID	request/create.go	307;"	w	access:public	ctype:CreateRequest	language:Go	line:307	type:string
+DeviceID	request/search.go	431;"	w	access:public	ctype:SearchRequest	language:Go	line:431	type:string
+DeviceID	request/search.go	502;"	w	access:public	ctype:SearchResponseReport	language:Go	line:502	type:string
+DeviceID	structs/structs.go	372;"	w	access:public	ctype:NCreateRequest	language:Go	line:372	type:string
+DeviceID	structs/structs.go	427;"	w	access:public	ctype:NSearchRequestDID	language:Go	line:427	type:string
+DeviceID	structs/structs.go	474;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:474	type:string
+DeviceModel	request/create.go	325;"	w	access:public	ctype:CreateRequest	language:Go	line:325	type:string
+DeviceModel	request/search.go	501;"	w	access:public	ctype:SearchResponseReport	language:Go	line:501	type:string
+DeviceModel	structs/structs.go	371;"	w	access:public	ctype:NCreateRequest	language:Go	line:371	type:string
+DeviceModel	structs/structs.go	473;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:473	type:string
+DeviceType	request/create.go	324;"	w	access:public	ctype:CreateRequest	language:Go	line:324	type:string
+DeviceType	request/search.go	430;"	w	access:public	ctype:SearchRequest	language:Go	line:430	type:string
+DeviceType	request/search.go	500;"	w	access:public	ctype:SearchResponseReport	language:Go	line:500	type:string
+DeviceType	structs/structs.go	370;"	w	access:public	ctype:NCreateRequest	language:Go	line:370	type:string
+DeviceType	structs/structs.go	426;"	w	access:public	ctype:NSearchRequestDID	language:Go	line:426	type:string
+DeviceType	structs/structs.go	472;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:472	type:string
+Directionality	request/search.go	511;"	w	access:public	ctype:SearchResponseReport	language:Go	line:511	type:string
+Directionality	structs/structs.go	483;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:483	type:string
+Distance	geo/geocode.go	381;"	w	access:public	ctype:YOURSProperties	language:Go	line:381	type:string
+Email	request/create.go	306;"	w	access:public	ctype:CreateRequest	language:Go	line:306	type:string
+Email	structs/structs.go	382;"	w	access:public	ctype:NCreateRequest	language:Go	line:382	type:string
+EngRPCMsgType	telemetry/message.go	204;"	t	access:public	language:Go	line:204	type:struct
+EngRequestMsgType	telemetry/message.go	156;"	t	access:public	language:Go	line:156	type:struct
+EngStatusMsgType	telemetry/message.go	116;"	t	access:public	language:Go	line:116	type:struct
+Error	common/validation.go	92;"	m	access:public	ctype:Validation	language:Go	line:92	signature:()	type:string
+ErrorResponseJ	request/error.go	9;"	t	access:public	language:Go	line:9	type:struct
+ErrorsResponseJ	request/error.go	6;"	t	access:public	language:Go	line:6	type:[]*ErrorResponseJ
+FirstName	request/create.go	309;"	w	access:public	ctype:CreateRequest	language:Go	line:309	type:string
+FirstName	structs/structs.go	380;"	w	access:public	ctype:NCreateRequest	language:Go	line:380	type:string
+Float	common/conversion.go	54;"	m	access:public	ctype:Conversion	language:Go	line:54	signature:(name, val string)	type:float64
+Found	geo/geocode.go	218;"	w	access:public	ctype:Response	language:Go	line:218	type:string
+FullAddress	request/create.go	305;"	w	access:public	ctype:CreateRequest	language:Go	line:305	type:string
+FullAddress	request/services.go	191;"	w	access:public	ctype:ServicesReq	language:Go	line:191	type:string
+FullAddress	structs/structs.go	375;"	w	access:public	ctype:NCreateRequest	language:Go	line:375	type:string
+GEOCODE	geo/geocode.go	25;"	c	access:public	language:Go	line:25	type:RequestType
+GOOGLE	geo/geocode.go	29;"	c	access:public	language:Go	line:29
+Gateway311/engine/common	request/create.go	8;"	i	language:Go	line:8
+Gateway311/engine/common	request/error.go	3;"	i	language:Go	line:3
+Gateway311/engine/common	request/search.go	8;"	i	language:Go	line:8
+Gateway311/engine/common	request/services.go	10;"	i	language:Go	line:10
+Gateway311/engine/common	router/data.go	12;"	i	language:Go	line:12
+Gateway311/engine/common	router/rpc.go	10;"	i	language:Go	line:10
+Gateway311/engine/common	services/refresh.go	8;"	i	language:Go	line:8
+Gateway311/engine/common	services/services.go	9;"	i	language:Go	line:9
+Gateway311/engine/common	structs/structs.go	10;"	i	language:Go	line:10
+Gateway311/engine/geo	common/address.go	8;"	i	language:Go	line:8
+Gateway311/engine/geo	request/search.go	9;"	i	language:Go	line:9
+Gateway311/engine/geo	request/services.go	11;"	i	language:Go	line:11
+Gateway311/engine/logs	gateway.go	11;"	i	language:Go	line:11
+Gateway311/engine/logs	request/request.go	7;"	i	language:Go	line:7
+Gateway311/engine/logs	router/router.go	8;"	i	language:Go	line:8
+Gateway311/engine/logs	router/router_test.go	7;"	i	language:Go	line:7
+Gateway311/engine/logs	services/services.go	10;"	i	language:Go	line:10
+Gateway311/engine/logs	services/services_test.go	8;"	i	language:Go	line:8
+Gateway311/engine/logs	telemetry/telemetry.go	8;"	i	language:Go	line:8
+Gateway311/engine/request	gateway.go	12;"	i	language:Go	line:12
+Gateway311/engine/router	gateway.go	13;"	i	language:Go	line:13
+Gateway311/engine/router	request/create.go	9;"	i	language:Go	line:9
+Gateway311/engine/router	request/search.go	10;"	i	language:Go	line:10
+Gateway311/engine/router	request/services.go	12;"	i	language:Go	line:12
+Gateway311/engine/router	services/refresh.go	9;"	i	language:Go	line:9
+Gateway311/engine/router	services/services.go	11;"	i	language:Go	line:11
+Gateway311/engine/router	services/services_test.go	9;"	i	language:Go	line:9
+Gateway311/engine/services	gateway.go	14;"	i	language:Go	line:14
+Gateway311/engine/services	request/services.go	13;"	i	language:Go	line:13
+Gateway311/engine/structs	request/create.go	10;"	i	language:Go	line:10
+Gateway311/engine/structs	request/search.go	11;"	i	language:Go	line:11
+Gateway311/engine/structs	request/services.go	14;"	i	language:Go	line:14
+Gateway311/engine/structs	router/data.go	13;"	i	language:Go	line:13
+Gateway311/engine/structs	router/routes.go	4;"	i	language:Go	line:4
+Gateway311/engine/structs	router/rpc.go	11;"	i	language:Go	line:11
+Gateway311/engine/structs	router/validation.go	3;"	i	language:Go	line:3
+Gateway311/engine/structs	services/refresh.go	10;"	i	language:Go	line:10
+Gateway311/engine/structs	services/services.go	12;"	i	language:Go	line:12
+Gateway311/engine/telemetry	request/create.go	11;"	i	language:Go	line:11
+Gateway311/engine/telemetry	request/search.go	12;"	i	language:Go	line:12
+Gateway311/engine/telemetry	request/services.go	15;"	i	language:Go	line:15
+Gateway311/engine/telemetry	router/rpc.go	12;"	i	language:Go	line:12
+Gateway311/engine/telemetry	services/refresh.go	11;"	i	language:Go	line:11
+Geometry	geo/geocode.go	297;"	w	access:public	ctype:GoogleResult	language:Go	line:297	type:*Geometry
+Geometry	geo/geocode.go	307;"	t	access:public	language:Go	line:307	type:struct
+Get	common/sid.go	16;"	m	access:public	ctype:SerialID	language:Go	line:16	signature:()	type:int64
+GetAdapter	router/data.go	48;"	f	access:public	ctype:Adapter	language:Go	line:48	signature:(id string)	type:*Adapter, error
+GetAdapterID	router/data.go	43;"	f	access:public	language:Go	line:43	signature:(MID string)	type:string, error
+GetAllActiveRoutes	router/data.go	59;"	f	access:public	language:Go	line:59	signature:()	type:structs.NRoutes
+GetAllRoutes	router/data.go	64;"	f	access:public	language:Go	line:64	signature:()	type:structs.NRoutes
+GetArea	services/services.go	25;"	f	access:public	language:Go	line:25	signature:(areaID string)	type:structs.NServices, error
+GetAreaAdapters	router/data.go	33;"	f	access:public	language:Go	line:33	signature:(areaID string)	type:[]*Adapter, error
+GetAreaID	router/data.go	38;"	f	access:public	language:Go	line:38	signature:(alias string)	type:string, error
+GetAreaRoutes	router/data.go	53;"	f	access:public	language:Go	line:53	signature:(areaID string)	type:structs.NRoutes, error
+GetChAreaAdp	router/data.go	22;"	f	access:public	language:Go	line:22	signature:()	type:chan map[string][]string
+GetChRouteUpd	router/data.go	27;"	f	access:public	language:Go	line:27	signature:()	type:chan map[structs.NRoute]bool
+GetID	structs/structs.go	202;"	m	access:public	ctype:NResponseCommon	language:Go	line:202	signature:()	type:int64, int64
+GetID	structs/structs.go	248;"	m	access:public	language:Go	line:248	ntype:NResponser	signature:()	type:int64, int64
+GetID	structs/structs.go	59;"	m	access:public	ctype:NRequestCommon	language:Go	line:59	signature:()	type:int64, int64
+GetID	structs/structs.go	99;"	m	access:public	language:Go	line:99	ntype:NRequester	signature:()	type:int64, int64
+GetIDS	structs/structs.go	100;"	m	access:public	language:Go	line:100	ntype:NRequester	signature:()	type:string
+GetIDS	structs/structs.go	207;"	m	access:public	ctype:NResponseCommon	language:Go	line:207	signature:()	type:string
+GetIDS	structs/structs.go	249;"	m	access:public	language:Go	line:249	ntype:NResponser	signature:()	type:string
+GetIDS	structs/structs.go	64;"	m	access:public	ctype:NRequestCommon	language:Go	line:64	signature:()	type:string
+GetNID	structs/structs.go	36;"	m	access:public	ctype:NID	language:Go	line:36	signature:()	type:int64, int64
+GetRoute	structs/structs.go	102;"	m	access:public	language:Go	line:102	ntype:NRequester	signature:()	type:NRoute
+GetRoute	structs/structs.go	235;"	m	access:public	ctype:NResponseCommon	language:Go	line:235	signature:()	type:NRoute
+GetRoute	structs/structs.go	253;"	m	access:public	language:Go	line:253	ntype:NResponser	signature:()	type:NRoute
+GetRoute	structs/structs.go	333;"	m	access:public	ctype:ServiceID	language:Go	line:333	signature:()	type:NRoute
+GetRoute	structs/structs.go	86;"	m	access:public	ctype:NRequestCommon	language:Go	line:86	signature:()	type:NRoute
+GetRouteAdapter	router/data.go	69;"	f	access:public	language:Go	line:69	signature:(route structs.NRoute)	type:AdpRPCer, error
+GetRoutes	structs/structs.go	134;"	m	access:public	language:Go	line:134	ntype:NRouter	signature:()	type:NRoutes
+GetRoutes	structs/structs.go	286;"	m	access:public	ctype:NServiceRequest	language:Go	line:286	signature:()	type:NRoutes
+GetRoutes	structs/structs.go	390;"	m	access:public	ctype:NCreateRequest	language:Go	line:390	signature:()	type:NRoutes
+GetRoutes	structs/structs.go	418;"	m	access:public	ctype:NSearchRequestLL	language:Go	line:418	signature:()	type:NRoutes
+GetRoutes	structs/structs.go	434;"	m	access:public	ctype:NSearchRequestDID	language:Go	line:434	signature:()	type:NRoutes
+GetRoutes	structs/structs.go	451;"	m	access:public	ctype:NSearchRequestRID	language:Go	line:451	signature:()	type:NRoutes
+GetType	structs/structs.go	105;"	m	access:public	language:Go	line:105	ntype:NRequester	signature:()	type:NRequestType
+GetType	structs/structs.go	224;"	m	access:public	ctype:NResponseCommon	language:Go	line:224	signature:()	type:NResponseType
+GetType	structs/structs.go	251;"	m	access:public	language:Go	line:251	ntype:NResponser	signature:()	type:NResponseType
+GetType	structs/structs.go	75;"	m	access:public	ctype:NRequestCommon	language:Go	line:75	signature:()	type:NRequestType
+GetTypeS	structs/structs.go	106;"	m	access:public	language:Go	line:106	ntype:NRequester	signature:()	type:string
+GetTypeS	structs/structs.go	229;"	m	access:public	ctype:NResponseCommon	language:Go	line:229	signature:()	type:string
+GetTypeS	structs/structs.go	252;"	m	access:public	language:Go	line:252	ntype:NResponser	signature:()	type:string
+GetTypeS	structs/structs.go	80;"	m	access:public	ctype:NRequestCommon	language:Go	line:80	signature:()	type:string
+GoogleAddressPart	geo/geocode.go	301;"	t	access:public	language:Go	line:301	type:struct
+GoogleResponse	geo/geocode.go	225;"	t	access:public	language:Go	line:225	type:struct
+GoogleResult	geo/geocode.go	229;"	t	access:public	language:Go	line:229	type:struct
+Group	request/services.go	242;"	w	access:public	ctype:ServicesRespS	language:Go	line:242	type:string
+Group	structs/structs.go	318;"	w	access:public	ctype:NService	language:Go	line:318	type:string
+HTTPClient	geo/geocode.go	56;"	w	access:public	ctype:Request	language:Go	line:56	type:*http.Client
+HouseNumber	geo/geocode.go	344;"	w	access:public	ctype:OSMAddressPart	language:Go	line:344	type:string
+ID	request/create.go	389;"	w	access:public	ctype:CreateResponse	language:Go	line:389	type:string
+ID	request/services.go	236;"	w	access:public	ctype:ServicesRespS	language:Go	line:236	type:string
+ID	router/data.go	333;"	w	access:public	ctype:Adapter	language:Go	line:333	type:string
+ID	router/data.go	382;"	w	access:public	ctype:Area	language:Go	line:382	type:string
+ID	structs/structs.go	195;"	w	access:public	ctype:NResponseCommon	language:Go	line:195	type:NID
+ID	structs/structs.go	329;"	w	access:public	ctype:ServiceID	language:Go	line:329	type:int
+ID	structs/structs.go	347;"	w	access:public	ctype:ReportID	language:Go	line:347	type:string
+ID	structs/structs.go	51;"	w	access:public	ctype:NRequestCommon	language:Go	line:51	type:NID
+ID	telemetry/message.go	157;"	w	access:public	ctype:EngRequestMsgType	language:Go	line:157	type:string
+ID	telemetry/message.go	205;"	w	access:public	ctype:EngRPCMsgType	language:Go	line:205	type:string
+ID	telemetry/message.go	289;"	w	access:public	ctype:AdpRPCMsgType	language:Go	line:289	type:string
+Init	logs/logs.go	23;"	f	access:public	language:Go	line:23	signature:(debug bool)
+Init	router/router.go	20;"	f	access:public	language:Go	line:20	signature:(configFile string)	type:error
+Instructions	geo/geocode.go	382;"	w	access:public	ctype:YOURSProperties	language:Go	line:382	type:string
+Int	common/conversion.go	59;"	m	access:public	ctype:Conversion	language:Go	line:59	signature:(name, val string)	type:int
+IsAnonymous	structs/structs.go	384;"	w	access:public	ctype:NCreateRequest	language:Go	line:384	type:bool
+IsOK	common/validation.go	60;"	m	access:public	ctype:Validation	language:Go	line:60	signature:(item string)	type:bool
+JurisdictionID	request/create.go	302;"	w	access:public	ctype:CreateRequest	language:Go	line:302	type:string
+Key	telemetry/message.go	95;"	m	access:public	ctype:Message	language:Go	line:95	signature:()	type:string
+Keywords	request/services.go	241;"	w	access:public	ctype:ServicesRespS	language:Go	line:241	type:string
+Keywords	structs/structs.go	317;"	w	access:public	ctype:NService	language:Go	line:317	type:[]string
+Language	geo/geocode.go	69;"	w	access:public	ctype:Request	language:Go	line:69	type:string
+LastName	request/create.go	310;"	w	access:public	ctype:CreateRequest	language:Go	line:310	type:string
+LastName	structs/structs.go	381;"	w	access:public	ctype:NCreateRequest	language:Go	line:381	type:string
+Lat	geo/geocode.go	339;"	w	access:public	ctype:OSMResponse	language:Go	line:339	type:string
+Lat	geo/geocode.go	40;"	w	access:public	ctype:Point	language:Go	line:40	type:float64
+LatLngForAddr	geo/mygeocode.go	7;"	f	access:public	language:Go	line:7	signature:(addr string)	type:float64, float64, error
+Latitude	request/create.go	303;"	w	access:public	ctype:CreateRequest	language:Go	line:303	type:string
+Latitude	request/search.go	432;"	w	access:public	ctype:SearchRequest	language:Go	line:432	type:string
+Latitude	request/search.go	509;"	w	access:public	ctype:SearchResponseReport	language:Go	line:509	type:string
+Latitude	request/services.go	187;"	w	access:public	ctype:ServicesReq	language:Go	line:187	type:string
+Latitude	structs/structs.go	373;"	w	access:public	ctype:NCreateRequest	language:Go	line:373	type:float64
+Latitude	structs/structs.go	410;"	w	access:public	ctype:NSearchRequestLL	language:Go	line:410	type:float64
+Latitude	structs/structs.go	481;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:481	type:string
+LatitudeV	request/create.go	315;"	w	access:public	ctype:CreateRequest	language:Go	line:315	type:float64
+LatitudeV	request/search.go	433;"	w	access:public	ctype:SearchRequest	language:Go	line:433	type:float64
+LatitudeV	request/services.go	188;"	w	access:public	ctype:ServicesReq	language:Go	line:188	type:float64
+Limit	geo/geocode.go	67;"	w	access:public	ctype:Request	language:Go	line:67	type:int64
+Lng	geo/geocode.go	340;"	w	access:public	ctype:OSMResponse	language:Go	line:340	type:string
+Lng	geo/geocode.go	40;"	w	access:public	ctype:Point	language:Go	line:40	type:float64
+Location	geo/geocode.go	309;"	w	access:public	ctype:Geometry	language:Go	line:309	type:Point
+Location	geo/geocode.go	62;"	w	access:public	ctype:Request	language:Go	line:62	type:*Point
+Log	logs/logs.go	17;"	v	access:public	language:Go	line:17
+LogPrinter	logs/logs.go	18;"	v	access:public	language:Go	line:18	type:*logPrinter
+LogString	common/logformat.go	28;"	t	access:public	language:Go	line:28	type:struct
+LogString	logs/logs.go	82;"	t	access:public	language:Go	line:82	type:struct
+Longitude	request/create.go	304;"	w	access:public	ctype:CreateRequest	language:Go	line:304	type:string
+Longitude	request/search.go	434;"	w	access:public	ctype:SearchRequest	language:Go	line:434	type:string
+Longitude	request/search.go	510;"	w	access:public	ctype:SearchResponseReport	language:Go	line:510	type:string
+Longitude	request/services.go	189;"	w	access:public	ctype:ServicesReq	language:Go	line:189	type:string
+Longitude	structs/structs.go	374;"	w	access:public	ctype:NCreateRequest	language:Go	line:374	type:float64
+Longitude	structs/structs.go	411;"	w	access:public	ctype:NSearchRequestLL	language:Go	line:411	type:float64
+Longitude	structs/structs.go	482;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:482	type:string
+LongitudeV	request/create.go	316;"	w	access:public	ctype:CreateRequest	language:Go	line:316	type:float64
+LongitudeV	request/search.go	435;"	w	access:public	ctype:SearchRequest	language:Go	line:435	type:float64
+LongitudeV	request/services.go	190;"	w	access:public	ctype:ServicesReq	language:Go	line:190	type:float64
+Lookup	geo/geocode.go	147;"	m	access:public	ctype:Request	language:Go	line:147	signature:(transport http.RoundTripper)	type:*Response, error
+MID	request/create.go	300;"	w	access:public	ctype:CreateRequest	language:Go	line:300	type:structs.ServiceID
+MID	structs/structs.go	368;"	w	access:public	ctype:NCreateRequest	language:Go	line:368	type:ServiceID
+MID	structs/structs.go	711;"	m	access:public	ctype:ServiceID	language:Go	line:711	signature:()	type:string
+Marshal	telemetry/message.go	149;"	m	access:public	ctype:EngStatusMsgType	language:Go	line:149	signature:()	type:[]byte, error
+Marshal	telemetry/message.go	197;"	m	access:public	ctype:EngRequestMsgType	language:Go	line:197	signature:()	type:[]byte, error
+Marshal	telemetry/message.go	243;"	m	access:public	ctype:EngRPCMsgType	language:Go	line:243	signature:()	type:[]byte, error
+Marshal	telemetry/message.go	280;"	m	access:public	ctype:AdpStatusMsgType	language:Go	line:280	signature:()	type:[]byte, error
+Marshal	telemetry/message.go	338;"	m	access:public	ctype:AdpRPCMsgType	language:Go	line:338	signature:()	type:[]byte, error
+Marshal	telemetry/message.go	56;"	m	access:public	language:Go	line:56	ntype:msgSender	signature:()	type:[]byte, error
+MarshalJSON	structs/methods.go	30;"	m	access:public	ctype:ServiceID	language:Go	line:30	signature:()	type:[]byte, error
+MarshalJSON	structs/methods.go	56;"	m	access:public	ctype:ReportID	language:Go	line:56	signature:()	type:[]byte, error
+MaxResults	request/search.go	443;"	w	access:public	ctype:SearchRequest	language:Go	line:443	type:string
+MaxResults	structs/structs.go	414;"	w	access:public	ctype:NSearchRequestLL	language:Go	line:414	type:int
+MaxResults	structs/structs.go	428;"	w	access:public	ctype:NSearchRequestDID	language:Go	line:428	type:int
+MaxResultsV	request/search.go	444;"	w	access:public	ctype:SearchRequest	language:Go	line:444	type:int
+MediaURL	request/create.go	313;"	w	access:public	ctype:CreateRequest	language:Go	line:313	type:string
+MediaURL	request/search.go	505;"	w	access:public	ctype:SearchResponseReport	language:Go	line:505	type:string
+MediaURL	structs/structs.go	386;"	w	access:public	ctype:NCreateRequest	language:Go	line:386	type:string
+MediaURL	structs/structs.go	477;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:477	type:string
+Message	request/search.go	478;"	w	access:public	ctype:SearchResponse	language:Go	line:478	type:string
+Message	structs/structs.go	297;"	w	access:public	ctype:NServicesResponse	language:Go	line:297	type:string
+Message	structs/structs.go	397;"	w	access:public	ctype:NCreateResponse	language:Go	line:397	type:string
+Message	structs/structs.go	461;"	w	access:public	ctype:NSearchResponse	language:Go	line:461	type:string
+Message	telemetry/message.go	62;"	t	access:public	language:Go	line:62	type:struct
+Metadata	request/services.go	239;"	w	access:public	ctype:ServicesRespS	language:Go	line:239	type:bool
+Metadata	structs/structs.go	315;"	w	access:public	ctype:NService	language:Go	line:315	type:bool
+MidAdpID	structs/structs.go	534;"	f	access:public	language:Go	line:534	signature:(mid string)	type:string, error
+MidAreaID	structs/structs.go	543;"	f	access:public	language:Go	line:543	signature:(mid string)	type:string, error
+MidID	structs/structs.go	561;"	f	access:public	language:Go	line:561	signature:(mid string)	type:int, error
+MidProviderID	structs/structs.go	552;"	f	access:public	language:Go	line:552	signature:(mid string)	type:int, error
+MsgTypeARPC	telemetry/message.go	21;"	c	access:public	language:Go	line:21
+MsgTypeAS	telemetry/message.go	20;"	c	access:public	language:Go	line:20
+MsgTypeER	telemetry/message.go	17;"	c	access:public	language:Go	line:17
+MsgTypeERPC	telemetry/message.go	18;"	c	access:public	language:Go	line:18
+MsgTypeES	telemetry/message.go	16;"	c	access:public	language:Go	line:16
+MsgTypeIndex	telemetry/message.go	23;"	c	access:public	language:Go	line:23
+Mtype	telemetry/message.go	100;"	m	access:public	ctype:Message	language:Go	line:100	signature:()	type:string
+NCreateRequest	structs/structs.go	366;"	t	access:public	language:Go	line:366	type:struct
+NCreateResponse	structs/structs.go	395;"	t	access:public	language:Go	line:395	type:struct
+NID	structs/structs.go	18;"	t	access:public	language:Go	line:18	type:struct
+NRTCreate	structs/structs.go	121;"	c	access:public	language:Go	line:121
+NRTSearchDID	structs/structs.go	123;"	c	access:public	language:Go	line:123
+NRTSearchLL	structs/structs.go	122;"	c	access:public	language:Go	line:122
+NRTSearchRID	structs/structs.go	124;"	c	access:public	language:Go	line:124
+NRTServicesAll	structs/structs.go	119;"	c	access:public	language:Go	line:119
+NRTServicesArea	structs/structs.go	120;"	c	access:public	language:Go	line:120
+NRTUnknown	structs/structs.go	118;"	c	access:public	language:Go	line:118	type:NRequestType
+NRequestCommon	structs/structs.go	281;"	e	access:public	ctype:NServiceRequest	language:Go	line:281	type:NRequestCommon
+NRequestCommon	structs/structs.go	367;"	e	access:public	ctype:NCreateRequest	language:Go	line:367	type:NRequestCommon
+NRequestCommon	structs/structs.go	409;"	e	access:public	ctype:NSearchRequestLL	language:Go	line:409	type:NRequestCommon
+NRequestCommon	structs/structs.go	425;"	e	access:public	ctype:NSearchRequestDID	language:Go	line:425	type:NRequestCommon
+NRequestCommon	structs/structs.go	444;"	e	access:public	ctype:NSearchRequestRID	language:Go	line:444	type:NRequestCommon
+NRequestCommon	structs/structs.go	50;"	t	access:public	language:Go	line:50	type:struct
+NRequestType	structs/structs.go	114;"	t	access:public	language:Go	line:114	type:int
+NRequester	structs/structs.go	55;"	e	access:public	ctype:NRequestCommon	language:Go	line:55	type:NRequester
+NRequester	structs/structs.go	98;"	n	access:public	language:Go	line:98	type:interface
+NResponseCommon	structs/structs.go	194;"	t	access:public	language:Go	line:194	type:struct
+NResponseCommon	structs/structs.go	295;"	e	access:public	ctype:NServicesResponse	language:Go	line:295	type:NResponseCommon
+NResponseCommon	structs/structs.go	396;"	e	access:public	ctype:NCreateResponse	language:Go	line:396	type:NResponseCommon
+NResponseCommon	structs/structs.go	460;"	e	access:public	ctype:NSearchResponse	language:Go	line:460	type:NResponseCommon
+NResponseType	structs/structs.go	262;"	t	access:public	language:Go	line:262	type:int
+NResponser	structs/structs.go	198;"	e	access:public	ctype:NResponseCommon	language:Go	line:198	type:NResponser
+NResponser	structs/structs.go	247;"	n	access:public	language:Go	line:247	type:interface
+NRoute	structs/structs.go	152;"	t	access:public	language:Go	line:152	type:struct
+NRoute	structs/structs.go	346;"	e	access:public	ctype:ReportID	language:Go	line:346	type:NRoute
+NRouteFromString	structs/structs.go	597;"	f	access:public	ctype:NRoute	language:Go	line:597	signature:(rids string)	type:NRoute, error
+NRouteType	structs/structs.go	159;"	t	access:public	language:Go	line:159	type:int
+NRouter	structs/structs.go	133;"	n	access:public	language:Go	line:133	type:interface
+NRouter	structs/structs.go	54;"	e	access:public	ctype:NRequestCommon	language:Go	line:54	type:NRouter
+NRoutes	structs/structs.go	138;"	t	access:public	language:Go	line:138	type:[]NRoute
+NRspTCreate	structs/structs.go	269;"	c	access:public	language:Go	line:269
+NRspTSearchDID	structs/structs.go	271;"	c	access:public	language:Go	line:271
+NRspTSearchLL	structs/structs.go	270;"	c	access:public	language:Go	line:270
+NRspTSearchRID	structs/structs.go	272;"	c	access:public	language:Go	line:272
+NRspTServices	structs/structs.go	267;"	c	access:public	language:Go	line:267
+NRspTServicesArea	structs/structs.go	268;"	c	access:public	language:Go	line:268
+NRspTUnknown	structs/structs.go	266;"	c	access:public	language:Go	line:266	type:NResponseType
+NRtTypAllAdapters	structs/structs.go	168;"	c	access:public	language:Go	line:168
+NRtTypAllAreas	structs/structs.go	167;"	c	access:public	language:Go	line:167
+NRtTypArea	structs/structs.go	166;"	c	access:public	language:Go	line:166
+NRtTypEmpty	structs/structs.go	163;"	c	access:public	language:Go	line:163	type:NRouteType
+NRtTypFull	structs/structs.go	165;"	c	access:public	language:Go	line:165
+NRtTypInvalid	structs/structs.go	164;"	c	access:public	language:Go	line:164
+NSearchRequestDID	structs/structs.go	424;"	t	access:public	language:Go	line:424	type:struct
+NSearchRequestLL	structs/structs.go	408;"	t	access:public	language:Go	line:408	type:struct
+NSearchRequestRID	structs/structs.go	443;"	t	access:public	language:Go	line:443	type:struct
+NSearchResponse	structs/structs.go	459;"	t	access:public	language:Go	line:459	type:struct
+NSearchResponseReport	structs/structs.go	468;"	t	access:public	language:Go	line:468	type:struct
+NService	structs/structs.go	311;"	t	access:public	language:Go	line:311	type:struct
+NServiceRequest	structs/structs.go	280;"	t	access:public	language:Go	line:280	type:struct
+NServices	structs/structs.go	304;"	t	access:public	language:Go	line:304	type:[]NService
+NServicesResponse	structs/structs.go	294;"	t	access:public	language:Go	line:294	type:struct
+Name	geo/geocode.go	302;"	w	access:public	ctype:GoogleAddressPart	language:Go	line:302	type:string
+Name	geo/geocode.go	345;"	w	access:public	ctype:OSMAddressPart	language:Go	line:345	type:string
+Name	request/services.go	237;"	w	access:public	ctype:ServicesRespS	language:Go	line:237	type:string
+Name	router/data.go	383;"	w	access:public	ctype:Area	language:Go	line:383	type:string
+Name	structs/structs.go	313;"	w	access:public	ctype:NService	language:Go	line:313	type:string
+Name	telemetry/message.go	117;"	w	access:public	ctype:EngStatusMsgType	language:Go	line:117	type:string
+Name	telemetry/message.go	251;"	w	access:public	ctype:AdpStatusMsgType	language:Go	line:251	type:string
+NewConversion	common/conversion.go	10;"	f	access:public	ctype:Conversion	language:Go	line:10	signature:()	type:Conversion
+NewLogString	common/logformat.go	17;"	f	access:public	ctype:LogString	language:Go	line:17	signature:()	type:*LogString
+NewLogString	logs/logs.go	71;"	f	access:public	ctype:LogString	language:Go	line:71	signature:()	type:*LogString
+NewMessage	telemetry/message.go	69;"	f	access:public	ctype:Message	language:Go	line:69	signature:(b []byte, n int)	type:Message, error
+NewMessageTest	telemetry/message.go	82;"	f	access:public	ctype:Message	language:Go	line:82	signature:(msg []string)	type:Message
+NewNRoutes	structs/structs.go	141;"	f	access:public	language:Go	line:141	signature:()	type:NRoutes
+NewRID	structs/structs.go	352;"	f	access:public	ctype:ReportID	language:Go	line:352	signature:(route NRoute, id string)	type:ReportID
+NewRPCCallMgr	router/rpc.go	70;"	f	access:public	ctype:RPCCallMgr	language:Go	line:70	signature:(reqmgr requester)	type:*RPCCallMgr, error
+NewValidation	common/validation.go	38;"	f	access:public	language:Go	line:38	signature:()	type:Validation
+NorthEast	geo/geocode.go	48;"	w	access:public	ctype:Bounds	language:Go	line:48	type:Point
+Notice	request/create.go	390;"	w	access:public	ctype:CreateResponse	language:Go	line:390	type:string
+OSM	geo/geocode.go	30;"	c	access:public	language:Go	line:30
+OSMAddressPart	geo/geocode.go	343;"	t	access:public	language:Go	line:343	type:struct
+OSMResponse	geo/geocode.go	314;"	t	access:public	language:Go	line:314	type:struct
+Ok	common/validation.go	70;"	m	access:public	ctype:Validation	language:Go	line:70	signature:()	type:bool
+ParseAddress	common/address.go	51;"	f	access:public	ctype:Address	language:Go	line:51	signature:(fullAddr string, looseZip bool)	type:Address, error
+Password	logs/logs.go	59;"	t	access:public	language:Go	line:59	type:string
+Phone	request/create.go	311;"	w	access:public	ctype:CreateRequest	language:Go	line:311	type:string
+Phone	structs/structs.go	383;"	w	access:public	ctype:NCreateRequest	language:Go	line:383	type:string
+Point	geo/geocode.go	39;"	t	access:public	language:Go	line:39	type:struct
+Processer	request/create.go	106;"	m	access:public	ctype:createMgr	language:Go	line:106	signature:()	type:func(ndata interface{}) error
+Processer	request/search.go	119;"	m	access:public	ctype:searchMgr	language:Go	line:119	signature:()	type:func(ndata interface{}) error
+Processer	router/rpc.go	66;"	m	access:public	language:Go	line:66	ntype:requester	signature:()	type:func(ndata interface{}) error
+Processer	services/refresh.go	101;"	m	access:public	ctype:refreshMgr	language:Go	line:101	signature:()	type:func(ndata interface{}) error
+ProgramElapsedTime	common/misc.go	19;"	f	access:public	language:Go	line:19	signature:()	type:float64
+Properties	geo/geocode.go	377;"	w	access:public	ctype:YOURSResponse	language:Go	line:377	type:*YOURSProperties
+Provider	geo/geocode.go	57;"	w	access:public	ctype:Request	language:Go	line:57	type:ProviderApiLocation
+ProviderApiLocation	geo/geocode.go	20;"	t	access:public	language:Go	line:20	type:string
+ProviderID	structs/structs.go	155;"	w	access:public	ctype:NRoute	language:Go	line:155	type:int
+ProviderID	structs/structs.go	328;"	w	access:public	ctype:ServiceID	language:Go	line:328	type:int
+QueryString	geo/geocode.go	217;"	w	access:public	ctype:Response	language:Go	line:217	type:string
+REQUEST_TIMEOUT	geo/geocode.go	36;"	c	access:public	language:Go	line:36
+RID	request/search.go	429;"	w	access:public	ctype:SearchRequest	language:Go	line:429	type:structs.ReportID
+RID	request/search.go	497;"	w	access:public	ctype:SearchResponseReport	language:Go	line:497	type:structs.ReportID
+RID	structs/structs.go	398;"	w	access:public	ctype:NCreateResponse	language:Go	line:398	type:ReportID
+RID	structs/structs.go	445;"	w	access:public	ctype:NSearchRequestRID	language:Go	line:445	type:ReportID
+RID	structs/structs.go	469;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:469	type:ReportID
+RID	structs/structs.go	716;"	m	access:public	ctype:ReportID	language:Go	line:716	signature:()	type:string
+RIDFromString	structs/structs.go	576;"	f	access:public	ctype:ReportID	language:Go	line:576	signature:(rids string)	type:ReportID, NRoute, error
+ROUTE	geo/geocode.go	26;"	c	access:public	language:Go	line:26	type:RequestType
+RPCCallMgr	router/rpc.go	52;"	t	access:public	language:Go	line:52	type:struct
+RPCID	common/sid.go	26;"	f	access:public	language:Go	line:26	signature:()	type:int64
+RPCID	structs/structs.go	20;"	w	access:public	ctype:NID	language:Go	line:20	type:int64
+RType	request/create.go	94;"	m	access:public	ctype:createMgr	language:Go	line:94	signature:()	type:structs.NRequestType
+RType	request/search.go	107;"	m	access:public	ctype:searchMgr	language:Go	line:107	signature:()	type:structs.NRequestType
+RType	router/rpc.go	64;"	m	access:public	language:Go	line:64	ntype:requester	signature:()	type:structs.NRequestType
+RType	services/refresh.go	89;"	m	access:public	ctype:refreshMgr	language:Go	line:89	signature:()	type:structs.NRequestType
+Radius	request/search.go	436;"	w	access:public	ctype:SearchRequest	language:Go	line:436	type:string
+Radius	structs/structs.go	412;"	w	access:public	ctype:NSearchRequestLL	language:Go	line:412	type:int
+RadiusV	request/search.go	437;"	w	access:public	ctype:SearchRequest	language:Go	line:437	type:int
+Raw	logs/logs.go	152;"	m	access:public	ctype:LogString	language:Go	line:152	signature:()	type:string
+Redacted	logs/logs.go	62;"	m	access:public	ctype:Password	language:Go	line:62	signature:()	type:interface{}
+Refresh	services/services.go	30;"	f	access:public	language:Go	line:30	signature:()
+Region	geo/geocode.go	68;"	w	access:public	ctype:Request	language:Go	line:68	type:string
+ReportCount	request/search.go	479;"	w	access:public	ctype:SearchResponse	language:Go	line:479	type:int
+ReportCount	structs/structs.go	462;"	w	access:public	ctype:NSearchResponse	language:Go	line:462	type:int
+ReportID	structs/structs.go	345;"	t	access:public	language:Go	line:345	type:struct
+Reports	request/search.go	481;"	w	access:public	ctype:SearchResponse	language:Go	line:481	type:[]SearchResponseReport
+Reports	structs/structs.go	464;"	w	access:public	ctype:NSearchResponse	language:Go	line:464	type:[]NSearchResponseReport
+Request	geo/geocode.go	55;"	t	access:public	language:Go	line:55	type:struct
+RequestID	common/sid.go	21;"	f	access:public	language:Go	line:21	signature:()	type:int64
+RequestType	geo/geocode.go	19;"	t	access:public	language:Go	line:19	type:int
+RequestType	request/search.go	503;"	w	access:public	ctype:SearchResponseReport	language:Go	line:503	type:string
+RequestType	structs/structs.go	475;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:475	type:string
+RequestTypeID	request/search.go	504;"	w	access:public	ctype:SearchResponseReport	language:Go	line:504	type:string
+RequestTypeID	structs/structs.go	476;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:476	type:string
+Response	geo/geocode.go	215;"	t	access:public	language:Go	line:215	type:struct
+ResponseTime	request/search.go	480;"	w	access:public	ctype:SearchResponse	language:Go	line:480	type:string
+ResponseTime	structs/structs.go	463;"	w	access:public	ctype:NSearchResponse	language:Go	line:463	type:string
+Results	geo/geocode.go	226;"	w	access:public	ctype:GoogleResponse	language:Go	line:226	type:[]*GoogleResult
+Results	telemetry/message.go	293;"	w	access:public	ctype:AdpRPCMsgType	language:Go	line:293	type:int
+RidAdpID	structs/structs.go	620;"	f	access:public	language:Go	line:620	signature:(rid string)	type:string, error
+RidAreaID	structs/structs.go	629;"	f	access:public	language:Go	line:629	signature:(rid string)	type:string, error
+RidID	structs/structs.go	647;"	f	access:public	language:Go	line:647	signature:(rid string)	type:int, error
+RidProviderID	structs/structs.go	638;"	f	access:public	language:Go	line:638	signature:(rid string)	type:int, error
+Round	common/misc.go	39;"	f	access:public	language:Go	line:39	signature:(num float64)	type:int
+Route	geo/geocode.go	152;"	m	access:public	ctype:Request	language:Go	line:152	signature:(transport http.RoundTripper)	type:*Response, error
+Route	structs/structs.go	196;"	w	access:public	ctype:NResponseCommon	language:Go	line:196	type:NRoute
+Route	structs/structs.go	52;"	w	access:public	ctype:NRequestCommon	language:Go	line:52	type:NRoute
+Route	telemetry/message.go	207;"	w	access:public	ctype:EngRPCMsgType	language:Go	line:207	type:string
+Route	telemetry/message.go	291;"	w	access:public	ctype:AdpRPCMsgType	language:Go	line:291	type:string
+RouteList	structs/structs.go	429;"	w	access:public	ctype:NSearchRequestDID	language:Go	line:429	type:NRoutes
+RouteList	structs/structs.go	446;"	w	access:public	ctype:NSearchRequestRID	language:Go	line:446	type:NRoutes
+RouteType	structs/structs.go	104;"	m	access:public	language:Go	line:104	ntype:NRequester	signature:()	type:NRouteType
+RouteType	structs/structs.go	172;"	m	access:public	ctype:NRoute	language:Go	line:172	signature:()	type:NRouteType
+Routes	request/create.go	98;"	m	access:public	ctype:createMgr	language:Go	line:98	signature:()	type:structs.NRoutes
+Routes	request/search.go	111;"	m	access:public	ctype:searchMgr	language:Go	line:111	signature:()	type:structs.NRoutes
+Routes	router/rpc.go	63;"	m	access:public	language:Go	line:63	ntype:requester	signature:()	type:structs.NRoutes
+Routes	services/refresh.go	93;"	m	access:public	ctype:refreshMgr	language:Go	line:93	signature:()	type:structs.NRoutes
+RoutesAll	router/routes.go	26;"	f	access:public	language:Go	line:26	signature:()	type:structs.NRoutes, error
+RoutesArea	router/routes.go	20;"	f	access:public	language:Go	line:20	signature:(areaID string)	type:structs.NRoutes, error
+RoutesMID	router/routes.go	15;"	f	access:public	language:Go	line:15	signature:(mid structs.ServiceID)	type:structs.NRoutes, error
+RoutesRID	router/routes.go	10;"	f	access:public	language:Go	line:10	signature:(rid structs.ReportID)	type:structs.NRoutes, error
+RqstID	structs/structs.go	19;"	w	access:public	ctype:NID	language:Go	line:19	type:int64
+Rtype	structs/structs.go	197;"	w	access:public	ctype:NResponseCommon	language:Go	line:197	type:NResponseType
+Rtype	structs/structs.go	53;"	w	access:public	ctype:NRequestCommon	language:Go	line:53	type:NRequestType
+Rtype	telemetry/message.go	158;"	w	access:public	ctype:EngRequestMsgType	language:Go	line:158	type:string
+Run	router/rpc.go	152;"	m	access:public	ctype:RPCCallMgr	language:Go	line:152	signature:()	type:error
+SString	structs/structs.go	748;"	m	access:public	ctype:NRoute	language:Go	line:748	signature:()	type:string
+Search	request/request.go	39;"	f	access:public	language:Go	line:39	signature:(w rest.ResponseWriter, r *rest.Request)
+SearchRequest	request/search.go	428;"	t	access:public	language:Go	line:428	type:struct
+SearchResponse	request/search.go	477;"	t	access:public	language:Go	line:477	type:struct
+SearchResponseReport	request/search.go	496;"	t	access:public	language:Go	line:496	type:struct
+SendAPIRequest	geo/geocode.go	159;"	m	access:public	ctype:Request	language:Go	line:159	signature:(transport http.RoundTripper)	type:*Response, error
+SendRPC	telemetry/telemetry.go	36;"	f	access:public	language:Go	line:36	signature:(id, status, route string, at time.Time)
+SendRequest	telemetry/telemetry.go	23;"	f	access:public	language:Go	line:23	signature:(msgID int64, rType, status, areaID string, at time.Time)
+SendTelemetry	telemetry/telemetry.go	18;"	f	access:public	language:Go	line:18	signature:(rqstID int64, op, status string)
+Sensor	geo/geocode.go	70;"	w	access:public	ctype:Request	language:Go	line:70	type:bool
+SerialID	common/sid.go	13;"	t	access:public	language:Go	line:13	type:int64
+ServiceID	structs/structs.go	312;"	e	access:public	ctype:NService	language:Go	line:312	type:ServiceID
+ServiceID	structs/structs.go	325;"	t	access:public	language:Go	line:325	type:struct
+ServiceName	structs/structs.go	369;"	w	access:public	ctype:NCreateRequest	language:Go	line:369	type:string
+Services	request/request.go	29;"	f	access:public	language:Go	line:29	signature:(w rest.ResponseWriter, r *rest.Request)
+Services	structs/structs.go	298;"	w	access:public	ctype:NServicesResponse	language:Go	line:298	type:NServices
+ServicesReq	request/services.go	186;"	t	access:public	language:Go	line:186	type:struct
+ServicesResp	request/services.go	232;"	t	access:public	language:Go	line:232	type:[]*ServicesRespS
+ServicesRespS	request/services.go	235;"	t	access:public	language:Go	line:235	type:struct
+Set	common/validation.go	43;"	m	access:public	ctype:Validation	language:Go	line:43	signature:(item, result string, isOK bool)
+SetCurrentTime	common/misc.go	76;"	m	access:public	ctype:UnixTimestampType	language:Go	line:76	signature:()
+SetID	structs/structs.go	101;"	m	access:public	language:Go	line:101	ntype:NRequester	signature:(int64, int64)
+SetID	structs/structs.go	213;"	m	access:public	ctype:NResponseCommon	language:Go	line:213	signature:(rqstID, rpcID int64)
+SetID	structs/structs.go	250;"	m	access:public	language:Go	line:250	ntype:NResponser	signature:(int64, int64)
+SetID	structs/structs.go	70;"	m	access:public	ctype:NRequestCommon	language:Go	line:70	signature:(rqstID, rpcID int64)
+SetIDF	structs/structs.go	218;"	m	access:public	ctype:NResponseCommon	language:Go	line:218	signature:(f func() int64, int64)
+SetNID	structs/structs.go	24;"	m	access:public	ctype:NID	language:Go	line:24	signature:(rqstID, rpcID int64)
+SetPrecision	common/misc.go	44;"	f	access:public	language:Go	line:44	signature:(num float64, precision int)	type:float64
+SetRoute	structs/structs.go	103;"	m	access:public	language:Go	line:103	ntype:NRequester	signature:(route NRoute)
+SetRoute	structs/structs.go	240;"	m	access:public	ctype:NResponseCommon	language:Go	line:240	signature:(route NRoute)
+SetRoute	structs/structs.go	254;"	m	access:public	language:Go	line:254	ntype:NResponser	signature:(route NRoute)
+SetRoute	structs/structs.go	91;"	m	access:public	ctype:NRequestCommon	language:Go	line:91	signature:(route NRoute)
+ShortName	geo/geocode.go	303;"	w	access:public	ctype:GoogleAddressPart	language:Go	line:303	type:string
+Shutdown	services/services.go	41;"	f	access:public	language:Go	line:41	signature:()
+Shutdown	telemetry/telemetry.go	47;"	f	access:public	language:Go	line:47	signature:()
+SouthWest	geo/geocode.go	48;"	w	access:public	ctype:Bounds	language:Go	line:48	type:Point
+SplitMID	structs/structs.go	525;"	f	access:public	language:Go	line:525	signature:(mid string)	type:string, string, int, int, error
+SplitRID	structs/structs.go	611;"	f	access:public	language:Go	line:611	signature:(rid string)	type:string, string, int, int, error
+SplitRMID	structs/structs.go	502;"	f	access:public	language:Go	line:502	signature:(mid string)	type:string, string, int, int, error
+State	common/address.go	27;"	w	access:public	ctype:Address	language:Go	line:27	type:string
+State	geo/geocode.go	347;"	w	access:public	ctype:OSMAddressPart	language:Go	line:347	type:string
+State	request/create.go	320;"	w	access:public	ctype:CreateRequest	language:Go	line:320	type:string
+State	request/search.go	441;"	w	access:public	ctype:SearchRequest	language:Go	line:441	type:string
+State	request/search.go	507;"	w	access:public	ctype:SearchResponseReport	language:Go	line:507	type:string
+State	request/services.go	194;"	w	access:public	ctype:ServicesReq	language:Go	line:194	type:string
+State	structs/structs.go	378;"	w	access:public	ctype:NCreateRequest	language:Go	line:378	type:string
+State	structs/structs.go	479;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:479	type:string
+Status	geo/geocode.go	216;"	w	access:public	ctype:Response	language:Go	line:216	type:string
+Status	telemetry/message.go	118;"	w	access:public	ctype:EngStatusMsgType	language:Go	line:118	type:string
+Status	telemetry/message.go	159;"	w	access:public	ctype:EngRequestMsgType	language:Go	line:159	type:string
+Status	telemetry/message.go	206;"	w	access:public	ctype:EngRPCMsgType	language:Go	line:206	type:string
+Status	telemetry/message.go	252;"	w	access:public	ctype:AdpStatusMsgType	language:Go	line:252	type:string
+Status	telemetry/message.go	290;"	w	access:public	ctype:AdpRPCMsgType	language:Go	line:290	type:string
+StatusType	request/search.go	521;"	w	access:public	ctype:SearchResponseReport	language:Go	line:521	type:string
+StatusType	structs/structs.go	493;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:493	type:string
+String	common/conversion.go	68;"	m	access:public	ctype:Conversion	language:Go	line:68	signature:()	type:string
+String	common/misc.go	81;"	m	access:public	ctype:UnixTimestampType	language:Go	line:81	signature:()	type:string
+String	common/validation.go	80;"	m	access:public	ctype:Validation	language:Go	line:80	signature:()	type:string
+String	geo/geocode.go	43;"	m	access:public	ctype:Point	language:Go	line:43	signature:()	type:string
+String	geo/geocode.go	51;"	m	access:public	ctype:Bounds	language:Go	line:51	signature:()	type:string
+String	request/create.go	270;"	m	access:public	ctype:createMgr	language:Go	line:270	signature:()	type:string
+String	request/create.go	371;"	m	access:public	ctype:CreateRequest	language:Go	line:371	signature:()	type:string
+String	request/create.go	403;"	m	access:public	ctype:CreateResponse	language:Go	line:403	signature:()	type:string
+String	request/error.go	28;"	m	access:public	ctype:ErrorsResponseJ	language:Go	line:28	signature:()	type:string
+String	request/search.go	396;"	m	access:public	ctype:searchMgr	language:Go	line:396	signature:()	type:string
+String	request/search.go	461;"	m	access:public	ctype:SearchRequest	language:Go	line:461	signature:()	type:string
+String	request/search.go	485;"	m	access:public	ctype:SearchResponse	language:Go	line:485	signature:()	type:string
+String	request/search.go	526;"	m	access:public	ctype:SearchResponseReport	language:Go	line:526	signature:()	type:string
+String	request/services.go	269;"	m	access:public	ctype:ServicesReq	language:Go	line:269	signature:()	type:string
+String	request/services.go	277;"	m	access:public	ctype:ServicesResp	language:Go	line:277	signature:()	type:string
+String	router/data.go	158;"	m	access:public	ctype:routeData	language:Go	line:158	signature:()	type:string
+String	router/data.go	424;"	m	access:public	ctype:Adapters	language:Go	line:424	signature:()	type:string
+String	router/data.go	451;"	m	access:public	ctype:Adapter	language:Go	line:451	signature:()	type:string
+String	router/data.go	460;"	m	access:public	ctype:Area	language:Go	line:460	signature:()	type:string
+String	router/rpc.go	208;"	m	access:public	ctype:RPCCallMgr	language:Go	line:208	signature:()	type:string
+String	router/rpc.go	244;"	m	access:public	ctype:rpcCall	language:Go	line:244	signature:()	type:string
+String	services/refresh.go	131;"	m	access:public	ctype:refreshMgr	language:Go	line:131	signature:()	type:string
+String	services/services.go	210;"	m	access:public	ctype:cache	language:Go	line:210	signature:()	type:string
+String	structs/nrequesttype_string.go	11;"	m	access:public	ctype:NRequestType	language:Go	line:11	signature:()	type:string
+String	structs/nresponsetype_string.go	11;"	m	access:public	ctype:NResponseType	language:Go	line:11	signature:()	type:string
+String	structs/structs.go	41;"	m	access:public	ctype:NID	language:Go	line:41	signature:()	type:string
+String	structs/structs.go	660;"	m	access:public	ctype:NRequestCommon	language:Go	line:660	signature:()	type:string
+String	structs/structs.go	669;"	m	access:public	ctype:NServiceRequest	language:Go	line:669	signature:()	type:string
+String	structs/structs.go	678;"	m	access:public	ctype:NResponseCommon	language:Go	line:678	signature:()	type:string
+String	structs/structs.go	686;"	m	access:public	ctype:NServicesResponse	language:Go	line:686	signature:()	type:string
+String	structs/structs.go	695;"	m	access:public	ctype:NService	language:Go	line:695	signature:()	type:string
+String	structs/structs.go	701;"	m	access:public	ctype:NServices	language:Go	line:701	signature:()	type:string
+String	structs/structs.go	721;"	m	access:public	ctype:ReportID	language:Go	line:721	signature:()	type:string
+String	structs/structs.go	725;"	m	access:public	ctype:NRouteType	language:Go	line:725	signature:()	type:string
+String	structs/structs.go	743;"	m	access:public	ctype:NRoute	language:Go	line:743	signature:()	type:string
+String	structs/structs.go	767;"	m	access:public	ctype:NCreateRequest	language:Go	line:767	signature:()	type:string
+String	structs/structs.go	782;"	m	access:public	ctype:NCreateResponse	language:Go	line:782	signature:()	type:string
+String	structs/structs.go	792;"	m	access:public	ctype:NSearchRequestLL	language:Go	line:792	signature:()	type:string
+String	structs/structs.go	802;"	m	access:public	ctype:NSearchRequestDID	language:Go	line:802	signature:()	type:string
+String	structs/structs.go	812;"	m	access:public	ctype:NSearchRequestRID	language:Go	line:812	signature:()	type:string
+String	structs/structs.go	822;"	m	access:public	ctype:NSearchResponse	language:Go	line:822	signature:()	type:string
+String	structs/structs.go	834;"	m	access:public	ctype:NSearchResponseReport	language:Go	line:834	signature:()	type:string
+String	structs/structs.go	850;"	m	access:public	ctype:NRoutes	language:Go	line:850	signature:()	type:string
+String	telemetry/message.go	109;"	m	access:public	ctype:Message	language:Go	line:109	signature:()	type:string
+Stype	request/services.go	240;"	w	access:public	ctype:ServicesRespS	language:Go	line:240	type:string
+Stype	structs/structs.go	316;"	w	access:public	ctype:NService	language:Go	line:316	type:string
+TestAddrForLatLng	geo/geocode_test.go	187;"	f	access:public	language:Go	line:187	signature:(t *testing.T)
+TestAddress	common/common_test.go	13;"	f	access:public	language:Go	line:13	signature:(t *testing.T)
+TestAreaAdapters	services/services_test.go	68;"	f	access:public	language:Go	line:68	signature:(t *testing.T)
+TestCityForLatLng	geo/geocode_test.go	205;"	f	access:public	language:Go	line:205	signature:(t *testing.T)
+TestConsole	logs/logs_test.go	15;"	f	access:public	language:Go	line:15	signature:(t *testing.T)
+TestLatLngForAddr	geo/geocode_test.go	173;"	f	access:public	language:Go	line:173	signature:(t *testing.T)
+TestLatLong	common/common_test.go	95;"	f	access:public	language:Go	line:95	signature:(t *testing.T)
+TestLatLongData	common/common_test.go	88;"	t	access:public	language:Go	line:88	type:struct
+TestLookup	geo/geocode_test.go	10;"	f	access:public	language:Go	line:10	signature:(t *testing.T)
+TestLookup2	geo/geocode_test.go	36;"	f	access:public	language:Go	line:36	signature:(t *testing.T)
+TestLookupWithBounds	geo/geocode_test.go	83;"	f	access:public	language:Go	line:83	signature:(t *testing.T)
+TestLookupWithLanguage	geo/geocode_test.go	112;"	f	access:public	language:Go	line:112	signature:(t *testing.T)
+TestLookupWithRegion	geo/geocode_test.go	138;"	f	access:public	language:Go	line:138	signature:(t *testing.T)
+TestReadConfig	router/router_test.go	14;"	f	access:public	language:Go	line:14	signature:(t *testing.T)
+TestRetrieve	services/services_test.go	46;"	f	access:public	language:Go	line:46	signature:(t *testing.T)
+TestReverseLookup	geo/geocode_test.go	62;"	f	access:public	language:Go	line:62	signature:(t *testing.T)
+TestServiceDataRefresh	services/services_test.go	32;"	f	access:public	language:Go	line:32	signature:(t *testing.T)
+TestShutdown	services/services_test.go	77;"	f	access:public	language:Go	line:77	signature:(t *testing.T)
+TicketSLA	request/search.go	522;"	w	access:public	ctype:SearchResponseReport	language:Go	line:522	type:string
+TicketSLA	structs/structs.go	494;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:494	type:string
+TimeoutChan	common/misc.go	25;"	f	access:public	language:Go	line:25	signature:(t time.Duration)	type:chan bool
+TravelTime	geo/geocode.go	383;"	w	access:public	ctype:YOURSProperties	language:Go	line:383	type:string
+Type	geo/geocode.go	310;"	w	access:public	ctype:Geometry	language:Go	line:310	type:string
+Type	geo/geocode.go	58;"	w	access:public	ctype:Request	language:Go	line:58	type:RequestType
+Type	router/data.go	334;"	w	access:public	ctype:Adapter	language:Go	line:334	type:string
+Types	geo/geocode.go	298;"	w	access:public	ctype:GoogleResult	language:Go	line:298	type:[]string
+Types	geo/geocode.go	304;"	w	access:public	ctype:GoogleAddressPart	language:Go	line:304	type:[]string
+URL	telemetry/message.go	292;"	w	access:public	ctype:AdpRPCMsgType	language:Go	line:292	type:string
+URLDetail	request/search.go	518;"	w	access:public	ctype:SearchResponseReport	language:Go	line:518	type:string
+URLDetail	structs/structs.go	490;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:490	type:string
+URLShortened	request/search.go	519;"	w	access:public	ctype:SearchResponseReport	language:Go	line:519	type:string
+URLShortened	structs/structs.go	491;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:491	type:string
+UnixTimestampType	common/misc.go	73;"	t	access:public	language:Go	line:73	type:int64
+UnmarshalAdpRPCMsg	telemetry/message.go	309;"	f	access:public	ctype:AdpRPCMsgType	language:Go	line:309	signature:(m Message)	type:*AdpRPCMsgType, error
+UnmarshalAdpStatusMsg	telemetry/message.go	264;"	f	access:public	ctype:AdpStatusMsgType	language:Go	line:264	signature:(m Message)	type:*AdpStatusMsgType, error
+UnmarshalEngRPCMsg	telemetry/message.go	220;"	f	access:public	ctype:EngRPCMsgType	language:Go	line:220	signature:(m Message)	type:*EngRPCMsgType, error
+UnmarshalEngRequestMsg	telemetry/message.go	174;"	f	access:public	ctype:EngRequestMsgType	language:Go	line:174	signature:(m Message)	type:*EngRequestMsgType, error
+UnmarshalEngStatusMsg	telemetry/message.go	132;"	f	access:public	ctype:EngStatusMsgType	language:Go	line:132	signature:(m Message)	type:*EngStatusMsgType, error
+UnmarshalJSON	structs/methods.go	14;"	m	access:public	ctype:ServiceID	language:Go	line:14	signature:(value []byte)	type:error
+UnmarshalJSON	structs/methods.go	40;"	m	access:public	ctype:ReportID	language:Go	line:40	signature:(value []byte)	type:error
+ValidateLatLng	common/validation.go	19;"	f	access:public	language:Go	line:19	signature:(lat, lng float64)	type:bool
+ValidateRID	router/validation.go	8;"	f	access:public	language:Go	line:8	signature:(rid structs.ReportID)	type:bool
+Validation	common/conversion.go	50;"	e	access:public	ctype:Conversion	language:Go	line:50	type:Validation
+Validation	common/validation.go	35;"	t	access:public	language:Go	line:35	type:map[string]*ValidationDetail
+ValidationDetail	common/validation.go	29;"	t	access:public	language:Go	line:29	type:struct
+Values	geo/geocode.go	75;"	m	access:public	ctype:Request	language:Go	line:75	signature:()	type:url.Values
+Viewport	geo/geocode.go	311;"	w	access:public	ctype:Geometry	language:Go	line:311	type:Bounds
+Votes	request/search.go	520;"	w	access:public	ctype:SearchResponseReport	language:Go	line:520	type:string
+Votes	structs/structs.go	492;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:492	type:string
+YOURS	geo/geocode.go	33;"	c	access:public	language:Go	line:33
+YOURSProperties	geo/geocode.go	380;"	t	access:public	language:Go	line:380	type:struct
+YOURSResponse	geo/geocode.go	351;"	t	access:public	language:Go	line:351	type:struct
+YOURS_HEADER	geo/geocode.go	34;"	c	access:public	language:Go	line:34
+Zip	common/address.go	28;"	w	access:public	ctype:Address	language:Go	line:28	type:string
+Zip	request/create.go	321;"	w	access:public	ctype:CreateRequest	language:Go	line:321	type:string
+Zip	request/search.go	442;"	w	access:public	ctype:SearchRequest	language:Go	line:442	type:string
+Zip	request/services.go	195;"	w	access:public	ctype:ServicesReq	language:Go	line:195	type:string
+Zip	structs/structs.go	379;"	w	access:public	ctype:NCreateRequest	language:Go	line:379	type:string
+ZipCode	request/search.go	508;"	w	access:public	ctype:SearchResponseReport	language:Go	line:508	type:string
+ZipCode	structs/structs.go	480;"	w	access:public	ctype:NSearchResponseReport	language:Go	line:480	type:string
+_NRequestType_index	structs/nrequesttype_string.go	9;"	v	access:private	language:Go	line:9
+_NRequestType_name	structs/nrequesttype_string.go	7;"	c	access:private	language:Go	line:7
+_NResponseType_index	structs/nresponsetype_string.go	9;"	v	access:private	language:Go	line:9
+_NResponseType_name	structs/nresponsetype_string.go	7;"	c	access:private	language:Go	line:7
+activeSet	router/data.go	81;"	w	access:private	ctype:routeData	language:Go	line:81	type:int
+activeSet	services/services.go	55;"	w	access:private	ctype:cache	language:Go	line:55	type:int
+adapters	router/data.go	17;"	v	access:private	language:Go	line:17	type:Adapters
+add	structs/structs.go	146;"	m	access:private	ctype:NRoutes	language:Go	line:146	signature:(nr NRoute)	type:NRoutes
+addressTest	common/common_test.go	10;"	t	access:private	language:Go	line:10	type:struct
+adp	router/rpc.go	232;"	w	access:private	ctype:rpcCall	language:Go	line:232	type:AdpRPCer
+all	router/data.go	80;"	w	access:private	ctype:routeData	language:Go	line:80	type:[2][]structs.NRoute
+areaAdapters	router/data.go	181;"	w	access:private	ctype:Adapters	language:Go	line:181	type:map[string][]*Adapter
+areaAlias	router/data.go	180;"	w	access:private	ctype:Adapters	language:Go	line:180	type:map[string]*Area
+areaID	request/services.go	196;"	w	access:private	ctype:ServicesReq	language:Go	line:196	type:string
+areaID	router/data.go	196;"	m	access:private	ctype:Adapters	language:Go	line:196	signature:(alias string)	type:string, error
+arpcAdpID	telemetry/message.go	298;"	c	access:private	language:Go	line:298	type:int
+arpcAt	telemetry/message.go	304;"	c	access:private	language:Go	line:304
+arpcID	telemetry/message.go	299;"	c	access:private	language:Go	line:299
+arpcLength	telemetry/message.go	305;"	c	access:private	language:Go	line:305
+arpcResults	telemetry/message.go	303;"	c	access:private	language:Go	line:303
+arpcRoute	telemetry/message.go	301;"	c	access:private	language:Go	line:301
+arpcStatus	telemetry/message.go	300;"	c	access:private	language:Go	line:300
+arpcURL	telemetry/message.go	302;"	c	access:private	language:Go	line:302
+asAddr	telemetry/message.go	259;"	c	access:private	language:Go	line:259
+asLength	telemetry/message.go	260;"	c	access:private	language:Go	line:260
+asName	telemetry/message.go	257;"	c	access:private	language:Go	line:257	type:int
+asStatus	telemetry/message.go	258;"	c	access:private	language:Go	line:258
+box	common/logformat.go	77;"	m	access:private	ctype:LogString	language:Go	line:77	signature:(w int, lr bool)	type:string
+box	logs/logs.go	123;"	m	access:private	ctype:LogString	language:Go	line:123	signature:(w int, lr bool)	type:string
+bytes	common/misc.go	4;"	i	language:Go	line:4
+cache	services/services.go	53;"	t	access:private	language:Go	line:53	type:struct
+callRPC	request/create.go	248;"	m	access:private	ctype:createMgr	language:Go	line:248	signature:()	type:error
+callRPC	request/search.go	275;"	m	access:private	ctype:searchMgr	language:Go	line:275	signature:()	type:error
+callRPC	services/refresh.go	110;"	m	access:private	ctype:refreshMgr	language:Go	line:110	signature:()	type:error
+calls	router/rpc.go	58;"	w	access:private	ctype:RPCCallMgr	language:Go	line:58	type:map[structs.NRoute]*rpcCall
+chTQue	telemetry/telemetry.go	13;"	v	access:private	language:Go	line:13	type:chan msgSender
+chUpdate	router/data.go	178;"	w	access:private	ctype:Adapters	language:Go	line:178	type:chan map[string][]string
+chUpdate	router/data.go	82;"	w	access:private	ctype:routeData	language:Go	line:82	type:chan map[structs.NRoute]bool
+city	common/common_test.go	89;"	w	access:private	ctype:TestLatLongData	language:Go	line:89	type:string
+clearLoadSet	router/data.go	142;"	m	access:private	ctype:routeData	language:Go	line:142	signature:(ds int)
+clearLoadSet	services/services.go	125;"	m	access:private	ctype:cache	language:Go	line:125	signature:(ds int)
+client	router/data.go	337;"	w	access:private	ctype:Adapter	language:Go	line:337	type:*rpc.Client
+color	common/logformat.go	31;"	w	access:private	ctype:LogString	language:Go	line:31	type:map[string]func() string
+color	logs/logs.go	85;"	w	access:private	ctype:LogString	language:Go	line:85	type:map[string]func() string
+common	common/address.go	1;"	p	language:Go	line:1
+common	common/common_test.go	1;"	p	language:Go	line:1
+common	common/conversion.go	1;"	p	language:Go	line:1
+common	common/logformat.go	1;"	p	language:Go	line:1
+common	common/misc.go	1;"	p	language:Go	line:1
+common	common/sid.go	1;"	p	language:Go	line:1
+common	common/validation.go	1;"	p	language:Go	line:1
+con	logs/logs.go	173;"	m	access:private	ctype:logPrinter	language:Go	line:173	signature:(s string)
+connect	router/data.go	320;"	m	access:private	ctype:Adapters	language:Go	line:320	signature:()	type:error
+connect	router/data.go	340;"	m	access:private	ctype:Adapter	language:Go	line:340	signature:()	type:error
+connected	router/data.go	336;"	w	access:private	ctype:Adapter	language:Go	line:336	type:bool
+contains	geo/mygeocode.go	83;"	f	access:private	language:Go	line:83	signature:(s []string, e string)	type:bool
+convert	common/conversion.go	72;"	m	access:private	ctype:Conversion	language:Go	line:72	signature:(name, val string)	type:interface{}
+convert	request/create.go	329;"	m	access:private	ctype:CreateRequest	language:Go	line:329	signature:()	type:error
+convert	request/search.go	448;"	m	access:private	ctype:SearchRequest	language:Go	line:448	signature:()	type:error
+convert	request/services.go	219;"	m	access:private	ctype:ServicesReq	language:Go	line:219	signature:()	type:error
+convertRequest	request/create.go	341;"	m	access:private	ctype:createMgr	language:Go	line:341	signature:()
+convertResponse	request/create.go	395;"	m	access:private	ctype:createMgr	language:Go	line:395	signature:()
+convertResponse	request/search.go	308;"	m	access:private	ctype:searchMgr	language:Go	line:308	signature:()
+createMgr	request/create.go	26;"	t	access:private	language:Go	line:26	type:struct
+data	router/rpc.go	183;"	m	access:private	ctype:RPCCallMgr	language:Go	line:183	signature:()	type:interface{}
+data	router/rpc.go	260;"	m	access:private	language:Go	line:260	ntype:rpcmanager	signature:()	type:interface{}
+data	telemetry/message.go	65;"	w	access:private	ctype:Message	language:Go	line:65	type:[]string
+debugRecover	request/request.go	13;"	c	access:private	language:Go	line:13
+decPending	router/rpc.go	199;"	m	access:private	ctype:RPCCallMgr	language:Go	line:199	signature:()	type:int64
+decPending	router/rpc.go	264;"	m	access:private	language:Go	line:264	ntype:rpcmanager	signature:()	type:int64
+dflt	common/conversion.go	42;"	w	access:private	ctype:vparm	language:Go	line:42	type:string
+emInvalidMid	structs/structs.go	522;"	c	access:private	language:Go	line:522
+emInvalidRid	structs/structs.go	573;"	c	access:private	language:Go	line:573
+encoding/json	geo/geocode.go	10;"	i	language:Go	line:10
+encoding/json	router/data.go	4;"	i	language:Go	line:4
+erAreaID	telemetry/message.go	168;"	c	access:private	language:Go	line:168
+erAt	telemetry/message.go	169;"	c	access:private	language:Go	line:169
+erID	telemetry/message.go	165;"	c	access:private	language:Go	line:165	type:int
+erLength	telemetry/message.go	170;"	c	access:private	language:Go	line:170
+erRqstType	telemetry/message.go	166;"	c	access:private	language:Go	line:166
+erStatus	telemetry/message.go	167;"	c	access:private	language:Go	line:167
+erpcAt	telemetry/message.go	215;"	c	access:private	language:Go	line:215
+erpcID	telemetry/message.go	212;"	c	access:private	language:Go	line:212	type:int
+erpcLength	telemetry/message.go	216;"	c	access:private	language:Go	line:216
+erpcRoute	telemetry/message.go	214;"	c	access:private	language:Go	line:214
+erpcStatus	telemetry/message.go	213;"	c	access:private	language:Go	line:213
+err	router/rpc.go	240;"	w	access:private	ctype:rpcCall	language:Go	line:240	type:error
+errorJ	request/error.go	19;"	m	access:private	ctype:ErrorsResponseJ	language:Go	line:19	signature:(code int, descr string)	type:ErrorsResponseJ
+errorResp	request/request.go	61;"	f	access:private	language:Go	line:61	signature:(w rest.ResponseWriter, errResp ErrorsResponseJ, code int)
+errors	request/create.go	4;"	i	language:Go	line:4
+errors	request/request.go	4;"	i	language:Go	line:4
+errors	request/search.go	4;"	i	language:Go	line:4
+errors	request/services.go	4;"	i	language:Go	line:4
+errors	router/data.go	5;"	i	language:Go	line:5
+errors	router/router.go	4;"	i	language:Go	line:4
+errors	router/rpc.go	4;"	i	language:Go	line:4
+errors	services/services.go	4;"	i	language:Go	line:4
+errs	router/rpc.go	59;"	w	access:private	ctype:RPCCallMgr	language:Go	line:59	type:[]error
+esAdapters	telemetry/message.go	126;"	c	access:private	language:Go	line:126
+esAddr	telemetry/message.go	127;"	c	access:private	language:Go	line:127
+esLength	telemetry/message.go	128;"	c	access:private	language:Go	line:128
+esName	telemetry/message.go	124;"	c	access:private	language:Go	line:124	type:int
+esStatus	telemetry/message.go	125;"	c	access:private	language:Go	line:125
+flag	gateway.go	4;"	i	language:Go	line:4
+fmt	common/address.go	4;"	i	language:Go	line:4
+fmt	common/common_test.go	4;"	i	language:Go	line:4
+fmt	common/conversion.go	4;"	i	language:Go	line:4
+fmt	common/logformat.go	30;"	w	access:private	ctype:LogString	language:Go	line:30	type:string
+fmt	common/logformat.go	4;"	i	language:Go	line:4
+fmt	common/misc.go	5;"	i	language:Go	line:5
+fmt	common/validation.go	4;"	i	language:Go	line:4
+fmt	gateway.go	5;"	i	language:Go	line:5
+fmt	geo/geocode.go	11;"	i	language:Go	line:11
+fmt	geo/geocode_test.go	4;"	i	language:Go	line:4
+fmt	geo/mygeocode.go	3;"	i	language:Go	line:3
+fmt	logs/logs.go	4;"	i	language:Go	line:4
+fmt	logs/logs.go	84;"	w	access:private	ctype:LogString	language:Go	line:84	type:string
+fmt	request/create.go	5;"	i	language:Go	line:5
+fmt	request/search.go	5;"	i	language:Go	line:5
+fmt	request/services.go	5;"	i	language:Go	line:5
+fmt	router/data.go	6;"	i	language:Go	line:6
+fmt	router/router.go	5;"	i	language:Go	line:5
+fmt	router/router_test.go	4;"	i	language:Go	line:4
+fmt	router/rpc.go	5;"	i	language:Go	line:5
+fmt	services/refresh.go	4;"	i	language:Go	line:4
+fmt	services/services.go	5;"	i	language:Go	line:5
+fmt	services/services_test.go	4;"	i	language:Go	line:4
+fmt	structs/methods.go	4;"	i	language:Go	line:4
+fmt	structs/nrequesttype_string.go	5;"	i	language:Go	line:5
+fmt	structs/nresponsetype_string.go	5;"	i	language:Go	line:5
+fmt	structs/structs.go	4;"	i	language:Go	line:4
+fmt	telemetry/message.go	4;"	i	language:Go	line:4
+fmt	telemetry/telemetry.go	4;"	i	language:Go	line:4
+geo	geo/geocode.go	7;"	p	language:Go	line:7
+geo	geo/geocode_test.go	1;"	p	language:Go	line:1
+geo	geo/mygeocode.go	1;"	p	language:Go	line:1
+getAdapter	router/data.go	229;"	m	access:private	ctype:Adapters	language:Go	line:229	signature:(id string)	type:*Adapter, error
+getAdapterID	router/data.go	241;"	m	access:private	ctype:Adapters	language:Go	line:241	signature:(MID string)	type:string, error
+getAllRoutes	router/data.go	185;"	m	access:private	ctype:Adapters	language:Go	line:185	signature:()	type:structs.NRoutes
+getAllRoutes	router/data.go	87;"	m	access:private	ctype:routeData	language:Go	line:87	signature:()	type:structs.NRoutes
+getArea	services/services.go	61;"	m	access:private	ctype:cache	language:Go	line:61	signature:(areaID string)	type:structs.NServices, error
+getAreaAdapters	router/data.go	218;"	m	access:private	ctype:Adapters	language:Go	line:218	signature:(areaID string)	type:[]*Adapter, error
+getAreaRoutes	router/data.go	96;"	m	access:private	ctype:routeData	language:Go	line:96	signature:(areaID string)	type:structs.NRoutes, error
+getRouteAdapter	router/data.go	207;"	m	access:private	ctype:Adapters	language:Go	line:207	signature:(route structs.NRoute)	type:*Adapter, error
+github.com/ant0ine/go-json-rest/rest	gateway.go	16;"	i	language:Go	line:16
+github.com/ant0ine/go-json-rest/rest	request/create.go	13;"	i	language:Go	line:13
+github.com/ant0ine/go-json-rest/rest	request/request.go	9;"	i	language:Go	line:9
+github.com/ant0ine/go-json-rest/rest	request/search.go	14;"	i	language:Go	line:14
+github.com/ant0ine/go-json-rest/rest	request/services.go	17;"	i	language:Go	line:17
+github.com/davecgh/go-spew/spew	geo/geocode_test.go	7;"	i	language:Go	line:7
+github.com/davecgh/go-spew/spew	router/router_test.go	9;"	i	language:Go	line:9
+github.com/davecgh/go-spew/spew	services/services_test.go	11;"	i	language:Go	line:11
+github.com/fatih/color	common/logformat.go	7;"	i	language:Go	line:7
+github.com/fatih/color	logs/logs.go	8;"	i	language:Go	line:8
+github.com/fatih/color	structs/structs.go	8;"	i	language:Go	line:8
+github.com/op/go-logging	logs/logs.go	9;"	i	language:Go	line:9
+greEmpty	request/request.go	15;"	c	access:private	language:Go	line:15
+id	request/create.go	27;"	w	access:private	ctype:createMgr	language:Go	line:27	type:int64
+id	request/search.go	37;"	w	access:private	ctype:searchMgr	language:Go	line:37	type:int64
+id	request/services.go	27;"	w	access:private	ctype:serviceMgr	language:Go	line:27	type:int64
+id	router/rpc.go	235;"	w	access:private	ctype:rpcCall	language:Go	line:235	type:int64
+id	services/refresh.go	17;"	w	access:private	ctype:refreshMgr	language:Go	line:17	type:int64
+incPending	router/rpc.go	195;"	m	access:private	ctype:RPCCallMgr	language:Go	line:195	signature:()	type:int64
+incPending	router/rpc.go	263;"	m	access:private	language:Go	line:263	ntype:rpcmanager	signature:()	type:int64
+indArea	router/data.go	79;"	w	access:private	ctype:routeData	language:Go	line:79	type:[2]map[string]structs.NRoutes
+indexAreaAdapters	services/services.go	90;"	m	access:private	ctype:cache	language:Go	line:90	signature:()	type:error
+indexAreaAlias	router/data.go	289;"	m	access:private	ctype:Adapters	language:Go	line:289	signature:()	type:error
+init	common/address.go	31;"	f	access:private	language:Go	line:31	signature:()
+init	common/conversion.go	20;"	f	access:private	language:Go	line:20	signature:()
+init	gateway.go	45;"	f	access:private	language:Go	line:45	signature:()
+init	logs/modulename.go	3;"	f	access:private	language:Go	line:3	signature:()
+init	router/data.go	391;"	f	access:private	language:Go	line:391	signature:()
+init	router/rpc.go	37;"	f	access:private	language:Go	line:37	signature:()
+init	services/services.go	176;"	m	access:private	ctype:cache	language:Go	line:176	signature:()
+init	services/services.go	228;"	f	access:private	language:Go	line:228	signature:()
+init	services/services_test.go	16;"	f	access:private	language:Go	line:16	signature:()
+init	telemetry/message.go	32;"	f	access:private	language:Go	line:32	signature:()
+init	telemetry/telemetry.go	51;"	f	access:private	language:Go	line:51	signature:()
+initMsgKeys	telemetry/message.go	37;"	f	access:private	language:Go	line:37	signature:()
+initMsgLen	telemetry/message.go	46;"	f	access:private	language:Go	line:46	signature:()
+initialized	logs/logs.go	19;"	v	access:private	language:Go	line:19	type:bool
+io/ioutil	router/router.go	6;"	i	language:Go	line:6
+isAnonymous	request/create.go	322;"	w	access:private	ctype:CreateRequest	language:Go	line:322	type:bool
+isError	services/services_test.go	25;"	f	access:private	language:Go	line:25	signature:(e error)	type:bool
+key	telemetry/message.go	64;"	w	access:private	ctype:Message	language:Go	line:64	type:string
+lat	common/common_test.go	91;"	w	access:private	ctype:TestLatLongData	language:Go	line:91	type:float64
+latMax	common/validation.go	13;"	c	access:private	language:Go	line:13	type:float64
+latMin	common/validation.go	12;"	c	access:private	language:Go	line:12	type:float64
+list	services/services.go	54;"	w	access:private	ctype:cache	language:Go	line:54	type:[2]map[string]structs.NServices
+lngMax	common/validation.go	15;"	c	access:private	language:Go	line:15	type:float64
+lngMin	common/validation.go	14;"	c	access:private	language:Go	line:14	type:float64
+load	router/data.go	258;"	m	access:private	ctype:Adapters	language:Go	line:258	signature:(file []byte)	type:error
+loadSet	router/data.go	135;"	m	access:private	ctype:routeData	language:Go	line:135	signature:()	type:int
+loadSet	services/services.go	118;"	m	access:private	ctype:cache	language:Go	line:118	signature:()	type:int
+loaded	router/data.go	174;"	w	access:private	ctype:Adapters	language:Go	line:174	type:bool
+loadedAt	router/data.go	175;"	w	access:private	ctype:Adapters	language:Go	line:175	type:time.Time
+log	gateway.go	20;"	v	access:private	language:Go	line:20
+log	request/request.go	19;"	v	access:private	language:Go	line:19
+log	router/router.go	12;"	v	access:private	language:Go	line:12
+log	services/services.go	21;"	v	access:private	language:Go	line:21
+log	telemetry/telemetry.go	12;"	v	access:private	language:Go	line:12
+logPrinter	logs/logs.go	158;"	t	access:private	language:Go	line:158	type:struct
+logs	logs/logs.go	1;"	p	language:Go	line:1
+logs	logs/modulename.go	1;"	p	language:Go	line:1
+logs_test	logs/logs_test.go	1;"	p	language:Go	line:1
+long	common/common_test.go	92;"	w	access:private	ctype:TestLatLongData	language:Go	line:92	type:float64
+mType	telemetry/message.go	63;"	w	access:private	ctype:Message	language:Go	line:63	type:string
+main	gateway.go	1;"	p	language:Go	line:1
+main	gateway.go	25;"	f	access:private	language:Go	line:25	signature:()
+matchCityStateZip	common/address.go	73;"	f	access:private	language:Go	line:73	signature:(fullAddr string, looseZip bool)	type:[]int, error
+math	common/misc.go	6;"	i	language:Go	line:6
+merge	services/services.go	150;"	m	access:private	ctype:cache	language:Go	line:150	signature:(ndata interface{})	type:error
+modulename	logs/logs.go	16;"	v	access:private	language:Go	line:16	type:string
+monitorAddr	telemetry/telemetry.go	14;"	v	access:private	language:Go	line:14
+msgDelimiter	telemetry/message.go	24;"	c	access:private	language:Go	line:24
+msgKeys	telemetry/message.go	28;"	v	access:private	language:Go	line:28	type:map[string]int
+msgLen	telemetry/message.go	29;"	v	access:private	language:Go	line:29	type:map[string]int
+msgSender	telemetry/message.go	55;"	n	access:private	language:Go	line:55	type:interface
+net	telemetry/telemetry.go	5;"	i	language:Go	line:5
+net/http	gateway.go	6;"	i	language:Go	line:6
+net/http	geo/geocode.go	12;"	i	language:Go	line:12
+net/http	request/request.go	5;"	i	language:Go	line:5
+net/rpc	router/data.go	7;"	i	language:Go	line:7
+net/url	geo/geocode.go	13;"	i	language:Go	line:13
+newErrorsResponseJ	request/error.go	14;"	f	access:private	language:Go	line:14	signature:()	type:ErrorsResponseJ
+newLogPrinter	logs/logs.go	165;"	f	access:private	ctype:logPrinter	language:Go	line:165	signature:()	type:*logPrinter
+newResponse	router/rpc.go	35;"	v	access:private	language:Go	line:35	type:map[structs.NRequestType]func() interface{}
+newServiceResp	request/services.go	246;"	f	access:private	language:Go	line:246	signature:(msg string, ns structs.NServices)	type:*ServicesResp, error
+newrpcCall	router/rpc.go	268;"	f	access:private	ctype:rpcCall	language:Go	line:268	signature:(rpcmgr rpcmanager, route structs.NRoute)	type:*rpcCall, error
+nreq	request/create.go	33;"	w	access:private	ctype:createMgr	language:Go	line:33	type:*structs.NCreateRequest
+nreq	request/search.go	43;"	w	access:private	ctype:searchMgr	language:Go	line:43	type:interface{}
+nreq	services/refresh.go	21;"	w	access:private	ctype:refreshMgr	language:Go	line:21	type:*structs.NServiceRequest
+nresp	request/create.go	40;"	w	access:private	ctype:createMgr	language:Go	line:40	type:*structs.NCreateResponse
+nresp	request/search.go	50;"	w	access:private	ctype:searchMgr	language:Go	line:50	type:*structs.NSearchResponse
+ok	common/validation.go	30;"	w	access:private	ctype:ValidationDetail	language:Go	line:30	type:bool
+os	gateway.go	7;"	i	language:Go	line:7
+os	logs/logs.go	5;"	i	language:Go	line:5
+os/signal	gateway.go	8;"	i	language:Go	line:8
+parseQP	request/create.go	185;"	m	access:private	ctype:createMgr	language:Go	line:185	signature:()	type:error
+parseQP	request/search.go	199;"	m	access:private	ctype:searchMgr	language:Go	line:199	signature:()	type:error
+parseQP	request/services.go	152;"	m	access:private	ctype:serviceMgr	language:Go	line:152	signature:()	type:error
+pending	router/rpc.go	56;"	w	access:private	ctype:RPCCallMgr	language:Go	line:56	type:int64
+prepRPC	router/rpc.go	290;"	m	access:private	ctype:rpcCall	language:Go	line:290	signature:()	type:interface{}, error
+processCreate	request/create.go	44;"	f	access:private	language:Go	line:44	signature:(rqst *rest.Request)	type:interface{}, error
+processReply	request/create.go	262;"	m	access:private	ctype:createMgr	language:Go	line:262	signature:(ndata interface{})	type:error
+processReply	request/search.go	294;"	m	access:private	ctype:searchMgr	language:Go	line:294	signature:(ndata interface{})	type:error
+processReply	services/refresh.go	124;"	m	access:private	ctype:refreshMgr	language:Go	line:124	signature:(ndata interface{})	type:error
+processSearch	request/search.go	54;"	f	access:private	language:Go	line:54	signature:(rqst *rest.Request)	type:interface{}, error
+processServices	request/services.go	41;"	f	access:private	language:Go	line:41	signature:(rqst *rest.Request)	type:interface{}, error
+processer	router/rpc.go	203;"	m	access:private	ctype:RPCCallMgr	language:Go	line:203	signature:()	type:func(ndata interface{}) error
+processer	router/rpc.go	265;"	m	access:private	language:Go	line:265	ntype:rpcmanager	signature:()	type:func(ndata interface{}) error
+programStartTime	common/misc.go	16;"	v	access:private	language:Go	line:16
+rType	router/rpc.go	179;"	m	access:private	ctype:RPCCallMgr	language:Go	line:179	signature:()	type:structs.NRequestType
+rType	router/rpc.go	259;"	m	access:private	language:Go	line:259	ntype:rpcmanager	signature:()	type:structs.NRequestType
+raw	common/logformat.go	29;"	w	access:private	ctype:LogString	language:Go	line:29	type:string
+raw	logs/logs.go	83;"	w	access:private	ctype:LogString	language:Go	line:83	type:string
+readConfig	router/router.go	32;"	f	access:private	language:Go	line:32	signature:(filePath string)	type:error
+receive	router/rpc.go	105;"	m	access:private	ctype:RPCCallMgr	language:Go	line:105	signature:()
+refresh	services/refresh.go	29;"	f	access:private	language:Go	line:29	signature:(area string)	type:error
+refresh	services/services.go	132;"	m	access:private	ctype:cache	language:Go	line:132	signature:()
+refreshMgr	services/refresh.go	16;"	t	access:private	language:Go	line:16	type:struct
+regexp	common/address.go	5;"	i	language:Go	line:5
+replied	router/rpc.go	239;"	w	access:private	ctype:rpcCall	language:Go	line:239	type:bool
+req	request/create.go	32;"	w	access:private	ctype:createMgr	language:Go	line:32	type:*CreateRequest
+req	request/search.go	42;"	w	access:private	ctype:searchMgr	language:Go	line:42	type:*SearchRequest
+req	request/services.go	32;"	w	access:private	ctype:serviceMgr	language:Go	line:32	type:*ServicesReq
+reqType	request/create.go	30;"	w	access:private	ctype:createMgr	language:Go	line:30	type:structs.NRequestType
+reqType	request/search.go	40;"	w	access:private	ctype:searchMgr	language:Go	line:40	type:structs.NRequestType
+reqType	request/services.go	30;"	w	access:private	ctype:serviceMgr	language:Go	line:30	type:structs.NRequestType
+reqType	services/refresh.go	20;"	w	access:private	ctype:refreshMgr	language:Go	line:20	type:structs.NRequestType
+reqmgr	router/rpc.go	53;"	w	access:private	ctype:RPCCallMgr	language:Go	line:53	type:requester
+request	request/create.go	1;"	p	language:Go	line:1
+request	request/error.go	1;"	p	language:Go	line:1
+request	request/request.go	1;"	p	language:Go	line:1
+request	request/search.go	1;"	p	language:Go	line:1
+request	request/services.go	1;"	p	language:Go	line:1
+requestID	common/sid.go	8;"	v	access:private	language:Go	line:8	type:SerialID
+requester	router/rpc.go	62;"	n	access:private	language:Go	line:62	type:interface
+required	common/conversion.go	41;"	w	access:private	ctype:vparm	language:Go	line:41	type:bool
+resp	request/create.go	41;"	w	access:private	ctype:createMgr	language:Go	line:41	type:*CreateResponse
+resp	request/search.go	51;"	w	access:private	ctype:searchMgr	language:Go	line:51	type:*SearchResponse
+resp	request/services.go	38;"	w	access:private	ctype:serviceMgr	language:Go	line:38	type:*ServicesResp
+response	router/rpc.go	237;"	w	access:private	ctype:rpcCall	language:Go	line:237	type:interface{}
+result	common/validation.go	31;"	w	access:private	ctype:ValidationDetail	language:Go	line:31	type:string
+resultChan	router/rpc.go	191;"	m	access:private	ctype:RPCCallMgr	language:Go	line:191	signature:()	type:chan structs.NRoute
+resultChan	router/rpc.go	262;"	m	access:private	language:Go	line:262	ntype:rpcmanager	signature:()	type:chan structs.NRoute
+results	router/rpc.go	55;"	w	access:private	ctype:RPCCallMgr	language:Go	line:55	type:chan structs.NRoute
+route	router/rpc.go	236;"	w	access:private	ctype:rpcCall	language:Go	line:236	type:structs.NRoute
+routeData	router/data.go	78;"	t	access:private	language:Go	line:78	type:struct
+router	router/data.go	1;"	p	language:Go	line:1
+router	router/router.go	1;"	p	language:Go	line:1
+router	router/router_test.go	1;"	p	language:Go	line:1
+router	router/routes.go	1;"	p	language:Go	line:1
+router	router/rpc.go	1;"	p	language:Go	line:1
+router	router/validation.go	1;"	p	language:Go	line:1
+routes	request/create.go	37;"	w	access:private	ctype:createMgr	language:Go	line:37	type:structs.NRoutes
+routes	request/search.go	47;"	w	access:private	ctype:searchMgr	language:Go	line:47	type:structs.NRoutes
+routes	request/services.go	36;"	w	access:private	ctype:serviceMgr	language:Go	line:36	type:structs.NRoutes
+routes	router/data.go	18;"	v	access:private	language:Go	line:18	type:routeData
+routes	services/refresh.go	25;"	w	access:private	ctype:refreshMgr	language:Go	line:25	type:structs.NRoutes
+rpc	request/create.go	38;"	w	access:private	ctype:createMgr	language:Go	line:38	type:*router.RPCCallMgr
+rpc	request/search.go	48;"	w	access:private	ctype:searchMgr	language:Go	line:48	type:*router.RPCCallMgr
+rpc	router/rpc.go	231;"	w	access:private	ctype:rpcCall	language:Go	line:231	type:rpcmanager
+rpc	services/refresh.go	26;"	w	access:private	ctype:refreshMgr	language:Go	line:26	type:*router.RPCCallMgr
+rpcCall	router/rpc.go	230;"	t	access:private	language:Go	line:230	type:struct
+rpcChanSize	router/rpc.go	16;"	c	access:private	language:Go	line:16
+rpcID	common/sid.go	9;"	v	access:private	language:Go	line:9	type:SerialID
+rpcTimeout	router/rpc.go	17;"	c	access:private	language:Go	line:17
+rpcmanager	router/rpc.go	258;"	n	access:private	language:Go	line:258	type:interface
+rqst	request/create.go	31;"	w	access:private	ctype:createMgr	language:Go	line:31	type:*rest.Request
+rqst	request/search.go	41;"	w	access:private	ctype:searchMgr	language:Go	line:41	type:*rest.Request
+rqst	request/services.go	31;"	w	access:private	ctype:serviceMgr	language:Go	line:31	type:*rest.Request
+run	logs/logs.go	178;"	m	access:private	ctype:logPrinter	language:Go	line:178	signature:()
+run	request/services.go	167;"	m	access:private	ctype:serviceMgr	language:Go	line:167	signature:()	type:error
+run	router/rpc.go	329;"	m	access:private	ctype:rpcCall	language:Go	line:329	signature:()	type:error
+runRequest	request/request.go	43;"	f	access:private	language:Go	line:43	signature:(w rest.ResponseWriter, r *rest.Request, f func(*rest.Request) interface{}, error)
+rxCityStateLooseZip	common/address.go	13;"	v	access:private	language:Go	line:13	type:*regexp.Regexp
+rxCityStateLooseZipPattern	common/address.go	19;"	c	access:private	language:Go	line:19
+rxCityStateZip	common/address.go	12;"	v	access:private	language:Go	line:12	type:*regexp.Regexp
+rxCityStateZipPattern	common/address.go	18;"	c	access:private	language:Go	line:18
+rxGoogleAddressPattern	common/address.go	20;"	c	access:private	language:Go	line:20
+rxGoogleFound	common/address.go	14;"	v	access:private	language:Go	line:14	type:*regexp.Regexp
+searchMgr	request/search.go	36;"	t	access:private	language:Go	line:36	type:struct
+searchRadiusMax	request/search.go	19;"	c	access:private	language:Go	line:19	type:int
+searchRadiusMin	request/search.go	18;"	c	access:private	language:Go	line:18	type:int
+send	router/rpc.go	94;"	m	access:private	ctype:RPCCallMgr	language:Go	line:94	signature:()
+sendRoutes	services/services.go	73;"	m	access:private	ctype:cache	language:Go	line:73	signature:()	type:error
+sent	router/rpc.go	238;"	w	access:private	ctype:rpcCall	language:Go	line:238	type:bool
+service	router/rpc.go	187;"	m	access:private	ctype:RPCCallMgr	language:Go	line:187	signature:()	type:string
+service	router/rpc.go	261;"	m	access:private	language:Go	line:261	ntype:rpcmanager	signature:()	type:string
+serviceMethod	router/rpc.go	54;"	w	access:private	ctype:RPCCallMgr	language:Go	line:54	type:string
+serviceMethods	router/rpc.go	25;"	v	access:private	language:Go	line:25
+serviceMgr	request/services.go	26;"	t	access:private	language:Go	line:26	type:struct
+services	services/refresh.go	1;"	p	language:Go	line:1
+services	services/services.go	1;"	p	language:Go	line:1
+services	services/services_test.go	1;"	p	language:Go	line:1
+servicesData	services/services.go	20;"	v	access:private	language:Go	line:20	type:cache
+setDID	request/search.go	349;"	m	access:private	ctype:searchMgr	language:Go	line:349	signature:()	type:*structs.NSearchRequestDID
+setLL	request/search.go	365;"	m	access:private	ctype:searchMgr	language:Go	line:365	signature:()	type:*structs.NSearchRequestLL
+setRID	request/search.go	382;"	m	access:private	ctype:searchMgr	language:Go	line:382	signature:()	type:*structs.NSearchRequestRID
+setRoute	request/create.go	233;"	m	access:private	ctype:createMgr	language:Go	line:233	signature:()	type:error
+setRoute	request/search.go	216;"	m	access:private	ctype:searchMgr	language:Go	line:216	signature:()	type:error
+setSearchType	request/search.go	249;"	m	access:private	ctype:searchMgr	language:Go	line:249	signature:()	type:error
+setSent	router/rpc.go	284;"	m	access:private	ctype:rpcCall	language:Go	line:284	signature:()
+showResponse	router/rpc.go	22;"	v	access:private	language:Go	line:22
+showRunTimes	router/rpc.go	21;"	v	access:private	language:Go	line:21
+shutdown	services/services.go	201;"	m	access:private	ctype:cache	language:Go	line:201	signature:()
+signalHandler	gateway.go	64;"	f	access:private	language:Go	line:64	signature:(c chan os.Signal)
+start	request/create.go	28;"	w	access:private	ctype:createMgr	language:Go	line:28	type:time.Time
+start	request/search.go	38;"	w	access:private	ctype:searchMgr	language:Go	line:38	type:time.Time
+start	request/services.go	28;"	w	access:private	ctype:serviceMgr	language:Go	line:28	type:time.Time
+start	services/refresh.go	18;"	w	access:private	ctype:refreshMgr	language:Go	line:18	type:time.Time
+startupDelay	services/services.go	16;"	c	access:private	language:Go	line:16
+state	common/common_test.go	90;"	w	access:private	ctype:TestLatLongData	language:Go	line:90	type:string
+stop	gateway.go	80;"	f	access:private	language:Go	line:80	signature:()	type:error
+strconv	common/conversion.go	5;"	i	language:Go	line:5
+strconv	geo/geocode.go	14;"	i	language:Go	line:14
+strconv	request/services.go	6;"	i	language:Go	line:6
+strconv	structs/methods.go	5;"	i	language:Go	line:5
+strconv	structs/structs.go	5;"	i	language:Go	line:5
+strconv	telemetry/message.go	5;"	i	language:Go	line:5
+strings	common/address.go	6;"	i	language:Go	line:6
+strings	common/logformat.go	5;"	i	language:Go	line:5
+strings	common/misc.go	7;"	i	language:Go	line:7
+strings	logs/logs.go	6;"	i	language:Go	line:6
+strings	request/services.go	7;"	i	language:Go	line:7
+strings	router/data.go	8;"	i	language:Go	line:8
+strings	services/refresh.go	5;"	i	language:Go	line:5
+strings	structs/methods.go	6;"	i	language:Go	line:6
+strings	structs/structs.go	6;"	i	language:Go	line:6
+strings	telemetry/message.go	6;"	i	language:Go	line:6
+structs	structs/methods.go	1;"	p	language:Go	line:1
+structs	structs/nrequesttype_string.go	3;"	p	language:Go	line:3
+structs	structs/nresponsetype_string.go	3;"	p	language:Go	line:3
+structs	structs/structs.go	1;"	p	language:Go	line:1
+switchSet	router/data.go	147;"	m	access:private	ctype:routeData	language:Go	line:147	signature:()
+switchSet	services/services.go	136;"	m	access:private	ctype:cache	language:Go	line:136	signature:()
+sync	router/data.go	9;"	i	language:Go	line:9
+sync	router/rpc.go	6;"	i	language:Go	line:6
+sync	services/services.go	6;"	i	language:Go	line:6
+sync.Mutex	router/rpc.go	234;"	e	access:public	ctype:rpcCall	language:Go	line:234	type:sync.Mutex
+sync.RWMutex	router/data.go	182;"	e	access:public	ctype:Adapters	language:Go	line:182	type:sync.RWMutex
+sync.RWMutex	router/data.go	83;"	e	access:public	ctype:routeData	language:Go	line:83	type:sync.RWMutex
+sync.RWMutex	services/services.go	57;"	e	access:public	ctype:cache	language:Go	line:57	type:sync.RWMutex
+sync/atomic	common/sid.go	4;"	i	language:Go	line:4
+sync/atomic	router/rpc.go	7;"	i	language:Go	line:7
+telemetry	telemetry/message.go	1;"	p	language:Go	line:1
+telemetry	telemetry/telemetry.go	1;"	p	language:Go	line:1
+testEq	common/common_test.go	128;"	f	access:private	language:Go	line:128	signature:(a, b []int)	type:bool
+testing	common/common_test.go	5;"	i	language:Go	line:5
+testing	geo/geocode_test.go	5;"	i	language:Go	line:5
+testing	logs/logs_test.go	8;"	i	language:Go	line:8
+testing	router/router_test.go	5;"	i	language:Go	line:5
+testing	services/services_test.go	5;"	i	language:Go	line:5
+time	common/misc.go	8;"	i	language:Go	line:8
+time	gateway.go	9;"	i	language:Go	line:9
+time	geo/geocode.go	15;"	i	language:Go	line:15
+time	logs/logs_test.go	6;"	i	language:Go	line:6
+time	request/create.go	6;"	i	language:Go	line:6
+time	request/search.go	6;"	i	language:Go	line:6
+time	request/services.go	8;"	i	language:Go	line:8
+time	router/data.go	10;"	i	language:Go	line:10
+time	router/rpc.go	8;"	i	language:Go	line:8
+time	services/refresh.go	6;"	i	language:Go	line:6
+time	services/services.go	7;"	i	language:Go	line:7
+time	services/services_test.go	6;"	i	language:Go	line:6
+time	telemetry/message.go	7;"	i	language:Go	line:7
+time	telemetry/telemetry.go	6;"	i	language:Go	line:6
+todo	logs/logs.go	159;"	w	access:private	ctype:logPrinter	language:Go	line:159	type:chan string
+update	router/data.go	114;"	m	access:private	ctype:routeData	language:Go	line:114	signature:(upd map[structs.NRoute]bool)
+update	services/services.go	56;"	w	access:private	ctype:cache	language:Go	line:56	type:chan bool
+updateAreaAdapters	router/data.go	299;"	m	access:private	ctype:Adapters	language:Go	line:299	signature:(input map[string][]string)	type:error
+valid	request/create.go	35;"	w	access:private	ctype:createMgr	language:Go	line:35	type:common.Validation
+valid	request/search.go	45;"	w	access:private	ctype:searchMgr	language:Go	line:45	type:common.Validation
+valid	request/services.go	34;"	w	access:private	ctype:serviceMgr	language:Go	line:34	type:common.Validation
+valid	services/refresh.go	23;"	w	access:private	ctype:refreshMgr	language:Go	line:23	type:common.Validation
+valid	telemetry/message.go	90;"	m	access:private	ctype:Message	language:Go	line:90	signature:()	type:bool
+validate	request/create.go	132;"	m	access:private	ctype:createMgr	language:Go	line:132	signature:()	type:error
+validate	request/search.go	129;"	m	access:private	ctype:searchMgr	language:Go	line:129	signature:()	type:error
+validate	request/services.go	199;"	m	access:private	ctype:ServicesReq	language:Go	line:199	signature:()	type:error
+validate	request/services.go	88;"	m	access:private	ctype:serviceMgr	language:Go	line:88	signature:()	type:error
+validateRoute	router/data.go	107;"	m	access:private	ctype:routeData	language:Go	line:107	signature:(route structs.NRoute)	type:bool
+values	geo/geocode.go	72;"	w	access:private	ctype:Request	language:Go	line:72	type:url.Values
+vparm	common/conversion.go	39;"	t	access:private	language:Go	line:39	type:struct
+vparms	common/conversion.go	46;"	v	access:private	language:Go	line:46	type:map[string]vparm
+vtype	common/conversion.go	40;"	w	access:private	ctype:vparm	language:Go	line:40	type:string

@@ -1,10 +1,6 @@
 package geo
 
-import (
-	"fmt"
-
-	"github.com/davecgh/go-spew/spew"
-)
+import "fmt"
 
 // LatLngForAddr queries Google for the geolocation of an address.  It returns the lat, lng, and
 // an error.
@@ -31,13 +27,36 @@ func AddrForLatLng(lat, lng float64) (string, error) {
 	}
 	resp, err := req.Lookup(nil)
 	fmt.Printf(">>>Found: %s\n", resp.Found)
-	fmt.Printf(">>>Response:\n%s\n", spew.Sdump(resp))
-	fmt.Printf("+++Response:\n%#v\n", resp.GoogleResponse.Results[0].AddressParts)
-	fmt.Println("---------------------------- Address Parts -------------------")
-	for i, v := range resp.GoogleResponse.Results[0].AddressParts {
-		fmt.Printf("%t %2d %#v\n", contains(v.Types, "political") && contains(v.Types, "locality"), i, v)
-
+	// fmt.Printf(">>>Response:\n%s\n", spew.Sdump(resp))
+	// fmt.Printf("+++Response:\n%#v\n", resp.GoogleResponse.Results[0].AddressParts)
+	// fmt.Println("---------------------------- Address Parts -------------------")
+	// for i, v := range resp.GoogleResponse.Results[0].AddressParts {
+	// 	fmt.Printf("%t %2d %#v\n", contains(v.Types, "political") && contains(v.Types, "locality"), i, v)
+	//
+	// }
+	if err != nil || resp.Status != "OK" {
+		return "", fmt.Errorf("Unable to determine GeoLoc for %v | %v", lat, lng)
 	}
+	return resp.Found, nil
+}
+
+// AddrForLatLng queries Google for the geolocation of the input LatitudeV and LongitudeV.
+// It returns the full address and an error.
+func AddrDetailForLatLng(lat, lng float64) (string, error) {
+	loc := Point{lat, lng}
+	req := &Request{
+		Location: &loc,
+		Provider: GOOGLE,
+	}
+	resp, err := req.Lookup(nil)
+	fmt.Printf(">>>Found: %s\n", resp.Found)
+	// fmt.Printf(">>>Response:\n%s\n", spew.Sdump(resp))
+	// fmt.Printf("+++Response:\n%#v\n", resp.GoogleResponse.Results[0].AddressParts)
+	// fmt.Println("---------------------------- Address Parts -------------------")
+	// for i, v := range resp.GoogleResponse.Results[0].AddressParts {
+	// 	fmt.Printf("%t %2d %#v\n", contains(v.Types, "political") && contains(v.Types, "locality"), i, v)
+	//
+	// }
 	if err != nil || resp.Status != "OK" {
 		return "", fmt.Errorf("Unable to determine GeoLoc for %v | %v", lat, lng)
 	}
