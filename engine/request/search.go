@@ -48,7 +48,7 @@ type searchMgr struct {
 	rpc    *router.RPCCallMgr
 
 	nresp *structs.NSearchResponse
-	resp  *SearchResponse
+	resp  SearchResponse
 }
 
 func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
@@ -59,7 +59,6 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 		start: time.Now(),
 		req:   &SearchRequest{},
 		valid: common.NewValidation(),
-		resp:  &SearchResponse{Message: "Request failed"},
 		nresp: &structs.NSearchResponse{
 			Reports: make([]structs.NSearchResponseReport, 0),
 		},
@@ -306,42 +305,32 @@ func (r *searchMgr) processReply(ndata interface{}) error {
 // -------------------------------------------------------------------------------
 
 func (r *searchMgr) convertResponse() {
-	var rpts []SearchResponseReport
+	r.resp = SearchResponse{}
+
 	for _, rpt := range r.nresp.Reports {
-		rpts = append(rpts, SearchResponseReport{
-			RID:               rpt.RID,
-			DateCreated:       rpt.DateCreated,
-			DateUpdated:       rpt.DateUpdated,
-			DeviceType:        rpt.DeviceType,
-			DeviceModel:       rpt.DeviceModel,
-			DeviceID:          rpt.DeviceID,
-			RequestType:       rpt.RequestType,
-			RequestTypeID:     rpt.RequestTypeID,
-			MediaURL:          rpt.MediaURL,
-			City:              rpt.City,
-			State:             rpt.State,
-			ZipCode:           rpt.ZipCode,
-			Latitude:          rpt.Latitude,
-			Longitude:         rpt.Longitude,
-			Directionality:    rpt.Directionality,
-			Description:       rpt.Description,
-			AuthorNameFirst:   rpt.AuthorNameFirst,
-			AuthorNameLast:    rpt.AuthorNameLast,
-			AuthorEmail:       rpt.AuthorEmail,
-			AuthorTelephone:   rpt.AuthorTelephone,
-			AuthorIsAnonymous: rpt.AuthorIsAnonymous,
-			URLDetail:         rpt.URLDetail,
-			URLShortened:      rpt.URLShortened,
-			Votes:             rpt.Votes,
-			StatusType:        rpt.StatusType,
-			TicketSLA:         rpt.TicketSLA,
-		})
-	}
-	r.resp = &SearchResponse{
-		Message:      r.nresp.Message,
-		ReportCount:  r.nresp.ReportCount,
-		ResponseTime: r.nresp.ResponseTime,
-		Reports:      rpts,
+		fullAddress := rpt.FullAddress()
+		newRsp := SearchResponseReport{
+			RID: rpt.RID,
+
+			Status:            &rpt.StatusType,
+			StatusNotes:       &rpt.TicketSLA,
+			ServiceName:       &rpt.RequestType,
+			ServiceCode:       &rpt.RequestTypeID,
+			Description:       &rpt.Description,
+			AgencyResponsible: nil,
+			ServiceNotice:     nil,
+			RequestedAt:       &rpt.DateCreated,
+			UpdatedAt:         &rpt.DateUpdated,
+			ExpectedAt:        nil,
+			Address:           &fullAddress,
+			AddressID:         nil,
+			ZipCode:           &rpt.ZipCode,
+			Latitude:          &rpt.Latitude,
+			Longitude:         &rpt.Longitude,
+			MediaURL:          &rpt.MediaURL,
+		}
+		newRsp.emptyToNil()
+		r.resp = append(r.resp, newRsp)
 	}
 }
 
@@ -474,19 +463,13 @@ func (r SearchRequest) String() string {
 // =======================================================================================
 
 // SearchResponse contains the search results.
-type SearchResponse struct {
-	Message      string                 `json:"Message" xml:"Message"`
-	ReportCount  int                    `json:"ReportCount" xml:"ReportCount"`
-	ResponseTime string                 `json:"ResponseTime" xml:"ResponseTime"`
-	Reports      []SearchResponseReport `json:"Reports,omitempty" xml:"Reports,omitempty"`
-}
+type SearchResponse []SearchResponseReport
 
 // Displays the SearchResponse custom type.
 func (r SearchResponse) String() string {
 	ls := new(common.LogString)
 	ls.AddS("SearchResponse\n")
-	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.ReportCount, r.ResponseTime, r.Message)
-	for _, x := range r.Reports {
+	for _, x := range r {
 		ls.AddS(x.String())
 	}
 	return ls.Box(90)
@@ -494,47 +477,88 @@ func (r SearchResponse) String() string {
 
 // SearchResponseReport represents a report.
 type SearchResponseReport struct {
-	RID               structs.ReportID `xml:"ID" json:"ID"`
-	DateCreated       string           `json:"DateCreated" xml:"DateCreated"`
-	DateUpdated       string           `json:"DateUpdated" xml:"DateUpdated"`
-	DeviceType        string           `json:"DeviceType" xml:"DeviceType"`
-	DeviceModel       string           `json:"DeviceModel" xml:"DeviceModel"`
-	DeviceID          string           `json:"DeviceID" xml:"DeviceID"`
-	RequestType       string           `json:"RequestType" xml:"RequestType"`
-	RequestTypeID     string           `json:"RequestTypeID" xml:"RequestTypeID"`
-	MediaURL          string           `json:"MediaURL" xml:"MediaURL"`
-	City              string           `json:"City" xml:"City"`
-	State             string           `json:"State" xml:"State"`
-	ZipCode           string           `json:"ZipCode" xml:"ZipCode"`
-	Latitude          string           `json:"lat" xml:"lat"`
-	Longitude         string           `json:"long" xml:"long"`
-	Directionality    string           `json:"Directionality" xml:"Directionality"`
-	Description       string           `json:"Description" xml:"Description"`
-	AuthorNameFirst   string           `json:"AuthorNameFirst" xml:"AuthorNameFirst"`
-	AuthorNameLast    string           `json:"AuthorNameLast" xml:"AuthorNameLast"`
-	AuthorEmail       string           `json:"AuthorEmail" xml:"AuthorEmail"`
-	AuthorTelephone   string           `json:"AuthorTelephone" xml:"AuthorTelephone"`
-	AuthorIsAnonymous string           `json:"AuthorIsAnonymous" xml:"AuthorIsAnonymous"`
-	URLDetail         string           `json:"URLDetail" xml:"URLDetail"`
-	URLShortened      string           `json:"URLShortened" xml:"URLShortened"`
-	Votes             string           `json:"Votes" xml:"Votes"`
-	StatusType        string           `json:"StatusType" xml:"StatusType"`
-	TicketSLA         string           `json:"TicketSLA" xml:"TicketSLA"`
+	RID               structs.ReportID `xml:"service_request_id" json:"service_request_id"`
+	Status            *string          `json:"status" xml:"status"`
+	StatusNotes       *string          `json:"status_notes,omitempty" xml:"status_notes,omitempty"`
+	ServiceName       *string          `json:"service_name" xml:"service_name"`
+	ServiceCode       *string          `json:"service_code" xml:"service_code"`
+	Description       *string          `json:"description" xml:"description"`
+	AgencyResponsible *string          `json:"agency_responsible,omitempty" xml:"agency_responsible,omitempty"`
+	ServiceNotice     *string          `json:"service_notice,omitempty" xml:"service_notice,omitempty"`
+	RequestedAt       *string          `json:"requested_datetime" xml:"requested_datetime"`
+	UpdatedAt         *string          `json:"updated_datetime" xml:"updated_datetime"`
+	ExpectedAt        *string          `json:"expected_datetime,omitempty" xml:"expected_datetime,omitempty"`
+	Address           *string          `json:"address" xml:"address"`
+	AddressID         *string          `json:"address_id" xml:"address_id"`
+	ZipCode           *string          `json:"zipcode" xml:"zipcode"`
+	Latitude          *string          `json:"lat" xml:"lat"`
+	Longitude         *string          `json:"long" xml:"long"`
+	MediaURL          *string          `json:"media_url" xml:"media_url"`
+}
+
+func (r *SearchResponseReport) emptyToNil() {
+	if r.Status != nil && *r.Status == "" {
+		r.Status = nil
+	}
+	if r.StatusNotes != nil && *r.StatusNotes == "" {
+		r.StatusNotes = nil
+	}
+	if r.ServiceName != nil && *r.ServiceName == "" {
+		r.ServiceName = nil
+	}
+	if r.ServiceCode != nil && *r.ServiceCode == "" {
+		r.ServiceCode = nil
+	}
+	if r.Description != nil && *r.Description == "" {
+		r.Description = nil
+	}
+	if r.AgencyResponsible != nil && *r.AgencyResponsible == "" {
+		r.AgencyResponsible = nil
+	}
+	if r.ServiceNotice != nil && *r.ServiceNotice == "" {
+		r.ServiceNotice = nil
+	}
+	if r.RequestedAt != nil && *r.RequestedAt == "" {
+		r.RequestedAt = nil
+	}
+	if r.UpdatedAt != nil && *r.UpdatedAt == "" {
+		r.UpdatedAt = nil
+	}
+	if r.ExpectedAt != nil && *r.ExpectedAt == "" {
+		r.ExpectedAt = nil
+	}
+	if r.Address != nil && *r.Address == "" {
+		r.Address = nil
+	}
+	if r.AddressID != nil && *r.AddressID == "" {
+		r.AddressID = nil
+	}
+	if r.ZipCode != nil && *r.ZipCode == "" {
+		r.ZipCode = nil
+	}
+	if r.Latitude != nil && *r.Latitude == "" {
+		r.Latitude = nil
+	}
+	if r.Longitude != nil && *r.Longitude == "" {
+		r.Longitude = nil
+	}
+	if r.MediaURL != nil && *r.MediaURL == "" {
+		r.MediaURL = nil
+	}
+
+	return
 }
 
 // Displays the the SearchResponseReport custom type.
 func (r SearchResponseReport) String() string {
 	ls := new(common.LogString)
-	ls.AddF("SearchResponseReport %d\n", r.RID.RID())
-	ls.AddF("DateCreated \"%v\"\n", r.DateCreated)
-	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
-	ls.AddF("Request - type: %q  id: %q\n", r.RequestType, r.RequestTypeID)
-	ls.AddF("Location - lat: %v  lon: %v  directionality: %q\n", r.Latitude, r.Longitude, r.Directionality)
-	ls.AddF("          %s, %s   %s\n", r.City, r.State, r.ZipCode)
-	ls.AddF("Votes: %v\n", r.Votes)
+	ls.AddF("ServiceRequestID: %s\n", r.RID.RID())
+	ls.AddF("Service - id: %q   name: %q\n", r.ServiceCode, r.ServiceName)
+	ls.AddF("Created: %v   Updated: %v   Expected: %v\n", r.RequestedAt, r.UpdatedAt, r.ExpectedAt)
 	ls.AddF("Description: %q\n", r.Description)
-	ls.AddF("Images - std: %s\n", r.MediaURL)
-	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", r.AuthorIsAnonymous, r.AuthorNameFirst, r.AuthorNameLast, r.AuthorEmail, r.AuthorTelephone)
-	ls.AddF("SLA: %s\n", r.TicketSLA)
+	ls.AddF("Agency: %s\n", r.AgencyResponsible)
+	ls.AddF("Location - lat: %v  lon: %v \n", r.Latitude, r.Longitude)
+	ls.AddF("          %s  zip: %s\n", r.Address, r.ZipCode)
+	ls.AddF("MediaURL: %s\n", r.MediaURL)
 	return ls.Box(80)
 }

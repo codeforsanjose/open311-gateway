@@ -37,6 +37,12 @@ ___
 
 ## Log
 
+### 2016.03.30 - Wed
+
+* Modified go-json-rest lib so that errors are returned in the Open311 format.
+* Modified Search to return "null" JSON values instead of empty strings.
+* Saved to GIT.
+
 ### 2016.03.29 - Tue
 
 * Address validation (in engine/common) working well, including ServiceArea validation.

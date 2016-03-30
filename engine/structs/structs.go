@@ -495,6 +495,14 @@ type NSearchResponseReport struct {
 	TicketSLA         string
 }
 
+// FullAddress returns the standard formatted full address.
+func (r *NSearchResponseReport) FullAddress() string {
+	if len(r.City+r.State+r.ZipCode) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%s, %s %s", r.City, r.State, r.ZipCode)
+}
+
 // =======================================================================================
 //                                      MID
 // =======================================================================================
@@ -851,7 +859,7 @@ func (r NSearchResponse) String() string {
 // Displays the the NSearchResponseReport custom type.
 func (r NSearchResponseReport) String() string {
 	ls := new(common.LogString)
-	ls.AddF("NSearchResponseReport %d\n", r.RID.RID())
+	ls.AddF("NSearchResponseReport %s\n", r.RID.RID())
 	ls.AddF("DateCreated \"%v\"\n", r.DateCreated)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
 	ls.AddF("Request - type: %q  id: %q\n", r.RequestType, r.RequestTypeID)

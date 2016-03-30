@@ -275,7 +275,7 @@ func (s Report) String() string {
 	ls.AddF("Request - type: %q  id: %q\n", s.RequestType, s.RequestTypeID)
 	ls.AddF("Location - lat: %v  lon: %v  directionality: %q\n", s.Latitude, s.Longitude, s.Directionality)
 	ls.AddF("          %s, %s   %s\n", s.City, s.State, s.ZipCode)
-	ls.AddF("Votes: %d\n", s.Votes)
+	ls.AddF("Votes: %v\n", s.Votes)
 	ls.AddF("Description: %q\n", s.Description)
 	ls.AddF("Images - std: %s\n", s.ImageURL)
 	if len(s.ImageURLXs) > 0 {
