@@ -233,13 +233,31 @@ type ServicesResp []*ServicesRespS
 
 // ServicesRespS represents a service in a service list.
 type ServicesRespS struct {
-	ID          string `json:"service_code" xml:"service_code"`
-	Name        string `json:"service_name" xml:"service_name"`
-	Description string `json:"description" xml:"description"`
-	Metadata    bool   `json:"metadata" xml:"metadata"`
-	Stype       string `json:"type" xml:"type"`
-	Keywords    string `json:"keywords" xml:"keywords"`
-	Group       string `json:"group" xml:"group"`
+	ID          string  `json:"service_code" xml:"service_code"`
+	Name        *string `json:"service_name" xml:"service_name"`
+	Description *string `json:"description" xml:"description"`
+	Metadata    bool    `json:"metadata" xml:"metadata"`
+	Stype       *string `json:"type" xml:"type"`
+	Keywords    *string `json:"keywords" xml:"keywords"`
+	Group       *string `json:"group" xml:"group"`
+}
+
+func (r *ServicesRespS) emptyToNil() {
+	if r.Name != nil && *r.Name == "" {
+		r.Name = nil
+	}
+	if r.Description != nil && *r.Description == "" {
+		r.Description = nil
+	}
+	if r.Stype != nil && *r.Stype == "" {
+		r.Stype = nil
+	}
+	if r.Keywords != nil && *r.Keywords == "" {
+		r.Keywords = nil
+	}
+	if r.Group != nil && *r.Group == "" {
+		r.Group = nil
+	}
 }
 
 // newServiceResp translates structs.NServices to ServicesResp and ServicesRespS.
@@ -247,15 +265,18 @@ func newServiceResp(msg string, ns structs.NServices) (*ServicesResp, error) {
 	newSR := ServicesResp{}
 
 	for _, v := range ns {
-		newSR = append(newSR, &ServicesRespS{
+		keywords := strings.Join(v.Keywords, ",")
+		sr := &ServicesRespS{
 			ID:          v.ServiceID.MID(),
-			Name:        v.Name,
-			Description: v.Name,
+			Name:        &v.Name,
+			Description: &v.Name,
 			Metadata:    false,
-			Stype:       "realtime",
-			Keywords:    strings.Join(v.Keywords, ","),
-			Group:       v.Group,
-		})
+			Stype:       &v.Stype,
+			Keywords:    &keywords,
+			Group:       &v.Group,
+		}
+		sr.emptyToNil()
+		newSR = append(newSR, sr)
 	}
 
 	return &newSR, nil

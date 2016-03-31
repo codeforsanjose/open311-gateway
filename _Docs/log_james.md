@@ -37,6 +37,11 @@ ___
 
 ## Log
 
+### 2016.03.31 - Thu
+
+* Modified Services response to return empty strings as null.
+* Saved to GIT.
+
 ### 2016.03.30 - Wed
 
 * Modified go-json-rest lib so that errors are returned in the Open311 format.
