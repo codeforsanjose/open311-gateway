@@ -278,6 +278,17 @@ func (r *createMgr) convertRequest() {
 	}
 }
 
+// convertResponse converts the NCreateResponse{} to a CreateResponse{}
+func (r *createMgr) convertResponse() {
+	rid := r.nresp.RID.RID()
+	r.resp = &CreateResponse{
+		ID:        &rid,
+		Notice:    &r.nresp.Message,
+		AccountID: &r.nresp.AccountID,
+	}
+	r.resp.emptyToNil()
+}
+
 // setRoute gets the route(s) to process the request.
 func (r *createMgr) setRoute() error {
 	routes, err := router.RoutesMID(r.req.MID)
@@ -493,17 +504,20 @@ func (r CreateRequest) String() string {
 
 // CreateResponse is the response to creating or updating a report.
 type CreateResponse struct {
-	ID        string `json:"service_request_id" xml:"service_request_id"`
-	Notice    string `json:"service_notice" xml:"service_notice"`
-	AccountID string `json:"account_id" xml:"account_id"`
+	ID        *string `json:"service_request_id" xml:"service_request_id"`
+	Notice    *string `json:"service_notice" xml:"service_notice"`
+	AccountID *string `json:"account_id" xml:"account_id"`
 }
 
-// convertResponse converts the NCreateResponse{} to a CreateResponse{}
-func (r *createMgr) convertResponse() {
-	r.resp = &CreateResponse{
-		ID:        r.nresp.RID.RID(),
-		Notice:    r.nresp.Message,
-		AccountID: r.nresp.AccountID,
+func (r *CreateResponse) emptyToNil() {
+	if r.ID != nil && *r.ID == "" {
+		r.ID = nil
+	}
+	if r.Notice != nil && *r.Notice == "" {
+		r.Notice = nil
+	}
+	if r.AccountID != nil && *r.AccountID == "" {
+		r.AccountID = nil
 	}
 }
 

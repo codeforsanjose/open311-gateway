@@ -33,7 +33,7 @@ type serviceMgr struct {
 
 	valid common.Validation
 
-	routes structs.NRoutes
+	// routes structs.NRoutes
 
 	resp *ServicesResp
 }
