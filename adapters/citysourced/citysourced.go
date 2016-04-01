@@ -47,6 +47,7 @@ func init() {
 	flag.Parse()
 
 	logs.Init(Debug)
+	log.Debug("Command line settings - debug: %t\nConfig file: %q", Debug, configFile)
 
 	if err := data.Init(configFile); err != nil {
 		log.Fatal("Unable to start - data initilization failed.\n")

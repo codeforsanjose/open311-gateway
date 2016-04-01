@@ -24,14 +24,14 @@ func GetArea(areaID string) (structs.NServices, error) {
 // Refresh initiates a refresh of the Services Cache.
 func Refresh() {
 	if err := refresh("all"); err != nil {
-		log.Errorf("service cache refresh failed - %s", err.Error())
+		log.Errorf("service cache refresh failed - " + err.Error())
 	}
 
 	if err := servicesData.indexAreaAdapters(); err != nil {
-		log.Errorf("service cache indexAreaAdapters() failed - %s", err.Error())
+		log.Errorf("service cache indexAreaAdapters() failed - " + err.Error())
 	}
 	if err := servicesData.sendRoutes(); err != nil {
-		log.Errorf("service cache sendRoutes() failed - %s", err.Error())
+		log.Errorf("service cache sendRoutes() failed - " + err.Error())
 	}
 
 	servicesData.switchSet()
@@ -183,11 +183,10 @@ func (r *cache) merge(ndata interface{}) error {
 	}
 	for _, ns := range data {
 		if _, ok := r.list[loadSet][ns.AreaID]; !ok {
-			log.Info("Created Area: %q", ns.AreaID)
+			log.Infof("Created Area: %q", ns.AreaID)
 			r.list[loadSet][ns.AreaID] = make(structs.NServices, 0)
 		}
 		r.list[loadSet][ns.AreaID] = append(r.list[loadSet][ns.AreaID], ns)
-		// log.Debug("   Appending: %s - %s", ns.MID(), ns.Name)
 		r.services[loadSet][ns.MID()] = true
 	}
 	return nil

@@ -66,7 +66,7 @@ func refresh(area string) (reterr error) {
 	}
 
 	routes, err := router.RoutesAll()
-	log.Debug("router.RoutesAll(): %T: %#[1]v  len: %d", routes, len(routes))
+	log.Debugf("router.RoutesAll(): %T: %#[1]v  len: %d", routes, len(routes))
 	switch {
 	case err != nil:
 		return err
@@ -75,9 +75,9 @@ func refresh(area string) (reterr error) {
 	}
 	mgr.routes = routes
 
-	log.Debug("Before callRPC: %s", mgr.String())
+	log.Debug("Before callRPC: " + mgr.String())
 	if err := mgr.callRPC(); err != nil {
-		log.Errorf("processRefresh.callRPC() failed - %s", err)
+		log.Error("processRefresh.callRPC() failed - " + err.Error())
 		return err
 	}
 
@@ -114,7 +114,7 @@ func (r *refreshMgr) callRPC() (err error) {
 		return err
 	}
 
-	log.Debug("Before RPC\n%s", r.String())
+	log.Debug("Before RPC" + r.String())
 	if err = r.rpc.Run(); err != nil {
 		log.Error(err.Error())
 		return err

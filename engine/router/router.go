@@ -17,11 +17,11 @@ func Init(configFile string) error {
 	if err := readConfig(configFile); err != nil {
 		return err
 	}
+	log.Debug("Adapters: " + adapters.String())
 	err := adapters.connect()
 	if err != nil {
 		return err
 	}
-	// log.Debug(adapters.String())
 	return nil
 }
 
@@ -39,6 +39,5 @@ func readConfig(filePath string) error {
 		return err
 	}
 
-	// log.Debug(adapters.String())
 	return nil
 }

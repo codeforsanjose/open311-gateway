@@ -83,12 +83,11 @@ func NewRPCCallMgr(reqmgr requester) (*RPCCallMgr, error) {
 	for _, route := range reqmgr.Routes() {
 		rpccall, err := newrpcCall(r, route)
 		if err != nil {
-			log.Errorf("%s", err.Error())
+			log.Error(err.Error())
 			return nil, err
 		}
 		r.calls[route] = rpccall
 	}
-	// log.Debug("New RPC Call Mgr:\n%s", r)
 
 	return r, nil
 }
@@ -115,18 +114,24 @@ func (r *RPCCallMgr) receive() {
 			case respKey := <-r.results:
 				answer := r.calls[respKey]
 				r.decPending()
-				// log.Debug("%s", answer.String())
 				telemetry.SendRPC(answer.response.(structs.NResponser).GetIDS(), "done", "", time.Now())
 				if answer.err != nil {
 					r.errs = append(r.errs, answer.err)
-					log.Errorf("RPC call to: %q failed - %s", respKey, answer.err)
+					log.WithFields(log.Fields{
+						"method": r.serviceMethod,
+						"route":  respKey.String(),
+						"error":  answer.err,
+					}).Error("RPC call failed.")
 					break
 				}
-				// log.Debug("Answer: %s", answer.response)
 				err := r.reqmgr.Processer()(answer.response)
 				if err != nil {
-					r.errs = append(r.errs, answer.err)
-					log.Errorf("RPC call to: %q failed - %s", respKey, answer.err)
+					r.errs = append(r.errs, err)
+					log.WithFields(log.Fields{
+						"method": r.serviceMethod,
+						"route":  respKey.String(),
+						"error":  err,
+					}).Error("RPC Processor() failed.")
 					break
 				}
 
@@ -140,7 +145,10 @@ func (r *RPCCallMgr) receive() {
 		if timedout {
 			for route, call := range r.calls {
 				if !call.replied {
-					log.Errorf("Adapter: %q timed out", route.String())
+					log.WithFields(log.Fields{
+						"method": r.serviceMethod,
+						"route":  route.String(),
+					}).Error("Adapter call timedout.")
 				}
 			}
 		}
@@ -154,18 +162,26 @@ func (r *RPCCallMgr) receive() {
 func (r *RPCCallMgr) Run() error {
 	startTime := time.Now()
 
+	// Initiate all RPC calls
 	r.send()
 
+	// Process responses
 	r.receive()
 
 	if showRunTimes {
-		log.Info("RPC Call: %q took: %s", r.serviceMethod, time.Since(startTime))
+		log.WithFields(log.Fields{
+			"method":   r.serviceMethod,
+			"duration": time.Since(startTime),
+		}).Info("RPC call duration.")
 	}
 
 	if len(r.errs) > 0 {
 		var errs string
 		for i, e := range r.errs {
-			log.Errorf(e.Error())
+			log.WithFields(log.Fields{
+				"method": r.serviceMethod,
+				"error":  e.Error(),
+			}).Error("RPC Run() failed.")
 			if i > 0 {
 				errs = errs + "; "
 			}
@@ -273,13 +289,11 @@ func newrpcCall(rpcmgr rpcmanager, route structs.NRoute) (*rpcCall, error) {
 		rpc:   rpcmgr,
 		route: route,
 	}
-	// log.Debug("Route: %v", route.String())
 	adp, err := GetRouteAdapter(r.route)
 	if err != nil {
 		return nil, err
 	}
 	r.adp = adp
-	// log.Debug(r.String())
 	return r, nil
 }
 
@@ -330,7 +344,6 @@ func (r *rpcCall) prepRPC() (rqstCopy interface{}, err error) {
 
 func (r *rpcCall) run() error {
 	if r.adp.Connected() {
-		// log.Debug("{%s::%v} Calling prepRPC...", r.route.String(), r.id)
 		payload, err := r.prepRPC()
 		if err != nil {
 			return err

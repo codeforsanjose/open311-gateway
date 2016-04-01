@@ -2,15 +2,33 @@
   "adapters": {
     "CS1": {
       "type": "CitySourced",
-      "address": ":5001"
+      "address": ":5001",
+      "startup": {
+        "autostart": true,
+        "dir": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/citysourced",
+        "cmd": "citysourced",
+        "args": ["-debug", "-config", "data/config1.json"]
+      }
     },
     "CS2": {
       "type": "CitySourced",
-      "address": ":5002"
+      "address": ":5002",
+      "startup": {
+        "autostart": true,
+        "dir": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/citysourced",
+        "cmd": "citysourced",
+        "args": ["-debug", "-config", "data/config2.json"]
+      }
     },
     "EM1": {
       "type": "Email",
-      "address": ":5003"
+      "address": ":5003",
+      "startup": {
+        "autostart": true,
+        "dir": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/email",
+        "cmd": "email",
+        "args": ["-debug", "-config", "data/config.json"]
+      }
     }
   },
   "areas": {

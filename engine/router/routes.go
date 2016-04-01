@@ -1,10 +1,6 @@
 package router
 
-import (
-	"Gateway311/engine/structs"
-
-	log "github.com/jeffizhungry/logrus"
-)
+import "Gateway311/engine/structs"
 
 // "github.com/davecgh/go-spew/spew"
 
@@ -26,7 +22,6 @@ func RoutesArea(areaID string) (routes structs.NRoutes, err error) {
 // RoutesAll returns all routes from all CONFIG'ured adapters.  This call does not
 // use the Services cache for this list - it uses the config.json file.
 func RoutesAll() (routes structs.NRoutes, err error) {
-	log.Debug("Using ALL adapters")
 	for _, adp := range adapters.Adapters {
 		routes = append(routes, structs.NRoute{AdpID: adp.ID, AreaID: "all", ProviderID: 0})
 	}

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/rpc"
+	"os"
+	"os/exec"
 	"strings"
 	"sync"
 	"time"
@@ -277,7 +279,9 @@ func (r *Adapters) load(file []byte) error {
 		v.ID = k
 	}
 
-	r.indexAreaAlias()
+	if err := r.indexAreaAlias(); err != nil {
+		log.Error("Data load failed - " + err.Error())
+	}
 
 	r.loaded = true
 	r.loadedAt = time.Now()
@@ -298,14 +302,13 @@ func (r *Adapters) indexAreaAlias() error {
 	return nil
 }
 
-func (r *Adapters) updateAreaAdapters(input map[string][]string) error {
+func (r *Adapters) updateAreaAdapters(input map[string][]string) {
 	r.Lock()
 	defer r.Unlock()
 	r.areaAdapters = make(map[string][]*Adapter)
 
 	for areaID, adpList := range input {
 		for _, adpID := range adpList {
-			// log.Debugf("AreaID: %q  AdapterID: %q", areaID, adpID)
 			if _, ok := r.areaAdapters[areaID]; !ok {
 				r.areaAdapters[areaID] = make([]*Adapter, 0)
 			}
@@ -315,13 +318,26 @@ func (r *Adapters) updateAreaAdapters(input map[string][]string) error {
 
 	log.Debugf("After updateAreaAdapters...\n" + r.String() + "\n")
 
-	return nil
+	return
 }
 
 // Connect asks each adapter to Dial it's Server.
 func (r *Adapters) connect() error {
+	var startup bool
 	for _, v := range r.Adapters {
-		v.connect()
+		if err := v.connect(); err != nil {
+			v.start()
+			startup = true
+			time.Sleep(time.Second * 1)
+		}
+	}
+	if startup {
+		time.Sleep(time.Second * 2)
+		for _, v := range r.Adapters {
+			if !v.connected {
+				_ = v.connect()
+			}
+		}
 	}
 	return nil
 }
@@ -332,9 +348,10 @@ func (r *Adapters) connect() error {
 
 // Adapter represents an active Adapter.
 type Adapter struct {
-	ID        string //
-	Type      string `json:"type"`
-	Address   string `json:"address"`
+	ID        string     //
+	Type      string     `json:"type"`
+	Address   string     `json:"address"`
+	Startup   AdpStartup `json:"startup"`
 	connected bool
 	client    *rpc.Client
 }
@@ -345,15 +362,74 @@ func (adp *Adapter) connect() error {
 		log.WithFields(log.Fields{
 			"adapter": adp.ID,
 			"error":   err.Error(),
-		}).Error("Failed to connect to adapter - ")
+		}).Error("Failed to connect to adapter")
 		return err
 	}
 	log.WithFields(log.Fields{
 		"adapter": adp.ID,
-	}).Info("Established connection to adapter - ")
+	}).Info("Established connection to adapter")
 	adp.client = client
 	adp.connected = true
 	return nil
+}
+
+func (adp *Adapter) start() {
+	if !adp.Startup.Autostart {
+		log.WithFields(log.Fields{
+			"adapter": adp.ID,
+		}).Info("Adapter cannot be autostarted")
+		return
+	}
+	log.WithFields(log.Fields{
+		"adapter": adp.ID,
+		"dir":     adp.Startup.Dir,
+		"cmd":     adp.Startup.Cmd,
+		"args":    adp.Startup.Args,
+	}).Info("Starting adapter")
+	go func() {
+		cmd := &exec.Cmd{
+			Dir:  adp.Startup.Dir,
+			Path: adp.Startup.Cmd,
+			Args: adp.Startup.Args,
+		}
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Start()
+		if err != nil {
+			log.WithFields(log.Fields{
+				"adapter": adp.ID,
+				"dir":     adp.Startup.Dir,
+				"cmd":     adp.Startup.Cmd,
+				"args":    adp.Startup.Args,
+			}).Error("Adapter failed to start")
+		}
+		log.WithFields(log.Fields{
+			"adapter": adp.ID,
+		}).Info("Adapter started!")
+
+		err = cmd.Wait()
+		if err != nil {
+			log.WithFields(log.Fields{
+				"adapter": adp.ID,
+				"error":   err.Error(),
+			}).Error("Adapter exited!")
+		}
+
+		log.WithFields(log.Fields{
+			"adapter": adp.ID,
+		}).Info("Adapter stopped!")
+	}()
+	return
+}
+
+// --------------------------- Startup ----------------------------------------
+
+// AdpStartup represents the startup data for an adapter.
+type AdpStartup struct {
+	Autostart bool     `json:"autostart"`
+	Dir       string   `json:"dir"`
+	Cmd       string   `json:"cmd"`
+	Args      []string `json:"args"`
 }
 
 // --------------------------- AdpRPCer Interface ----------------------------------------
@@ -459,7 +535,15 @@ func (adp Adapter) String() string {
 	// ls := new(common.LogString)
 	ls := common.NewLogString()
 	ls.AddF("%s\n", adp.ID)
-	ls.AddF("%-17s   Type: %s  Address: %s\n", ls.ColorBool(adp.connected, "CONNECTED  ", "UNCONNECTED", "green", "red"), adp.Type, adp.Address)
+	ls.AddF("%-17s   Type: %s  Address: %s  Autostart: %t\n",
+		ls.ColorBool(adp.connected, "CONNECTED  ", "UNCONNECTED", "green", "red"),
+		adp.Type,
+		adp.Address,
+		adp.Startup.Autostart,
+	)
+	ls.AddF("Working directory: %s\n", adp.Startup.Dir)
+	ls.AddF("Command: %s\n", adp.Startup.Cmd)
+	ls.AddF("Args: %#v\n", adp.Startup.Args)
 	return ls.Box(80)
 }
 
