@@ -5,11 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"Gateway311/engine/logs"
-)
-
-var (
-	log = logs.Log
+	log "github.com/jeffizhungry/logrus"
 )
 
 // ==============================================================================================================================

@@ -11,6 +11,8 @@ import (
 
 	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
+
+	log "github.com/jeffizhungry/logrus"
 )
 
 var (
@@ -87,8 +89,10 @@ type routeData struct {
 func (r *routeData) getAllRoutes() structs.NRoutes {
 	r.RLock()
 	defer r.RUnlock()
-	log.Debug("getAllRoutes: activeSet: %d", r.activeSet)
-	log.Debug("len(r.all): %d", len(r.all[r.activeSet]))
+	log.WithFields(log.Fields{
+		"activeSet":  r.activeSet,
+		"len(r.all)": len(r.all[r.activeSet]),
+	}).Debug("getAllRoutes")
 	return r.all[r.activeSet]
 }
 
@@ -120,7 +124,7 @@ func (r *routeData) update(upd map[structs.NRoute]bool) {
 	r.clearLoadSet(ls)
 
 	for route := range upd {
-		log.Debug("Route: %v", route)
+		log.Debugf("Route: %v", route)
 		r.all[ls] = append(r.all[ls], route)
 		if _, ok := r.indArea[ls][route.AreaID]; !ok {
 			r.indArea[ls][route.AreaID] = make(structs.NRoutes, 0)
@@ -129,7 +133,7 @@ func (r *routeData) update(upd map[structs.NRoute]bool) {
 	}
 
 	r.switchSet()
-	log.Debug("Updated routeData!%s", r.String())
+	log.Debug("Updated routeData: " + r.String())
 }
 
 func (r *routeData) loadSet() (ls int) {
@@ -230,7 +234,6 @@ func (r *Adapters) getAdapter(id string) (*Adapter, error) {
 	r.RLock()
 	defer r.RUnlock()
 	a, ok := r.Adapters[id]
-	// log.Debug("a: %s-%s  ok: %t\n", a.ID, a.Type, ok)
 	if !ok {
 		return nil, fmt.Errorf("Adapter: %q was not found.", id)
 	}
@@ -246,7 +249,6 @@ func (r *Adapters) getAdapterID(MID string) (string, error) {
 		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
 	}
 	// a, ok := r.Adapters[AdpID]
-	// log.Debug("AdpID: %q  a: %s-%s  ok: %t\n", AdpID, a.ID, a.Type, ok)
 	_, ok := r.Adapters[AdpID]
 	if !ok {
 		return "", fmt.Errorf("The requested ServiceID: %q is not serviced by this gateway.", MID)
@@ -280,7 +282,7 @@ func (r *Adapters) load(file []byte) error {
 	r.loaded = true
 	r.loadedAt = time.Now()
 
-	// log.Debug("=================== Adapters ===============\n%s\n\n\n", spew.Sdump(*r))
+	// log.Debugf("=================== Adapters ===============\n%s\n\n\n", spew.Sdump(*r))
 	// log.Debug("")
 	return nil
 }
@@ -303,7 +305,7 @@ func (r *Adapters) updateAreaAdapters(input map[string][]string) error {
 
 	for areaID, adpList := range input {
 		for _, adpID := range adpList {
-			// log.Debug("AreaID: %q  AdapterID: %q", areaID, adpID)
+			// log.Debugf("AreaID: %q  AdapterID: %q", areaID, adpID)
 			if _, ok := r.areaAdapters[areaID]; !ok {
 				r.areaAdapters[areaID] = make([]*Adapter, 0)
 			}
@@ -311,7 +313,7 @@ func (r *Adapters) updateAreaAdapters(input map[string][]string) error {
 		}
 	}
 
-	log.Debug("After updateAreaAdapters...\n%s\n", r)
+	log.Debugf("After updateAreaAdapters...\n" + r.String() + "\n")
 
 	return nil
 }
@@ -340,10 +342,15 @@ type Adapter struct {
 func (adp *Adapter) connect() error {
 	client, err := rpc.DialHTTP("tcp", adp.Address)
 	if err != nil {
-		log.Errorf("Connection to: %s failed: %s", adp.ID, err)
+		log.WithFields(log.Fields{
+			"adapter": adp.ID,
+			"error":   err.Error(),
+		}).Error("Failed to connect to adapter - ")
 		return err
 	}
-	log.Info("Connection to: %q OK!\n", adp.ID)
+	log.WithFields(log.Fields{
+		"adapter": adp.ID,
+	}).Info("Established connection to adapter - ")
 	adp.client = client
 	adp.connected = true
 	return nil

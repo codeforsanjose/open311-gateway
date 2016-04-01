@@ -1,10 +1,13 @@
 ## To Do.todo
 
 *  Improve error handling.
+* Spin up a test implementation.
+* Finish Service Definitions, including optional attributes on a POST Service Request.  
+* SeeClickFix adapter.
+* Quick Start guide.
 * Allow logs to be configured to go to the System Logger (MacOS & Linux).
 * Stress tester.
-* Remove ant0ine REST library.
-* Fix dates on Searches.
+* Fix dates on Searches. @done(2016-03-31)
 * Run race detector.  _Ran OK!  Will start running with "-race" flag for all testing._ @done(2016-03-18)
 * Rework engine/router/rpcroute.go - the map idea seemed like a good idea at the time, but it's difficult to understand and debug. @done(2016-03-18)
 * Implement Report Upvote
@@ -43,7 +46,9 @@ ___
 * Saved to GIT.
 * Modified Services response to return empty strings as null.
 * Saved to GIT.
-* 
+* Replaced logging system (replaced go-logging with jeffizhungry version of logrus).
+* Removed some debug prints.
+* Saved to GIT.
 
 ### 2016.03.30 - Wed
 

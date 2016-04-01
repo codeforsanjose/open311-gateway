@@ -10,7 +10,6 @@ import (
 type addressTest struct {
 }
 
-/*
 func TestParse(t *testing.T) {
 
 	fmt.Printf("\n\n======================================================== TestParse ========================================================\n\n")
@@ -171,7 +170,6 @@ func TestLatLong(t *testing.T) {
 		}
 	}
 }
-*/
 
 func TestAddress(t *testing.T) {
 

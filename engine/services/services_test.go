@@ -5,20 +5,19 @@ import (
 	"testing"
 	"time"
 
-	"Gateway311/engine/logs"
 	"Gateway311/engine/router"
 
 	"github.com/davecgh/go-spew/spew"
+	log "github.com/jeffizhungry/logrus"
 )
 
 var Debug = true
 
 func init() {
-	logs.Init(Debug)
-
+	log.Setup(false, log.DebugLevel)
 	fmt.Println("Reading config...")
 	if err := router.Init("../data/config.json"); err != nil {
-		fmt.Errorf("Init() failed: %s", err)
+		log.Errorf("Init() failed: %s", err)
 	}
 }
 

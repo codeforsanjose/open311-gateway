@@ -4,19 +4,14 @@ import (
 	"errors"
 	"net/http"
 
-	"Gateway311/engine/logs"
-
 	"github.com/ant0ine/go-json-rest/rest"
+	log "github.com/jeffizhungry/logrus"
 )
 
 const (
 	debugRecover = false
 
 	greEmpty = "JSON payload is empty"
-)
-
-var (
-	log = logs.Log
 )
 
 // Services looks up the service providers and services for the specified location.

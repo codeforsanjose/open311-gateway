@@ -6,14 +6,14 @@ import (
 	"sync"
 
 	"Gateway311/engine/common"
-	"Gateway311/engine/logs"
 	"Gateway311/engine/router"
 	"Gateway311/engine/structs"
+
+	log "github.com/jeffizhungry/logrus"
 )
 
 var (
 	servicesData cache
-	log          = logs.Log
 )
 
 // GetArea returns a list of Services for the specified Area.

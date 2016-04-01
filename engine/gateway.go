@@ -8,16 +8,15 @@ import (
 	"os/signal"
 	"time"
 
-	"Gateway311/engine/logs"
 	"Gateway311/engine/request"
 	"Gateway311/engine/router"
 	"Gateway311/engine/services"
 
 	"github.com/ant0ine/go-json-rest/rest"
+	log "github.com/jeffizhungry/logrus"
 )
 
 var (
-	log = logs.Log
 	// Debug switches on some debugging statements.
 	Debug = false
 )
@@ -43,12 +42,12 @@ func main() {
 }
 
 func init() {
+	log.Setup(false, log.DebugLevel)
+
 	var configFile string
 	flag.BoolVar(&Debug, "debug", false, "Activates debug logging.")
 	flag.StringVar(&configFile, "config", "data/config.json", "Config file. This is a full or relative path.")
 	flag.Parse()
-
-	logs.Init(Debug)
 
 	if err := router.Init(configFile); err != nil {
 		log.Fatal("Unable to start - data initilization failed.\n")

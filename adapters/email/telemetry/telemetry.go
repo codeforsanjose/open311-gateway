@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"Gateway311/adapters/email/data"
-	"Gateway311/engine/logs"
+
+	log "github.com/jeffizhungry/logrus"
 )
 
 var (
-	log         = logs.Log
 	chTQue      chan msgSender
 	monitorAddr = "127.0.0.1:5051"
 )

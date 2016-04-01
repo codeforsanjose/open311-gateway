@@ -15,6 +15,7 @@ import (
 	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
+	log "github.com/jeffizhungry/logrus"
 )
 
 // servicesMgr conglomerates the Normal and Native structs and supervisor logic
@@ -39,7 +40,6 @@ type serviceMgr struct {
 }
 
 func processServices(rqst *rest.Request) (fresp interface{}, ferr error) {
-	log.Debug("starting processServices()")
 	mgr := serviceMgr{
 		id:      common.RequestID(),
 		start:   time.Now(),
@@ -58,7 +58,7 @@ func processServices(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}()
 
 	fail := func(err error) (interface{}, error) {
-		log.Warningf("processServices failed - %s", err)
+		log.Info("processServices failed - " + err.Error())
 		return mgr.resp, fmt.Errorf(err.Error())
 	}
 
@@ -69,12 +69,11 @@ func processServices(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	if err := mgr.validate(); err != nil {
-		log.Warningf("processServices.validate() failed - %s", err)
 		return fail(err)
 	}
 
 	if err := mgr.run(); err != nil {
-		log.Errorf("processServices.callRPC() failed - %s", err)
+		log.Error("processServices.callRPC() failed - " + err.Error())
 		return fail(err)
 	}
 
@@ -91,29 +90,27 @@ func (r *serviceMgr) validate() error {
 		if err != nil {
 			msg = msg + " - " + err.Error()
 		}
-		log.Warningf("Validation failed: %s", msg)
 		return errors.New(msg)
 	}
 
 	v := r.valid
-	v.Set("QP", "Query parms parsed and loaded ok", false)
-	v.Set("convert", "Type conversion of inputs is OK", false)
+	v.Set("qryParms", "Query parms parsed and loaded ok", false)
+	v.Set("inputs", "Type conversion of inputs is OK", false)
 	v.Set("areaID", "We have a valid AreaID", false)
 
 	// Load Query Parms.
 	if err := r.parseQP(); err != nil {
 		return fail("", err)
 	}
-	v.Set("QP", "", true)
+	v.Set("qryParms", "", true)
 
 	// Convert all string inputs.
 	if err := r.req.convert(); err != nil {
 		return fail("", err)
 	}
-	v.Set("convert", "", true)
+	v.Set("inputs", "", true)
 
 	// Location
-
 	switch {
 	case common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV):
 		r.req.City, _ = geo.CityForLatLng(r.req.LatitudeV, r.req.LongitudeV)
@@ -121,14 +118,14 @@ func (r *serviceMgr) validate() error {
 
 	case len(r.req.FullAddress) > 0:
 		addr, err := common.ParseAddress(r.req.FullAddress, true)
-		log.Debug("Parsed full address - addr: %+v", addr)
+		log.Debugf("Parsed full address - addr: %+v", addr)
 		if err == nil {
 			r.req.Address = addr.Addr
 			r.req.City = addr.City
 			r.req.State = addr.State
 			r.req.Zip = addr.Zip
 		} else {
-			log.Warningf("ParseAddress failed - %s", err.Error())
+			log.Info("ParseAddress failed - " + err.Error())
 		}
 	}
 
@@ -165,7 +162,7 @@ func (r *serviceMgr) parseQP() error {
 // -------------------------------------------------------------------------------
 
 func (r *serviceMgr) run() error {
-	log.Debug("%s", r.req.String())
+	log.Debug(r.req.String())
 	services, err := services.GetArea(r.req.areaID)
 	if err != nil {
 		return fmt.Errorf("Cannot find services for %v - %v", r.req.City, err.Error())
@@ -197,7 +194,7 @@ type ServicesReq struct {
 }
 
 func (r *ServicesReq) validate() error {
-	log.Debug("Starting validation:\n%s", r.String())
+	log.Debug("Starting validation:\n" + r.String())
 	if x, err := strconv.ParseFloat(r.Latitude, 64); err == nil {
 		r.LatitudeV = x
 	}
@@ -220,7 +217,7 @@ func (r *ServicesReq) convert() error {
 	c := common.NewConversion()
 	r.LatitudeV = c.Float("Latitude", r.Latitude)
 	r.LongitudeV = c.Float("Longitude", r.Longitude)
-	log.Debug("After convert: %s\n%s", c.String(), r.String())
+	log.Debug("After convert: " + c.String() + "\n" + r.String())
 	return nil
 }
 

@@ -10,6 +10,8 @@ import (
 	"Gateway311/engine/common"
 	"Gateway311/engine/structs"
 	"Gateway311/engine/telemetry"
+
+	log "github.com/jeffizhungry/logrus"
 )
 
 const (
@@ -144,7 +146,7 @@ func (r *RPCCallMgr) receive() {
 		}
 	}
 	if showResponse {
-		log.Debug("RPC Manager:%v", r)
+		log.Debugf("RPC Manager:%v", r)
 	}
 }
 
@@ -297,27 +299,27 @@ func (r *rpcCall) prepRPC() (rqstCopy interface{}, err error) {
 		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
-		log.Debug("Sending: %s", rCopy.String())
+		log.Debugf("Sending: %s", rCopy.String())
 	case *structs.NCreateRequest:
 		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
-		log.Debug("Sending: %s", rCopy.String())
+		log.Debugf("Sending: %s", rCopy.String())
 	case *structs.NSearchRequestLL:
 		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
-		log.Debug("Sending: %s", rCopy.String())
+		log.Debugf("Sending: %s", rCopy.String())
 	case *structs.NSearchRequestDID:
 		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
-		log.Debug("Sending: %s", rCopy.String())
+		log.Debugf("Sending: %s", rCopy.String())
 	case *structs.NSearchRequestRID:
 		rCopy := *data
 		prep(&rCopy)
 		rqstCopy = &rCopy
-		log.Debug("Sending: %s", rCopy.String())
+		log.Debugf("Sending: %s", rCopy.String())
 	default:
 		msg := fmt.Sprintf("Invalid type in send RPC: %T", r.rpc.data())
 		log.Errorf(msg)

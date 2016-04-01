@@ -12,6 +12,7 @@ import (
 	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
+	log "github.com/jeffizhungry/logrus"
 )
 
 const (
@@ -52,7 +53,6 @@ type searchMgr struct {
 }
 
 func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
-	log.Debug("starting processSearch()")
 	mgr := searchMgr{
 		rqst:  rqst,
 		id:    common.RequestID(),
@@ -74,7 +74,7 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}()
 
 	fail := func(err error) (interface{}, error) {
-		log.Errorf("processSearch failed - %s", err)
+		log.Warn("processSearch failed - " + err.Error())
 		return mgr.resp, fmt.Errorf("Search request failed - %s", err.Error())
 	}
 
@@ -85,13 +85,13 @@ func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	if err := mgr.validate(); err != nil {
-		log.Warningf("processSearch.validate() failed - %s", err)
+		log.Warn("processSearch.validate() failed - " + err.Error())
 		return fail(err)
 	}
 
 	log.Debug("Before RPC Call:\n%s", mgr.String())
 	if err := mgr.callRPC(); err != nil {
-		log.Errorf("processSearch.callRPC() failed - %s", err)
+		log.Error("processSearch.callRPC() failed - " + err.Error())
 		return fail(err)
 	}
 
@@ -130,13 +130,13 @@ func (r *searchMgr) validate() error {
 		if err != nil {
 			msg = msg + " - " + err.Error()
 		}
-		log.Warningf("Validation failed: %s", msg)
+		log.Warn("Validation failed - " + msg)
 		return errors.New(msg)
 	}
 
 	v := r.valid
-	v.Set("QP", "Query parms parsed and loaded ok", false)
-	v.Set("convert", "Type conversion of inputs is OK", false)
+	v.Set("qryParms", "Query parms parsed and loaded ok", false)
+	v.Set("inputs", "Type conversion of inputs is OK", false)
 	v.Set("RID", "Has a Report ID", false)
 	v.Set("DID", "Has a Device ID", false)
 	v.Set("geo", "Location coordinates are within the continental US", false)
@@ -147,13 +147,13 @@ func (r *searchMgr) validate() error {
 	if err := r.parseQP(); err != nil {
 		return fail("", err)
 	}
-	v.Set("QP", "", true)
+	v.Set("qryParms", "", true)
 
 	// Convert all string inputs.
 	if err := r.req.convert(); err != nil {
 		return fail("", err)
 	}
-	v.Set("convert", "", true)
+	v.Set("inputs", "", true)
 
 	// ReportID (RID)
 	if router.ValidateRID(r.req.RID) {
@@ -186,7 +186,7 @@ func (r *searchMgr) validate() error {
 	if err := r.setRoute(); err != nil {
 		return fail("", err)
 	}
-	log.Debug("After setRoute() - %s", v.String())
+	log.Debug("After setRoute() - " + v.String())
 
 	if err := r.setSearchType(); err != nil {
 		return fail("", err)
@@ -223,7 +223,7 @@ func (r *searchMgr) setRoute() error {
 
 	case v.IsOK("geo"):
 		if city, err := geo.CityForLatLng(r.req.LatitudeV, r.req.LongitudeV); err == nil {
-			log.Debug("City: %q", city)
+			log.Debug("City: " + city)
 			r.req.City = city
 		}
 		var err error
@@ -292,7 +292,11 @@ func (r *searchMgr) callRPC() (err error) {
 
 func (r *searchMgr) processReply(ndata interface{}) error {
 	reply, ok := ndata.(*structs.NSearchResponse)
-	log.Debug("reply: %p  ok: %t  size: %v", reply, ok, len(reply.Reports))
+	log.WithFields(log.Fields{
+		"reply": reply,
+		"ok":    ok,
+		"size":  len(reply.Reports),
+	}).Debug("processReply...")
 	if !ok {
 		return fmt.Errorf("wrong type of data: %T returned by RPC call", ndata)
 	}

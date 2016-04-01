@@ -23,11 +23,9 @@ type NID struct {
 // SetNID sets the NID.
 func (r *NID) SetNID(rqstID, rpcID int64) {
 	if rqstID > 0 {
-		fmt.Printf("Setting RqstID: %d\n", rqstID)
 		r.RqstID = rqstID
 	}
 	if rpcID > 0 {
-		fmt.Printf("Setting RPCID: %d\n", rpcID)
 		r.RPCID = rpcID
 	}
 }
@@ -78,7 +76,6 @@ func (r NRequestCommon) GetType() NRequestType {
 
 // GetTypeS returns the Request Type as a string.
 func (r NRequestCommon) GetTypeS() string {
-	fmt.Println("[NRequestCommon: GetTypeS()] start")
 	return r.Rtype.String()
 }
 
@@ -227,7 +224,6 @@ func (r NResponseCommon) GetType() NResponseType {
 
 // GetTypeS returns the Response Type as a string.
 func (r NResponseCommon) GetTypeS() string {
-	fmt.Println("[NResponseCommon: GetTypeS()] start")
 	return r.Rtype.String()
 }
 
@@ -513,7 +509,6 @@ func SplitRMID(mid string) (string, string, int, int, error) {
 		return "", "", 0, 0, fmt.Errorf("Invalid RMID: %q", mid)
 	}
 	parts := strings.Split(mid, "-")
-	fmt.Printf("MID: %+v\n", parts)
 	if len(parts) != 4 {
 		fail()
 	}

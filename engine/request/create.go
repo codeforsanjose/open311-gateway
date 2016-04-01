@@ -12,6 +12,7 @@ import (
 	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
+	log "github.com/jeffizhungry/logrus"
 )
 
 // createMgr conglomerates the Normal and Native structs and supervisor logic
@@ -62,7 +63,7 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}()
 
 	fail := func(err error) (interface{}, error) {
-		log.Errorf("processCreate failed - %s", err)
+		log.Warn("processCreate failed - " + err.Error())
 		return mgr.resp, fmt.Errorf("Create request failed - %s", err.Error())
 	}
 
@@ -73,14 +74,14 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	}
 
 	if err := mgr.validate(); err != nil {
-		log.Warningf("processCreate.validate() failed - %s", err)
+		log.Warn("processCreate.validate() failed - " + err.Error())
 		return fail(err)
 	}
 
 	mgr.convertRequest()
 
 	if err := mgr.callRPC(); err != nil {
-		log.Errorf("processCreate.callRPC() failed - %s", err)
+		log.Warn("processCreate.callRPC() failed - " + err.Error())
 		return fail(err)
 	}
 
@@ -136,13 +137,13 @@ func (r *createMgr) validate() error {
 		if err != nil {
 			msg = msg + " - " + err.Error()
 		}
-		log.Warningf("Validation failed: %s", msg)
+		log.Warn("Validation failed: " + msg)
 		return errors.New(msg)
 	}
 
 	v := r.valid
-	v.Set("QP", "Query parms parsed and loaded ok", false)
-	v.Set("convert", "Type conversion of inputs is OK", false)
+	v.Set("qryParms", "Query parms parsed and loaded ok", false)
+	v.Set("inputs", "Type conversion of inputs is OK", false)
 	v.Set("SrvID", "The ServiceID is valid", false)
 	v.Set("geo", "Location coordinates are within the continental US", false)
 	v.Set("city", "We have a city", false)
@@ -152,7 +153,7 @@ func (r *createMgr) validate() error {
 	if err := r.parseQP(); err != nil {
 		return fail("", err)
 	}
-	v.Set("QP", "", true)
+	v.Set("qryParms", "", true)
 
 	// Check the ServiceID
 	if err := r.req.validateServiceID(); err != nil {
@@ -163,7 +164,7 @@ func (r *createMgr) validate() error {
 	if err := r.req.convert(); err != nil {
 		return fail("", err)
 	}
-	v.Set("convert", "", true)
+	v.Set("inputs", "", true)
 
 	// Is it anonymous:
 	if r.req.Email == "" && r.req.FirstName == "" && r.req.LastName == "" {
@@ -185,7 +186,7 @@ func (r *createMgr) validate() error {
 	// Location - the AreaID in the MID must match the location specified by the address
 	// or the lat/long.
 	r.valid.Set("geo", "", common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
-	log.Debug("After ValidateLatLng: %s%s", v.String(), r.req.String())
+	log.Debug("After ValidateLatLng: " + v.String() + r.req.String())
 
 	// Is the Request routable?
 	if err := r.setRoute(); err != nil {
@@ -292,7 +293,7 @@ func (r *createMgr) convertResponse() {
 // setRoute gets the route(s) to process the request.
 func (r *createMgr) setRoute() error {
 	routes, err := router.RoutesMID(r.req.MID)
-	log.Debug("Routes: %v", routes.String())
+	log.Debug("Routes: " + routes.String())
 	if err != nil {
 		return fmt.Errorf("no routes found - %s", err.Error())
 	}
@@ -311,7 +312,7 @@ func (r *createMgr) callRPC() (err error) {
 		return err
 	}
 
-	log.Debug("Before RPC\n%s", r.String())
+	log.Debug("Before RPC\n" + r.String())
 	if err = r.rpc.Run(); err != nil {
 		log.Error(err.Error())
 		return err
@@ -389,16 +390,13 @@ type CreateRequest struct {
 
 // convert the unmarshaled data.
 func (r *CreateRequest) convert() error {
-	log.Debug("starting convert()")
 	c := common.NewConversion()
 	r.LatitudeV = c.Float("Latitude", r.Latitude)
 	r.LongitudeV = c.Float("Longitude", r.Longitude)
-	log.Debug("After convert: %s%s", c.String(), r.String())
 	return nil
 }
 
 func (r *CreateRequest) validateServiceID() (err error) {
-	// Check the ServiceID
 	if !services.ValidateServiceID(r.MID) {
 		return fmt.Errorf("The requested ServiceID: %s is invalid", r.MID.MID())
 	}
@@ -422,11 +420,11 @@ func (r *CreateRequest) validateLocation() (err error) {
 		r.City = addr.City
 		r.State = addr.State
 		r.Zip = addr.Zip
-		log.Debug("validateLocation SUCCESS - %s\n%s", r.String(), addr.String())
+		log.Debug("validateLocation SUCCESS - " + r.String() + "\n" + addr.String())
 		return nil
 	}
 	fail := func(e string) error {
-		log.Debug("validateLocation FAIL: %s\n%s", e, r.String())
+		log.Debug("validateLocation FAIL: " + e + "\n" + r.String())
 		return fmt.Errorf(e)
 	}
 
@@ -467,7 +465,10 @@ func (r *CreateRequest) validateLocationMID() error {
 	}
 
 	if r.AreaID != r.MID.AreaID {
-		log.Warning("Address area ID: %q does not match the ServiceID area ID: %q", r.AreaID, r.MID.AreaID)
+		log.WithFields(log.Fields{
+			"areaID_address":   r.AreaID,
+			"areaID_ServiceID": r.MID.AreaID,
+		}).Warn("Address area ID does not match the ServiceID area ID ")
 		return fmt.Errorf("the ServiceID: %s is outside the specified location: %s", r.MID.MID(), r.City)
 	}
 

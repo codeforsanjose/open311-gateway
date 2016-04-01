@@ -9,6 +9,8 @@ import (
 	"Gateway311/engine/router"
 	"Gateway311/engine/structs"
 	"Gateway311/engine/telemetry"
+
+	log "github.com/jeffizhungry/logrus"
 )
 
 // refreshMgr conglomerates the Normal and Native structs and supervisor logic
@@ -28,7 +30,6 @@ type refreshMgr struct {
 
 func refresh(area string) (reterr error) {
 	tid := "SrvRrsh"
-	log.Debug("starting Refresh() for area: %q", area)
 	rqstID := common.RequestID()
 	mgr := refreshMgr{
 		id:    rqstID,
