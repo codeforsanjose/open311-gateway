@@ -16,13 +16,13 @@ import (
 
 // Create fully processes the Create request.
 func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) error {
-	log.Debug("Create - request: %p  resp: %p\n", rqst, resp)
+	log.Debugf("Create - request: %p  resp: %p\n", rqst, resp)
 	// Make the Create Manager
 	cm := &createMgr{
 		nreq:  rqst,
 		nresp: resp,
 	}
-	log.Debug("createMgr: %#v\n", *cm)
+	log.Debugf("createMgr: %#v\n", *cm)
 
 	return runRequest(processer(cm))
 }

@@ -46,7 +46,7 @@ func init() {
 
 	var configFile string
 	flag.BoolVar(&Debug, "debug", false, "Activates debug logging.")
-	flag.StringVar(&configFile, "config", "data/config.json", "Config file. This is a full or relative path.")
+	flag.StringVar(&configFile, "config", "config_gateway.json", "Config file. This is a full or relative path.")
 	flag.Parse()
 
 	if err := router.Init(configFile); err != nil {

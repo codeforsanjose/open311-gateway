@@ -1,0 +1,42 @@
+{
+    "reports": [{
+        "MyComment": "Dunne and Hill in Morgan Hill",
+        "Id": 100,
+        "DateCreated": "2015-05-20T08:30:30",
+        "DateUpdated": "2015-05-20T08:30:30",
+        "DeviceType": "IPHONE",
+        "DeviceModel": "5S",
+        "DeviceId": "1111",
+        "RequestType": "Graffiti Removal",
+        "RequestTypeId": "10",
+        "ImageUrl": "http://www.citysourced.com/image_100.png",
+        "ImageUrlXl": "http://www.citysourced.com/image_xl_100.png",
+        "ImageUrlLg": "http://www.citysourced.com/image_lg_100.png",
+        "ImageUrlMd": "http://www.citysourced.com/image_md_100.png",
+        "ImageUrlSm": "http://www.citysourced.com/image_sm_100.png",
+        "ImageUrlXs": "http://www.citysourced.com/image_xs_100.png",
+        "City": "Morgan Hill",
+        "State": "CA",
+        "ZipCode": "95037",
+        "Latitude": "37.138698",
+        "Longitude": "-121.615391",
+        "Directionality": "25 N NW",
+        "Description": "Illegal Trash / Dumping",
+        "AuthorNameFirst": "",
+        "AuthorNameLast": "",
+        "AuthorEmail": "",
+        "AuthorTelephone": "",
+        "AuthorIsAnonymous": "true",
+        "UrlDetail": "http://www.citysourced.com/report/100/graffiti",
+        "UrlShortened": "",
+        "Votes": "2",
+        "StatusType": "Open",
+        "TicketSla": "The city's goal is to respond within 1 calendar days"
+    }],
+    "Comments": [{
+        "Id": 1,
+        "ReportId": 100,
+        "DateCreated": "2015-05-20T08:30:30",
+        "Text": "Test comment for report 100"
+    }]
+}

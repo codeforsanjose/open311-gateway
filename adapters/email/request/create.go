@@ -12,6 +12,8 @@ import (
 	"Gateway311/adapters/email/data"
 	"Gateway311/adapters/email/structs"
 	"Gateway311/adapters/email/telemetry"
+
+	log "github.com/jeffizhungry/logrus"
 )
 
 var successMessages map[string]bool
@@ -22,7 +24,7 @@ var successMessages map[string]bool
 
 // Create fully processes the Create request.
 func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateResponse) (err error) {
-	log.Debug("Create - request: %p  resp: %p\n", rqst, resp)
+	log.Debugf("Create - request: %p  resp: %p\n", rqst, resp)
 	// Make the Create Manager
 	cm := &createMgr{
 		nreq:  rqst,
@@ -33,7 +35,7 @@ func (r *Report) Create(rqst *structs.NCreateRequest, resp *structs.NCreateRespo
 		return fmt.Errorf("unable to process Create request - %s", err.Error())
 	}
 
-	log.Debug("createMgr: %#v\n", *cm)
+	log.Debugf("createMgr: %#v\n", *cm)
 
 	return runRequest(processer(cm))
 }
@@ -94,8 +96,8 @@ func (c *createMgr) process() error {
 func (c *createMgr) convertResponse() (int, error) {
 	rspOK := func(msg string) bool {
 		_, ok := successMessages[strings.ToLower(msg)]
-		log.Debug("successMessages: %#v", successMessages)
-		log.Debug("Msg: %q / %q result: %t", msg, strings.ToLower(msg), ok)
+		log.Debugf("successMessages: %#v", successMessages)
+		log.Debugf("Msg: %q / %q result: %t", msg, strings.ToLower(msg), ok)
 		return ok
 	}
 	route := c.nreq.GetRoute()
@@ -108,7 +110,7 @@ func (c *createMgr) convertResponse() (int, error) {
 		return 1, nil
 	}
 
-	log.Debug("Service: %s", c.nsrv.SString())
+	log.Debugf("Service: %s", c.nsrv.SString())
 
 	c.nresp.Message = fmt.Sprintf(c.nsrv.ServiceNotice, c.nsrv.Name)
 	return 1, nil
@@ -133,12 +135,12 @@ func (c *createMgr) getRoute() string {
 func (c *createMgr) createBody(tmpl *template.Template) (string, error) {
 	var doc bytes.Buffer
 	// Apply the values we have initialized in our struct context to the template.
-	log.Debug("Executing template: %p", tmpl)
+	log.Debugf("Executing template: %p", tmpl)
 	if err := tmpl.Execute(&doc, c.nreq); err != nil {
-		log.Error("error trying to execute email template ", err)
+		log.Errorf("error trying to execute email template - %s", err.Error())
 		return "", err
 	}
-	log.Debug("Doc:\n%s", doc.String())
+	log.Debugf("Doc:\n%s", doc.String())
 	return doc.String(), nil
 }
 

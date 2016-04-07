@@ -1,7 +1,6 @@
 package create
 
 import (
-	"CitySourcedAPI/logs"
 	"fmt"
 	"strings"
 
@@ -9,10 +8,6 @@ import (
 	"Gateway311/adapters/email/data"
 	"Gateway311/adapters/email/mail"
 	"Gateway311/adapters/email/structs"
-)
-
-var (
-	log = logs.Log
 )
 
 // ================================================================================================

@@ -41,6 +41,13 @@ ___
 
 ## Log
 
+### 2016.04.06 - Wed
+
+* Converted logging in Adapters to jeffizhungry version of logrus.
+* Cleanup
+* Started Deployment / Docker.
+* Saved to GIT.
+
 ### 2016.03.31 - Thu
 
 * Modified Services response to return empty strings as null.

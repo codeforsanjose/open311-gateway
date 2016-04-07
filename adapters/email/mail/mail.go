@@ -1,18 +1,18 @@
 package mail
 
 import (
+	"CitySourcedAPI/logs"
 	"fmt"
 
 	"Gateway311/adapters/email/common"
 	"Gateway311/adapters/email/data"
-	"Gateway311/adapters/email/logs"
 	"Gateway311/adapters/email/structs"
 
+	log "github.com/jeffizhungry/logrus"
 	"gopkg.in/gomail.v2"
 )
 
 var (
-	log    = logs.Log
 	auth   data.EmailAuthData
 	dialer *gomail.Dialer
 )
@@ -21,7 +21,7 @@ var (
 func Init() {
 	logs.Init(true)
 	auth = data.GetEmailAuth()
-	log.Debug("Auth: %v", auth)
+	log.Debugf("Auth: %v", auth)
 
 	dialer = gomail.NewDialer(
 		auth.Server,
@@ -38,10 +38,10 @@ func Send(a data.EmailSender, p structs.Payloader) error {
 	}
 	var msg string
 	to, from, subject := a.Address()
-	log.Debug("to: %#v  from: %#v  subject: %q", to, from, subject)
+	log.Debugf("to: %#v  from: %#v  subject: %q", to, from, subject)
 	ptype, content := p.Get()
-	log.Debug("ptype: %v  content: %v (%[2]T)", ptype, content)
-	// log.Debug("dialer:\n%s\n", spew.Sdump(dialer))
+	log.Debugf("ptype: %v  content: %v (%[2]T)", ptype, content)
+	// log.Debugf("dialer:\n%s\n", spew.Sdump(dialer))
 
 	fail := func() error {
 		return fmt.Errorf("invalid payload (type: %T) received by Send() - must be either string or []byte", content)

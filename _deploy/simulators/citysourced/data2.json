@@ -1,0 +1,46 @@
+{
+    "reports": [{
+        "MyComment": "City Hall, San Jose",
+        "Id": 101,
+        "DateCreated": "2015-10-20T13:45:30",
+        "DateUpdated": "2015-10-25T09:00:01",
+        "DeviceType": "IPHONE",
+        "DeviceModel": "6",
+        "DeviceId": "2222",
+        "RequestType": "Graffiti Removal",
+        "RequestTypeId": "10",
+        "ImageUrl": "http://www.citysourced.com/image_200.png",
+        "ImageUrlXl": "http://www.citysourced.com/image_xl_200.png",
+        "ImageUrlLg": "http://www.citysourced.com/image_lg_200.png",
+        "ImageUrlMd": "http://www.citysourced.com/image_md_200.png",
+        "ImageUrlSm": "http://www.citysourced.com/image_sm_200.png",
+        "ImageUrlXs": "http://www.citysourced.com/image_xs_200.png",
+        "City": "San Jose",
+        "State": "CA",
+        "ZipCode": "95101",
+        "Latitude": "37.338208",
+        "Longitude": "-121.886329",
+        "Directionality": "25 N NW",
+        "Description": "I hate this ugly graffiti",
+        "AuthorNameFirst": "",
+        "AuthorNameLast": "",
+        "AuthorEmail": "",
+        "AuthorTelephone": "",
+        "AuthorIsAnonymous": "true",
+        "UrlDetail": "http://www.citysourced.com/report/100/graffiti",
+        "UrlShortened": "",
+        "Votes": "22",
+        "StatusType": "Open"
+    }],
+    "Comments": [{
+        "Id": 2,
+        "ReportId": 101,
+        "DateCreated": "2015-05-20T10:30:30",
+        "Text": "Test comment for report 101"
+    }, {
+        "Id": 3,
+        "ReportId": 101,
+        "DateCreated": "2015-05-21T11:30:30",
+        "Text": "The second test comment for report 101"
+    }]
+}

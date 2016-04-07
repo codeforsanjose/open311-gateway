@@ -34,7 +34,8 @@ func Shutdown() {
 	close(chTQue)
 }
 
-func init() {
+// Init initializes the system monitoring service.
+func Init() {
 	chTQue = make(chan msgSender, 100)
 
 	tlmtryServer, err := net.ResolveUDPAddr("udp", monitorAddr)

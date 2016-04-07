@@ -45,6 +45,6 @@ func runRequest(r processer) error {
 	}
 	// telemetry.SendRPC(r.getID(), data.AdapterName(), "", "", "adp-send")
 	telemetry.SendRPC(id, "done", r.getRoute(), "", resultCount, time.Now())
-	log.Debug("Request COMPLETED:%s\n", r.String())
+	log.Debugf("Request COMPLETED:%s\n", r.String())
 	return nil
 }

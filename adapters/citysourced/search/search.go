@@ -6,11 +6,8 @@ import (
 	"net/http"
 
 	"Gateway311/adapters/citysourced/common"
-	"Gateway311/adapters/citysourced/logs"
-)
 
-var (
-	log = logs.Log
+	log "github.com/jeffizhungry/logrus"
 )
 
 // ================================================================================================
@@ -46,7 +43,7 @@ func (r *RequestLL) Process(url string) (*Response, error) {
 	{
 		enc := xml.NewEncoder(payload)
 		enc.Indent("  ", "    ")
-		enc.Encode(r)
+		_ = enc.Encode(r)
 	}
 	// log.Printf("Payload:\n%v\n", payload.String())
 
@@ -97,9 +94,9 @@ func (r *RequestDID) Process(url string) (*Response, error) {
 	{
 		enc := xml.NewEncoder(payload)
 		enc.Indent("  ", "    ")
-		enc.Encode(r)
+		_ = enc.Encode(r)
 	}
-	log.Debug("Payload:\n%v\n", payload.String())
+	log.Debugf("Payload:\n%v\n", payload.String())
 
 	client := http.Client{Timeout: common.HttpClientTimeout}
 	resp, err := client.Post(url, "application/xml", payload)
@@ -147,9 +144,9 @@ func (r *RequestRID) Process(url string) (*Response, error) {
 	{
 		enc := xml.NewEncoder(payload)
 		enc.Indent("  ", "    ")
-		enc.Encode(r)
+		_ = enc.Encode(r)
 	}
-	log.Debug("Payload:\n%v\n", payload.String())
+	log.Debugf("Payload:\n%v\n", payload.String())
 
 	client := http.Client{Timeout: common.HttpClientTimeout}
 	resp, err := client.Post(url, "application/xml", payload)

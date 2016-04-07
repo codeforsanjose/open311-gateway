@@ -3,12 +3,9 @@ package request
 import (
 	"time"
 
-	"Gateway311/adapters/email/logs"
 	"Gateway311/adapters/email/telemetry"
-)
 
-var (
-	log = logs.Log
+	log "github.com/jeffizhungry/logrus"
 )
 
 // Report is the RPC container struct for the Report.Create service.  This service creates
@@ -46,6 +43,6 @@ func runRequest(r processer) error {
 	}
 	// telemetry.SendRPC(r.getID(), data.AdapterName(), "", "", "adp-send")
 	telemetry.SendRPC(id, "done", r.getRoute(), "", resultCount, time.Now())
-	log.Debug("Request COMPLETED:%s\n", r.String())
+	log.Debugf("Request COMPLETED:%s\n", r.String())
 	return nil
 }

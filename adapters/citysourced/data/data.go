@@ -9,15 +9,14 @@ import (
 	"strings"
 
 	"Gateway311/adapters/citysourced/common"
-	"Gateway311/adapters/citysourced/logs"
 	"Gateway311/adapters/citysourced/structs"
 
 	"github.com/davecgh/go-spew/spew"
+	log "github.com/jeffizhungry/logrus"
 )
 
 var (
 	configData ConfigData
-	log        = logs.Log
 )
 
 // ShowConfigData dumps configData using spew.
@@ -28,14 +27,14 @@ func ShowConfigData() string {
 // ServicesArea returns a list of all services available for the specified Area.
 func ServicesArea(area string) (*structs.NServices, error) {
 	larea := strings.ToLower(area)
-	log.Debug("   Services for: %s...\n", larea)
+	log.Debugf("   Services for: %s...\n", larea)
 	ccode, ok := configData.isValidCity(larea)
 	if !ok {
 		msg := fmt.Sprintf("The area: %q is not serviced by this Gateway", area)
 		log.Error(msg)
 		return nil, errors.New(msg)
 	}
-	log.Debug("      data length: %d\n", len(configData.areaServices[ccode]))
+	log.Debugf("      data length: %d\n", len(configData.areaServices[ccode]))
 	services, ok := configData.areaServices[ccode]
 	if !ok {
 		msg := fmt.Sprintf("Unable to find requested area: %q", area)
@@ -66,38 +65,43 @@ func AdapterName() string {
 
 // MIDProvider returns the Provider data for the specified MidAdpID.
 func MIDProvider(MID structs.ServiceID) (Provider, error) {
-	log.Debug("MID: %s", MID.MID())
+	log.Debugf("MID: %s", MID.MID())
 	return getProvider(MID.AreaID, MID.ProviderID)
 }
 
 // RouteProvider returns the Provider data for the specified NRoute.
 func RouteProvider(route structs.NRoute) (Provider, error) {
-	log.Debug("Route: %s", route)
+	log.Debugf("Route: %s", route)
 	return getProvider(route.AreaID, route.ProviderID)
 }
 
 // ServiceFromID returns the NService data for the specified ServiceID.
 func ServiceFromID(srvID structs.ServiceID) (nsrv structs.NService, err error) {
-	log.Debug("ServiceID: %s", srvID.MID())
+	log.Debugf("ServiceID: %s", srvID.MID())
 	sm, ok := configData.serviceMID[srvID.MID()]
 	if !ok {
 		err = fmt.Errorf("invalid ServiceID: %s", srvID.MID())
 		return
 	}
 	nsrv = *sm.service
-	log.Debug("Returning: %s", nsrv.String())
+	log.Debugf("Returning: %s", nsrv.String())
 	return
 }
 
 // getProvider returns the Provider data for the specified Area and Provider.
 func getProvider(AreaID string, ProviderID int) (Provider, error) {
-	log.Debug("AreaID: %v  ProviderID: %v\n", AreaID, ProviderID)
+	log.Debugf("AreaID: %v  ProviderID: %v\n", AreaID, ProviderID)
 	p, ok := configData.areaProvider[areaProvider{AreaID, ProviderID}]
-	// log.Debug("Provider (%t): %s", ok, *p)
+	// log.Debugf("Provider (%t): %s", ok, *p)
 	if !ok {
 		return Provider{}, fmt.Errorf("Unable to find Provider for %v-%v", AreaID, ProviderID)
 	}
 	return *p, nil
+}
+
+// TelemetryAddress returns the Telemetry Address from the config file.
+func TelemetryAddress() string {
+	return configData.Telemetry.Address
 }
 
 // ==============================================================================================================================
@@ -140,8 +144,9 @@ type areaProvider struct {
 
 // ConfigData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* area name.
 type ConfigData struct {
-	Loaded  bool
-	Adapter AdapterData `json:"adapter"`
+	Loaded    bool
+	Adapter   AdapterData `json:"adapter"`
+	Telemetry Telemetry   `json:"telemetry"`
 
 	Categories []string         `json:"serviceCategories"`
 	Areas      map[string]*Area `json:"serviceAreas"`
@@ -177,8 +182,8 @@ func (pd *ConfigData) Load(file []byte) error {
 		return errors.New(msg)
 	}
 	log.Info("Initializing data...")
-	pd.settle()
-	pd.index()
+	_ = pd.settle()
+	_ = pd.index()
 	pd.Loaded = true
 	log.Debug(ShowConfigData())
 	return nil
@@ -203,13 +208,13 @@ func (pd *ConfigData) settle() error {
 // Index() builds all required map indexes: Services by City,
 func (pd *ConfigData) index() error {
 	log.Info("   Building indexes:\n")
-	pd.indexServiceMID()
-	pd.indexServiceID()
-	pd.indexProviderID()
-	pd.indexCityCode()
-	pd.indexAreaProvider()
+	_ = pd.indexServiceMID()
+	_ = pd.indexServiceID()
+	_ = pd.indexProviderID()
+	_ = pd.indexCityCode()
+	_ = pd.indexAreaProvider()
 	// Run indexCityCode() last.
-	pd.indexCityServices()
+	_ = pd.indexCityServices()
 	return nil
 }
 
@@ -290,6 +295,7 @@ func (pd ConfigData) String() string {
 	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
 	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
+	ls.AddS(pd.Telemetry.String())
 	ls.AddS("\n-----------INDEX: serviceID-----------\n")
 	for k, v := range pd.serviceID {
 		ls.AddF("   %-4d %s\n", k, v.Name)
@@ -333,6 +339,20 @@ func (pd *ConfigData) isValidCity(area string) (string, bool) {
 	code, ok := pd.areaCode[strings.ToLower(area)]
 	return code, ok
 
+}
+
+// ------------------------------- Telemetry -------------------------------
+
+// Telemetry contains the configuration for communicating with the System Monitor.
+type Telemetry struct {
+	Address string `json:"address"`
+}
+
+func (r Telemetry) String() string {
+	ls := new(common.LogString)
+	ls.AddS("Telemetry\n")
+	ls.AddF("Address: %s\n", r.Address)
+	return ls.Box(85)
 }
 
 // ------------------------------- Area -------------------------------
@@ -379,7 +399,7 @@ func (p Provider) String() string {
 // SplitMID breaks down an MID, and returns pointers to the Area and Provider.
 func SplitMID(mid string) (*Area, *Provider, error) {
 	parts := strings.Split(mid, "-")
-	log.Debug("MID: %+v\n", parts)
+	log.Debugf("MID: %+v\n", parts)
 	area := configData.Areas[parts[1]]
 	v, err := strconv.ParseInt(parts[2], 10, 64)
 	if err != nil {

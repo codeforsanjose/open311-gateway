@@ -1,0 +1,354 @@
+{
+	"adapter": {
+		"name": "CS2",
+		"type": "CitySourced",
+		"address": ":5002"
+	},
+	"telemetry": {
+		"address": ":5081"
+	},
+	"serviceCategories": [
+		"Abandoned",
+		"Eyesore",
+		"Graffiti",
+		"Street",
+		"Trash"
+	],
+	"serviceAreas": {
+		"SC": {
+			"name": "Santa Clara",
+			"providers": [{
+				"id": 1,
+				"name": "CitySourced - SJ",
+				"url": "http://localhost:5053/api/",
+				"apiVersion": "1",
+				"key": "a01234567890z",
+				"services": [{
+					"id": 11,
+					"name": "Fire Hazard Potential",
+					"description": "Fire Hazard Potential",
+					"type": "realtime",
+					"group": "Fire"
+				}, {
+					"id": 12,
+					"name": "Foreclosed Home",
+					"description": "Foreclosed Home",
+					"type": "realtime",
+					"group": "Eyesore"
+				}, {
+					"id": 13,
+					"name": "Gang Activity",
+					"description": "Gang Activity",
+					"type": "realtime",
+					"group": "Gangs"
+				}, {
+					"id": 14,
+					"name": "Garbage Can Out Early",
+					"description": "Garbage Can Out Early",
+					"type": "realtime",
+					"group": "Garbage"
+				}, {
+					"id": 15,
+					"name": "Garbage Cart Missed Pickup",
+					"description": "Garbage Cart Missed Pickup",
+					"type": "realtime",
+					"group": "Garbage"
+				}, {
+					"id": 16,
+					"name": "Garbage from Shopping Center",
+					"description": "Garbage from Shopping Center",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 17,
+					"name": "Garbage Not Picked Up",
+					"description": "Garbage Not Picked Up",
+					"type": "realtime",
+					"group": "Garbage"
+				}, {
+					"id": 18,
+					"name": "Graffiti",
+					"description": "Graffiti",
+					"type": "realtime",
+					"group": "Graffiti"
+				}, {
+					"id": 19,
+					"name": "Graffiti - In Parks",
+					"description": "Graffiti - In Parks",
+					"type": "realtime",
+					"group": "Graffiti"
+				}, {
+					"id": 20,
+					"name": "Graffiti Removal",
+					"description": "Graffiti Removal",
+					"type": "realtime",
+					"group": "Graffiti"
+				}, {
+					"id": 21,
+					"name": "Homeless Encampment",
+					"description": "Homeless Encampment",
+					"type": "realtime",
+					"group": "Eyesore"
+				}, {
+					"id": 22,
+					"name": "Illegal Dumping / Trash",
+					"description": "Illegal Dumping / Trash",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 23,
+					"name": "Illegal Dumping/Trash",
+					"description": "Illegal Dumping/Trash",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 24,
+					"name": "Illegal Signage",
+					"description": "Illegal Signage",
+					"type": "realtime",
+					"group": "Eyesore"
+				}, {
+					"id": 25,
+					"name": "Illegal Signage ? Private Property",
+					"description": "Illegal Signage ? Private Property",
+					"type": "realtime",
+					"group": "Eyesore"
+				}, {
+					"id": 26,
+					"name": "Illegal Signage ? Roadway",
+					"description": "Illegal Signage ? Roadway",
+					"type": "realtime",
+					"group": "Eyesore"
+				}, {
+					"id": 27,
+					"name": "Illegal Signage (Private Property)",
+					"description": "Illegal Signage (Private Property)",
+					"type": "realtime",
+					"group": "Eyesore"
+				}, {
+					"id": 28,
+					"name": "Illegal Signage (Roadway)",
+					"description": "Illegal Signage (Roadway)",
+					"type": "realtime",
+					"group": "Eyesore"
+				}, {
+					"id": 29,
+					"name": "Illegal Trash / Dumping",
+					"description": "Illegal Trash / Dumping",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 30,
+					"name": "Illegal Trash / Dumping ? Private Property",
+					"description": "Illegal Trash / Dumping ? Private Property",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 31,
+					"name": "Illegal Trash / Dumping ? Roadway",
+					"description": "Illegal Trash / Dumping ? Roadway",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 32,
+					"name": "Illegal Trash / Dumping (Private Property)",
+					"description": "Illegal Trash / Dumping (Private Property)",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 33,
+					"name": "Illegal Trash / Dumping (Roadway)",
+					"description": "Illegal Trash / Dumping (Roadway)",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 34,
+					"name": "Illegally Parked Car",
+					"description": "Illegally Parked Car",
+					"type": "realtime",
+					"group": "Cars"
+				}, {
+					"id": 35,
+					"name": "Illegally Parked in Driveway",
+					"description": "Illegally Parked in Driveway",
+					"type": "realtime",
+					"group": "Parking"
+				}, {
+					"id": 36,
+					"name": "Information Only (Please Describe)",
+					"description": "Information Only (Please Describe)",
+					"type": "realtime",
+					"group": "Information"
+				}, {
+					"id": 37,
+					"name": "Other (Not Listed Please Describe)",
+					"description": "Other (Not Listed Please Describe)",
+					"type": "realtime",
+					"group": "Other"
+				}, {
+					"id": 38,
+					"name": "Other (Please Describe)",
+					"description": "Other (Please Describe)",
+					"type": "realtime",
+					"group": "Other"
+				}, {
+					"id": 39,
+					"name": "Parking Issue",
+					"description": "Parking Issue",
+					"type": "realtime",
+					"group": "Parking"
+				}, {
+					"id": 40,
+					"name": "Parking Issues",
+					"description": "Parking Issues",
+					"type": "realtime",
+					"group": "Parking"
+				}, {
+					"id": 41,
+					"name": "Parks General Issue",
+					"description": "Parks General Issue",
+					"type": "realtime",
+					"group": "Parks"
+				}, {
+					"id": 42,
+					"name": "Photos for DAM",
+					"description": "Photos for DAM",
+					"type": "realtime",
+					"group": "Other"
+				}, {
+					"id": 43,
+					"name": "Plants / Trees Danger",
+					"description": "Plants / Trees Danger",
+					"type": "realtime",
+					"group": "Trees"
+				}, {
+					"id": 44,
+					"name": "Plants / Trees Diseased",
+					"description": "Plants / Trees Diseased",
+					"type": "realtime",
+					"group": "Trees"
+				}, {
+					"id": 45,
+					"name": "Plants / Trees Dying",
+					"description": "Plants / Trees Dying",
+					"type": "realtime",
+					"group": "Trees"
+				}, {
+					"id": 46,
+					"name": "Plants / Trees Overgrown",
+					"description": "Plants / Trees Overgrown",
+					"type": "realtime",
+					"group": "Trees"
+				}, {
+					"id": 47,
+					"name": "Plants / Trees Trimming",
+					"description": "Plants / Trees Trimming",
+					"type": "realtime",
+					"group": "Trees"
+				}, {
+					"id": 48,
+					"name": "Plants / Yard Clippings",
+					"description": "Plants / Yard Clippings",
+					"type": "realtime",
+					"group": "Garbage"
+				}, {
+					"id": 49,
+					"name": "Plants & Trees",
+					"description": "Plants & Trees",
+					"type": "realtime",
+					"group": "Trees"
+				}, {
+					"id": 50,
+					"name": "Potholes",
+					"description": "Potholes",
+					"type": "realtime",
+					"group": "Streets"
+				}, {
+					"id": 51,
+					"name": "Roadway Degradation (Pothole, etc.)",
+					"description": "Roadway Degradation (Pothole, etc.)",
+					"type": "realtime",
+					"group": "Streets"
+				}, {
+					"id": 52,
+					"name": "Sidewalk Cracked",
+					"description": "Sidewalk Cracked",
+					"type": "realtime",
+					"group": "Streets"
+				}, {
+					"id": 53,
+					"name": "Sidewalk Raised",
+					"description": "Sidewalk Raised",
+					"type": "realtime",
+					"group": "Streets"
+				}, {
+					"id": 54,
+					"name": "Sidewalks",
+					"description": "Sidewalks",
+					"type": "realtime",
+					"group": "Streets"
+				}, {
+					"id": 55,
+					"name": "SJ13-1458",
+					"description": "SJ13-1458",
+					"type": "realtime",
+					"group": "Other"
+				}, {
+					"id": 56,
+					"name": "Street Light",
+					"description": "Street Light",
+					"type": "realtime",
+					"group": "Streets"
+				}, {
+					"id": 57,
+					"name": "Streetlight Out/Broken",
+					"description": "Streetlight Out/Broken",
+					"type": "realtime",
+					"group": "Streets"
+				}, {
+					"id": 58,
+					"name": "Streets & Roads",
+					"description": "Streets & Roads",
+					"type": "realtime",
+					"group": "Streets"
+				}, {
+					"id": 59,
+					"name": "Traffic Violation (Speeding, etc.)",
+					"description": "Traffic Violation (Speeding, etc.)",
+					"type": "realtime",
+					"group": "Traffic"
+				}, {
+					"id": 60,
+					"name": "Trash / Waste / Dumping",
+					"description": "Trash / Waste / Dumping",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 61,
+					"name": "Trash, Waste & Dumping",
+					"description": "Trash, Waste & Dumping",
+					"type": "realtime",
+					"group": "Trash"
+				}, {
+					"id": 62,
+					"name": "Vehicle Issue",
+					"description": "Vehicle Issue",
+					"type": "realtime",
+					"group": "Cars"
+				}, {
+					"id": 63,
+					"name": "Water Waste",
+					"description": "Water Waste",
+					"type": "realtime",
+					"group": "Water"
+				}, {
+					"id": 64,
+					"name": "Yard Waste Removal",
+					"description": "Yard Waste Removal",
+					"type": "realtime",
+					"group": "Garbage"
+				}]
+			}]
+		}
+	}
+}

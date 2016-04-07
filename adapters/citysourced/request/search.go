@@ -23,13 +23,13 @@ const (
 
 // SearchLL fully processes a "Search by Location" request.
 func (r *Report) SearchLL(rqst *structs.NSearchRequestLL, resp *structs.NSearchResponse) error {
-	log.Debug("SearchLL - request: %p  resp: %p\n", rqst, resp)
+	log.Debugf("SearchLL - request: %p  resp: %p\n", rqst, resp)
 	// Make the Search Manager
 	cm := &searchLLMgr{
 		nreq:  rqst,
 		nresp: resp,
 	}
-	log.Debug("searchLLMgr: %#v\n", *cm)
+	log.Debugf("searchLLMgr: %#v\n", *cm)
 	log.Debug(cm.nreq.String())
 
 	return runRequest(processer(cm))
@@ -79,7 +79,7 @@ func (c *searchLLMgr) process() error {
 }
 
 func (c *searchLLMgr) convertResponse() (resultCount int, err error) {
-	log.Debug("Resp: %s", c.nresp)
+	log.Debugf("Resp: %s", c.nresp)
 	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(route)
@@ -149,13 +149,13 @@ func (c *searchLLMgr) String() string {
 
 // SearchRID fully processes the Search by DeviceID request.
 func (r *Report) SearchRID(rqst *structs.NSearchRequestRID, resp *structs.NSearchResponse) error {
-	log.Debug("Search - request: %p  resp: %p\n", rqst, resp)
+	log.Debugf("Search - request: %p  resp: %p\n", rqst, resp)
 	// Make the Search Manager
 	cm := &searchRIDMgr{
 		nreq:  rqst,
 		nresp: resp,
 	}
-	log.Debug("searchRIDMgr: %#v\n", *cm)
+	log.Debugf("searchRIDMgr: %#v\n", *cm)
 
 	return runRequest(processer(cm))
 }
@@ -202,7 +202,7 @@ func (c *searchRIDMgr) process() error {
 }
 
 func (c *searchRIDMgr) convertResponse() (resultCount int, err error) {
-	log.Debug("Resp: %s", c.nresp)
+	log.Debugf("Resp: %s", c.nresp)
 	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(route)
@@ -272,13 +272,13 @@ func (c *searchRIDMgr) String() string {
 
 // SearchDID fully processes the Search by DeviceID request.
 func (r *Report) SearchDID(rqst *structs.NSearchRequestDID, resp *structs.NSearchResponse) error {
-	log.Debug("Search - request: %p  resp: %p\n", rqst, resp)
+	log.Debugf("Search - request: %p  resp: %p\n", rqst, resp)
 	// Make the Search Manager
 	cm := &searchDIDMgr{
 		nreq:  rqst,
 		nresp: resp,
 	}
-	log.Debug("searchDIDMgr: %#v\n", *cm)
+	log.Debugf("searchDIDMgr: %#v\n", *cm)
 
 	return runRequest(processer(cm))
 }
@@ -326,7 +326,7 @@ func (c *searchDIDMgr) process() error {
 }
 
 func (c *searchDIDMgr) convertResponse() (resultCount int, err error) {
-	log.Debug("Resp: %s", c.nresp)
+	log.Debugf("Resp: %s", c.nresp)
 	route := c.nreq.GetRoute()
 	c.nresp.SetIDF(c.nreq.GetID)
 	c.nresp.SetRoute(route)

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"Gateway311/adapters/email/data"
-	"Gateway311/adapters/email/logs"
 	"Gateway311/adapters/email/structs"
 
 	"github.com/davecgh/go-spew/spew"
@@ -14,7 +13,6 @@ import (
 var Debug = true
 
 func init() {
-	logs.Init(Debug)
 
 	fmt.Println("Reading config...")
 	if err := data.Init("../data/config.json"); err != nil {

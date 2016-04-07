@@ -1,3 +1,9 @@
 .idea
-adapters/citysourced/citysourced
-adapters/email/email
+_deploy/gateway
+_deploy/adapters/citysourced/adp_cs
+_deploy/adapters/email/adp_email
+_deploy/simulators/cs_sim
+engine/gateway
+adapters/citysourced/adp_cs
+adapters/email/adp_email
+monitor/monitor
