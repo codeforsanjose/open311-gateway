@@ -11,28 +11,26 @@ import (
 	"Gateway311/engine/request"
 	"Gateway311/engine/router"
 	"Gateway311/engine/services"
+	"Gateway311/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	log "github.com/jeffizhungry/logrus"
 )
 
 var (
+	configFile string
+
 	// Debug switches on some debugging statements.
 	Debug = false
 )
 
 func main() {
-
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
 		rest.Get("/v1/services.json", request.Services),
 		rest.Post("/v1/requests.json", request.Create),
 		rest.Get("/v1/requests.json", request.Search),
-		// rest.Get("/:jid/requests", rpt.GetAll),
-		// rest.Get("/:jid/requests/:id", rpt.Get),
-		// rest.Put("/:jid/requests/:id", rpt.Update),
-		// rest.Delete("/:jid/requests/:id", rpt.Delete),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -44,14 +42,17 @@ func main() {
 func init() {
 	log.Setup(false, log.DebugLevel)
 
-	var configFile string
 	flag.BoolVar(&Debug, "debug", false, "Activates debug logging.")
-	flag.StringVar(&configFile, "config", "config_gateway.json", "Config file. This is a full or relative path.")
+	flag.StringVar(&configFile, "config", "config.json", "Config file. This is a full or relative path.")
 	flag.Parse()
+
+	fmt.Printf("Debug: %v  Config: %v\n", Debug, configFile)
 
 	if err := router.Init(configFile); err != nil {
 		log.Fatal("Unable to start - data initilization failed.\n")
 	}
+
+	telemetry.Init(router.GetMonitorAddress())
 
 	go signalHandler(make(chan os.Signal, 1))
 	fmt.Println("Press Ctrl-C to shutdown...")

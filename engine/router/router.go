@@ -18,10 +18,16 @@ func Init(configFile string) error {
 		return err
 	}
 	log.Debug("Adapters: " + adapters.String())
+
+	if err := adapters.AuxProgs.start(); err != nil {
+		return err
+	}
+
 	err := adapters.connect()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

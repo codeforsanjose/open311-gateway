@@ -99,9 +99,9 @@ func getProvider(AreaID string, ProviderID int) (Provider, error) {
 	return *p, nil
 }
 
-// TelemetryAddress returns the Telemetry Address from the config file.
-func TelemetryAddress() string {
-	return configData.Telemetry.Address
+// GetMonitorAddress returns the Telemetry Address from the config file.
+func GetMonitorAddress() string {
+	return configData.Monitor.Address
 }
 
 // ==============================================================================================================================
@@ -144,10 +144,11 @@ type areaProvider struct {
 
 // ConfigData is a list of all the Service Areas.  It contains an indexed list of all the Service Areas.  The index is the *lowercase* area name.
 type ConfigData struct {
-	Loaded    bool
-	Adapter   AdapterData `json:"adapter"`
-	Telemetry Telemetry   `json:"telemetry"`
-
+	Loaded  bool
+	Adapter AdapterData `json:"adapter"`
+	Monitor struct {
+		Address string `json:"address"`
+	} `json:"monitor"`
 	Categories []string         `json:"serviceCategories"`
 	Areas      map[string]*Area `json:"serviceAreas"`
 
@@ -295,7 +296,7 @@ func (pd ConfigData) String() string {
 	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
 	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
-	ls.AddS(pd.Telemetry.String())
+	ls.AddF("Monitor - address: %s\n", pd.Monitor.Address)
 	ls.AddS("\n-----------INDEX: serviceID-----------\n")
 	for k, v := range pd.serviceID {
 		ls.AddF("   %-4d %s\n", k, v.Name)
@@ -339,20 +340,6 @@ func (pd *ConfigData) isValidCity(area string) (string, bool) {
 	code, ok := pd.areaCode[strings.ToLower(area)]
 	return code, ok
 
-}
-
-// ------------------------------- Telemetry -------------------------------
-
-// Telemetry contains the configuration for communicating with the System Monitor.
-type Telemetry struct {
-	Address string `json:"address"`
-}
-
-func (r Telemetry) String() string {
-	ls := new(common.LogString)
-	ls.AddS("Telemetry\n")
-	ls.AddF("Address: %s\n", r.Address)
-	return ls.Box(85)
 }
 
 // ------------------------------- Area -------------------------------

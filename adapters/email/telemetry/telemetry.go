@@ -10,8 +10,7 @@ import (
 )
 
 var (
-	chTQue      chan msgSender
-	monitorAddr = "127.0.0.1:5051"
+	chTQue chan msgSender
 )
 
 // SendRPC queues an RPC status message onto the send channel.
@@ -35,10 +34,10 @@ func Shutdown() {
 }
 
 // Init initializes the system monitoring service.
-func Init() {
+func Init(addr string) {
 	chTQue = make(chan msgSender, 100)
 
-	tlmtryServer, err := net.ResolveUDPAddr("udp", monitorAddr)
+	tlmtryServer, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		log.Errorf("Cannot start telemetry - %s", err)
 		return
@@ -51,8 +50,12 @@ func Init() {
 	}
 
 	go func() {
-		log.Debug("Telemetry sender starting...")
-		defer conn.Close()
+		log.Debugf("Telemetry sender starting on: %v", addr)
+		finish := func() {
+			log.Debug("Closing telemetry connection...")
+			_ = conn.Close()
+		}
+		defer finish()
 		for m := range chTQue {
 			msg, err := m.Marshal()
 			if err != nil {

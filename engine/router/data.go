@@ -74,6 +74,11 @@ func GetRouteAdapter(route structs.NRoute) (AdpRPCer, error) {
 	return adapters.getRouteAdapter(route)
 }
 
+// GetMonitorAddress returns the Monitor Address.
+func GetMonitorAddress() string {
+	return adapters.Monitor.Address
+}
+
 // ==============================================================================================================================
 //                                      ROUTES
 // ==============================================================================================================================
@@ -179,6 +184,10 @@ func (r routeData) String() string {
 type Adapters struct {
 	loaded   bool
 	loadedAt time.Time
+	AuxProgs auxiliaryProgs `json:"auxiliary"`
+	Monitor  struct {
+		Address string `json:"address"`
+	} `json:"monitor"`
 	Adapters map[string]*Adapter `json:"adapters"` // Index: AdpID
 	Areas    map[string]*Area    `json:"areas"`    // Index: AreaID
 	chUpdate chan map[string][]string
@@ -500,6 +509,67 @@ func init() {
 }
 
 // ==============================================================================================================================
+//                                      AUXILIARY PROGRAMS
+// ==============================================================================================================================
+
+type auxiliaryProgs []*struct {
+	Name      string   `json:"name"`
+	Autostart bool     `json:"autostart"`
+	Dir       string   `json:"dir"`
+	Cmd       string   `json:"cmd"`
+	Args      []string `json:"args"`
+}
+
+func (r auxiliaryProgs) start() error {
+	for _, ss := range r {
+		if !ss.Autostart {
+			log.Infof("%s is not being started.", ss.Name)
+			continue
+		}
+		log.WithFields(log.Fields{
+			"dir":  ss.Dir,
+			"cmd":  ss.Cmd,
+			"args": ss.Args,
+		}).Info("Starting " + ss.Name)
+
+		go func(name, dir, prog string, args []string) {
+			cmd := &exec.Cmd{
+				Dir:  dir,
+				Path: prog,
+				Args: args,
+			}
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			err := cmd.Start()
+			if err != nil {
+				log.WithFields(log.Fields{
+					"name": name,
+					"dir":  dir,
+					"cmd":  prog,
+					"args": args,
+				}).Error("Auxiliary program failed to start")
+			}
+			log.WithFields(log.Fields{
+				"name": name,
+			}).Info("Auxiliary program started!")
+
+			err = cmd.Wait()
+			if err != nil {
+				log.WithFields(log.Fields{
+					"name":  name,
+					"error": err.Error(),
+				}).Error("Auxiliary program exited!")
+			}
+
+			log.WithFields(log.Fields{
+				"name": name,
+			}).Info("Auxiliary program has stopped!")
+		}(ss.Name, ss.Dir, ss.Cmd, ss.Args)
+	}
+	return nil
+}
+
+// ==============================================================================================================================
 //                                      STRINGs
 // ==============================================================================================================================
 
@@ -507,6 +577,7 @@ func init() {
 func (r Adapters) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Adapters\n")
+	ls.AddF("Monitor - address: %s\n", r.Monitor.Address)
 	for _, v := range r.Adapters {
 		ls.AddS(v.String())
 	}

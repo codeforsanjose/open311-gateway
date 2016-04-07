@@ -4,7 +4,7 @@
 		"type": "CitySourced",
 		"address": ":5002"
 	},
-	"telemetry": {
+	"monitor": {
 		"address": ":5081"
 	},
 	"serviceCategories": [

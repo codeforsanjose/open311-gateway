@@ -33,7 +33,7 @@ func main() {
 	if err := data.Init(configFile); err != nil {
 		log.Fatal("Unable to start - data initilization failed.\n")
 	}
-	telemetry.Init()
+	telemetry.Init(data.GetMonitorAddress())
 
 	rpc.Register(&request.Report{})
 	rpc.Register(&request.Services{})

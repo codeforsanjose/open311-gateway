@@ -4,6 +4,9 @@
 		"type": "Email",
 		"address": ":5003"
 	},
+	"monitor": {
+		"address": ":5081"
+	},
 	"email": {
 		"auth": "/Users/james/Dropbox/Development/Keys/CFSJ/Gateway311/email.config"
 	},

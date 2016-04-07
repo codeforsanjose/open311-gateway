@@ -9,8 +9,7 @@ import (
 )
 
 var (
-	chTQue      chan msgSender
-	monitorAddr = "127.0.0.1:5051"
+	chTQue chan msgSender
 )
 
 // SendTelemetry sends a telemetry message.
@@ -47,10 +46,11 @@ func Shutdown() {
 	close(chTQue)
 }
 
-func init() {
+// Init initializes the Monitor system
+func Init(addr string) {
 	chTQue = make(chan msgSender, 100)
 
-	tlmtryServer, err := net.ResolveUDPAddr("udp", monitorAddr)
+	tlmtryServer, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		log.Errorf("Cannot start telemetry - %s", err.Error())
 		return
@@ -63,12 +63,16 @@ func init() {
 	}
 
 	go func() {
-		// log.Debug("Telemetry sender starting...")
-		defer conn.Close()
+		log.Debugf("Telemetry sender starting on: %v", addr)
+		finish := func() {
+			log.Debugf("Closing telemetry connection...")
+			_ = conn.Close()
+		}
+		defer finish()
 		for m := range chTQue {
 			msg, err := m.Marshal()
 			if err != nil {
-				log.Warning("unable to send message - %s", err.Error())
+				log.Warningf("unable to send message - %s", err.Error())
 				continue
 			}
 			// log.Debug(string(msg))

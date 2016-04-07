@@ -100,6 +100,11 @@ func GetEmailAuth() EmailAuthData {
 	return configData.Email.Auth
 }
 
+// GetMonitorAddress returns the Telemetry Address from the config file.
+func GetMonitorAddress() string {
+	return configData.Monitor.Address
+}
+
 // getProvider returns the Provider data for the specified Area and Provider.
 func getProvider(AreaID string, ProviderID int) (Provider, error) {
 	log.Debugf("AreaID: %v  ProviderID: %v\n", AreaID, ProviderID)
@@ -186,6 +191,9 @@ type ConfigData struct {
 	Loaded  bool
 	Adapter AdapterData `json:"adapter"`
 
+	Monitor struct {
+		Address string `json:"address"`
+	} `json:"monitor"`
 	Email EmailAuth `json:"email"`
 
 	Categories []string         `json:"serviceCategories"`
@@ -373,6 +381,7 @@ func (pd ConfigData) String() string {
 	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
 	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
+	ls.AddF("Monitor - address: %s\n", pd.Monitor.Address)
 	ls.AddS(pd.Email.String())
 	ls.AddS("\n-----------INDEX: serviceID-----------\n")
 	for k, v := range pd.serviceID {

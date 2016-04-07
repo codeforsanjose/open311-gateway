@@ -41,6 +41,13 @@ ___
 
 ## Log
 
+### 2016.04.07 - Thu
+
+* Deployment cleanup.
+* Converted hardcoded "monitor" address to config files.
+* In engine, added startup for auxiliary programs.  This can be used to start the CitySourced simulator for testing purposes.
+* Saved to GIT.
+
 ### 2016.04.06 - Wed
 
 * Converted logging in Adapters to jeffizhungry version of logrus.
