@@ -282,13 +282,13 @@ func (s Report) String() string {
 		ls.AddF("          SM: %s\n", s.ImageURLSm)
 	}
 	if len(s.ImageURLMd) > 0 {
-		ls.AddF("          XS: %s\n", s.ImageURLMd)
+		ls.AddF("          MD: %s\n", s.ImageURLMd)
 	}
 	if len(s.ImageURLLg) > 0 {
-		ls.AddF("          XS: %s\n", s.ImageURLLg)
+		ls.AddF("          LG: %s\n", s.ImageURLLg)
 	}
 	if len(s.ImageURLXl) > 0 {
-		ls.AddF("          XS: %s\n", s.ImageURLXl)
+		ls.AddF("          XL: %s\n", s.ImageURLXl)
 	}
 	ls.AddF("Author(anon: %v) %s %s  Email: %s  Tel: %s\n", s.AuthorIsAnonymous, s.AuthorNameFirst, s.AuthorNameLast, s.AuthorEmail, s.AuthorTelephone)
 	ls.AddF("SLA: %s\n", s.TicketSLA)

@@ -1,0 +1,74 @@
+{
+  "auxiliary": [{
+    "name": "cs_sim1",
+    "autostart": true,
+    "dir": "./simulators/citysourced",
+    "cmd": "cs_sim",
+    "args": ["-debug", "-config", "config1.json", "-data", "data1.json"]
+  }, {
+    "name": "cs_sim2",
+    "autostart": true,
+    "dir": "./simulators/citysourced",
+    "cmd": "cs_sim",
+    "args": ["-debug", "-config", "config2.json", "-data", "data2.json"]
+  }, {
+    "name": "cs_sim3",
+    "autostart": true,
+    "dir": "./simulators/citysourced",
+    "cmd": "cs_sim",
+    "args": ["-debug", "-config", "config3.json", "-data", "data3.json"]
+  }],
+  "monitor": {
+    "address": ":5081"
+  },
+  "adapters": {
+    "CS1": {
+      "type": "CitySourced",
+      "address": ":5001",
+      "startup": {
+        "autostart": true,
+        "dir": "./adapters/citysourced",
+        "cmd": "adp_cs",
+        "args": ["-debug", "-config", "config1.json"]
+      }
+    },
+    "CS2": {
+      "type": "CitySourced",
+      "address": ":5002",
+      "startup": {
+        "autostart": true,
+        "dir": "./adapters/citysourced",
+        "cmd": "adp_cs",
+        "args": ["-debug", "-config", "config2.json"]
+      }
+    },
+    "EM1": {
+      "type": "Email",
+      "address": ":5003",
+      "startup": {
+        "autostart": true,
+        "dir": "./adapters/email",
+        "cmd": "adp_email",
+        "args": ["-debug", "-config", "config.json"]
+      }
+    }
+  },
+  "areas": {
+    "SJ": {
+      "name": "San Jose",
+      "aliases": ["san jose"]
+    },
+    "SC": {
+      "name": "Santa Clara",
+      "aliases": ["santa clara"]
+    },
+    "CU": {
+      "name": "Cupertino",
+      "aliases": ["cupertino"]
+    },
+    "SUN": {
+      "name": "Sunnyvale",
+      "aliases": ["sunnyvale"]
+    }
+  }
+}

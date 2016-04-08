@@ -2,7 +2,7 @@
 _deploy/gateway
 _deploy/adapters/citysourced/adp_cs
 _deploy/adapters/email/adp_email
-_deploy/simulators/cs_sim
+_deploy/simulators/citysourced/cs_sim
 engine/gateway
 adapters/citysourced/adp_cs
 adapters/email/adp_email

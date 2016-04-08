@@ -41,6 +41,11 @@ ___
 
 ## Log
 
+### 2016.04.08 - Fri
+
+* Make file for building Linux deployment image (or Mac for testing) complete.
+* Saved to GIT.
+
 ### 2016.04.07 - Thu
 
 * Deployment cleanup.

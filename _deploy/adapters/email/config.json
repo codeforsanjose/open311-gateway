@@ -4,6 +4,9 @@
 		"type": "Email",
 		"address": ":5003"
 	},
+	"monitor": {
+		"address": ":5081"
+	},
 	"email": {
 		"auth": "email.config"
 	},
@@ -21,7 +24,7 @@
 				"id": 1,
 				"name": "City of Cupertino - Gang & Graffiti",
 				"email": {
-					"to": ["jameskhaskell+cu1@gmail.com"],
+					"to": ["cfsj.test+cu1@gmail.com"],
 					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
 					"subject": "Cupertino: Gang/Graffiti Issue",
 					"template": "templates/cupertino1.tmpl"
@@ -45,7 +48,7 @@
 				"id": 2,
 				"name": "City of Cupertino - Other",
 				"email": {
-					"to": ["jameskhaskell+cu2@gmail.com"],
+					"to": ["cfsj.test+cu2@gmail.com"],
 					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
 					"subject": "Cupertino: General Issue",
 					"template": "templates/cupertino2.tmpl"
@@ -143,7 +146,7 @@
 				"id": 1,
 				"name": "City of Sunnyvale",
 				"email": {
-					"to": ["jameskhaskell+su1@gmail.com"],
+					"to": ["cfsj.test+su1@gmail.com"],
 					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
 					"subject": "Sunnyvale: General Issue",
 					"template": "templates/sunnyvale1.tmpl"
