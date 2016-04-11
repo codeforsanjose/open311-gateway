@@ -1,8 +1,8 @@
 .idea
-_deploy/gateway
-_deploy/adapters/citysourced/adp_cs
-_deploy/adapters/email/adp_email
-_deploy/simulators/citysourced/cs_sim
+_deploy/image/gateway
+_deploy/image/adapters/citysourced/adp_cs
+_deploy/image/adapters/email/adp_email
+_deploy/image/simulators/citysourced/cs_sim
 engine/gateway
 adapters/citysourced/adp_cs
 adapters/email/adp_email
