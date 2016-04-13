@@ -1,4 +1,8 @@
 {
+    "network": {
+        "address": ":8080",
+        "protocol": "HTTP"
+    },
     "auxiliary": [{
         "name": "cs_sim1",
         "autostart": true,

@@ -79,6 +79,12 @@ func GetMonitorAddress() string {
 	return adapters.Monitor.Address
 }
 
+// GetNetworkConfig returns the network configuration for the Engine.
+func GetNetworkConfig() (address, protocol, certFile, keyFile string) {
+	n := adapters.Network
+	return n.Address, n.Protocol, n.CertFile, n.KeyFile
+}
+
 // ==============================================================================================================================
 //                                      ROUTES
 // ==============================================================================================================================
@@ -185,7 +191,13 @@ type Adapters struct {
 	loaded   bool
 	loadedAt time.Time
 	AuxProgs auxiliaryProgs `json:"auxiliary"`
-	Monitor  struct {
+	Network  struct {
+		Address  string `json:"address"`
+		Protocol string `json:"protocol"`
+		CertFile string `json:"certFile"`
+		KeyFile  string `json:"keyFile"`
+	} `json:"network"`
+	Monitor struct {
 		Address string `json:"address"`
 	} `json:"monitor"`
 	Adapters map[string]*Adapter `json:"adapters"` // Index: AdpID
@@ -277,6 +289,12 @@ func (r *Adapters) load(file []byte) error {
 		log.Error(msg)
 		return errors.New(msg)
 	}
+
+	// Set defaults
+	if r.Network.Protocol == "" {
+		r.Network.Protocol = "http"
+	}
+	r.Network.Protocol = strings.ToLower(r.Network.Protocol)
 
 	// Denormalize the Adapters.
 	for k, v := range r.Adapters {
@@ -577,6 +595,11 @@ func (r auxiliaryProgs) start() error {
 func (r Adapters) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Adapters\n")
+	lsn := new(common.LogString)
+	lsn.AddS("Network\n")
+	lsn.AddF("Address: %q  protocol: %q\n", r.Network.Address, r.Network.Protocol)
+	lsn.AddF("CertFile: %q  KeyFile: %q\n", r.Network.CertFile, r.Network.KeyFile)
+	ls.AddS(lsn.Box(60))
 	ls.AddF("Monitor - address: %s\n", r.Monitor.Address)
 	for _, v := range r.Adapters {
 		ls.AddS(v.String())

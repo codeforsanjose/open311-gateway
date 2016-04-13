@@ -27,7 +27,7 @@ var (
 func main() {
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
-	router, err := rest.MakeRouter(
+	restrouter, err := rest.MakeRouter(
 		rest.Get("/v1/services.json", request.Services),
 		rest.Post("/v1/requests.json", request.Create),
 		rest.Get("/v1/requests.json", request.Search),
@@ -35,8 +35,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	api.SetApp(router)
-	log.Fatal(http.ListenAndServe(":8080", api.MakeHandler()))
+	api.SetApp(restrouter)
+
+	addr, prot, cert, key := router.GetNetworkConfig()
+	switch prot {
+	case "http":
+		log.Fatal(http.ListenAndServe(addr, api.MakeHandler()))
+	case "https":
+		log.Fatal(http.ListenAndServeTLS(addr, cert, key, api.MakeHandler()))
+	default:
+		log.Fatalf("Invalid network protocol: %s specified in config.", prot)
+	}
 }
 
 func init() {

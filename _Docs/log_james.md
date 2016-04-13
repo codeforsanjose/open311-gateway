@@ -6,6 +6,7 @@
 * SeeClickFix adapter.
 * Quick Start guide.
 * Allow logs to be configured to go to the System Logger (MacOS & Linux).
+* Test running the Engine on HTTPS.
 * Spin up a test implementation. @done(2016-04-12)
 * Auto start & stop adapters.  @done(2016-03-31)
 * Finish Service Definitions, including optional attributes on a POST Service Request.   @done(2016-04-12)
@@ -47,7 +48,8 @@ ___
 ### 2016.04.13 - Wed
 
 * Saved to GIT.
-* 
+* Engine: added config settings for network, including (untested!) HTTPS support.
+* Saved to GIT.
 
 ### 2016.04.12 - Tue
 
