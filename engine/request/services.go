@@ -268,7 +268,7 @@ func newServiceResp(msg string, ns structs.NServices) (*ServicesResp, error) {
 			Name:        &v.Name,
 			Description: &v.Name,
 			Metadata:    false,
-			Stype:       &v.Stype,
+			Stype:       &v.ResponseType,
 			Keywords:    &keywords,
 			Group:       &v.Group,
 		}

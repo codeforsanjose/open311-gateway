@@ -154,7 +154,7 @@ func readConfig(filePath string) error {
 
 func readEmail() error {
 	// Read Auth
-	configData.Email.Auth.Read(&configData.Email.Auth, configData.Email.AuthFile)
+	_ = configData.Email.Auth.Read(&configData.Email.Auth, configData.Email.AuthFile)
 
 	for areaID, areaData := range configData.Areas {
 		fmt.Printf("\n\n---------- Area: %q ----------\n", areaID)
@@ -268,8 +268,8 @@ func (pd *ConfigData) Load(file []byte) error {
 		return errors.New(msg)
 	}
 	log.Info("Initializing data...")
-	pd.settle()
-	pd.index()
+	_ = pd.settle()
+	_ = pd.index()
 	pd.Loaded = true
 	log.Debug(ShowConfigData())
 	return nil
@@ -285,6 +285,9 @@ func (pd *ConfigData) settle() error {
 				service.AdpID = pd.Adapter.Name
 				service.AreaID = areaKey
 				service.ProviderID = provider.ID
+				if service.ResponseType == "" {
+					service.ResponseType = provider.ResponseType
+				}
 			}
 		}
 	}
@@ -294,13 +297,13 @@ func (pd *ConfigData) settle() error {
 // Index() builds all required map indexes: Services by City,
 func (pd *ConfigData) index() error {
 	log.Info("   Building indexes:\n")
-	pd.indexServiceMID()
-	pd.indexServiceID()
-	pd.indexProviderID()
-	pd.indexCityCode()
-	pd.indexAreaProvider()
+	_ = pd.indexServiceMID()
+	_ = pd.indexServiceID()
+	_ = pd.indexProviderID()
+	_ = pd.indexCityCode()
+	_ = pd.indexAreaProvider()
 	// Run indexCityCode() last.
-	pd.indexCityServices()
+	_ = pd.indexCityServices()
 	return nil
 }
 
@@ -450,12 +453,11 @@ func (a Area) String() string {
 
 // Provider is the data for each Service Provider.  It contains an index list of all of the Services provided by this Provider.
 type Provider struct {
-	ID    int          //
-	Name  string       `json:"name"`
-	Email *EmailConfig `json:"email"`
-	// APIVersion string              `json:"apiVersion"`
-	// Key        string              `json:"key"`
-	Services []*structs.NService `json:"services"`
+	ID           int                 //
+	Name         string              `json:"name"`
+	Email        *EmailConfig        `json:"email"`
+	ResponseType string              `json:"responseType"`
+	Services     []*structs.NService `json:"services"`
 }
 
 func (p Provider) String() string {

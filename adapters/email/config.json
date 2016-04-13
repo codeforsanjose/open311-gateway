@@ -1,256 +1,259 @@
 {
-	"adapter": {
-		"name": "EM1",
-		"type": "Email",
-		"address": ":5003"
-	},
-	"monitor": {
-		"address": ":5081"
-	},
-	"email": {
-		"auth": "/Users/james/Dropbox/Development/Keys/CFSJ/Gateway311/email.config"
-	},
-	"serviceCategories": [
-		"Abandoned",
-		"Eyesore",
-		"Graffiti",
-		"Street",
-		"Trash"
-	],
-	"serviceAreas": {
-		"CU": {
-			"name": "Cupertino",
-			"providers": [{
-				"id": 1,
-				"name": "City of Cupertino - Gang & Graffiti",
-				"email": {
-					"to": ["jameskhaskell+cu1@gmail.com"],
-					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
-					"subject": "Cupertino: Gang/Graffiti Issue",
-					"template": "templates/cupertino1.tmpl"
-				},
-				"services": [{
-					"id": 10,
-					"name": "Gang Activity",
-					"description": "Gang Activity",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Gangs"
-				}, {
-					"id": 20,
-					"name": "Graffiti",
-					"description": "Graffiti",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Graffiti"
-				}]
-			}, {
-				"id": 2,
-				"name": "City of Cupertino - Other",
-				"email": {
-					"to": ["jameskhaskell+cu2@gmail.com"],
-					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
-					"subject": "Cupertino: General Issue",
-					"template": "templates/cupertino2.tmpl"
-				},
-				"services": [{
-					"id": 30,
-					"name": "Illegal Dumping / Trash",
-					"description": "Illegal Dumping / Trash",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Trash"
-				}, {
-					"id": 40,
-					"name": "Illegally Parked Car",
-					"description": "Illegally Parked Car",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Parking"
-				}, {
-					"id": 50,
-					"name": "Parks General Issue",
-					"description": "Parks General Issue",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Parks"
-				}, {
-					"id": 60,
-					"name": "Plants & Trees",
-					"description": "Plants & Trees",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Trees"
-				}, {
-					"id": 70,
-					"name": "Potholes",
-					"description": "Potholes",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Streets"
-				}, {
-					"id": 80,
-					"name": "Sidewalks",
-					"description": "Sidewalks",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Streets"
-				}, {
-					"id": 90,
-					"name": "Street Light",
-					"description": "Street Light",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Streets"
-				}, {
-					"id": 100,
-					"name": "Streets & Roads",
-					"description": "Streets & Roads",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Streets"
-				}, {
-					"id": 110,
-					"name": "Trash / Waste / Dumping",
-					"description": "Trash / Waste / Dumping",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Trash"
-				}, {
-					"id": 120,
-					"name": "Vehicle Issue",
-					"description": "Vehicle Issue",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Cars"
-				}, {
-					"id": 130,
-					"name": "Water Waste",
-					"description": "Water Waste",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Water"
-				}, {
-					"id": 140,
-					"name": "Yard Waste Removal",
-					"description": "Yard Waste Removal",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Garbage"
-				}]
-			}]
-		},
-		"SUN": {
-			"name": "Sunnyvale",
-			"providers": [{
-				"id": 1,
-				"name": "City of Sunnyvale",
-				"email": {
-					"to": ["jameskhaskell+su1@gmail.com"],
-					"from": ["cfsj.test@gmail.com", "Code for San Jose"],
-					"subject": "Sunnyvale: General Issue",
-					"template": "templates/sunnyvale1.tmpl"
-				},
-				"services": [{
-					"id": 10,
-					"name": "Gang Activity",
-					"description": "Gang Activity",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Gangs"
-				}, {
-					"id": 20,
-					"name": "Graffiti",
-					"description": "Graffiti",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Graffiti"
-				}, {
-					"id": 30,
-					"name": "Illegal Dumping / Trash",
-					"description": "Illegal Dumping / Trash",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Trash"
-				}, {
-					"id": 40,
-					"name": "Illegally Parked Car",
-					"description": "Illegally Parked Car",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Parking"
-				}, {
-					"id": 50,
-					"name": "Parks General Issue",
-					"description": "Parks General Issue",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Parks"
-				}, {
-					"id": 60,
-					"name": "Plants & Trees",
-					"description": "Plants & Trees",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Trees"
-				}, {
-					"id": 70,
-					"name": "Potholes",
-					"description": "Potholes",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Streets"
-				}, {
-					"id": 80,
-					"name": "Sidewalks",
-					"description": "Sidewalks",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Streets"
-				}, {
-					"id": 90,
-					"name": "Street Light",
-					"description": "Street Light",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Streets"
-				}, {
-					"id": 100,
-					"name": "Streets & Roads",
-					"description": "Streets & Roads",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Streets"
-				}, {
-					"id": 110,
-					"name": "Trash / Waste / Dumping",
-					"description": "Trash / Waste / Dumping",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Trash"
-				}, {
-					"id": 120,
-					"name": "Vehicle Issue",
-					"description": "Vehicle Issue",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Cars"
-				}, {
-					"id": 130,
-					"name": "Water Waste",
-					"description": "Water Waste",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Water"
-				}, {
-					"id": 140,
-					"name": "Yard Waste Removal",
-					"description": "Yard Waste Removal",
-					"type": "blackbox",
-					"service_notice": "Your request regarding %s has been submitted.",
-					"group": "Garbage"
-				}]
-			}]
-		}
-	}
+    "adapter": {
+        "name": "EM1",
+        "type": "Email",
+        "address": ":5003"
+    },
+    "monitor": {
+        "address": ":5081"
+    },
+    "email": {
+        "auth": "/Users/james/Dropbox/Development/Keys/CFSJ/Gateway311/email.config"
+    },
+    "serviceCategories": [
+        "Abandoned",
+        "Eyesore",
+        "Graffiti",
+        "Street",
+        "Trash"
+    ],
+    "serviceAreas": {
+        "CU": {
+            "name": "Cupertino",
+            "providers": [{
+                "id": 1,
+                "name": "City of Cupertino - Gang & Graffiti",
+                "responseType": "blackbox",
+                "email": {
+                    "to": ["jameskhaskell+cu1@gmail.com"],
+                    "from": ["cfsj.test@gmail.com", "Code for San Jose"],
+                    "subject": "Cupertino: Gang/Graffiti Issue",
+                    "template": "templates/cupertino1.tmpl"
+                },
+                "services": [{
+                    "id": 10,
+                    "name": "Gang Activity",
+                    "description": "Gang Activity",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Gangs"
+                }, {
+                    "id": 20,
+                    "name": "Graffiti",
+                    "description": "Graffiti",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Graffiti"
+                }]
+            }, {
+                "id": 2,
+                "name": "City of Cupertino - Other",
+                "responseType": "blackbox",
+                "email": {
+                    "to": ["jameskhaskell+cu2@gmail.com"],
+                    "from": ["cfsj.test@gmail.com", "Code for San Jose"],
+                    "subject": "Cupertino: General Issue",
+                    "template": "templates/cupertino2.tmpl"
+                },
+                "services": [{
+                    "id": 30,
+                    "name": "Illegal Dumping / Trash",
+                    "description": "Illegal Dumping / Trash",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Trash"
+                }, {
+                    "id": 40,
+                    "name": "Illegally Parked Car",
+                    "description": "Illegally Parked Car",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Parking"
+                }, {
+                    "id": 50,
+                    "name": "Parks General Issue",
+                    "description": "Parks General Issue",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Parks"
+                }, {
+                    "id": 60,
+                    "name": "Plants & Trees",
+                    "description": "Plants & Trees",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Trees"
+                }, {
+                    "id": 70,
+                    "name": "Potholes",
+                    "description": "Potholes",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Streets"
+                }, {
+                    "id": 80,
+                    "name": "Sidewalks",
+                    "description": "Sidewalks",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Streets"
+                }, {
+                    "id": 90,
+                    "name": "Street Light",
+                    "description": "Street Light",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Streets"
+                }, {
+                    "id": 100,
+                    "name": "Streets & Roads",
+                    "description": "Streets & Roads",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Streets"
+                }, {
+                    "id": 110,
+                    "name": "Trash / Waste / Dumping",
+                    "description": "Trash / Waste / Dumping",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Trash"
+                }, {
+                    "id": 120,
+                    "name": "Vehicle Issue",
+                    "description": "Vehicle Issue",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Cars"
+                }, {
+                    "id": 130,
+                    "name": "Water Waste",
+                    "description": "Water Waste",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Water"
+                }, {
+                    "id": 140,
+                    "name": "Yard Waste Removal",
+                    "description": "Yard Waste Removal",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Garbage"
+                }]
+            }]
+        },
+        "SUN": {
+            "name": "Sunnyvale",
+            "providers": [{
+                "id": 1,
+                "name": "City of Sunnyvale",
+                "responseType": "blackbox",
+                "email": {
+                    "to": ["jameskhaskell+su1@gmail.com"],
+                    "from": ["cfsj.test@gmail.com", "Code for San Jose"],
+                    "subject": "Sunnyvale: General Issue",
+                    "template": "templates/sunnyvale1.tmpl"
+                },
+                "services": [{
+                    "id": 10,
+                    "name": "Gang Activity",
+                    "description": "Gang Activity",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Gangs"
+                }, {
+                    "id": 20,
+                    "name": "Graffiti",
+                    "description": "Graffiti",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Graffiti"
+                }, {
+                    "id": 30,
+                    "name": "Illegal Dumping / Trash",
+                    "description": "Illegal Dumping / Trash",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Trash"
+                }, {
+                    "id": 40,
+                    "name": "Illegally Parked Car",
+                    "description": "Illegally Parked Car",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Parking"
+                }, {
+                    "id": 50,
+                    "name": "Parks General Issue",
+                    "description": "Parks General Issue",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Parks"
+                }, {
+                    "id": 60,
+                    "name": "Plants & Trees",
+                    "description": "Plants & Trees",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Trees"
+                }, {
+                    "id": 70,
+                    "name": "Potholes",
+                    "description": "Potholes",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Streets"
+                }, {
+                    "id": 80,
+                    "name": "Sidewalks",
+                    "description": "Sidewalks",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Streets"
+                }, {
+                    "id": 90,
+                    "name": "Street Light",
+                    "description": "Street Light",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Streets"
+                }, {
+                    "id": 100,
+                    "name": "Streets & Roads",
+                    "description": "Streets & Roads",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Streets"
+                }, {
+                    "id": 110,
+                    "name": "Trash / Waste / Dumping",
+                    "description": "Trash / Waste / Dumping",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Trash"
+                }, {
+                    "id": 120,
+                    "name": "Vehicle Issue",
+                    "description": "Vehicle Issue",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Cars"
+                }, {
+                    "id": 130,
+                    "name": "Water Waste",
+                    "description": "Water Waste",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Water"
+                }, {
+                    "id": 140,
+                    "name": "Yard Waste Removal",
+                    "description": "Yard Waste Removal",
+                    "responseType": "blackbox",
+                    "service_notice": "Your request regarding %s has been submitted.",
+                    "group": "Garbage"
+                }]
+            }]
+        }
+    }
 }

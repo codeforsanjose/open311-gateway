@@ -1,0 +1,130 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+
+    "definitions": {
+        "program": {
+            "description": "Defines an auxiliary programs to be launched at system startup.",
+            "type": "object",
+            "properties": {
+                "autostart": {
+                    "type": "boolean",
+                    "description": "If true, then the Engine will attempt to start this process at system startup."
+                },
+                "dir": {
+                    "type": "string",
+                    "description": "Full path to the program or script file."
+                },
+                "cmd": {
+                    "type": "string",
+                    "description": "The program or script to run."
+                },
+                "args": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "An array of strings, with each flag and setting as a separate string."
+                }
+            },
+            "required": ["autostart", "dir", "cmd", "args"]
+        },
+        "adapter": {
+            "description": "Defines one Adapter the Engine will use.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "Adapter type, e.g. CitySourced, Email, SCF"
+                },
+                "address": {
+                    "type": "string",
+                    "description": "IP address and port number for the RPC connection of the Adapter.  This is specified in the Adapter's config file."
+                },
+                "startup": {
+                    "type": "object",
+                    "properties": {
+                        "autostart": {
+                            "type": "boolean",
+                            "description": "If true, then the Engine will attempt to start this process at system startup."
+                        },
+                        "dir": {
+                            "type": "string",
+                            "description": "Full path to the program or script file."
+                        },
+                        "cmd": {
+                            "type": "string",
+                            "description": "The program or script to run."
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "An array of strings, with each flag and setting as a separate string."
+                        }
+                    },
+                    "description": "The startup parameters for the Adapter."
+                }
+            }
+        },
+        "area": {
+            "description": "This is a map of all the Areas serviced by this Gateway instance.",
+            "type": "object",
+            "properties": {
+
+                "name": {
+                    "type": "string",
+                    "description": "Name of the Area."
+                },
+                "aliases": {
+                    "description": "A list of aliases for the Area.  For example, an alias of 'San Jose' might be 'SJ'.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+
+    "properties": {
+        "auxiliary": {
+            "description": "The list of all auxiliary programs to be launched at system startup.",
+            "type": "array",
+            "items": {
+                "allOf": [{
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The *unique* name of the program.  This identifies the auxiliary program in error messages and logs."
+                        }
+                    }
+                }, {
+                    "$ref": "#/definitions/program"
+                }]
+            }
+        },
+        "monitor": {
+            "description": "Configuration data for the System Monitor.",
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type:": "string",
+                    "description": "IP and port of the system monitor."
+                }
+            }
+        },
+        "adapters": {
+            "description": "The list of all Adapters the Engine should attempt to connect to.",
+            "additionalProperties": {
+                "$ref": "#/definitions/adapter"
+            }
+        },
+        "areas": {
+            "description": "The list of all geographic areas the Engine will service.",
+            "additionalProperties": {
+                "$ref": "#/definitions/area"
+            }
+        }
+    }
+}

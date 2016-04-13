@@ -1,0 +1,12 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Authentication": {
+    "Bucket": "cfsj.gateway311",
+    "Key": "docker/dockercfg"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "8080"
+    }
+  ],
+}

@@ -31,7 +31,9 @@ mactest: maccompile
 	cp $(CS_SIM_SRC)/cs_sim $(DEPLOYDIR)/simulators/citysourced
 
 builddocker: linuxcompile
-	docker build --rm --tag=cfsj/gateway311 ./_deploy
+	docker build --rm --tag=jameshaskell/gateway311 ./_deploy
+	docker login
+	docker push jameshaskell/gateway311
 
 buildrun: builddocker
-	docker run -p 80:80 -t cfsj/gateway311
+	docker run -p 80:80 -t jameshaskell/gateway311

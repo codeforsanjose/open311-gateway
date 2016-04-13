@@ -12,3 +12,12 @@
 |cs_sim|2|CS2 - CitySourced Simulator|5052|
 |cs_sim|3|CS3 - CitySourced Simulator|5053|
 |monitor|2|System Monitor|5081|
+
+## AWS Setup
+
+|Item|Config|Notes|
+|----|----|-----|
+|IP|52.34.144.221||
+|Port|8080||
+|URL|http://52.34.144.221:8080/||
+

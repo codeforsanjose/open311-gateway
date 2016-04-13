@@ -87,12 +87,12 @@ func TestAdapter(t *testing.T) {
 		n    structs.ServiceID // input
 		isOK bool              // expected result
 	}{
-		{structs.ServiceID{"EM1", "CU", 1, 1}, true},
-		{structs.ServiceID{"EM1", "CU", 2, 9999}, true},
-		{structs.ServiceID{"EM1", "CU", 3, 999999}, false},
-		{structs.ServiceID{"EM1", "SUN", 1, 1}, true},
-		{structs.ServiceID{"EM1", "SJ", 1, 1}, false},
-		{structs.ServiceID{"EM1", "XXXXXXXXX", 1, 1}, false},
+		{structs.ServiceID{AdpID: "EM1", AreaID: "CU", ProviderID: 1, ID: 1}, true},
+		{structs.ServiceID{AdpID: "EM1", AreaID: "CU", ProviderID: 2, ID: 9999}, true},
+		{structs.ServiceID{AdpID: "EM1", AreaID: "CU", ProviderID: 3, ID: 999999}, false},
+		{structs.ServiceID{AdpID: "EM1", AreaID: "SUN", ProviderID: 1, ID: 1}, true},
+		{structs.ServiceID{AdpID: "EM1", AreaID: "SJ", ProviderID: 1, ID: 1}, false},
+		{structs.ServiceID{AdpID: "EM1", AreaID: "XXXXXXXXX", ProviderID: 1, ID: 1}, false},
 	}
 
 	for _, tt := range midTests {
@@ -112,12 +112,12 @@ func TestAdapter(t *testing.T) {
 		n    structs.NRoute // input
 		isOK bool           // expected result
 	}{
-		{structs.NRoute{"EM1", "CU", 1}, true},
-		{structs.NRoute{"EM1", "CU", 2}, true},
-		{structs.NRoute{"EM1", "CU", 3}, false},
-		{structs.NRoute{"EM1", "SUN", 1}, true},
-		{structs.NRoute{"EM1", "SJ", 1}, false},
-		{structs.NRoute{"EM1", "XXXXXXXXX", 1}, false},
+		{structs.NRoute{AdpID: "EM1", AreaID: "CU", ProviderID: 1}, true},
+		{structs.NRoute{AdpID: "EM1", AreaID: "CU", ProviderID: 2}, true},
+		{structs.NRoute{AdpID: "EM1", AreaID: "CU", ProviderID: 3}, false},
+		{structs.NRoute{AdpID: "EM1", AreaID: "SUN", ProviderID: 1}, true},
+		{structs.NRoute{AdpID: "EM1", AreaID: "SJ", ProviderID: 1}, false},
+		{structs.NRoute{AdpID: "EM1", AreaID: "XXXXXXXXX", ProviderID: 1}, false},
 	}
 
 	for _, tt := range routeTests {

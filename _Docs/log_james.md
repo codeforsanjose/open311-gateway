@@ -1,11 +1,14 @@
 ## To Do.todo
 
-* Spin up a test implementation.
-* Auto start & stop adapters.  @done(2016-03-31)
-* Finish Service Definitions, including optional attributes on a POST Service Request.  
+* Convert ServiceID.ID to string.
+* In Adapter config files, change "type" to "responseType".
+* In Adapter data, convert "serviceCategories" to "serviceGroup" for consistency.
 * SeeClickFix adapter.
 * Quick Start guide.
 * Allow logs to be configured to go to the System Logger (MacOS & Linux).
+* Spin up a test implementation. @done(2016-04-12)
+* Auto start & stop adapters.  @done(2016-03-31)
+* Finish Service Definitions, including optional attributes on a POST Service Request.   @done(2016-04-12)
 * Stress tester.
 *  Improve error handling. @done(2016-03-31)
 * Fix dates on Searches. @done(2016-03-31)
@@ -41,10 +44,21 @@ ___
 
 ## Log
 
+### 2016.04.13 - Wed
+
+* Saved to GIT.
+* 
+
+### 2016.04.12 - Tue
+
+* Created JSON Schema for Engine and Adapter config files, to document and allow easy verification of their structure.
+* Created a copy of the CitySourced adapter code as a starting point for SeeClickFix adapter.
+
 ### 2016.04.11 - Mon
 
 * Docker build working.
 * Saved to GIT.
+* Docker container running on AWS!
 
 ### 2016.04.08 - Fri
 
