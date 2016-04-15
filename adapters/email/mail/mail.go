@@ -84,7 +84,7 @@ func Send(a data.EmailSender, p structs.Payloader) error {
 
 	go func() {
 		if err := dialer.DialAndSend(m); err != nil {
-			panic(err)
+			log.Error(err)
 		}
 	}()
 

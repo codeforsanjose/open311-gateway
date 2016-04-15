@@ -30,10 +30,12 @@ mactest: maccompile
 	cp adapters/email/adp_email $(DEPLOYDIR)/adapters/email
 	cp $(CS_SIM_SRC)/cs_sim $(DEPLOYDIR)/simulators/citysourced
 
-builddocker: linuxcompile
-	docker build --rm --tag=jameshaskell/gateway311 ./_deploy
-	docker login
-	docker push jameshaskell/gateway311
+rebuilddocker:
+		docker build --rm --tag=jameshaskell/gateway311 ./_deploy
+		docker login
+		docker push jameshaskell/gateway311
 
-buildrun: builddocker
-	docker run -p 80:80 -t jameshaskell/gateway311
+builddocker: linuxcompile rebuilddocker
+
+buildrun: rebuilddocker
+	docker run -p 80:80 -it jameshaskell/gateway311

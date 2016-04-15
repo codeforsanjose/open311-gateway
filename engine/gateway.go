@@ -25,6 +25,7 @@ var (
 )
 
 func main() {
+	log.Debug("Version 0.1.1")
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 	restrouter, err := rest.MakeRouter(

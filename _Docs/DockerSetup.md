@@ -4,7 +4,7 @@
 
 |Program|Instance|Purpose|Port|
 |:------|:------:|:------|:----:|
-|engine|1|CitySourced Adapter|8080|
+|engine|1|CitySourced Adapter|80|
 |adp_cs|1|CitySourced Adapter <br>San Jose -> CS1 <br>San Jose -> CS2 <br>Santa Clara -> CS3|5001|
 |adp_cs|2|CitySourced Adapter <br>Santa Clara -> CS3|5002|
 |adp_email|1|Email Adapter (Cupertino, Sunnyvale)|5003|
@@ -18,6 +18,6 @@
 |Item|Config|Notes|
 |----|----|-----|
 |IP|52.34.144.221||
-|Port|8080||
-|URL|http://52.34.144.221:8080/||
+|Port|80||
+|URL|http://52.34.144.221:80/||
 

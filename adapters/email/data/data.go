@@ -154,6 +154,7 @@ func readConfig(filePath string) error {
 
 func readEmail() error {
 	// Read Auth
+	log.Debugf("Reading email config file: %s", configData.Email.AuthFile)
 	_ = configData.Email.Auth.Read(&configData.Email.Auth, configData.Email.AuthFile)
 
 	for areaID, areaData := range configData.Areas {
@@ -385,6 +386,7 @@ func (pd ConfigData) String() string {
 	ls.AddF("Loaded: %t\n", pd.Loaded)
 	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
 	ls.AddF("Monitor - address: %s\n", pd.Monitor.Address)
+	ls.AddS(pd.Email.String())
 	ls.AddS(pd.Email.String())
 	ls.AddS("\n-----------INDEX: serviceID-----------\n")
 	for k, v := range pd.serviceID {
