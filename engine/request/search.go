@@ -15,9 +15,9 @@ import (
 	log "github.com/jeffizhungry/logrus"
 )
 
-const (
-	searchRadiusMin int = 50
-	searchRadiusMax int = 250
+var (
+	searchRadiusMin int
+	searchRadiusMax int
 )
 
 // =======================================================================================
@@ -169,6 +169,7 @@ func (r *searchMgr) validate() error {
 	v.Set("geo", "", common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
 
 	// Range-check the search radius.
+	log.Debugf("Search radius min/max: %v-%v", searchRadiusMin, searchRadiusMax)
 	switch {
 	case r.req.RadiusV < searchRadiusMin:
 		r.req.RadiusV = searchRadiusMin

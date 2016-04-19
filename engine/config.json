@@ -6,24 +6,28 @@
     "auxiliary": [{
         "name": "cs_sim1",
         "autostart": true,
-        "dir": "/Users/james/Dropbox/Work/CodeForSanJose/Open311/_test/CitySourced/cfg1",
+        "dir": "/Users/james/Dropbox/Work/CodeForSanJose/Gateway311/_test/CitySourced/cfg1",
         "cmd": "cs_sim",
         "args": ["-debug"]
     }, {
         "name": "cs_sim2",
         "autostart": true,
-        "dir": "/Users/james/Dropbox/Work/CodeForSanJose/Open311/_test/CitySourced/cfg2",
+        "dir": "/Users/james/Dropbox/Work/CodeForSanJose/Gateway311/_test/CitySourced/cfg2",
         "cmd": "cs_sim",
         "args": ["-debug"]
     }, {
         "name": "cs_sim3",
         "autostart": true,
-        "dir": "/Users/james/Dropbox/Work/CodeForSanJose/Open311/_test/CitySourced/cfg3",
+        "dir": "/Users/james/Dropbox/Work/CodeForSanJose/Gateway311/_test/CitySourced/cfg3",
         "cmd": "cs_sim",
         "args": ["-debug"]
     }],
     "monitor": {
         "address": ":5081"
+    },
+    "general": {
+        "searchRadiusMin": 50,
+        "searchRadiusMax": 200
     },
     "adapters": {
         "CS1": {
@@ -32,8 +36,8 @@
             "startup": {
                 "autostart": true,
                 "dir": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/citysourced",
-                "cmd": "citysourced",
-                "args": ["-debug", "-config", "data/config1.json"]
+                "cmd": "adp_cs",
+                "args": ["-debug", "-config", "config1.json"]
             }
         },
         "CS2": {
@@ -42,8 +46,8 @@
             "startup": {
                 "autostart": true,
                 "dir": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/citysourced",
-                "cmd": "citysourced",
-                "args": ["-debug", "-config", "data/config2.json"]
+                "cmd": "adp_cs",
+                "args": ["-debug", "-config", "config2.json"]
             }
         },
         "EM1": {
@@ -52,8 +56,8 @@
             "startup": {
                 "autostart": true,
                 "dir": "/Users/james/Dropbox/Development/go/src/Gateway311/adapters/email",
-                "cmd": "email",
-                "args": ["-debug", "-config", "data/config.json"]
+                "cmd": "adp_email",
+                "args": ["-debug", "-config", "config.json"]
             }
         }
     },

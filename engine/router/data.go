@@ -85,6 +85,12 @@ func GetNetworkConfig() (address, protocol, certFile, keyFile string) {
 	return n.Address, n.Protocol, n.CertFile, n.KeyFile
 }
 
+// GetSearchRadius returns the Min and Max Search Radius values.
+func GetSearchRadius() (min, max int) {
+	n := adapters.General
+	return n.SearchRadiusMin, n.SearchRadiusMax
+}
+
 // ==============================================================================================================================
 //                                      ROUTES
 // ==============================================================================================================================
@@ -200,6 +206,10 @@ type Adapters struct {
 	Monitor struct {
 		Address string `json:"address"`
 	} `json:"monitor"`
+	General struct {
+		SearchRadiusMin int `json:"searchRadiusMin"`
+		SearchRadiusMax int `json:"searchRadiusMax"`
+	} `json:"general"`
 	Adapters map[string]*Adapter `json:"adapters"` // Index: AdpID
 	Areas    map[string]*Area    `json:"areas"`    // Index: AreaID
 	chUpdate chan map[string][]string

@@ -23,12 +23,12 @@
 	* LatLng    (SearchLL) @done(2016-02-23)
 	* Address (converted to LatLng in engine... submitted to Adapter as SearchLL)
 * Update RAML file for all current Query Parms.
-* On the engine, search needs an index of CityCode -> Providers.  When the ServiceList is loaded, we need to create that index. @done(2016-02-04)
+* On the engine, search needs an index of CityCode -\> Providers.  When the ServiceList is loaded, we need to create that index. @done(2016-02-04)
 * * Get Create working again. @done(2016-01-25)
 * Update Services cache on Engine. @done(2016-01-22)
 	* Be able to safely and easily refresh the services list. @done(2016-01-22)
-	* Quickly lookup location -> AreaID -> Service list. @done(2016-01-22)
-	* Quickly lookup location -> AreaID -> Adapter list. @done(2016-01-22)
+	* Quickly lookup location -\> AreaID -\> Service list. @done(2016-01-22)
+	* Quickly lookup location -\> AreaID -\> Adapter list. @done(2016-01-22)
 * Implement RPC Dispatch System @done(2016-01-19)
 * Custom Type for ServiceID. @done(2016-01-11)
 * CitySourced Adapter - load config.json data file. @done(2016-01-05)
@@ -41,9 +41,14 @@
 * Modify CitySourced simulator to return the Request ID and Document ID. @done(2015-12-12)
 * Outline the Displatch system. @done(2015-12-14)
 
-___ 
+---- 
 
 ## Log
+
+### 2016.04.19 - Tue
+
+* Organizing documentation.
+* Moved SearchRadius from a static constant to a configuration parameter.
 
 ### 2016.04.13 - Wed
 
@@ -133,7 +138,7 @@ ___
 
 ### 2016.03.14 - Mon
 
-* Email adapter working at the unit test level.  
+* Email adapter working at the unit test level.
 * Saved to GIT.
 
 ### 2016.03.10 - Thu
@@ -186,7 +191,7 @@ ___
 	* router/data.go saves the full, unique route list, and then builds the indexed list of routes by AreaID.
 * Added new file router/routes.go.  This file returns route lists (all, by Area, and by ReportID).
 * Saved to GIT.
-* 
+\* 
 
 ### 2016.03.03 - Thu
 
@@ -202,7 +207,7 @@ ___
 ### 2016.03.02 - Wed
 
 * Started cleaning up engine/request.  It will more closely follow the model used in the Adapters of using "Request Managers" to process requests.  
-*  
+\*  
 
 ### 2016.03.01 - Tue
 
@@ -216,7 +221,7 @@ ___
 * Search by ReportID working.
 * Added RID (ReportID) to structs.go.
 * Saved to GIT.
-* 
+\* 
 
 ### 2016.02.24 - Wed
 
@@ -233,13 +238,13 @@ ___
 	* Cleaned up JSON/XML tags for the SearchRequest struct.
 	* SearchRequest.validate() calls the new function setSearchType().  This function ascertains the type of search based on which query parms were used, in the following priority: ReportID, DeviceID, LatLng.  In other words, if the ReportID is present, then that will be search type.  If ReportID has not been set, or appears invalid, and there is a valid DeviceID, then that will will be the search used.  If neither ReportID or DeviceID searches look ok, then LatLng will be checked.  If the Lat & Lng don't look valid, then the search request is rejected.
 * Saved to GIT.
-* 
+\* 
 
 ### 2016.02.22 - Mon
 
 * In structs, changed the ID in responses from an int to a ReportID (new struct).  The ReportID includes the Route, so an upvote or comment to a specific report can be properly routed.
 * Saved to GIT.
-* Deleted engine/request/_old code.
+* Deleted engine/request/\_old code.
 * Saved to GIT.
 * Fixed Search function on the Engine - it was not consolidating multiple returns from Adapter Routes. 
 * Saved to GIT.
@@ -320,7 +325,7 @@ ___
 * In engine/router, changed "routeMap" to "serviceMap".  This is more descriptive.
 * Test OK.
 * Saved to GIT..
-* Changed the "map[structs.NRoute]*rpcAdapterStatus" to a custom type in engine/router/rpc.go and rpcroute.go.  
+* Changed the "map[structs.NRoute]\*rpcAdapterStatus" to a custom type in engine/router/rpc.go and rpcroute.go.  
 * Test OK.
 * Saved to GIT.
 * Cleaned up debug prints.
@@ -370,7 +375,7 @@ ___
 * Reverted the above change.  This pushes routing logic into the Adapters, which is not a good road.  The Adapters should be very simple, mediating a single request.  There should not be any routing logic in the Adapters...
 * First draft of SearchLL() ready for testing in adapters/citysourced.
 * Saved to GIT.
-* 
+\* 
 
 ### 2016.02.01 - Mon
 
@@ -381,7 +386,7 @@ ___
 * In adapters/citysourced/request.go, created an interface "processer", and runRequest() for the main processing steps for all requests.
 * Test OK.
 * Saved to GIT.
-* 
+\* 
 
 ### 2016.01.28 - Thu
 
@@ -430,17 +435,17 @@ ___
 * Saved to GIT.
 * Moved services.go from the engine/router package into it's own, new package "services".  All code related to the ServiceList cache system will be in this package.
 * The services package needs access to the RPC call system, so revised engine/router/rpc.go - made the following exported:
-	* newRPCCall -> NewRPCCall
-	* rpcCalls -> RPCCall
-	* rpcCalls.run() -> RPCCall.Run()
+	* newRPCCall -\> NewRPCCall
+	* rpcCalls -\> RPCCall
+	* rpcCalls.run() -\> RPCCall.Run()
 * Restored engine/request/services.go, and updated to match all the changes in the Engine.
 * Test OK.
 * Saved to GIT.
-* Renamed engine/router/adapters.go -> data.go.  There is more in the config.json file than just adapter data.
+* Renamed engine/router/adapters.go -\> data.go.  There is more in the config.json file than just adapter data.
 * Fixed Services response.
 * Test OK from Paw client, with location in San Jose.
 * Saved to GIT.
-* 
+\* 
 
 
 ### 2016.01.20 - Wed
@@ -472,8 +477,8 @@ ___
 * Signal handler working.
 * Saved to GIT.
 * Renamed functions in adapters/citysourced/data.go to show they are about Services:
-	* City() -> ServicesCity()
-	* All() -> ServicesAll()
+	* City() -\> ServicesCity()
+	* All() -\> ServicesAll()
 * Removed debug from config file.  It's redundant and unnecessary.
 * Saved to GIT.
 
@@ -481,11 +486,11 @@ ___
 ### 2016.01.13 - Wed
 
 * Renamed directories:
-	* gateway -> engine
-	* integration -> adapters
+	* gateway -\> engine
+	* integration -\> adapters
 * Started rebuilding the Engine.
 * Saved to GIT.
-* 
+\* 
 
 
 ### 2016.01.12 - Tue
@@ -506,12 +511,12 @@ ___
 * Saved to GIT.
 * Added second CitySourced integration for testing purpose.
 * Saved to GIT.
-* Changed gateway/request/*.go:
+* Changed gateway/request/\*.go:
 	* All fields need to be exported in the Create structs, so change "longitude", "latitude", etc. to "LongitudeV", "LatitudeV", etc.
 * Moved gateway/request/structs.go to gateway/structs/structs.go
-	* Added gateway/structs/methods.go.  
-* 
-	
+	* Added gateway/structs/methods.go.
+\* 
+ 
 ### 2016.01.07 - Thu
 
 * Tried an alternative layout using the ID's as keys in the Adapter/config.json file.  This (theoretically) would have been convenient, but the JSON decoder doesn't support anything but strings for the "keys".  Not working well.   
@@ -531,7 +536,7 @@ ___
 
 * Wrote up "EngineAndAdapters.md" file outlining design of the Engine / Adapter system.
 * Saved to GIT.
-* Changed _Test/CSclient.go to use asynchronous API calls.  Working OK.
+* Changed \_Test/CSclient.go to use asynchronous API calls.  Working OK.
 * Saved to GIT.
 
 ### 2016.01.04 - Mon
@@ -541,15 +546,15 @@ ___
 * Worked on design of Engine/Adapter RPC system - responsibilities, design.
 * Got the CitySourced client rudimentarily working.  
 * Put all "Native" structs into a the request/structs.go file.
-* 
+\* 
 
 ### 2015.12.30 - Wed
 
 * Renamed geo functions:
-	* LatLngForAddr() -> LatLngForAddr()
-	* AddrForLatLng() -> AddrForLatLng()
-	* CityForLatLng() -> cityForLatLng()
-	
+	* LatLngForAddr() -\> LatLngForAddr()
+	* AddrForLatLng() -\> AddrForLatLng()
+	* CityForLatLng() -\> cityForLatLng()
+		 
 
 ### 2015.12.29 - Tue
 
@@ -585,8 +590,8 @@ ___
 
 * Greatly reorganized request processing to Create a report (in the "request" package):
 	* Renamed:
-		* CreateReport type -> CreateReq
-		* CreateReportResp type -> CreateResp
+		* CreateReport type -\> CreateReq
+		* CreateReportResp type -\> CreateResp
 	* Moved all Create functionality under the CreateReq type - current methods:
 		1. validate
 		2. init
@@ -631,13 +636,13 @@ Thoughts on using the JID for most/all requests:
 * Renamed request/report.go to request.go, as this is the primary file in the request package.
 * Test OK.
 * Saved to GIT.
-		
+		 
 
 ### 2015.12.23 - Wed
 
-* Cleaned up router.ServiceProviderInterface().  Added test cases in data_test.go.
+* Cleaned up router.ServiceProviderInterface().  Added test cases in data\_test.go.
 * Test OK.
-* 
+\* 
 
 ### 2015.12.19 - Sat
 
@@ -651,7 +656,7 @@ Thoughts on using the JID for most/all requests:
 ### 2015.12.18 - Fri
 
 * Brought "geo" package over from CitySourced.
-* Added "getCity()" function to mygeocode.go.  This scans through the Google response and retrieves the city.  We will need this for quickly mapping the Mobile Apps geoloc -> city -> Service Providers -> list of Services.
+* Added "getCity()" function to mygeocode.go.  This scans through the Google response and retrieves the city.  We will need this for quickly mapping the Mobile Apps geoloc -\> city -\> Service Providers -\> list of Services.
 * Test OK.
 * Saved to GIT.
 * Added a CityForLatLng() func in the "geo" package.  This takes a latitude and longitude, and returns the City.
@@ -689,7 +694,7 @@ Thoughts on using the JID for most/all requests:
 
 ### 2015.12.14 - Mon
 
-* Added design documentation for the Service Router capabilities.  
+* Added design documentation for the Service Router capabilities.
 * Saved to GIT.
 
 ### 2015.12.10 - Thu
@@ -704,11 +709,11 @@ Thoughts on using the JID for most/all requests:
 
 * Implemented "napping" REST client.  Not working due to XML.  Starting over using just the HTTP lib.
 * Saved to GIT.
-* 
+\* 
 
 ### 2015.12.01 - Tue
 
-* 
+\* 
 
 ### 2015.11.30 - Mon
 

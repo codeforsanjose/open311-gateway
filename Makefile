@@ -4,7 +4,7 @@ ENGINE_SRC=/Users/james/Dropbox/Development/go/src/Gateway311/engine
 ADP_CS_SRC=/Users/james/Dropbox/Development/go/src/Gateway311/adapters/citysourced
 ADP_EMAIL_SRC=/Users/james/Dropbox/Development/go/src/Gateway311/adapters/email
 CS_SIM_SRC=/Users/james/Dropbox/Development/go/src/CitySourcedAPI
-CS_SIM_TEST=/Users/james/Dropbox/Work/CodeForSanJose/Open311/_test/CitySourced
+CS_SIM_TEST=/Users/james/Dropbox/Work/CodeForSanJose/Gateway311/_test/CitySourced
 
 default: builddocker
 

@@ -125,7 +125,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">9</attribute>
-        <attribute name="name" type="string">FAIL: Get Service / address_string (6 digit zipcode)</attribute>
+        <attribute name="name" type="string">FAIL: Invalid zip code</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z200"></relationship>
@@ -149,12 +149,12 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="body" type="string">[{"data":{"json":"{\\"service_code\\":\\"EM1-CU-2-30\\",\\"service_name\\":\\"Illegal Dumping\\",\\"device_id\\":\\"123456789\\",\\"address_string\\":\\"10630 S De Anza Blvd, Cupertino, CA 95014\\",\\"device_type\\":\\"iPhone\\",\\"device_model\\":\\"6\\",\\"first_name\\":\\"James\\",\\"last_name\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"description\\":\\"There's a big pile of trash at the end of my block.\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"EM1-CU-2-30\\",\\n  \\"service_name\\": \\"Illegal Dumping\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"address_string\\": \\"10630 S De Anza Blvd, Cupertino, CA 95014\\",\\n  \\"device_type\\": \\"iPhone\\",\\n  \\"device_model\\": \\"6\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"description\\": \\"There's a big pile of trash at the end of my block.\\"\\n}"]</attribute>
         <attribute name="order" type="int64">8</attribute>
-        <attribute name="name" type="string">Create Request - CU-2 Email</attribute>
+        <attribute name="name" type="string">EM1-CU-2-30 (Illegal Dumping / Trash) - address string in Cupertino</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z158 z194"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z194 z158"></relationship>
     </object>
     <object type="LMKEYVALUE" id="z111">
         <attribute name="value" type="string"></attribute>
@@ -233,7 +233,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">10</attribute>
-        <attribute name="name" type="string">FAIL: Get Service / address_string (Morgan Hill)</attribute>
+        <attribute name="name" type="string">FAIL: Morgan Hill</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z139"></relationship>
@@ -273,7 +273,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">3</attribute>
-        <attribute name="name" type="string">Get Service / Address SJ</attribute>
+        <attribute name="name" type="string">San Jose address</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z142"></relationship>
@@ -287,12 +287,12 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="body" type="string">[{"data":{"json":"{\\"service_code\\":\\"CS1-SJ-2-64\\",\\"service_name\\":\\"Yard Waste Removal\\",\\"device_id\\":\\"123456789\\",\\"device_type\\":\\"iPhone\\",\\"device_model\\":\\"6\\",\\"lat\\":\\"37.339244\\",\\"long\\":\\"-121.883638\\",\\"first_name\\":\\"James\\",\\"last_name\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"description\\":\\"There are piles of trash in my front yard!\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"CS1-SJ-2-64\\",\\n  \\"service_name\\": \\"Yard Waste Removal\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"device_type\\": \\"iPhone\\",\\n  \\"device_model\\": \\"6\\",\\n  \\"lat\\": \\"37.339244\\",\\n  \\"long\\": \\"-121.883638\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"description\\": \\"There are piles of trash in my front yard!\\"\\n}"]</attribute>
         <attribute name="order" type="int64">3</attribute>
-        <attribute name="name" type="string">Create Request CS1-SJ-2</attribute>
+        <attribute name="name" type="string">CS1-SJ-2-64 (Yard Waste Removal) - lat/long</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z197 z202"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z202 z197"></relationship>
     </object>
     <object type="LMREQUESTGROUP" id="z123">
         <attribute name="uuid" type="string">2FE81402-68C7-48A9-8022-EF15F1A50E4D</attribute>
@@ -329,7 +329,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">6</attribute>
-        <attribute name="name" type="string">Get Service / address_string (Cupertino)</attribute>
+        <attribute name="name" type="string">Cupertino address string</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z188"></relationship>
@@ -345,7 +345,7 @@
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"EM1-SUN-1-80\\",\\n  \\"service_name\\": \\"Sidewalks\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"device_type\\": \\"iPhone\\",\\n  \\"device_model\\": \\"6\\",\\n  \\"address\\": \\"235 Olson Way\\",\\n  \\"city\\": \\"Sunnyvale\\",\\n  \\"state\\": \\"CA\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"description\\": \\"The sidewalk in front of my house is cracked and dangerous.\\"\\n}"]</attribute>
         <attribute name="order" type="int64">9</attribute>
-        <attribute name="name" type="string">Create Request - SUN-1 Email</attribute>
+        <attribute name="name" type="string">EM1-SUN-1-80 (Sidewalks) - address in Sunnyvale</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z129 z114"></relationship>
@@ -380,7 +380,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">3</attribute>
-        <attribute name="name" type="string">Get Request - Costco Hofstetter</attribute>
+        <attribute name="name" type="string">Near Costco on Hofstetter, San Jose</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z131"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z120"></relationship>
@@ -413,7 +413,7 @@
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">[{"data":{"json":"{}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">Get Service / LatLng</attribute>
+        <attribute name="name" type="string">San Jose lat/long</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z171"></relationship>
@@ -447,16 +447,6 @@
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
-    </object>
-    <object type="LMKEYVALUE" id="z138">
-        <attribute name="value" type="string"></attribute>
-        <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string"></attribute>
-        <attribute name="enabled" type="bool">1</attribute>
-        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
-        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
-        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
-        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z150"></relationship>
     </object>
     <object type="LMKEYVALUE" id="z139">
         <attribute name="value" type="string"></attribute>
@@ -510,10 +500,10 @@
         <attribute name="clientcertificate" type="string">[{"data":{"mode":0},"identifier":"com.luckymarmot.CertificateDynamicValue"}]</attribute>
         <attribute name="body" type="string">["{\\n  \\"api_key\\": \\"xyz\\",\\n  \\"jurisdiction_id\\": \\"city.gov\\",\\n  \\"service_code\\": \\"CS1-SJ-2-58\\",\\n  \\"lat\\": \\"37.361780\\",\\n  \\"long\\": \\"-121.902293\\",\\n  \\"address_string\\": \\"1234 5th street, san jose, CA\\",\\n  \\"first_name\\": \\"John\\",\\n  \\"last_name\\": \\"Smith\\",\\n  \\"phone\\": \\"111111111\\",\\n  \\"description\\": \\"A large sinkhole is destroying the street\\",\\n  \\"media_url\\": \\"http:\\/\\/farm3.static.flickr.com\\/2002\\/2212426634_5ed477a060.jpg\\",\\n  \\"attribute[WHISPAWN]\\": \\"123456\\",\\n  \\"attribute[WHISDORN]\\": \\"COISL001\\"\\n}"]</attribute>
         <attribute name="order" type="int64">1</attribute>
-        <attribute name="name" type="string">Create Request CS1-SJ-1 (Open311!)</attribute>
+        <attribute name="name" type="string">CS1-SJ-2-50 (Potholes) - lat/long \u2600 address string</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z145 z104"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z104 z145"></relationship>
     </object>
     <object type="LMREQUEST" id="z144">
         <attribute name="uuid" type="string">E40DE015-25AB-426A-A19D-0BAA8F56C2EA</attribute>
@@ -525,7 +515,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">1</attribute>
-        <attribute name="name" type="string">Get Request - near "Open311!" report</attribute>
+        <attribute name="name" type="string">Near 101 \u2600 880, San Jose, radius 200m</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z131"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z154"></relationship>
@@ -551,10 +541,10 @@
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"EM1-CU-1-10\\",\\n  \\"service_name\\": \\"Gang Activity\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"device_type\\": \\"iPhone\\",\\n  \\"device_model\\": \\"6\\",\\n  \\"lat\\": \\"37.323614\\",\\n  \\"long\\": \\"-122.039439\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"description\\": \\"Please take care of this Gang Activity!!!\\"\\n}"]</attribute>
         <attribute name="order" type="int64">6</attribute>
-        <attribute name="name" type="string">Create Request - Email CU-1 - Whole Foods</attribute>
+        <attribute name="name" type="string">EM1-CU-1-10 (Gang Activity) - lat/long in Cupertino</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z198 z112"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z112 z198"></relationship>
     </object>
     <object type="LMENVIRONMENT" id="z147">
         <attribute name="uuid" type="string">662EFB7C-C451-4097-9312-E408075051C2</attribute>
@@ -572,9 +562,9 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="body" type="string">[{"data":{"json":"{\\"service_code\\":\\"EM1-CU-1-10\\",\\"service_name\\":\\"Gang Activity\\",\\"device_id\\":\\"123456789\\",\\"device_type\\":\\"iPhone\\",\\"device_model\\":\\"6\\",\\"lat\\":\\"37.350038\\",\\"long\\":\\"-121.946097\\",\\"first_name\\":\\"James\\",\\"last_name\\":\\"Haskell\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"phone\\":\\"4445556666\\",\\"description\\":\\"Please take care of this Gang Activity!!!\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"EM1-CU-1-10\\",\\n  \\"service_name\\": \\"Gang Activity\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"device_type\\": \\"iPhone\\",\\n  \\"device_model\\": \\"6\\",\\n  \\"lat\\": \\"37.350038\\",\\n  \\"long\\": \\"-121.946097\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"description\\": \\"Please take care of this Gang Activity!!!\\"\\n}"]</attribute>
         <attribute name="order" type="int64">7</attribute>
-        <attribute name="name" type="string">FAIL: Create Request - CU-1 Email - invalid location Duplicate</attribute>
+        <attribute name="name" type="string">FAIL: Attempt to create a Cupertino service in Santa Clara.</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z203 z170"></relationship>
@@ -589,25 +579,10 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">4</attribute>
-        <attribute name="name" type="string">FAIL: Get Request - Morgan Hill</attribute>
+        <attribute name="name" type="string">FAIL: Morgan Hill</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z131"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z175"></relationship>
-    </object>
-    <object type="LMREQUEST" id="z150">
-        <attribute name="uuid" type="string">218A9B66-05DB-4FC3-B308-283B1127F8D4</attribute>
-        <attribute name="url" type="string">[{"data":{"environmentVariable":"24D0B386-3FCF-4B87-B7B8-7A06E2AF8324"},"identifier":"com.luckymarmot.EnvironmentVariableDynamicValue"},":\\/\\/",{"data":{"environmentVariable":"49C33F54-9571-42EA-875E-C99EF4CE15C9"},"identifier":"com.luckymarmot.EnvironmentVariableDynamicValue"},":",{"data":{"environmentVariable":"711AA1B8-338B-4222-AB9C-EB735870EA78"},"identifier":"com.luckymarmot.EnvironmentVariableDynamicValue"},"\\/v1\\/services.json?address_string=100%20First%20St.%2C%20San%20Jose%2C%20CA"]</attribute>
-        <attribute name="storecookies" type="bool">1</attribute>
-        <attribute name="sendcookies" type="bool">1</attribute>
-        <attribute name="redirectmethod" type="bool">0</attribute>
-        <attribute name="redirectauthorization" type="bool">0</attribute>
-        <attribute name="method" type="string">GET</attribute>
-        <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">8</attribute>
-        <attribute name="name" type="string">Get Service / address_string</attribute>
-        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z138"></relationship>
     </object>
     <object type="LMREQUEST" id="z151">
         <attribute name="uuid" type="string">4AF75C3A-CA89-4EA1-801A-A3DAE48B1C67</attribute>
@@ -619,7 +594,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">11</attribute>
-        <attribute name="name" type="string">Get Service / Address SC</attribute>
+        <attribute name="name" type="string">Santa Clara address</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z113"></relationship>
@@ -644,7 +619,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">1</attribute>
-        <attribute name="name" type="string">CS1-SJ-2-101</attribute>
+        <attribute name="name" type="string">RequestID: CS1-SJ-2-101</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z137"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z161"></relationship>
@@ -669,7 +644,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">Get Request - near SJ City Hall</attribute>
+        <attribute name="name" type="string">Near SJ City Hall, radius 200m</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z131"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z204"></relationship>
@@ -679,7 +654,7 @@
         <attribute name="order" type="int64">0</attribute>
         <attribute name="name" type="string">ServiceList</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z157 z159 z126 z199 z195 z133 z118 z108 z150 z151 z121"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z157 z126 z195 z199 z151 z121 z118 z159 z108 z133"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -694,7 +669,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">2</attribute>
-        <attribute name="name" type="string">FAIL: Get Service / Address MH</attribute>
+        <attribute name="name" type="string">FAIL: Morgan Hill lat/long</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z180"></relationship>
@@ -719,7 +694,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">5</attribute>
-        <attribute name="name" type="string">Get Service / address_string (Sunnyvale)</attribute>
+        <attribute name="name" type="string">Sunnyvale address string</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z196"></relationship>
@@ -755,7 +730,7 @@
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"CS1-SJ-1-39\\",\\n  \\"service_name\\": \\"Parking Issue\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"device_type\\": \\"iPhone\\",\\n  \\"device_model\\": \\"6\\",\\n  \\"lat\\": \\"37.323614\\",\\n  \\"long\\": \\"-122.039439\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"description\\": \\"There are lots of illegally parked cars around here.\\"\\n}"]</attribute>
         <attribute name="order" type="int64">4</attribute>
-        <attribute name="name" type="string">FAIL: Create Request - CS1-SJ-2 (location: Cupertino)</attribute>
+        <attribute name="name" type="string">FAIL: Attempt to create a San Jose Service in Cupertino</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z184 z107"></relationship>
@@ -771,7 +746,7 @@
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"CS1-SC-1-3\\",\\n  \\"service_name\\": \\"Abandoned Home\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"device_type\\": \\"iPhone\\",\\n  \\"device_model\\": \\"6\\",\\n  \\"lat\\": \\"37.350038\\",\\n  \\"long\\": \\"-121.946097\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"description\\": \\"This home is full of vagrant gangstas.\\"\\n}"]</attribute>
         <attribute name="order" type="int64">5</attribute>
-        <attribute name="name" type="string">Create Request - SC</attribute>
+        <attribute name="name" type="string"> CS1-SC-1-3 (Abandoned Home) - lat/long in Santa Clara</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z173 z193"></relationship>
@@ -860,9 +835,9 @@
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="clientcertificate" type="string">[{"data":{"mode":0},"identifier":"com.luckymarmot.CertificateDynamicValue"}]</attribute>
-        <attribute name="body" type="string">[{"data":{"json":"{\\"service_code\\":\\"CS1-SJ-1-20\\",\\"address_string\\":\\"322 E Santa Clara St, San Jose, CA 95112\\",\\"email\\":\\"jameskhaskell@gmail.com\\",\\"device_id\\":\\"123456789\\",\\"first_name\\":\\"James\\",\\"last_name\\":\\"Haskell\\",\\"phone\\":\\"4445556666\\",\\"description\\":\\"Gang signs spray painted on the building.\\",\\"isAnonymous\\":\\"true\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"CS1-SJ-1-20\\",\\n  \\"address_string\\": \\"322 E Santa Clara St, San Jose, CA 95112\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"description\\": \\"Gang signs spray painted on the building.\\",\\n  \\"isAnonymous\\": \\"true\\"\\n}"]</attribute>
         <attribute name="order" type="int64">2</attribute>
-        <attribute name="name" type="string">Create Request CS1-SJ-1 Address (near City Hall)</attribute>
+        <attribute name="name" type="string">CS1-SJ-1-20 (Graffiti Removal) - Address string</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z105 z117"></relationship>
@@ -887,7 +862,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">CS1-SJ-1-100</attribute>
+        <attribute name="name" type="string">RequestID: CS1-SJ-1-100</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z137"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z141"></relationship>
@@ -934,10 +909,10 @@
         <attribute name="clientcertificate" type="string">[{"data":{"mode":0},"identifier":"com.luckymarmot.CertificateDynamicValue"}]</attribute>
         <attribute name="body" type="string">["{\\n  \\"service_code\\": \\"CS1-SJ-1-20\\",\\n  \\"lat\\": \\"37.339244\\",\\n  \\"long\\": \\"-121.883638\\",\\n  \\"device_id\\": \\"123456789\\",\\n  \\"first_name\\": \\"James\\",\\n  \\"last_name\\": \\"Haskell\\",\\n  \\"email\\": \\"jameskhaskell@gmail.com\\",\\n  \\"phone\\": \\"4445556666\\",\\n  \\"isAnonymous\\": \\"true\\",\\n  \\"description\\": \\"Gang signs spray painted on the building.\\"\\n}"]</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">Create Request CS1-SJ-1</attribute>
+        <attribute name="name" type="string">CS1-SJ-1-20 (Graffiti Removal) - lat/long</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z128"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z160 z140"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z140 z160"></relationship>
     </object>
     <object type="LMENVIRONMENTVARIABLEVALUE" id="z179">
         <attribute name="value" type="string">http</attribute>
@@ -1038,7 +1013,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">2</attribute>
-        <attribute name="name" type="string">Get Request - Santa Clara 1</attribute>
+        <attribute name="name" type="string">Near Santa Clara Courthouse</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z131"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z186"></relationship>
@@ -1063,7 +1038,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">2</attribute>
-        <attribute name="name" type="string">CS1-SC-1-102</attribute>
+        <attribute name="name" type="string">RequestID: CS1-SC-1-102</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z137"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z169"></relationship>
@@ -1143,7 +1118,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="order" type="int64">7</attribute>
-        <attribute name="name" type="string">FAIL: Get Service / address_string (Campbell)</attribute>
+        <attribute name="name" type="string">FAIL: Campbell address string</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z156"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z165"></relationship>

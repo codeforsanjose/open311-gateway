@@ -1,4 +1,5 @@
 .idea
+.Ulysses*
 _deploy/image/gateway
 _deploy/image/adapters/citysourced/adp_cs
 _deploy/image/adapters/email/adp_email

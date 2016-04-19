@@ -62,6 +62,10 @@ func init() {
 		log.Fatal("Unable to start - data initilization failed.\n")
 	}
 
+	if err := request.Init(); err != nil {
+		log.Fatal("Unable to start - initialization of Request package failed.\n")
+	}
+
 	telemetry.Init(router.GetMonitorAddress())
 
 	go signalHandler(make(chan os.Signal, 1))

@@ -1,6 +1,7 @@
 package request
 
 import (
+	"Gateway311/engine/router"
 	"errors"
 	"net/http"
 
@@ -59,4 +60,10 @@ func errorResp(w rest.ResponseWriter, errResp ErrorsResponseJ, code int) {
 	if err != nil {
 		panic(errors.New("invalid error response"))
 	}
+}
+
+// Init initializes the router package.
+func Init() error {
+	searchRadiusMin, searchRadiusMax = router.GetSearchRadius()
+	return nil
 }
