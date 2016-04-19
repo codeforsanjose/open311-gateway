@@ -1,8 +1,9 @@
+# AWS Test Deployment
 
 ## API
 * A test deployment of the 311 Gateway is on AWS.  It is running at URL:
-http://52.34.144.221:80/.  
-* This test application is openly accessible - it does not require security or authorization.
+http://52.34.144.221:80/.
+* The test application is openly accessible - it does not require security or authorization.
 
 The API is versioned, currently “v1”.  The following are example API requests (**NOTE: “{baseURL}” is the URL above**):
 
@@ -12,7 +13,7 @@ The API is versioned, currently “v1”.  The following are example API request
 |`{baseURL}/v1/services.json?address=100 First St.&city=San Jose&state=CA`|GET|Service List for the specified address|
 |`{baseURL}/v1/requests.json?lat=37.339244&lng=-121.883638&radius=200&comments=1`|GET|Return a list of all requests within 200 meters of lat=37.339244, lng=-121.883638|
 
-NOTE: See the APITests.sh document for cURL examples of each type of API query.
+NOTE: See the “\_Docs/\_Testing/APITests.sh” document for [cURL][1] examples of each type of API query.
 
 ## Configuration
 To test a multiple adapter environment, it is configured with two CitySourced Adapter instances providing services for San Jose and Santa Clara, and one Email Adapter providing services for Cupertino and Sunnyvale.  
@@ -26,10 +27,10 @@ The following lists all adapters, their config files, and their service lists. (
 
 The configuration details  can be found in the “\_Deploy” directory of the project repo.  
 
-**NOTE:** The list of services for each Adapter is listed in TestAdapterServiceLists.md.
+**NOTE:** The list of services for each Adapter is listed in “\_Docs/\_Testing/TestAdapterServiceLists.md” file in the repo.
 
 ## Usage
-The API should follow the [Open311/GeoReport v2][1] spec very closely.  Please create an Issue on GitHub if you notice a discrepancy.  NOTE: the Gateway API _extends_ the Open311 spec (e.g. Search).
+The API is meant to follow the [Open311/GeoReport v2][2] spec very closely - please create an Issue on GitHub if you notice a discrepancy.  NOTE: the Gateway API _extends_ the Open311 spec (e.g. Search).
 
 NOTE: the Gateway currently only supports JSON, both in the API requests and in returned data.  If a request specifies “XML”, it will be ignored and JSON used.
 
@@ -54,12 +55,12 @@ Here’s how the application is expected to use the Gateway API:
 ### Notes
 #### Service List
 * This is an HTML **GET** request.
-* One of the primary objectives of the Gateway is to provide a uniform service layer for multiple geographies.  So when first accessing the Gateway, an application will typically send a request for a Service List for it’s current geolocation.  The Gateway will periodically refresh it’s Service List cache, so as to keep an up to date list of services for the various cities it services.
+* One of the primary objectives of the Gateway is to provide a uniform service presentation for multiple geographies.  So, when first accessing the Gateway, an application will typically send a request for a Service List for it’s current geolocation.  
 * The Service List includes a “group” categorization, providing a coarse grouping of the Services.
 
 #### Create
 * Create is an HTML **POST** request.
-* There are a number of fields required to create a Request (see the [Open311][2] spec) - these can either be passed as query parameters, or as JSON in the request body.
+* There are a number of fields required to create a Request (see the [Open311][3] spec) - these can either be passed as query parameters, or as JSON in the request body.
 
 #### Search
 * Search is an HTML **GET** request.
@@ -68,10 +69,8 @@ Here’s how the application is expected to use the Gateway API:
 	2. Search by a street address (NOTE: this can be using either separate Address, City, State fields, or a single address string).
 	3. Search by Device ID.
 * All searches retrieve both open and closed incidents.
-* Geographic searches (Lat/Long or Address) are currently limited to a maximum of 200 meters search radius.  
+* The radius for geographic searches (Lat/Long or Address) is currently limited to between 50 - 200 meters. This is a configuration parameter easily changed.
 
-
-
-
-[1]:	http://wiki.open311.org/GeoReport_v2/
-[2]:	http://wiki.open311.org/GeoReport_v2/
+[1]:	https://curl.haxx.se/
+[2]:	http://wiki.open311.org/GeoReport%5C_v2/
+[3]:	http://wiki.open311.org/GeoReport%5C_v2/

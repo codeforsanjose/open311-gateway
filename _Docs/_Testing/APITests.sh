@@ -43,9 +43,9 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   "lat": "37.339244",
   "long": "-121.883638",
   "device_id": "123456789",
-  "first_name": "James",
-  "last_name": "Haskell",
-  "email": "jameskhaskell@gmail.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "johnsmith@gmail.com",
   "phone": "4445556666",
   "isAnonymous": "true",
   "description": "Gang signs spray painted on the building."
@@ -76,10 +76,10 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   -d $'{
   "service_code": "CS1-SJ-1-20",
   "address_string": "322 E Santa Clara St, San Jose, CA 95112",
-  "email": "jameskhaskell@gmail.com",
+  "email": "johnsmith@gmail.com",
   "device_id": "123456789",
-  "first_name": "James",
-  "last_name": "Haskell",
+  "first_name": "John",
+  "last_name": "Smith",
   "phone": "4445556666",
   "description": "Gang signs spray painted on the building.",
   "isAnonymous": "true"
@@ -96,9 +96,9 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   "device_model": "6",
   "lat": "37.339244",
   "long": "-121.883638",
-  "first_name": "James",
-  "last_name": "Haskell",
-  "email": "jameskhaskell@gmail.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "johnsmith@gmail.com",
   "phone": "4445556666",
   "description": "There are piles of trash in my front yard!"
 }'
@@ -114,9 +114,9 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   "device_model": "6",
   "lat": "37.323614",
   "long": "-122.039439",
-  "first_name": "James",
-  "last_name": "Haskell",
-  "email": "jameskhaskell@gmail.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "johnsmith@gmail.com",
   "phone": "4445556666",
   "description": "There are lots of illegally parked cars around here."
 }'
@@ -132,9 +132,9 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   "device_model": "6",
   "lat": "37.350038",
   "long": "-121.946097",
-  "first_name": "James",
-  "last_name": "Haskell",
-  "email": "jameskhaskell@gmail.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "johnsmith@gmail.com",
   "phone": "4445556666",
   "description": "This home is full of vagrant gangstas."
 }'
@@ -150,9 +150,9 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   "device_model": "6",
   "lat": "37.323614",
   "long": "-122.039439",
-  "first_name": "James",
-  "last_name": "Haskell",
-  "email": "jameskhaskell@gmail.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "johnsmith@gmail.com",
   "phone": "4445556666",
   "description": "Please take care of this Gang Activity!!!"
 }'
@@ -168,9 +168,9 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   "device_model": "6",
   "lat": "37.350038",
   "long": "-121.946097",
-  "first_name": "James",
-  "last_name": "Haskell",
-  "email": "jameskhaskell@gmail.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "johnsmith@gmail.com",
   "phone": "4445556666",
   "description": "Please take care of this Gang Activity!!!"
 }'
@@ -185,9 +185,9 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   "address_string": "10630 S De Anza Blvd, Cupertino, CA 95014",
   "device_type": "iPhone",
   "device_model": "6",
-  "first_name": "James",
-  "last_name": "Haskell",
-  "email": "jameskhaskell@gmail.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "johnsmith@gmail.com",
   "phone": "4445556666",
   "description": "There\'s a big pile of trash at the end of my block."
 }'
@@ -204,9 +204,9 @@ curl -X "POST" "http://52.34.144.221:80/v1/requests.json" \
   "address": "235 Olson Way",
   "city": "Sunnyvale",
   "state": "CA",
-  "first_name": "James",
-  "last_name": "Haskell",
-  "email": "jameskhaskell@gmail.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "johnsmith@gmail.com",
   "phone": "4445556666",
   "description": "The sidewalk in front of my house is cracked and dangerous."
 }'
