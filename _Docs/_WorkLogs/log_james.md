@@ -49,6 +49,9 @@
 
 * Organizing documentation.
 * Moved SearchRadius from a static constant to a configuration parameter.
+* Saved to GIT.
+* Added doc for Engine Configuration.
+* 
 
 ### 2016.04.13 - Wed
 
@@ -207,7 +210,7 @@
 ### 2016.03.02 - Wed
 
 * Started cleaning up engine/request.  It will more closely follow the model used in the Adapters of using "Request Managers" to process requests.  
-\*  
+	\*
 
 ### 2016.03.01 - Tue
 
@@ -554,7 +557,7 @@
 	* LatLngForAddr() -\> LatLngForAddr()
 	* AddrForLatLng() -\> AddrForLatLng()
 	* CityForLatLng() -\> cityForLatLng()
-		 
+			  
 
 ### 2015.12.29 - Tue
 
@@ -636,7 +639,7 @@ Thoughts on using the JID for most/all requests:
 * Renamed request/report.go to request.go, as this is the primary file in the request package.
 * Test OK.
 * Saved to GIT.
-		 
+		  
 
 ### 2015.12.23 - Wed
 

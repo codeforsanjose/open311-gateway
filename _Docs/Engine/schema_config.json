@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-
     "definitions": {
         "program": {
             "description": "Defines an auxiliary programs to be launched at system startup.",
@@ -26,7 +25,12 @@
                     "description": "An array of strings, with each flag and setting as a separate string."
                 }
             },
-            "required": ["autostart", "dir", "cmd", "args"]
+            "required": [
+                "autostart",
+                "dir",
+                "cmd",
+                "args"
+            ]
         },
         "adapter": {
             "description": "Defines one Adapter the Engine will use.",
@@ -64,10 +68,19 @@
                             }
                         }
                     },
-                    "required": ["autostart", "dir", "cmd", "args"]
+                    "required": [
+                        "autostart",
+                        "dir",
+                        "cmd",
+                        "args"
+                    ]
                 }
             },
-            "required": ["type", "address", "startup"]
+            "required": [
+                "type",
+                "address",
+                "startup"
+            ]
         },
         "area": {
             "description": "This is a map of all the Areas serviced by this Gateway instance.",
@@ -85,10 +98,11 @@
                     }
                 }
             },
-            "required": ["name"]
+            "required": [
+                "name"
+            ]
         }
     },
-
     "properties": {
         "network": {
             "description": "Network settings for the Server.",
@@ -101,7 +115,12 @@
                 "protocol": {
                     "description": "HTTP or HTTPS.  Currently only HTTP is supported... setting this flag to HTTPS will have no effect.",
                     "type": "string",
-                    "enum": ["http", "HTTP", "https", "HTTPS"]
+                    "enum": [
+                        "http",
+                        "HTTP",
+                        "https",
+                        "HTTPS"
+                    ]
                 },
                 "certFile": {
                     "description": "The path and filename of the HTTPS certificate file.",
@@ -112,22 +131,27 @@
                     "type": "string"
                 }
             },
-            "required": ["address"]
+            "required": [
+                "address"
+            ]
         },
         "auxiliary": {
             "description": "The list of all auxiliary programs to be launched at system startup.",
             "type": "array",
             "items": {
-                "allOf": [{
-                    "properties": {
-                        "name": {
-                            "description": "The *unique* name of the program.  This identifies the auxiliary program in error messages and logs.",
-                            "type": "string"
+                "allOf": [
+                    {
+                        "properties": {
+                            "name": {
+                                "description": "The *unique* name of the program.  This identifies the auxiliary program in error messages and logs.",
+                                "type": "string"
+                            }
                         }
+                    },
+                    {
+                        "$ref": "#/definitions/program"
                     }
-                }, {
-                    "$ref": "#/definitions/program"
-                }]
+                ]
             }
         },
         "monitor": {
@@ -139,7 +163,27 @@
                     "type:": "string"
                 }
             },
-            "required": ["address"]
+            "required": [
+                "address"
+            ]
+        },
+        "general": {
+            "description": "General configuration parameters.",
+            "type": "object",
+            "properties": {
+                "searchRadiusMin": {
+                    "description": "Minimum search radius.  Anything lower will be set to this.",
+                    "type:": "number"
+                },
+                "searchRadiusMax": {
+                    "description": "Maximum search radius.  Anything higher will be set to this.",
+                    "type:": "number"
+                }
+            },
+            "required": [
+                "searchRadiusMin",
+                "searchRadiusMax"
+            ]
         },
         "adapters": {
             "description": "The list of all Adapters the Engine should attempt to connect to.",
