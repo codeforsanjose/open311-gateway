@@ -1,8 +1,8 @@
 package request
 
 import (
-	"Gateway311/adapters/citysourced/logs"
-	"Gateway311/adapters/citysourced/telemetry"
+	"Gateway311/adapters/seeclickfix/logs"
+	"Gateway311/adapters/seeclickfix/telemetry"
 	"time"
 )
 

@@ -135,7 +135,7 @@ type TestLatLongData struct {
 	city  string
 	state string
 	lat   float64
-	long  float64
+	lng   float64
 }
 
 func TestLatLong(t *testing.T) {
@@ -162,7 +162,7 @@ func TestLatLong(t *testing.T) {
 		}
 
 		for _, nt := range tests {
-			a, e := AddrForLatLng(nt.n.lat, nt.n.long)
+			a, e := AddrForLatLng(nt.n.lat, nt.n.lng)
 			fmt.Printf("%+v  %s\n", a, e)
 			if (nt.ok && e != nil) || (!nt.ok && e == nil) {
 				t.Errorf("Failed for: %s - error: %v", nt.n.city, e)
@@ -198,7 +198,7 @@ func TestAddress(t *testing.T) {
 				t.Errorf("Failed for: %v - error: %v", i+1, err)
 			}
 			if a.Lat != nt.r[0] || a.Long != nt.r[1] {
-				t.Errorf("Lat/long failed for: %v - error: %v", i+1, err)
+				t.Errorf("Lat/lng failed for: %v - error: %v", i+1, err)
 			}
 			fmt.Printf("%2d %-5t for: %v\n%+v\n\n", i+1, a.Valid, nt.n, a)
 		}
@@ -226,7 +226,7 @@ func TestAddress(t *testing.T) {
 				t.Errorf("Failed for: %v - error: %v", i+1, err)
 			}
 			if a.Lat != nt.r[0] || a.Long != nt.r[1] {
-				t.Errorf("Lat/long failed for: %v - error: %v", i+1, err)
+				t.Errorf("Lat/lng failed for: %v - error: %v", i+1, err)
 			}
 			fmt.Printf("%2d %-5t for: %s, %s, %s %s\n%+v\n\n", i+1, a.Valid, nt.addr, nt.city, nt.state, nt.zip, a)
 		}

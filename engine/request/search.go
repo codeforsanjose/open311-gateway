@@ -425,7 +425,7 @@ type SearchRequest struct {
 	DeviceID    string           `json:"deviceId" xml:"deviceId"`
 	Latitude    string           `json:"lat" xml:"lat"`
 	LatitudeV   float64          //
-	Longitude   string           `json:"long" xml:"long"`
+	Longitude   string           `json:"lng" xml:"lng"`
 	LongitudeV  float64          //
 	Radius      string           `json:"radius" xml:"radius"`
 	RadiusV     int              // in meters
@@ -497,7 +497,7 @@ type SearchResponseReport struct {
 	AddressID         *string          `json:"address_id" xml:"address_id"`
 	ZipCode           *string          `json:"zipcode" xml:"zipcode"`
 	Latitude          *string          `json:"lat" xml:"lat"`
-	Longitude         *string          `json:"long" xml:"long"`
+	Longitude         *string          `json:"lng" xml:"lng"`
 	MediaURL          *string          `json:"media_url" xml:"media_url"`
 }
 

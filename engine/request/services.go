@@ -148,7 +148,7 @@ func (r *serviceMgr) validate() error {
 // parseQP unloads any query parms in the request.
 func (r *serviceMgr) parseQP() error {
 	r.req.Latitude = r.rqst.URL.Query().Get("lat")
-	r.req.Longitude = r.rqst.URL.Query().Get("long")
+	r.req.Longitude = r.rqst.URL.Query().Get("lng")
 	r.req.FullAddress = r.rqst.URL.Query().Get("address_string")
 	r.req.Address = r.rqst.URL.Query().Get("addr")
 	r.req.City = r.rqst.URL.Query().Get("city")
@@ -167,6 +167,7 @@ func (r *serviceMgr) run() error {
 	if err != nil {
 		return fmt.Errorf("Cannot find services for %v - %v", r.req.City, err.Error())
 	}
+	// log.Debugf("***Services:\n%v", services.String())
 	resp, err := newServiceResp("OK", services)
 	if err != nil {
 		return err
@@ -183,7 +184,7 @@ func (r *serviceMgr) run() error {
 type ServicesReq struct {
 	Latitude    string  `json:"lat" xml:"lat"`
 	LatitudeV   float64 //
-	Longitude   string  `json:"long" xml:"long"`
+	Longitude   string  `json:"lng" xml:"lng"`
 	LongitudeV  float64 //
 	FullAddress string  `json:"address_string" xml:"address_string"`
 	Address     string  `json:"addr" xml:"addr"`
@@ -228,6 +229,17 @@ func (r *ServicesReq) convert() error {
 // ServicesResp represents a list of services.
 type ServicesResp []*ServicesRespS
 
+func newServiceResp(msg string, ns structs.NServices) (*ServicesResp, error) {
+	newSR := ServicesResp{}
+
+	for _, v := range ns {
+		newSR = append(newSR, newServicesRespS(v))
+	}
+	// log.Debugf("***ServiceResp:\n%v", newSR)
+
+	return &newSR, nil
+}
+
 // ServicesRespS represents a service in a service list.
 type ServicesRespS struct {
 	ID          string  `json:"service_code" xml:"service_code"`
@@ -237,6 +249,27 @@ type ServicesRespS struct {
 	Stype       *string `json:"type" xml:"type"`
 	Keywords    *string `json:"keywords" xml:"keywords"`
 	Group       *string `json:"group" xml:"group"`
+}
+
+func newServicesRespS(s structs.NService) (sr *ServicesRespS) {
+	name := s.Name
+	description := s.Name
+	metadata := false
+	stype := s.ResponseType
+	keywords := strings.Join(s.Keywords, ",")
+	group := s.Group
+
+	sr = &ServicesRespS{
+		ID:          s.ServiceID.MID(),
+		Name:        &name,
+		Description: &description,
+		Metadata:    metadata,
+		Stype:       &stype,
+		Keywords:    &keywords,
+		Group:       &group,
+	}
+	sr.emptyToNil()
+	return sr
 }
 
 func (r *ServicesRespS) emptyToNil() {
@@ -257,28 +290,6 @@ func (r *ServicesRespS) emptyToNil() {
 	}
 }
 
-// newServiceResp translates structs.NServices to ServicesResp and ServicesRespS.
-func newServiceResp(msg string, ns structs.NServices) (*ServicesResp, error) {
-	newSR := ServicesResp{}
-
-	for _, v := range ns {
-		keywords := strings.Join(v.Keywords, ",")
-		sr := &ServicesRespS{
-			ID:          v.ServiceID.MID(),
-			Name:        &v.Name,
-			Description: &v.Name,
-			Metadata:    false,
-			Stype:       &v.ResponseType,
-			Keywords:    &keywords,
-			Group:       &v.Group,
-		}
-		sr.emptyToNil()
-		newSR = append(newSR, sr)
-	}
-
-	return &newSR, nil
-}
-
 // =======================================================================================
 //                                      STRINGS
 // =======================================================================================
@@ -296,8 +307,46 @@ func (r ServicesResp) String() string {
 	ls := new(common.LogString)
 	ls.AddS("Services Response\n")
 	for _, v := range r {
-		ls.AddF("%-18s %-30s %-10s [%s] %s\n", v.ID, v.Name, v.Stype, v.Group, v.Keywords)
+		ls.AddS(v.String())
 	}
 
 	return ls.Box(80)
+}
+
+// Displays the contents of the ServicesRespS custom type.
+func (r ServicesRespS) String() string {
+	var name, stype, group, keywords string
+	if r.Name != nil {
+		name = *r.Name
+	}
+	if r.Stype != nil {
+		stype = *r.Stype
+	}
+	if r.Group != nil {
+		group = *r.Group
+	}
+	if r.Keywords != nil {
+		keywords = *r.Keywords
+	}
+	return fmt.Sprintf("%-18s %-30s %-10s [%s] %s\n", r.ID, name, stype, group, keywords)
+	// ls.AddF("%-18s %T-%v %T-%v %T-%v %T-%v\n", r.ID, r.Name, r.Stype, r.Group, r.Keywords)
+}
+
+// StringD displays the contents of the ServicesRespS custom type, including pointer values.
+func (r ServicesRespS) StringD() string {
+	var name, stype, group, keywords string
+	if r.Name != nil {
+		name = *r.Name
+	}
+	if r.Stype != nil {
+		stype = *r.Stype
+	}
+	if r.Group != nil {
+		group = *r.Group
+	}
+	if r.Keywords != nil {
+		keywords = *r.Keywords
+	}
+	return fmt.Sprintf("%-18s (%p)%-30s (%p)%-10s (%p)[%s] (%p)%s\n", r.ID, r.Name, name, r.Stype, stype, r.Group, group, r.Keywords, keywords)
+	// ls.AddF("%-18s %T-%v %T-%v %T-%v %T-%v\n", r.ID, r.Name, r.Stype, r.Group, r.Keywords)
 }

@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	"Gateway311/adapters/citysourced/data"
+	"Gateway311/adapters/seeclickfix/data"
 
 	log "github.com/jeffizhungry/logrus"
 )

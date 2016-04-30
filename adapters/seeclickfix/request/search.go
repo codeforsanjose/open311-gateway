@@ -3,11 +3,11 @@ package request
 import (
 	"time"
 
-	"Gateway311/adapters/citysourced/common"
-	"Gateway311/adapters/citysourced/data"
-	"Gateway311/adapters/citysourced/search"
-	"Gateway311/adapters/citysourced/structs"
-	"Gateway311/adapters/citysourced/telemetry"
+	"Gateway311/adapters/seeclickfix/common"
+	"Gateway311/adapters/seeclickfix/data"
+	"Gateway311/adapters/seeclickfix/search"
+	"Gateway311/adapters/seeclickfix/structs"
+	"Gateway311/adapters/seeclickfix/telemetry"
 )
 
 const (

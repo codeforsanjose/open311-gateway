@@ -309,7 +309,7 @@ type NService struct {
 	Name          string   `json:"name"`
 	Description   string   `json:"description"`
 	Metadata      bool     `json:"metadata"`
-	Stype         string   `json:"type"`
+	ResponseType  string   `json:"responseType"`
 	ServiceNotice string   `json:"service_notice"`
 	Keywords      []string `json:"keywords"`
 	Group         string   `json:"group"`

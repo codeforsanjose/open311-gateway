@@ -45,13 +45,18 @@
 
 ## Log
 
+### 2016.04.30 - Sat
+
+* Fixed Services query.  Was returning the same name, group, etc. for all services.  Broken when making the empty values return JSON null… 
+* Fixed all instances of “long” to “lng” in the engine, as per Ari.
+
 ### 2016.04.19 - Tue
 
 * Organizing documentation.
 * Moved SearchRadius from a static constant to a configuration parameter.
 * Saved to GIT.
 * Added doc for Engine Configuration.
-* 
+\* 
 
 ### 2016.04.13 - Wed
 
@@ -557,7 +562,6 @@
 	* LatLngForAddr() -\> LatLngForAddr()
 	* AddrForLatLng() -\> AddrForLatLng()
 	* CityForLatLng() -\> cityForLatLng()
-			  
 
 ### 2015.12.29 - Tue
 
@@ -639,7 +643,6 @@ Thoughts on using the JID for most/all requests:
 * Renamed request/report.go to request.go, as this is the primary file in the request package.
 * Test OK.
 * Saved to GIT.
-		  
 
 ### 2015.12.23 - Wed
 

@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	"Gateway311/adapters/citysourced/common"
+	"Gateway311/adapters/seeclickfix/common"
 
 	log "github.com/jeffizhungry/logrus"
 )

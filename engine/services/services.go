@@ -35,6 +35,7 @@ func Refresh() {
 	}
 
 	servicesData.switchSet()
+	// log.Debugf("After refresh:\n%v", servicesData.String())
 
 }
 

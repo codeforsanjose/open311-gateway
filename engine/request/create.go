@@ -119,9 +119,9 @@ Route Validation
 
 1. If there is a full address string:
   a. Parse it.
-  b. Get lat/long.
-  c. Overwrite input lat/long.
-2. If there is a lat/long:
+  b. Get lat/lng.
+  c. Overwrite input lat/lng.
+2. If there is a lat/lng:
   a. Validate it is in the US.
   b. Overwrite the address
 
@@ -184,7 +184,7 @@ func (r *createMgr) validate() error {
 	v.Set("SrvID", "", true)
 
 	// Location - the AreaID in the MID must match the location specified by the address
-	// or the lat/long.
+	// or the lat/lng.
 	r.valid.Set("geo", "", common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
 	log.Debug("After ValidateLatLng: " + v.String() + r.req.String())
 
@@ -212,7 +212,7 @@ func (r *createMgr) parseQP() error {
 			switch key {
 			case "lat":
 				r.req.Latitude = value
-			case "long":
+			case "lng":
 				r.req.Longitude = value
 			case "address_string":
 				r.req.FullAddress = value
@@ -362,7 +362,7 @@ type CreateRequest struct {
 	APIKey         string            `json:"api_key" xml:"api_key"`
 	JurisdictionID string            `json:"jurisdiction_id" xml:"jurisdiction_id"`
 	Latitude       string            `json:"lat" xml:"lat"`
-	Longitude      string            `json:"long" xml:"long"`
+	Longitude      string            `json:"lng" xml:"lng"`
 	FullAddress    string            `json:"address_string" xml:"address_string"`
 	Email          string            `json:"email" xml:"email"`
 	DeviceID       string            `json:"device_id" xml:"device_id"`
