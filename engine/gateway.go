@@ -28,6 +28,19 @@ func main() {
 	log.Debug("Version 0.1.1")
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
+	api.Use(&rest.CorsMiddleware{
+		RejectNonCorsRequests: false,
+		OriginValidator: func(origin string, request *rest.Request) bool {
+			// return origin == "http://my.other.host"
+			return true
+		},
+		AllowedMethods: []string{"GET", "POST"},
+		AllowedHeaders: []string{
+			"Accept", "Content-Type", "X-Custom-Header", "Origin"},
+		AccessControlAllowCredentials: true,
+		AccessControlMaxAge:           3600,
+	})
+
 	restrouter, err := rest.MakeRouter(
 		rest.Get("/v1/services.json", request.Services),
 		rest.Post("/v1/requests.json", request.Create),

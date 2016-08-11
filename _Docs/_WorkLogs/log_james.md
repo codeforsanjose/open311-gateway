@@ -45,6 +45,11 @@
 
 ## Log
 
+### 2016.06.09 - Thu
+
+* Ari found a CORS issue.  See [here](http://stackoverflow.com/questions/22972066/how-to-handle-preflight-cors-requests-on-a-go-server) for a possible solution.
+* Installed CORS, recompiled and redeployed to AWS.
+
 ### 2016.04.30 - Sat
 
 * Fixed Services query.  Was returning the same name, group, etc. for all services.  Broken when making the empty values return JSON null… 

@@ -1,0 +1,479 @@
+<CsResponse>
+  <Message>Congratulations! The mobile app configuration(s) you requested is below.</Message>
+  <MobileAppItems>
+    <MobileAppItemCount>2</MobileAppItemCount>
+    <MobileAppItemPk>1021463</MobileAppItemPk>
+    <MobileAppItem>
+      <Id>1021463</Id>
+      <DateCreated>4/8/2016 9:13:52 PM</DateCreated>
+      <DateCreatedSortable>2016-04-08T14:13:52</DateCreatedSortable>
+      <DateCreatedUniversal>2016-04-08 14:13:52Z</DateCreatedUniversal>
+      <MobileAppId>10046</MobileAppId>
+      <MobileAppItemParentId/>
+      <MobileAppItemParentValue/>
+      <LabelText>Select a Report Type:</LabelText>
+      <DataValue/>
+      <DataKey>SR_ServiceRequest</DataKey>
+      <VariableType>String</VariableType>
+      <TrueFalseLabels/>
+      <UiElementType>DropDownList</UiElementType>
+      <ValidationRegEx/>
+      <UrlDataSource/>
+      <UrlXPathForList/>
+      <UrlXPathForLabel/>
+      <UrlXPathForValue/>
+      <IsGroup>True</IsGroup>
+      <IsRequired>True</IsRequired>
+      <IsDisabled>False</IsDisabled>
+      <IsInternal>False</IsInternal>
+      <SortOrder>100</SortOrder>
+      <MobileAppItems>
+        <MobileAppItemCount>3</MobileAppItemCount>
+        <MobileAppItem>
+          <Id>1021645</Id>
+          <DateCreated>7/19/2016 7:49:38 PM</DateCreated>
+          <DateCreatedSortable>2016-07-19T12:49:38</DateCreatedSortable>
+          <DateCreatedUniversal>2016-07-19 12:49:38Z</DateCreatedUniversal>
+          <MobileAppId>1</MobileAppId>
+          <MobileAppItemParentId>1021463</MobileAppItemParentId>
+          <MobileAppItemParentValue/>
+          <LabelText>Accela Issue</LabelText>
+          <DataValue/>
+          <DataKey>SR_ServiceRequest</DataKey>
+          <VariableType>String</VariableType>
+          <TrueFalseLabels/>
+          <UiElementType>ListItem</UiElementType>
+          <ValidationRegEx/>
+          <UrlDataSource/>
+          <UrlXPathForList/>
+          <UrlXPathForLabel/>
+          <UrlXPathForValue/>
+          <IsGroup>False</IsGroup>
+          <IsRequired>False</IsRequired>
+          <IsDisabled>False</IsDisabled>
+          <IsInternal>False</IsInternal>
+          <SortOrder>100</SortOrder>
+          <MobileAppItems>
+            <MobileAppItemCount>1</MobileAppItemCount>
+            <MobileAppItem>
+              <Id>1021646</Id>
+              <DateCreated>7/19/2016 7:50:04 PM</DateCreated>
+              <DateCreatedSortable>2016-07-19T12:50:04</DateCreatedSortable>
+              <DateCreatedUniversal>2016-07-19 12:50:04Z</DateCreatedUniversal>
+              <MobileAppId>1</MobileAppId>
+              <MobileAppItemParentId>1021645</MobileAppItemParentId>
+              <MobileAppItemParentValue/>
+              <LabelText>Issue Type:</LabelText>
+              <DataValue/>
+              <DataKey>SR_AccelaIssue</DataKey>
+              <VariableType>String</VariableType>
+              <TrueFalseLabels/>
+              <UiElementType>DropDownList</UiElementType>
+              <ValidationRegEx/>
+              <UrlDataSource/>
+              <UrlXPathForList/>
+              <UrlXPathForLabel/>
+              <UrlXPathForValue/>
+              <IsGroup>True</IsGroup>
+              <IsRequired>True</IsRequired>
+              <IsDisabled>False</IsDisabled>
+              <IsInternal>False</IsInternal>
+              <SortOrder>100</SortOrder>
+              <MobileAppItems>
+                <MobileAppItemCount>3</MobileAppItemCount>
+                <MobileAppItem>
+                  <Id>1000038</Id>
+                  <DateCreated>5/29/2013 11:18:52 PM</DateCreated>
+                  <DateCreatedSortable>2013-05-29T16:18:52</DateCreatedSortable>
+                  <DateCreatedUniversal>2013-05-29 16:18:52Z</DateCreatedUniversal>
+                  <MobileAppId>1</MobileAppId>
+                  <MobileAppItemParentId>1021646</MobileAppItemParentId>
+                  <MobileAppItemParentValue/>
+                  <LabelText>Abandoned Vehicle</LabelText>
+                  <DataValue>ServiceRequest-Vehicles-Abandoned.cVehicle-NA</DataValue>
+                  <DataKey>SR_AccelaIssue</DataKey>
+                  <VariableType>String</VariableType>
+                  <TrueFalseLabels/>
+                  <UiElementType>ListItem</UiElementType>
+                  <ValidationRegEx/>
+                  <UrlDataSource/>
+                  <UrlXPathForList/>
+                  <UrlXPathForLabel/>
+                  <UrlXPathForValue/>
+                  <IsGroup>False</IsGroup>
+                  <IsRequired>False</IsRequired>
+                  <IsDisabled>False</IsDisabled>
+                  <IsInternal>False</IsInternal>
+                  <SortOrder>100</SortOrder>
+                  <MobileAppItems>
+                    <MobileAppItemCount>1</MobileAppItemCount>
+                    <MobileAppItem>
+                      <Id>1000039</Id>
+                      <DateCreated>5/29/2013 11:24:03 PM</DateCreated>
+                      <DateCreatedSortable>2013-05-29T16:24:03</DateCreatedSortable>
+                      <DateCreatedUniversal>2013-05-29 16:24:03Z</DateCreatedUniversal>
+                      <MobileAppId>1</MobileAppId>
+                      <MobileAppItemParentId>1000038</MobileAppItemParentId>
+                      <MobileAppItemParentValue/>
+                      <LabelText>License Plate Number</LabelText>
+                      <DataValue/>
+                      <DataKey>SR_AccelaIssueLicense</DataKey>
+                      <VariableType>String</VariableType>
+                      <TrueFalseLabels/>
+                      <UiElementType>TextBox</UiElementType>
+                      <ValidationRegEx/>
+                      <UrlDataSource/>
+                      <UrlXPathForList/>
+                      <UrlXPathForLabel/>
+                      <UrlXPathForValue/>
+                      <IsGroup>False</IsGroup>
+                      <IsRequired>True</IsRequired>
+                      <IsDisabled>False</IsDisabled>
+                      <IsInternal>False</IsInternal>
+                      <SortOrder>100</SortOrder>
+                    </MobileAppItem>
+                  </MobileAppItems>
+                </MobileAppItem>
+                <MobileAppItem>
+                  <Id>1021651</Id>
+                  <DateCreated>7/22/2016 8:51:53 PM</DateCreated>
+                  <DateCreatedSortable>2016-07-22T13:51:53</DateCreatedSortable>
+                  <DateCreatedUniversal>2016-07-22 13:51:53Z</DateCreatedUniversal>
+                  <MobileAppId>1</MobileAppId>
+                  <MobileAppItemParentId>1021646</MobileAppItemParentId>
+                  <MobileAppItemParentValue/>
+                  <LabelText>Stop Sign Missing</LabelText>
+                  <DataValue>Service Request-Signs-Street.cSigns-NA</DataValue>
+                  <DataKey>SR_StreetSigns</DataKey>
+                  <VariableType>String</VariableType>
+                  <TrueFalseLabels/>
+                  <UiElementType>ListItem</UiElementType>
+                  <ValidationRegEx/>
+                  <UrlDataSource/>
+                  <UrlXPathForList/>
+                  <UrlXPathForLabel/>
+                  <UrlXPathForValue/>
+                  <IsGroup>False</IsGroup>
+                  <IsRequired>False</IsRequired>
+                  <IsDisabled>False</IsDisabled>
+                  <IsInternal>False</IsInternal>
+                  <SortOrder>100</SortOrder>
+                </MobileAppItem>
+                <MobileAppItem>
+                  <Id>1000015</Id>
+                  <DateCreated>2/1/2013 8:06:18 PM</DateCreated>
+                  <DateCreatedSortable>2013-02-01T12:06:18</DateCreatedSortable>
+                  <DateCreatedUniversal>2013-02-01 12:06:18Z</DateCreatedUniversal>
+                  <MobileAppId>1</MobileAppId>
+                  <MobileAppItemParentId>1021646</MobileAppItemParentId>
+                  <MobileAppItemParentValue/>
+                  <LabelText>Trash</LabelText>
+                  <DataValue>ServiceRequest-Garbage-Trash.cRemoval-NA</DataValue>
+                  <DataKey>SR_AccelaIssue</DataKey>
+                  <VariableType>String</VariableType>
+                  <TrueFalseLabels/>
+                  <UiElementType>ListItem</UiElementType>
+                  <ValidationRegEx/>
+                  <UrlDataSource/>
+                  <UrlXPathForList/>
+                  <UrlXPathForLabel/>
+                  <UrlXPathForValue/>
+                  <IsGroup>False</IsGroup>
+                  <IsRequired>False</IsRequired>
+                  <IsDisabled>False</IsDisabled>
+                  <IsInternal>False</IsInternal>
+                  <SortOrder>100</SortOrder>
+                </MobileAppItem>
+              </MobileAppItems>
+            </MobileAppItem>
+          </MobileAppItems>
+        </MobileAppItem>
+        <MobileAppItem>
+          <Id>1000016</Id>
+          <DateCreated>2/1/2013 8:06:18 PM</DateCreated>
+          <DateCreatedSortable>2013-02-01T12:06:18</DateCreatedSortable>
+          <DateCreatedUniversal>2013-02-01 12:06:18Z</DateCreatedUniversal>
+          <MobileAppId>1</MobileAppId>
+          <MobileAppItemParentId>1021463</MobileAppItemParentId>
+          <MobileAppItemParentValue/>
+          <LabelText>Graffiti</LabelText>
+          <DataValue/>
+          <DataKey>SR_ServiceRequest</DataKey>
+          <VariableType>String</VariableType>
+          <TrueFalseLabels/>
+          <UiElementType>ListItem</UiElementType>
+          <ValidationRegEx/>
+          <UrlDataSource/>
+          <UrlXPathForList/>
+          <UrlXPathForLabel/>
+          <UrlXPathForValue/>
+          <IsGroup>False</IsGroup>
+          <IsRequired>False</IsRequired>
+          <IsDisabled>False</IsDisabled>
+          <IsInternal>False</IsInternal>
+          <SortOrder>100</SortOrder>
+          <MobileAppItems>
+            <MobileAppItemCount>3</MobileAppItemCount>
+            <MobileAppItem>
+              <Id>1021644</Id>
+              <DateCreated>7/19/2016 7:34:01 PM</DateCreated>
+              <DateCreatedSortable>2016-07-19T12:34:01</DateCreatedSortable>
+              <DateCreatedUniversal>2016-07-19 12:34:01Z</DateCreatedUniversal>
+              <MobileAppId>1</MobileAppId>
+              <MobileAppItemParentId>1000016</MobileAppItemParentId>
+              <MobileAppItemParentValue/>
+              <LabelText>Gang Related?</LabelText>
+              <DataValue/>
+              <DataKey>SR_GraffitiGangRelated</DataKey>
+              <VariableType>TrueFalse</VariableType>
+              <TrueFalseLabels>Yeah|Nah</TrueFalseLabels>
+              <UiElementType>Checkbox</UiElementType>
+              <ValidationRegEx/>
+              <UrlDataSource/>
+              <UrlXPathForList/>
+              <UrlXPathForLabel/>
+              <UrlXPathForValue/>
+              <IsGroup>False</IsGroup>
+              <IsRequired>False</IsRequired>
+              <IsDisabled>False</IsDisabled>
+              <IsInternal>False</IsInternal>
+              <SortOrder>100</SortOrder>
+            </MobileAppItem>
+            <MobileAppItem>
+              <Id>1000018</Id>
+              <DateCreated>2/1/2013 8:07:16 PM</DateCreated>
+              <DateCreatedSortable>2013-02-01T12:07:16</DateCreatedSortable>
+              <DateCreatedUniversal>2013-02-01 12:07:16Z</DateCreatedUniversal>
+              <MobileAppId>1</MobileAppId>
+              <MobileAppItemParentId>1000016</MobileAppItemParentId>
+              <MobileAppItemParentValue/>
+              <LabelText>Is Offensive?</LabelText>
+              <DataValue/>
+              <DataKey>SR_GrafittiOffensive</DataKey>
+              <VariableType>TrueFalse</VariableType>
+              <TrueFalseLabels>Yes|No</TrueFalseLabels>
+              <UiElementType>Checkbox</UiElementType>
+              <ValidationRegEx/>
+              <UrlDataSource/>
+              <UrlXPathForList/>
+              <UrlXPathForLabel/>
+              <UrlXPathForValue/>
+              <IsGroup>False</IsGroup>
+              <IsRequired>False</IsRequired>
+              <IsDisabled>True</IsDisabled>
+              <IsInternal>False</IsInternal>
+              <SortOrder>100</SortOrder>
+            </MobileAppItem>
+            <MobileAppItem>
+              <Id>1000017</Id>
+              <DateCreated>2/1/2013 8:07:16 PM</DateCreated>
+              <DateCreatedSortable>2013-02-01T12:07:16</DateCreatedSortable>
+              <DateCreatedUniversal>2013-02-01 12:07:16Z</DateCreatedUniversal>
+              <MobileAppId>1</MobileAppId>
+              <MobileAppItemParentId>1000016</MobileAppItemParentId>
+              <MobileAppItemParentValue/>
+              <LabelText>On Private Property?</LabelText>
+              <DataValue/>
+              <DataKey>SR_GrafittiPrivateProperty</DataKey>
+              <VariableType>TrueFalse</VariableType>
+              <TrueFalseLabels>Yes|No</TrueFalseLabels>
+              <UiElementType>Checkbox</UiElementType>
+              <ValidationRegEx/>
+              <UrlDataSource/>
+              <UrlXPathForList/>
+              <UrlXPathForLabel/>
+              <UrlXPathForValue/>
+              <IsGroup>False</IsGroup>
+              <IsRequired>False</IsRequired>
+              <IsDisabled>False</IsDisabled>
+              <IsInternal>True</IsInternal>
+              <SortOrder>100</SortOrder>
+            </MobileAppItem>
+          </MobileAppItems>
+        </MobileAppItem>
+        <MobileAppItem>
+          <Id>1021228</Id>
+          <DateCreated>11/5/2014 5:43:51 AM</DateCreated>
+          <DateCreatedSortable>2014-11-04T21:43:51</DateCreatedSortable>
+          <DateCreatedUniversal>2014-11-04 21:43:51Z</DateCreatedUniversal>
+          <MobileAppId>1</MobileAppId>
+          <MobileAppItemParentId>1021463</MobileAppItemParentId>
+          <MobileAppItemParentValue/>
+          <LabelText>Cityworks Issue</LabelText>
+          <DataValue/>
+          <DataKey>SR_ServiceRequest</DataKey>
+          <VariableType>String</VariableType>
+          <TrueFalseLabels/>
+          <UiElementType>ListItem</UiElementType>
+          <ValidationRegEx/>
+          <UrlDataSource/>
+          <UrlXPathForList/>
+          <UrlXPathForLabel/>
+          <UrlXPathForValue/>
+          <IsGroup>False</IsGroup>
+          <IsRequired>False</IsRequired>
+          <IsDisabled>False</IsDisabled>
+          <IsInternal>False</IsInternal>
+          <SortOrder>110</SortOrder>
+          <MobileAppItems>
+            <MobileAppItemCount>1</MobileAppItemCount>
+            <MobileAppItem>
+              <Id>1021229</Id>
+              <DateCreated>11/5/2014 5:46:29 AM</DateCreated>
+              <DateCreatedSortable>2014-11-04T21:46:29</DateCreatedSortable>
+              <DateCreatedUniversal>2014-11-04 21:46:29Z</DateCreatedUniversal>
+              <MobileAppId>1</MobileAppId>
+              <MobileAppItemParentId>1021228</MobileAppItemParentId>
+              <MobileAppItemParentValue/>
+              <LabelText>Problem Type:</LabelText>
+              <DataValue/>
+              <DataKey>SR_CityworksIssue</DataKey>
+              <VariableType>String</VariableType>
+              <TrueFalseLabels/>
+              <UiElementType>DropDownList</UiElementType>
+              <ValidationRegEx/>
+              <UrlDataSource/>
+              <UrlXPathForList/>
+              <UrlXPathForLabel/>
+              <UrlXPathForValue/>
+              <IsGroup>True</IsGroup>
+              <IsRequired>True</IsRequired>
+              <IsDisabled>False</IsDisabled>
+              <IsInternal>False</IsInternal>
+              <SortOrder>100</SortOrder>
+              <MobileAppItems>
+                <MobileAppItemCount>4</MobileAppItemCount>
+                <MobileAppItem>
+                  <Id>1021230</Id>
+                  <DateCreated>11/5/2014 5:48:07 AM</DateCreated>
+                  <DateCreatedSortable>2014-11-04T21:48:07</DateCreatedSortable>
+                  <DateCreatedUniversal>2014-11-04 21:48:07Z</DateCreatedUniversal>
+                  <MobileAppId>1</MobileAppId>
+                  <MobileAppItemParentId>1021229</MobileAppItemParentId>
+                  <MobileAppItemParentValue/>
+                  <LabelText>Leaking pipe</LabelText>
+                  <DataValue>13</DataValue>
+                  <DataKey>SR_CityworksIssue</DataKey>
+                  <VariableType>String</VariableType>
+                  <TrueFalseLabels/>
+                  <UiElementType>ListItem</UiElementType>
+                  <ValidationRegEx/>
+                  <UrlDataSource/>
+                  <UrlXPathForList/>
+                  <UrlXPathForLabel/>
+                  <UrlXPathForValue/>
+                  <IsGroup>False</IsGroup>
+                  <IsRequired>False</IsRequired>
+                  <IsDisabled>False</IsDisabled>
+                  <IsInternal>False</IsInternal>
+                  <SortOrder>100</SortOrder>
+                </MobileAppItem>
+                <MobileAppItem>
+                  <Id>1021232</Id>
+                  <DateCreated>11/5/2014 5:49:13 AM</DateCreated>
+                  <DateCreatedSortable>2014-11-04T21:49:13</DateCreatedSortable>
+                  <DateCreatedUniversal>2014-11-04 21:49:13Z</DateCreatedUniversal>
+                  <MobileAppId>1</MobileAppId>
+                  <MobileAppItemParentId>1021229</MobileAppItemParentId>
+                  <MobileAppItemParentValue/>
+                  <LabelText>Low Water Pressue</LabelText>
+                  <DataValue>15</DataValue>
+                  <DataKey>SR_CityworksIssue</DataKey>
+                  <VariableType>String</VariableType>
+                  <TrueFalseLabels/>
+                  <UiElementType>ListItem</UiElementType>
+                  <ValidationRegEx/>
+                  <UrlDataSource/>
+                  <UrlXPathForList/>
+                  <UrlXPathForLabel/>
+                  <UrlXPathForValue/>
+                  <IsGroup>False</IsGroup>
+                  <IsRequired>False</IsRequired>
+                  <IsDisabled>False</IsDisabled>
+                  <IsInternal>False</IsInternal>
+                  <SortOrder>100</SortOrder>
+                </MobileAppItem>
+                <MobileAppItem>
+                  <Id>1021233</Id>
+                  <DateCreated>11/5/2014 5:49:41 AM</DateCreated>
+                  <DateCreatedSortable>2014-11-04T21:49:41</DateCreatedSortable>
+                  <DateCreatedUniversal>2014-11-04 21:49:41Z</DateCreatedUniversal>
+                  <MobileAppId>1</MobileAppId>
+                  <MobileAppItemParentId>1021229</MobileAppItemParentId>
+                  <MobileAppItemParentValue/>
+                  <LabelText>Missing Grate</LabelText>
+                  <DataValue>16</DataValue>
+                  <DataKey>SR_CityworksIssue</DataKey>
+                  <VariableType>String</VariableType>
+                  <TrueFalseLabels/>
+                  <UiElementType>ListItem</UiElementType>
+                  <ValidationRegEx/>
+                  <UrlDataSource/>
+                  <UrlXPathForList/>
+                  <UrlXPathForLabel/>
+                  <UrlXPathForValue/>
+                  <IsGroup>False</IsGroup>
+                  <IsRequired>False</IsRequired>
+                  <IsDisabled>False</IsDisabled>
+                  <IsInternal>False</IsInternal>
+                  <SortOrder>100</SortOrder>
+                </MobileAppItem>
+                <MobileAppItem>
+                  <Id>1021231</Id>
+                  <DateCreated>11/5/2014 5:48:51 AM</DateCreated>
+                  <DateCreatedSortable>2014-11-04T21:48:51</DateCreatedSortable>
+                  <DateCreatedUniversal>2014-11-04 21:48:51Z</DateCreatedUniversal>
+                  <MobileAppId>1</MobileAppId>
+                  <MobileAppItemParentId>1021229</MobileAppItemParentId>
+                  <MobileAppItemParentValue/>
+                  <LabelText>No Water</LabelText>
+                  <DataValue>14</DataValue>
+                  <DataKey>SR_CityworksIssue</DataKey>
+                  <VariableType>String</VariableType>
+                  <TrueFalseLabels/>
+                  <UiElementType>ListItem</UiElementType>
+                  <ValidationRegEx/>
+                  <UrlDataSource/>
+                  <UrlXPathForList/>
+                  <UrlXPathForLabel/>
+                  <UrlXPathForValue/>
+                  <IsGroup>False</IsGroup>
+                  <IsRequired>False</IsRequired>
+                  <IsDisabled>False</IsDisabled>
+                  <IsInternal>False</IsInternal>
+                  <SortOrder>100</SortOrder>
+                </MobileAppItem>
+              </MobileAppItems>
+            </MobileAppItem>
+          </MobileAppItems>
+        </MobileAppItem>
+      </MobileAppItems>
+    </MobileAppItem>
+    <MobileAppItem>
+      <Id>1021464</Id>
+      <DateCreated>4/8/2016 9:13:52 PM</DateCreated>
+      <DateCreatedSortable>2016-04-08T14:13:52</DateCreatedSortable>
+      <DateCreatedUniversal>2016-04-08 14:13:52Z</DateCreatedUniversal>
+      <MobileAppId>10046</MobileAppId>
+      <MobileAppItemParentId/>
+      <MobileAppItemParentValue/>
+      <LabelText>Description:</LabelText>
+      <DataValue/>
+      <DataKey>SR_Description</DataKey>
+      <VariableType>String</VariableType>
+      <TrueFalseLabels/>
+      <UiElementType>TextArea</UiElementType>
+      <ValidationRegEx/>
+      <UrlDataSource/>
+      <UrlXPathForList/>
+      <UrlXPathForLabel/>
+      <UrlXPathForValue/>
+      <IsGroup>False</IsGroup>
+      <IsRequired>True</IsRequired>
+      <IsDisabled>False</IsDisabled>
+      <IsInternal>False</IsInternal>
+      <SortOrder>200</SortOrder>
+    </MobileAppItem>
+  </MobileAppItems>
+  <ResponseTime>0.2656073 Seconds</ResponseTime>
+</CsResponse>

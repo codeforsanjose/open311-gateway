@@ -1,5 +1,5 @@
 
-## Test Deployment Service Lists by Adapter
+## AWS Deployment - Service Lists by Adapter
 
 ### Adapter CS1-SJ-1 - San Jose
 |ID|Name|Group|

@@ -69,6 +69,7 @@ func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 
 	if err := mgr.rqst.DecodeJsonPayload(mgr.req); err != nil {
 		if err.Error() != greEmpty {
+			log.Error("Decode failed")
 			return fail(err)
 		}
 	}
