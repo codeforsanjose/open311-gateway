@@ -11,9 +11,9 @@ import (
 	"os"
 	"os/signal"
 
-	"Gateway311/adapters/email/data"
-	"Gateway311/adapters/email/request"
-	"Gateway311/adapters/email/telemetry"
+	"github.com/open311-gateway/adapters/email/data"
+	"github.com/open311-gateway/adapters/email/request"
+	"github.com/open311-gateway/adapters/email/telemetry"
 
 	log "github.com/jeffizhungry/logrus"
 	// "github.com/davecgh/go-spew/spew"

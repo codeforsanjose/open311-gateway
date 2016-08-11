@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"Gateway311/adapters/email/common"
-	"Gateway311/adapters/email/data"
-	"Gateway311/adapters/email/mail"
-	"Gateway311/adapters/email/structs"
+	"github.com/open311-gateway/adapters/email/common"
+	"github.com/open311-gateway/adapters/email/data"
+	"github.com/open311-gateway/adapters/email/mail"
+	"github.com/open311-gateway/adapters/email/structs"
 )
 
 // ================================================================================================

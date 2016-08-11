@@ -3,7 +3,7 @@ package request
 import (
 	"time"
 
-	"Gateway311/adapters/email/telemetry"
+	"github.com/open311-gateway/adapters/email/telemetry"
 
 	log "github.com/jeffizhungry/logrus"
 )

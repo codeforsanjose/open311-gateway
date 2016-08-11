@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"Gateway311/engine/common"
-	"Gateway311/engine/router"
-	"Gateway311/engine/structs"
-	"Gateway311/engine/telemetry"
+	"github.com/open311-gateway/engine/common"
+	"github.com/open311-gateway/engine/router"
+	"github.com/open311-gateway/engine/structs"
+	"github.com/open311-gateway/engine/telemetry"
 
 	log "github.com/jeffizhungry/logrus"
 )

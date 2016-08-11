@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"Gateway311/engine/geo"
+	"github.com/open311-gateway/engine/geo"
 )
 
 var (

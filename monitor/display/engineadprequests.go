@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"Gateway311/monitor/telemetry"
+	"github.com/open311-gateway/monitor/telemetry"
 )
 
 type engAdpRequestType struct {

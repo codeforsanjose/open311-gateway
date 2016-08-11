@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	"Gateway311/adapters/citysourced/common"
+	"github.com/open311-gateway/adapters/citysourced/common"
 
 	log "github.com/jeffizhungry/logrus"
 )

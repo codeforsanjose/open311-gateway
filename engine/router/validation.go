@@ -1,6 +1,6 @@
 package router
 
-import "Gateway311/engine/structs"
+import "github.com/open311-gateway/engine/structs"
 
 // "github.com/davecgh/go-spew/spew"
 

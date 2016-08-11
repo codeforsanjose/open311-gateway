@@ -1,8 +1,8 @@
 package request
 
 import (
-	"Gateway311/adapters/citysourced/logs"
-	"Gateway311/adapters/citysourced/telemetry"
+	"github.com/open311-gateway/adapters/citysourced/logs"
+	"github.com/open311-gateway/adapters/citysourced/telemetry"
 	"time"
 )
 

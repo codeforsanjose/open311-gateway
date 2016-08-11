@@ -3,11 +3,11 @@ package request
 import (
 	"time"
 
-	"Gateway311/adapters/citysourced/common"
-	"Gateway311/adapters/citysourced/data"
-	"Gateway311/adapters/citysourced/search"
-	"Gateway311/adapters/citysourced/structs"
-	"Gateway311/adapters/citysourced/telemetry"
+	"github.com/open311-gateway/adapters/citysourced/common"
+	"github.com/open311-gateway/adapters/citysourced/data"
+	"github.com/open311-gateway/adapters/citysourced/search"
+	"github.com/open311-gateway/adapters/citysourced/structs"
+	"github.com/open311-gateway/adapters/citysourced/telemetry"
 )
 
 const (

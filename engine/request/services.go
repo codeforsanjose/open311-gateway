@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"Gateway311/engine/common"
-	"Gateway311/engine/geo"
-	"Gateway311/engine/router"
-	"Gateway311/engine/services"
-	"Gateway311/engine/structs"
-	"Gateway311/engine/telemetry"
+	"github.com/open311-gateway/engine/common"
+	"github.com/open311-gateway/engine/geo"
+	"github.com/open311-gateway/engine/router"
+	"github.com/open311-gateway/engine/services"
+	"github.com/open311-gateway/engine/structs"
+	"github.com/open311-gateway/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	log "github.com/jeffizhungry/logrus"

@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	"Gateway311/adapters/citysourced/data"
+	"github.com/open311-gateway/adapters/citysourced/data"
 
 	log "github.com/jeffizhungry/logrus"
 )

@@ -6,9 +6,9 @@ import (
 	"os"
 	"os/signal"
 
-	"Gateway311/monitor/display"
-	"Gateway311/monitor/logs"
-	"Gateway311/monitor/telemetry"
+	"github.com/open311-gateway/monitor/display"
+	"github.com/open311-gateway/monitor/logs"
+	"github.com/open311-gateway/monitor/telemetry"
 )
 
 var (

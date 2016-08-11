@@ -7,11 +7,11 @@ import (
 	"text/template"
 	"time"
 
-	"Gateway311/adapters/email/common"
-	"Gateway311/adapters/email/create"
-	"Gateway311/adapters/email/data"
-	"Gateway311/adapters/email/structs"
-	"Gateway311/adapters/email/telemetry"
+	"github.com/open311-gateway/adapters/email/common"
+	"github.com/open311-gateway/adapters/email/create"
+	"github.com/open311-gateway/adapters/email/data"
+	"github.com/open311-gateway/adapters/email/structs"
+	"github.com/open311-gateway/adapters/email/telemetry"
 
 	log "github.com/jeffizhungry/logrus"
 )

@@ -1,6 +1,6 @@
 package request
 
-import "Gateway311/engine/common"
+import "github.com/open311-gateway/engine/common"
 
 // ErrorsResponseJ represents an error response.  The error response contains one or more errors.
 type ErrorsResponseJ []*ErrorResponseJ

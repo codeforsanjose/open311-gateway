@@ -45,6 +45,12 @@
 
 ## Log
 
+### 2016.08.11 - Thu
+
+* Moved all code be under "github.com", rather than a local path.
+* Cleaned up all imports to work properly under github.com.
+* Compiles OK with "make maccompile".
+
 ### 2016.06.09 - Thu
 
 * Ari found a CORS issue.  See [here](http://stackoverflow.com/questions/22972066/how-to-handle-preflight-cors-requests-on-a-go-server) for a possible solution.

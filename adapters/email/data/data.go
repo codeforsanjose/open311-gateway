@@ -9,8 +9,8 @@ import (
 	"strings"
 	"text/template"
 
-	"Gateway311/adapters/email/common"
-	"Gateway311/adapters/email/structs"
+	"github.com/open311-gateway/adapters/email/common"
+	"github.com/open311-gateway/adapters/email/structs"
 
 	"github.com/davecgh/go-spew/spew"
 	log "github.com/jeffizhungry/logrus"

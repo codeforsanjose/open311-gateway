@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"Gateway311/engine/router"
+	"github.com/open311-gateway/engine/router"
 
 	"github.com/davecgh/go-spew/spew"
 	log "github.com/jeffizhungry/logrus"

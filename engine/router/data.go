@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"Gateway311/engine/common"
-	"Gateway311/engine/structs"
+	"github.com/open311-gateway/engine/common"
+	"github.com/open311-gateway/engine/structs"
 
 	log "github.com/jeffizhungry/logrus"
 )

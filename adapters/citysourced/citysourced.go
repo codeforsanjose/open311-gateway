@@ -11,9 +11,9 @@ import (
 	"os"
 	"os/signal"
 
-	"Gateway311/adapters/citysourced/data"
-	"Gateway311/adapters/citysourced/request"
-	"Gateway311/adapters/citysourced/telemetry"
+	"github.com/open311-gateway/adapters/citysourced/data"
+	"github.com/open311-gateway/adapters/citysourced/request"
+	"github.com/open311-gateway/adapters/citysourced/telemetry"
 
 	log "github.com/jeffizhungry/logrus"
 	// "github.com/davecgh/go-spew/spew"
