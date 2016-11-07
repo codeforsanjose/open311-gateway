@@ -1,4 +1,4 @@
-package common
+package sid
 
 import (
 	"sync/atomic"

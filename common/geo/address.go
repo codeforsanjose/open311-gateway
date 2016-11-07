@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/codeforsanjose/open311-gateway/_background/go/common"
-	"github.com/codeforsanjose/open311-gateway/_background/go/common/mystrings"
+	"github.com/codeforsanjose/open311-gateway/_background/go/common/mystr"
 )
 
 var (
-	rxCityStateZip, rxCityStateLooseZip, rxGoogleFound, rxZip *mystrings.MyRegexp
+	rxCityStateZip, rxCityStateLooseZip, rxGoogleFound, rxZip *mystr.MyRegexp
 	validZipLen                                               map[int]bool
 )
 
@@ -128,10 +128,10 @@ func ParseAddress(fullAddr string, looseZip bool) (a Address, err error) {
 }
 
 func init() {
-	rxCityStateZip = mystrings.NewRegex(`(?i), *(?P<city>[A-Za-z .]{2,}), *(?P<state>[A-Z][A-Z])[, ]*(?P<zip>\d{5}(?:[-\s]\d{4})?)$`, "", "")
-	rxCityStateLooseZip = mystrings.NewRegex(`(?i), *(?P<city>[A-Za-z .]{2,}), *(?P<state>[A-Z][A-Z])[, ]*(?P<zip>\d{5}(?:[-\s]\d{4})?)?$`, "", "")
-	rxGoogleFound = mystrings.NewRegex(`(?i)(?P<addr>.*), (?P<city>[A-Za-z .]{2,}), (?P<state>[A-Z][A-Z]) (?P<zip>\d{5}), USA$`, "", "")
-	rxZip = mystrings.NewRegex(`^(?P<zip>\d{5}(?:[-\s]*\d{4})?)$`, "", "- ")
+	rxCityStateZip = mystr.NewRegex(`(?i), *(?P<city>[A-Za-z .]{2,}), *(?P<state>[A-Z][A-Z])[, ]*(?P<zip>\d{5}(?:[-\s]\d{4})?)$`, "", "")
+	rxCityStateLooseZip = mystr.NewRegex(`(?i), *(?P<city>[A-Za-z .]{2,}), *(?P<state>[A-Z][A-Z])[, ]*(?P<zip>\d{5}(?:[-\s]\d{4})?)?$`, "", "")
+	rxGoogleFound = mystr.NewRegex(`(?i)(?P<addr>.*), (?P<city>[A-Za-z .]{2,}), (?P<state>[A-Z][A-Z]) (?P<zip>\d{5}), USA$`, "", "")
+	rxZip = mystr.NewRegex(`^(?P<zip>\d{5}(?:[-\s]*\d{4})?)$`, "", "- ")
 
 	validZipLen = map[int]bool{
 		0:  true,

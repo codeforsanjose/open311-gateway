@@ -1,4 +1,4 @@
-package geo_test
+package mystr_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func TestCommon(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Common/Geo Suite")
+	RunSpecs(t, "Common / MyStr")
 }

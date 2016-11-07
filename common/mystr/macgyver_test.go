@@ -1,9 +1,9 @@
-package mystrings_test
+package mystr_test
 
 import (
 	"fmt"
 
-	. "github.com/codeforsanjose/open311-gateway/_background/go/common/mystrings"
+	. "github.com/codeforsanjose/open311-gateway/_background/go/common/mystr"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"

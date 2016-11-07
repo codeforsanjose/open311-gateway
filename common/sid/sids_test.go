@@ -1,4 +1,4 @@
-package mystrings_test
+package sid_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func TestCommon(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Common Suite")
+	RunSpecs(t, "Common / SID")
 }

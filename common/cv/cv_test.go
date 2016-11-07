@@ -1,4 +1,4 @@
-package jx_test
+package cv_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func TestCommon(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Common / JX")
+	RunSpecs(t, "Common / Conversion")
 }

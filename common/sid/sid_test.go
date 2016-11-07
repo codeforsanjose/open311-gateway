@@ -1,4 +1,4 @@
-package common_test
+package sid_test
 
 import (
 	"math/rand"
@@ -9,7 +9,7 @@ import (
 	// . "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 
-	. "github.com/codeforsanjose/open311-gateway/_background/go/common"
+	. "github.com/codeforsanjose/open311-gateway/_background/go/common/sid"
 )
 
 type sidtest struct {
@@ -17,7 +17,7 @@ type sidtest struct {
 	sync.Mutex
 }
 
-var _ = Describe("Common Suite", func() {
+var _ = Describe("SID", func() {
 	Describe("RequestID", func() {
 		It("run several goroutines", func() {
 			stest := sidtest{
