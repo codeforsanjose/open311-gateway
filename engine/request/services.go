@@ -7,12 +7,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/open311-gateway/engine/common"
-	"github.com/open311-gateway/engine/geo"
-	"github.com/open311-gateway/engine/router"
-	"github.com/open311-gateway/engine/services"
-	"github.com/open311-gateway/engine/structs"
-	"github.com/open311-gateway/engine/telemetry"
+	"github.com/codeforsanjose/open311-gateway/common"
+	"github.com/codeforsanjose/open311-gateway/common/cv"
+	"github.com/codeforsanjose/open311-gateway/common/geo"
+	"github.com/codeforsanjose/open311-gateway/common/sid"
+	"github.com/codeforsanjose/open311-gateway/engine/router"
+	"github.com/codeforsanjose/open311-gateway/engine/services"
+	"github.com/codeforsanjose/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	log "github.com/jeffizhungry/logrus"
@@ -32,7 +34,7 @@ type serviceMgr struct {
 	rqst    *rest.Request
 	req     *ServicesReq
 
-	valid common.Validation
+	valid cv.Validation
 
 	// routes structs.NRoutes
 
@@ -41,12 +43,12 @@ type serviceMgr struct {
 
 func processServices(rqst *rest.Request) (fresp interface{}, ferr error) {
 	mgr := serviceMgr{
-		id:      common.RequestID(),
+		id:      sid.RequestID(),
 		start:   time.Now(),
 		reqType: structs.NRTServicesArea,
 		rqst:    rqst,
 		req:     &ServicesReq{},
-		valid:   common.NewValidation(),
+		valid:   cv.NewValidation(),
 	}
 	telemetry.SendTelemetry(mgr.id, "Services", "open")
 	defer func() {
@@ -112,12 +114,12 @@ func (r *serviceMgr) validate() error {
 
 	// Location
 	switch {
-	case common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV):
-		r.req.City, _ = geo.CityForLatLng(r.req.LatitudeV, r.req.LongitudeV)
+	case geo.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV):
+		r.req.City, _ = geo.GooCityForLatLng(r.req.LatitudeV, r.req.LongitudeV)
 		fallthrough
 
 	case len(r.req.FullAddress) > 0:
-		addr, err := common.ParseAddress(r.req.FullAddress, true)
+		addr, err := geo.ParseAddress(r.req.FullAddress, true)
 		log.Debugf("Parsed full address - addr: %+v", addr)
 		if err == nil {
 			r.req.Address = addr.Addr
@@ -203,7 +205,7 @@ func (r *ServicesReq) validate() error {
 		r.LongitudeV = x
 	}
 	if len(r.FullAddress) > 0 {
-		addr, err := common.ParseAddress(r.FullAddress, true)
+		addr, err := geo.ParseAddress(r.FullAddress, true)
 		if err == nil {
 			r.Address = addr.Addr
 			r.City = addr.City
@@ -215,7 +217,7 @@ func (r *ServicesReq) validate() error {
 }
 
 func (r *ServicesReq) convert() error {
-	c := common.NewConversion()
+	c := cv.NewConversion()
 	r.LatitudeV = c.Float("Latitude", r.Latitude)
 	r.LongitudeV = c.Float("Longitude", r.Longitude)
 	log.Debug("After convert: " + c.String() + "\n" + r.String())
@@ -296,7 +298,7 @@ func (r *ServicesRespS) emptyToNil() {
 
 // Displays the contents of the Spec_Type custom type.
 func (r ServicesReq) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("ServicesReq\n")
 	ls.AddF("Location - lat: %v  lon: %v  city: %v\n", r.LatitudeV, r.LongitudeV, r.City)
 	return ls.Box(80)
@@ -304,7 +306,7 @@ func (r ServicesReq) String() string {
 
 // Displays the contents of the Spec_Type custom type.
 func (r ServicesResp) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("Services Response\n")
 	for _, v := range r {
 		ls.AddS(v.String())

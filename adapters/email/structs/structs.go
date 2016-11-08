@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/open311-gateway/engine/common"
+	"github.com/codeforsanjose/open311-gateway/engine/common"
 )
 
 // =======================================================================================

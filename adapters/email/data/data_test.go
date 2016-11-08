@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/open311-gateway/adapters/email/logs"
-	"github.com/open311-gateway/adapters/email/structs"
+	"github.com/codeforsanjose/open311-gateway/adapters/email/logs"
+	"github.com/codeforsanjose/open311-gateway/adapters/email/structs"
 
 	"github.com/davecgh/go-spew/spew"
 )

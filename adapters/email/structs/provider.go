@@ -1,6 +1,6 @@
 package structs
 
-import "github.com/open311-gateway/adapters/email/common"
+import "github.com/codeforsanjose/open311-gateway/adapters/email/common"
 
 //go:generate stringer -type=PayloadType
 

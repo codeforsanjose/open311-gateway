@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/open311-gateway/engine/request"
-	"github.com/open311-gateway/engine/router"
-	"github.com/open311-gateway/engine/services"
-	"github.com/open311-gateway/engine/telemetry"
+	"github.com/codeforsanjose/open311-gateway/engine/request"
+	"github.com/codeforsanjose/open311-gateway/engine/router"
+	"github.com/codeforsanjose/open311-gateway/engine/services"
+	"github.com/codeforsanjose/open311-gateway/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	log "github.com/jeffizhungry/logrus"

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/open311-gateway/monitor/logs"
-	"github.com/open311-gateway/monitor/telemetry"
+	"github.com/codeforsanjose/open311-gateway/monitor/logs"
+	"github.com/codeforsanjose/open311-gateway/monitor/telemetry"
 
 	ui "github.com/gizak/termui"
 )

@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/open311-gateway/engine/common"
-	"github.com/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/common"
+	"github.com/codeforsanjose/open311-gateway/engine/structs"
 
 	log "github.com/jeffizhungry/logrus"
 )
@@ -179,7 +179,7 @@ func (r *routeData) switchSet() {
 
 // String displays the contents of the Spec_Type custom type.
 func (r routeData) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("routeData [%d]\n", r.activeSet)
 	ls.AddF("All Routes: %v\n", r.all[r.activeSet])
 	for k, v := range r.indArea[r.activeSet] {
@@ -603,9 +603,9 @@ func (r auxiliaryProgs) start() error {
 
 // String returns a formatted representation of Adapters.
 func (r Adapters) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("Adapters\n")
-	lsn := new(common.LogString)
+	lsn := new(common.FmtBoxer)
 	lsn.AddS("Network\n")
 	lsn.AddF("Address: %q  protocol: %q\n", r.Network.Address, r.Network.Protocol)
 	lsn.AddF("CertFile: %q  KeyFile: %q\n", r.Network.CertFile, r.Network.KeyFile)
@@ -636,8 +636,8 @@ func (r Adapters) String() string {
 
 // String returns a formatted representation of Adapter.
 func (adp Adapter) String() string {
-	// ls := new(common.LogString)
-	ls := common.NewLogString()
+	// ls := new(common.FmtBoxer)
+	ls := common.NewFmtBoxer()
 	ls.AddF("%s\n", adp.ID)
 	ls.AddF("%-17s   Type: %s  Address: %s  Autostart: %t\n",
 		ls.ColorBool(adp.connected, "CONNECTED  ", "UNCONNECTED", "green", "red"),
@@ -653,7 +653,7 @@ func (adp Adapter) String() string {
 
 // String returns a formatted representation of Adapter.
 func (a Area) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("%s\n", a.ID)
 	ls.AddF("Name: %s\n", a.Name)
 	ls.AddF("Aliases: \"%s\"\n", strings.Join(a.Aliases, "\", \""))

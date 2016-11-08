@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/open311-gateway/engine/common"
-	"github.com/open311-gateway/engine/router"
-	"github.com/open311-gateway/engine/services"
-	"github.com/open311-gateway/engine/structs"
-	"github.com/open311-gateway/engine/telemetry"
+	"github.com/codeforsanjose/open311-gateway/common"
+	"github.com/codeforsanjose/open311-gateway/common/cv"
+	"github.com/codeforsanjose/open311-gateway/common/geo"
+	"github.com/codeforsanjose/open311-gateway/common/sid"
+	"github.com/codeforsanjose/open311-gateway/engine/router"
+	"github.com/codeforsanjose/open311-gateway/engine/services"
+	"github.com/codeforsanjose/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	log "github.com/jeffizhungry/logrus"
@@ -34,7 +37,7 @@ type createMgr struct {
 	req     *CreateRequest
 	nreq    *structs.NCreateRequest
 
-	valid common.Validation
+	valid cv.Validation
 
 	routes structs.NRoutes
 	rpc    *router.RPCCallMgr
@@ -45,12 +48,12 @@ type createMgr struct {
 
 func processCreate(rqst *rest.Request) (fresp interface{}, ferr error) {
 	mgr := createMgr{
-		id:      common.RequestID(),
+		id:      sid.RequestID(),
 		start:   time.Now(),
 		reqType: structs.NRTCreate,
 		rqst:    rqst,
 		req:     &CreateRequest{},
-		valid:   common.NewValidation(),
+		valid:   cv.NewValidation(),
 		// resp:    &CreateResponse{Message: "Request failed"},
 	}
 	telemetry.SendTelemetry(mgr.id, "Create", "open")
@@ -186,7 +189,7 @@ func (r *createMgr) validate() error {
 
 	// Location - the AreaID in the MID must match the location specified by the address
 	// or the lat/lng.
-	r.valid.Set("geo", "", common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
+	r.valid.Set("geo", "", geo.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
 	log.Debug("After ValidateLatLng: " + v.String() + r.req.String())
 
 	// Is the Request routable?
@@ -330,7 +333,7 @@ func (r *createMgr) processReply(ndata interface{}) error {
 
 // String displays the contents of the SearchRequest custom type.
 func (r createMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("searchMgr - %d\n", r.id)
 	ls.AddF("Request type: %v\n", r.reqType.String())
 	ls.AddS(r.req.String())
@@ -391,7 +394,7 @@ type CreateRequest struct {
 
 // convert the unmarshaled data.
 func (r *CreateRequest) convert() error {
-	c := common.NewConversion()
+	c := cv.NewConversion()
 	r.LatitudeV = c.Float("Latitude", r.Latitude)
 	r.LongitudeV = c.Float("Longitude", r.Longitude)
 	return nil
@@ -411,11 +414,11 @@ func (r *CreateRequest) validateServiceID() (err error) {
 // 4. If LongitudeV and LatitudeV are invalid, return error.
 // 5. If the lodation can be found using LongitudeV and LatitudeV, then set the address and return.
 func (r *CreateRequest) validateLocation() (err error) {
-	var addr common.Address
+	var addr *geo.Address
 	success := func() error {
 
 		r.LatitudeV = addr.Lat
-		r.LongitudeV = addr.Long
+		r.LongitudeV = addr.Lng
 		r.FullAddress = addr.FullAddr()
 		r.Address = addr.Addr
 		r.City = addr.City
@@ -432,7 +435,7 @@ func (r *CreateRequest) validateLocation() (err error) {
 	// Try the FullAddress first.
 	if len(r.FullAddress) > 0 {
 		log.Debug("Trying FullAddress...")
-		addr, err = common.NewAddr(r.FullAddress, true)
+		addr, err = geo.NewAddr(r.FullAddress)
 		if err == nil {
 			return success()
 		}
@@ -440,19 +443,19 @@ func (r *CreateRequest) validateLocation() (err error) {
 
 	// Try the address parts next.
 	log.Debug("Trying AddressParts...")
-	addr, err = common.NewAddrP(r.Address, r.City, r.State, r.Zip, true)
+	addr, err = geo.NewAddrP(r.Address, r.City, r.State, r.Zip)
 	if err == nil {
 		return success()
 	}
 
 	// Finally, try reversing the Lat/Long to an address.
 	log.Debug("Validate LatLong...")
-	if !common.ValidateLatLng(r.LatitudeV, r.LongitudeV) {
+	if !geo.ValidateLatLng(r.LatitudeV, r.LongitudeV) {
 		return fail("unable to determine the request location")
 	}
 
 	log.Debug("Getting Address for Lat/Long...")
-	addr, err = common.AddrForLatLng(r.LatitudeV, r.LongitudeV)
+	addr, err = geo.AddrForLatLng(r.LatitudeV, r.LongitudeV)
 	if err == nil {
 		return success()
 	}
@@ -487,7 +490,7 @@ func (r *CreateRequest) setAreaID() error {
 
 // String displays the contents of the CreateRequest type.
 func (r CreateRequest) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("CreateRequest\n")
 	ls.AddF("Request - id: %q   JurisdictionID: %q\n", r.MID.MID(), r.JurisdictionID)
 	ls.AddF("Device - ID: %s  type %s  model: %s\n", r.DeviceID, r.DeviceType, r.DeviceModel)
@@ -525,7 +528,7 @@ func (r *CreateResponse) emptyToNil() {
 
 // String displays the contents of the CreateRequest type.
 func (r CreateResponse) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("CreateResponse - %d\n", r.ID)
 	ls.AddF("AccountID: %s\n", r.AccountID)
 	return ls.Box(80)

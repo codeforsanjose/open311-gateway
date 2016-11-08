@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/open311-gateway/engine/common"
-	"github.com/open311-gateway/engine/router"
-	"github.com/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/common"
+	"github.com/codeforsanjose/open311-gateway/engine/router"
+	"github.com/codeforsanjose/open311-gateway/engine/structs"
 
 	log "github.com/jeffizhungry/logrus"
 )
@@ -233,7 +233,7 @@ func (r *cache) shutdown() {
 
 // String returns a string representation of the cache type.
 func (r cache) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("cache [%d]\n", r.activeSet)
 	ls.AddS("------- Area Service List --------\n")
 	for k, v := range r.list[r.activeSet] {

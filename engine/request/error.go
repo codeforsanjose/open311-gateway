@@ -1,6 +1,6 @@
 package request
 
-import "github.com/open311-gateway/engine/common"
+import "github.com/codeforsanjose/open311-gateway/common"
 
 // ErrorsResponseJ represents an error response.  The error response contains one or more errors.
 type ErrorsResponseJ []*ErrorResponseJ
@@ -26,7 +26,7 @@ func (r ErrorsResponseJ) errorJ(code int, descr string) ErrorsResponseJ {
 
 // String displays the contents of the CreateRequest type.
 func (r ErrorsResponseJ) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("ErrorResponse\n")
 	for _, v := range r {
 		ls.AddF("%-5v  %v\n", v.Code, v.Description)

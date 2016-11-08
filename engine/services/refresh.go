@@ -5,10 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/open311-gateway/engine/common"
-	"github.com/open311-gateway/engine/router"
-	"github.com/open311-gateway/engine/structs"
-	"github.com/open311-gateway/engine/telemetry"
+	"github.com/codeforsanjose/open311-gateway/common"
+	"github.com/codeforsanjose/open311-gateway/common/cv"
+	"github.com/codeforsanjose/open311-gateway/common/sid"
+	"github.com/codeforsanjose/open311-gateway/engine/router"
+	"github.com/codeforsanjose/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/engine/telemetry"
 
 	log "github.com/jeffizhungry/logrus"
 )
@@ -22,7 +24,7 @@ type refreshMgr struct {
 	reqType structs.NRequestType
 	nreq    *structs.NServiceRequest
 
-	valid common.Validation
+	valid cv.Validation
 
 	routes structs.NRoutes
 	rpc    *router.RPCCallMgr
@@ -30,7 +32,7 @@ type refreshMgr struct {
 
 func refresh(area string) (reterr error) {
 	tid := "SrvRrsh"
-	rqstID := common.RequestID()
+	rqstID := sid.RequestID()
 	mgr := refreshMgr{
 		id:    rqstID,
 		start: time.Now(),
@@ -130,7 +132,7 @@ func (r *refreshMgr) processReply(ndata interface{}) error {
 
 // String displays the contents of the SearchRequest custom type.
 func (r refreshMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("Services refreshMgr - %d\n", r.id)
 	ls.AddF("Request type: %v\n", r.reqType.String())
 	ls.AddS(r.routes.String())

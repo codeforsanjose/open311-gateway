@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/open311-gateway/monitor/telemetry"
+	"github.com/codeforsanjose/open311-gateway/monitor/telemetry"
 )
 
 type adpStatusType struct {

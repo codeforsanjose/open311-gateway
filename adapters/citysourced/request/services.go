@@ -1,8 +1,8 @@
 package request
 
 import (
-	"github.com/open311-gateway/adapters/citysourced/data"
-	"github.com/open311-gateway/adapters/citysourced/structs"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/data"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/structs"
 	"fmt"
 
 	"github.com/davecgh/go-spew/spew"

@@ -13,7 +13,7 @@ import (
 // ==============================================================================================================================
 
 func TestConsole(t *testing.T) {
-	l := new(logs.LogString)
+	l := new(logs.FmtBoxer)
 
 	logs.Init(true, true)
 
@@ -24,7 +24,7 @@ func TestConsole(t *testing.T) {
 	l.BCon(60)
 
 	for i := 1001; i < 1021; i++ {
-		l = new(logs.LogString)
+		l = new(logs.FmtBoxer)
 		l.AddF("TTitle %d\n", i-1000)
 		l.AddF("And here we are at line: %d\n", i)
 		l.AddS("line 2\n")

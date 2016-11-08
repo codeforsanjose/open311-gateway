@@ -3,11 +3,11 @@ package request
 import (
 	"time"
 
-	"github.com/open311-gateway/adapters/citysourced/common"
-	"github.com/open311-gateway/adapters/citysourced/data"
-	"github.com/open311-gateway/adapters/citysourced/search"
-	"github.com/open311-gateway/adapters/citysourced/structs"
-	"github.com/open311-gateway/adapters/citysourced/telemetry"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/common"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/data"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/search"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/structs"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/telemetry"
 )
 
 const (

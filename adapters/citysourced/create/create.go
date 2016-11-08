@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	"github.com/open311-gateway/adapters/citysourced/common"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/common"
 )
 
 // ================================================================================================

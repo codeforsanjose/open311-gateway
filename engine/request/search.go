@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/open311-gateway/engine/common"
-	"github.com/open311-gateway/engine/geo"
-	"github.com/open311-gateway/engine/router"
-	"github.com/open311-gateway/engine/structs"
-	"github.com/open311-gateway/engine/telemetry"
+	"github.com/codeforsanjose/open311-gateway/common"
+	"github.com/codeforsanjose/open311-gateway/common/cv"
+	"github.com/codeforsanjose/open311-gateway/common/geo"
+	"github.com/codeforsanjose/open311-gateway/common/sid"
+	"github.com/codeforsanjose/open311-gateway/engine/router"
+	"github.com/codeforsanjose/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	log "github.com/jeffizhungry/logrus"
@@ -43,7 +45,7 @@ type searchMgr struct {
 	req     *SearchRequest
 	nreq    interface{}
 
-	valid common.Validation
+	valid cv.Validation
 
 	routes structs.NRoutes
 	rpc    *router.RPCCallMgr
@@ -55,10 +57,10 @@ type searchMgr struct {
 func processSearch(rqst *rest.Request) (fresp interface{}, ferr error) {
 	mgr := searchMgr{
 		rqst:  rqst,
-		id:    common.RequestID(),
+		id:    sid.RequestID(),
 		start: time.Now(),
 		req:   &SearchRequest{},
-		valid: common.NewValidation(),
+		valid: cv.NewValidation(),
 		nresp: &structs.NSearchResponse{
 			Reports: make([]structs.NSearchResponseReport, 0),
 		},
@@ -166,7 +168,7 @@ func (r *searchMgr) validate() error {
 	}
 
 	// Location
-	v.Set("geo", "", common.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
+	v.Set("geo", "", geo.ValidateLatLng(r.req.LatitudeV, r.req.LongitudeV))
 
 	// Range-check the search radius.
 	log.Debugf("Search radius min/max: %v-%v", searchRadiusMin, searchRadiusMax)
@@ -223,7 +225,7 @@ func (r *searchMgr) setRoute() error {
 		return nil
 
 	case v.IsOK("geo"):
-		if city, err := geo.CityForLatLng(r.req.LatitudeV, r.req.LongitudeV); err == nil {
+		if city, err := geo.GooCityForLatLng(r.req.LatitudeV, r.req.LongitudeV); err == nil {
 			log.Debug("City: " + city)
 			r.req.City = city
 		}
@@ -388,7 +390,7 @@ func (r *searchMgr) setRID() *structs.NSearchRequestRID {
 
 // String displays the contents of the SearchRequest custom type.
 func (r searchMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("searchMgr - %d\n", r.id)
 	ls.AddF("Request type: %v\n", r.reqType.String())
 	ls.AddS(r.routes.String())
@@ -440,7 +442,7 @@ type SearchRequest struct {
 
 // convert the unmarshaled data.
 func (r *SearchRequest) convert() error {
-	c := common.NewConversion()
+	c := cv.NewConversion()
 	r.LatitudeV = c.Float("Latitude", r.Latitude)
 	r.LongitudeV = c.Float("Longitude", r.Longitude)
 	r.RadiusV = c.Int("Radius", r.Radius)
@@ -453,7 +455,7 @@ func (r *SearchRequest) convert() error {
 
 // String displays the contents of the SearchRequest custom type.
 func (r SearchRequest) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("SearchRequest\n")
 	ls.AddF("RID: %s\n", r.RID)
 	ls.AddF("Device Type: %q    ID: %q\n", r.DeviceType, r.DeviceID)
@@ -472,7 +474,7 @@ type SearchResponse []SearchResponseReport
 
 // Displays the SearchResponse custom type.
 func (r SearchResponse) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("SearchResponse\n")
 	for _, x := range r {
 		ls.AddS(x.String())
@@ -556,7 +558,7 @@ func (r *SearchResponseReport) emptyToNil() {
 
 // Displays the the SearchResponseReport custom type.
 func (r SearchResponseReport) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("ServiceRequestID: %s\n", r.RID.RID())
 	ls.AddF("Service - id: %q   name: %q\n", r.ServiceCode, r.ServiceName)
 	ls.AddF("Created: %v   Updated: %v   Expected: %v\n", r.RequestedAt, r.UpdatedAt, r.ExpectedAt)

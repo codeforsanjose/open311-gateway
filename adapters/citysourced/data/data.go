@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/open311-gateway/adapters/citysourced/common"
-	"github.com/open311-gateway/adapters/citysourced/structs"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/common"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/structs"
 
 	"github.com/davecgh/go-spew/spew"
 	log "github.com/jeffizhungry/logrus"

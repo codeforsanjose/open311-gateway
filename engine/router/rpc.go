@@ -7,9 +7,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/open311-gateway/engine/common"
-	"github.com/open311-gateway/engine/structs"
-	"github.com/open311-gateway/engine/telemetry"
+	"github.com/codeforsanjose/open311-gateway/common"
+	"github.com/codeforsanjose/open311-gateway/common/sid"
+	"github.com/codeforsanjose/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/engine/telemetry"
 
 	log "github.com/jeffizhungry/logrus"
 )
@@ -224,7 +225,7 @@ func (r *RPCCallMgr) processer() func(ndata interface{}) error {
 
 // -------------------------------- String ---------------------------------
 func (r RPCCallMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("RPCCallMgr\n")
 	ls.AddF("ReqMgr: %p  type: %v\n", r.reqmgr, r.reqmgr.RType().String())
 	ls.AddF("Pending: %v\n", r.pending)
@@ -262,7 +263,7 @@ type rpcCall struct {
 func (r *rpcCall) String() string {
 	r.Lock()
 	defer r.Unlock()
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("rpcCall - %d\n", r.id)
 	ls.AddF("Service: %v\n", r.rpc.service())
 	ls.AddF("Adapter: %v  Route: %v\n", r.adp.AdpID(), r.route.String())
@@ -285,7 +286,7 @@ type rpcmanager interface {
 
 func newrpcCall(rpcmgr rpcmanager, route structs.NRoute) (*rpcCall, error) {
 	r := &rpcCall{
-		id:    common.RPCID(),
+		id:    sid.RPCID(),
 		rpc:   rpcmgr,
 		route: route,
 	}

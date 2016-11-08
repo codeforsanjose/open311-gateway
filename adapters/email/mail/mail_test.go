@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/open311-gateway/adapters/email/data"
-	"github.com/open311-gateway/adapters/email/structs"
+	"github.com/codeforsanjose/open311-gateway/adapters/email/data"
+	"github.com/codeforsanjose/open311-gateway/adapters/email/structs"
 )
 
 func TestMain(m *testing.M) {

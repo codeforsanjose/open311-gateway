@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/open311-gateway/adapters/email/data"
+	"github.com/codeforsanjose/open311-gateway/adapters/email/data"
 
 	log "github.com/jeffizhungry/logrus"
 )

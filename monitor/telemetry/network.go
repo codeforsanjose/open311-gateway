@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/open311-gateway/monitor/logs"
+	"github.com/codeforsanjose/open311-gateway/monitor/logs"
 )
 
 var (
