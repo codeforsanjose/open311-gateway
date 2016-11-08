@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/common"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/structs"
+	"github.com/codeforsanjose/open311-gateway/common"
 
 	"github.com/davecgh/go-spew/spew"
 	log "github.com/jeffizhungry/logrus"
@@ -295,7 +295,7 @@ func (pd *ConfigData) indexCityServices() error {
 
 // String returns the represeentation of the ConfigData custom type.
 func (pd ConfigData) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
 	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
@@ -355,7 +355,7 @@ type Area struct {
 }
 
 func (a Area) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("%s (%s)\n", a.Name, a.ID)
 	for _, v := range a.Providers {
 		ls.AddF("%s\n", v)
@@ -377,7 +377,7 @@ type Provider struct {
 }
 
 func (p Provider) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("%s (ID: %d)\n", p.Name, p.ID)
 	ls.AddF("URL: %s  ver: %s  Key: %s\n", p.URL, p.APIVersion, p.Key)
 	ls.AddS("---SERVICES:\n")

@@ -5,7 +5,8 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/common"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/cscommon"
+	"github.com/codeforsanjose/open311-gateway/common"
 )
 
 // ================================================================================================
@@ -60,7 +61,7 @@ func (r *Request) Process(url string) (*Response, error) {
 		enc.Encode(r)
 	}
 
-	client := http.Client{Timeout: common.HttpClientTimeout}
+	client := http.Client{Timeout: cscommon.HttpClientTimeout}
 	resp, err := client.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
@@ -90,7 +91,7 @@ type Response struct {
 
 // String displays a Request
 func (r Request) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("create.Request\n")
 	ls.AddF("API - auth: %q  RequestType: %q  Version: %q\n", r.APIAuthKey, r.APIRequestType, r.APIRequestVersion)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
@@ -103,7 +104,7 @@ func (r Request) String() string {
 
 // String displays a Response
 func (r Response) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("create.Response\n")
 	ls.AddF("Message: %v\n", r.Message)
 	ls.AddF("ID: %v  AuthorID: %v\n", r.ID, r.AuthorID)

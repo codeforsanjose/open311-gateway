@@ -3,11 +3,11 @@ package request
 import (
 	"time"
 
-	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/common"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/create"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/data"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/structs"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/telemetry"
+	"github.com/codeforsanjose/open311-gateway/common"
 )
 
 // ================================================================================================
@@ -103,7 +103,7 @@ func (c *createMgr) getRoute() string {
 }
 
 func (c *createMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("Create\n")
 	ls.AddS(c.nreq.String())
 	ls.AddS(c.req.String())

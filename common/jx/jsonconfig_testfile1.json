@@ -1,0 +1,6 @@
+{
+    "account": "xyz@gmail.com",
+    "password": "opensesame",
+    "server": "smtp.gmail.com",
+    "port": 587
+}

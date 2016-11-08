@@ -53,7 +53,7 @@ func (r Payload) Get() (ptype PayloadType, contents interface{}) {
 }
 
 func (r Payload) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("Payload\n")
 	ls.AddF("Type: %v\n", r.ptype)
 	switch content := r.content.(type) {

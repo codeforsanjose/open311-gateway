@@ -3,11 +3,11 @@ package request
 import (
 	"time"
 
-	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/common"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/data"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/search"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/structs"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/telemetry"
+	"github.com/codeforsanjose/open311-gateway/common"
 )
 
 const (
@@ -134,7 +134,7 @@ func (c *searchLLMgr) getRoute() string {
 }
 
 func (c *searchLLMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("SearchLL\n")
 	ls.AddS(c.nreq.String())
 	ls.AddS(c.req.String())
@@ -257,7 +257,7 @@ func (c *searchRIDMgr) getRoute() string {
 }
 
 func (c *searchRIDMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("SearchRID\n")
 	ls.AddS(c.nreq.String())
 	ls.AddS(c.req.String())
@@ -381,7 +381,7 @@ func (c *searchDIDMgr) getRoute() string {
 }
 
 func (c *searchDIDMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("SearchDID\n")
 	ls.AddS(c.nreq.String())
 	ls.AddS(c.req.String())

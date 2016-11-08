@@ -145,7 +145,7 @@ func (c *createMgr) createBody(tmpl *template.Template) (string, error) {
 }
 
 func (c *createMgr) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("Create\n")
 	ls.AddS(c.nreq.String())
 	ls.AddS(c.req.String())

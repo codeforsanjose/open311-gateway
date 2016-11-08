@@ -67,9 +67,9 @@ func (p Password) Redacted() interface{} {
 //                                      CONSOLE
 // ==============================================================================================================================
 
-// NewLogString creates a new LogString, and initializes color printing.
-func NewLogString() *LogString {
-	ls := new(LogString)
+// NewFmtBoxer creates a new FmtBoxer, and initializes color printing.
+func NewFmtBoxer() *FmtBoxer {
+	ls := new(FmtBoxer)
 	ls.color = make(map[string]func(...interface{}) string)
 	ls.color["red"] = color.New(color.FgRed).SprintFunc()
 	ls.color["green"] = color.New(color.FgGreen).SprintFunc()
@@ -78,15 +78,15 @@ func NewLogString() *LogString {
 	return ls
 }
 
-// LogString is used to "box" object representations.
-type LogString struct {
+// FmtBoxer is used to "box" object representations.
+type FmtBoxer struct {
 	raw   string
 	fmt   string
 	color map[string]func(...interface{}) string
 }
 
 // Color applies the specified color to the string.
-func (l *LogString) Color(color, s string) string {
+func (l *FmtBoxer) Color(color, s string) string {
 	f, ok := l.color[color]
 	if !ok {
 		return s
@@ -95,32 +95,32 @@ func (l *LogString) Color(color, s string) string {
 }
 
 // AddF adds a formated line of text, like Printf().
-func (l *LogString) AddF(format string, args ...interface{}) {
+func (l *FmtBoxer) AddF(format string, args ...interface{}) {
 	l.raw = l.raw + fmt.Sprintf(format, args...)
 }
 
 // AddS adds a single line of text, with no terminating line return.
-func (l *LogString) AddS(s string) {
+func (l *FmtBoxer) AddS(s string) {
 	l.raw = l.raw + s
 }
 
 // AddSR adds a single line of text (with line return), like Println().
-func (l *LogString) AddSR(s string) {
+func (l *FmtBoxer) AddSR(s string) {
 	l.raw = l.raw + s + "\n"
 }
 
-// Box draws a box around the LogString with the specified line width, with a leading line return.
-func (l *LogString) Box(w int) string {
+// Box draws a box around the FmtBoxer with the specified line width, with a leading line return.
+func (l *FmtBoxer) Box(w int) string {
 	return l.box(w, true)
 }
 
-// BoxC draws a box around the LogString with the specified line width, without a leading line return.
-func (l *LogString) BoxC(w int) string {
+// BoxC draws a box around the FmtBoxer with the specified line width, without a leading line return.
+func (l *FmtBoxer) BoxC(w int) string {
 	return l.box(w, false)
 }
 
-// box draws a box around the LogString with the specified line width, and leading line return.
-func (l *LogString) box(w int, lr bool) string {
+// box draws a box around the FmtBoxer with the specified line width, and leading line return.
+func (l *FmtBoxer) box(w int, lr bool) string {
 	var out string
 	if lr {
 		out = "\n"
@@ -142,18 +142,18 @@ func (l *LogString) box(w int, lr bool) string {
 	return l.fmt
 }
 
-// BCon sends a LogString to the log printer queue (see l.Con() and l.run() below).
-func (l *LogString) BCon(w int) {
+// BCon sends a FmtBoxer to the log printer queue (see l.Con() and l.run() below).
+func (l *FmtBoxer) BCon(w int) {
 	LogPrinter.con(l.Box(w))
 }
 
-// Raw retrieves the unprocessed LogString.  This is all of the strings to be printerd,
+// Raw retrieves the unprocessed FmtBoxer.  This is all of the strings to be printerd,
 // separated by "\n".
-func (l *LogString) Raw() string {
+func (l *FmtBoxer) Raw() string {
 	return l.raw
 }
 
-// logPrinter is a string channel that LogStrings can be sent to using the logPrinter.con() method.
+// logPrinter is a string channel that FmtBoxers can be sent to using the logPrinter.con() method.
 // The LogPrinter go routine will receive the strings and print them.
 type logPrinter struct {
 	todo chan string

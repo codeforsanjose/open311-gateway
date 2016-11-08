@@ -5,7 +5,8 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/common"
+	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/cscommon"
+	"github.com/codeforsanjose/open311-gateway/common"
 
 	log "github.com/jeffizhungry/logrus"
 )
@@ -47,7 +48,7 @@ func (r *RequestLL) Process(url string) (*Response, error) {
 	}
 	// log.Printf("Payload:\n%v\n", payload.String())
 
-	client := http.Client{Timeout: common.HttpClientTimeout}
+	client := http.Client{Timeout: cscommon.HttpClientTimeout}
 	resp, err := client.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
@@ -98,7 +99,7 @@ func (r *RequestDID) Process(url string) (*Response, error) {
 	}
 	log.Debugf("Payload:\n%v\n", payload.String())
 
-	client := http.Client{Timeout: common.HttpClientTimeout}
+	client := http.Client{Timeout: cscommon.HttpClientTimeout}
 	resp, err := client.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
@@ -148,7 +149,7 @@ func (r *RequestRID) Process(url string) (*Response, error) {
 	}
 	log.Debugf("Payload:\n%v\n", payload.String())
 
-	client := http.Client{Timeout: common.HttpClientTimeout}
+	client := http.Client{Timeout: cscommon.HttpClientTimeout}
 	resp, err := client.Post(url, "application/xml", payload)
 	if err != nil {
 		return fail(err)
@@ -224,7 +225,7 @@ type Report struct {
 
 // Displays the contents of the Spec_Type custom type.
 func (r RequestLL) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("RequestLL\n")
 	ls.AddF("Location - lat: %v  lon: %v\n", r.Latitude, r.Longitude)
 	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
@@ -234,7 +235,7 @@ func (r RequestLL) String() string {
 
 // Displays the contents of the Spec_Type custom type.
 func (r RequestDID) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("RequestDID\n")
 	ls.AddF("Device - type %s  ID: %s\n", r.DeviceType, r.DeviceID)
 	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
@@ -244,7 +245,7 @@ func (r RequestDID) String() string {
 
 // Displays the contents of the Spec_Type custom type.
 func (r RequestRID) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("RequestRID\n")
 	ls.AddF("ReportID: %s\n", r.ReportID)
 	ls.AddF("MaxResults: %v  IncludeDetails: %v\n", r.MaxResults, r.IncludeDetails)
@@ -254,7 +255,7 @@ func (r RequestRID) String() string {
 
 // Displays the contents of the Spec_Type custom type.
 func (r Response) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("Response\n")
 	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.Reports.ReportCount, r.ResponseTime, r.Message)
 	for _, x := range r.Reports.Reports {
@@ -265,7 +266,7 @@ func (r Response) String() string {
 
 // Displays the NSearchRequestDID custom type.
 func (s Report) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("Report %v\n", s.ID)
 	ls.AddF("DateCreated \"%v\"\n", s.DateCreated)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", s.DeviceType, s.DeviceModel, s.DeviceID)

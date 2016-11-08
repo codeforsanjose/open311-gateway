@@ -68,7 +68,7 @@ func (r *Request) createEmail(tmpl *template.Template) (string, error) {
 
 // String displays a Request
 func (r Request) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("create.Request\n")
 	to, from, subject := r.Sender.Address()
 	ls.AddF("Sender - to: %#v  from: %#v\n", strings.Join(to, ", "), strings.Join(from, ", "))
@@ -79,7 +79,7 @@ func (r Request) String() string {
 
 // String displays a Response
 func (r Response) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("create.Response\n")
 	ls.AddF("Message: %v\n", r.Message)
 	return ls.Box(80)

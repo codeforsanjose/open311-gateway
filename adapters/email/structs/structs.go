@@ -662,7 +662,7 @@ func RidID(rid string) (int, error) {
 
 // Displays the NRequestCommon custom type.
 func (r NRequestCommon) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("Type: %s\n", r.Rtype.String())
 	ls.AddF("ID: %v\n", r.ID)
 	ls.AddF("Route: %s\n", r.Route.String())
@@ -671,7 +671,7 @@ func (r NRequestCommon) String() string {
 
 // Displays the NServiceRequest custom type.
 func (r NServiceRequest) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("NServiceRequest\n")
 	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("Location - area: %v\n", r.Area)
@@ -680,7 +680,7 @@ func (r NServiceRequest) String() string {
 
 // Displays the NResponseCommon custom type.
 func (r NResponseCommon) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("Type: %s\n", r.Rtype.String())
 	ls.AddF("Route: %s\n", r.Route.String())
 	return ls.Box(40)
@@ -688,7 +688,7 @@ func (r NResponseCommon) String() string {
 
 // Displays the NServicesResponse custom type.
 func (r NServicesResponse) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("NServicesResponse\n")
 	ls.AddS(r.NResponseCommon.String())
 	ls.AddF("Message: %q%s", r.Message, r.Services)
@@ -703,7 +703,7 @@ func (s NService) String() string {
 
 // SString should be used to display one NService struct.
 func (s NService) SString() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("NService\n")
 	ls.AddF("MID: %s    Name: %s\n", s.MID(), s.Name)
 	ls.AddF("Group: %s   Keywords: %v\n", s.Group, s.Keywords)
@@ -713,7 +713,7 @@ func (s NService) SString() string {
 
 // Displays the NServices custom type.
 func (r NServices) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("NServices\n")
 	for _, s := range r {
 		ls.AddF("%s\n", s)
@@ -785,7 +785,7 @@ func (r NRoute) SString() string {
 
 // Displays the NCreateRequest custom type.
 func (r NCreateRequest) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("NCreateRequest\n")
 	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("Request: %s\n", r.ServiceName)
@@ -801,7 +801,7 @@ func (r NCreateRequest) String() string {
 
 // Displays the NCreateResponse custom type.
 func (r NCreateResponse) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("NCreateResponse\n")
 	ls.AddS(r.NResponseCommon.String())
 	ls.AddF("Message: %s\n", r.Message)
@@ -811,7 +811,7 @@ func (r NCreateResponse) String() string {
 
 // Displays the NSearchRequestLL custom type.
 func (r NSearchRequestLL) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("NSearchRequestLL\n")
 	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("Lat: %v  Lng: %v   Radius: %v AreaID: %q\n", r.Latitude, r.Longitude, r.Radius, r.AreaID)
@@ -821,7 +821,7 @@ func (r NSearchRequestLL) String() string {
 
 // Displays the NSearchRequestDID custom type.
 func (r NSearchRequestDID) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("NSearchRequestDID\n")
 	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("Device type: %v  ID: %v\n", r.DeviceType, r.DeviceID)
@@ -831,7 +831,7 @@ func (r NSearchRequestDID) String() string {
 
 // Displays the NSearchRequestRID custom type.
 func (r NSearchRequestRID) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("NSearchRequestRID\n")
 	ls.AddS(r.NRequestCommon.String())
 	ls.AddF("ReportID: %v    AreaID: %q\n", r.RID.String(), r.AreaID)
@@ -841,7 +841,7 @@ func (r NSearchRequestRID) String() string {
 
 // Displays the NSearchResponse custom type.
 func (r NSearchResponse) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("NSearchResponse\n")
 	ls.AddS(r.NResponseCommon.String())
 	ls.AddF("Count: %v RspTime: %v Message: %v\n", r.ReportCount, r.ResponseTime, r.Message)
@@ -853,7 +853,7 @@ func (r NSearchResponse) String() string {
 
 // Displays the the NSearchResponseReport custom type.
 func (r NSearchResponseReport) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("NSearchResponseReport %s\n", r.RID.RID())
 	ls.AddF("DateCreated \"%v\"\n", r.DateCreated)
 	ls.AddF("Device - type %s  model: %s  ID: %s\n", r.DeviceType, r.DeviceModel, r.DeviceID)
@@ -869,7 +869,7 @@ func (r NSearchResponseReport) String() string {
 }
 
 func (r NRoutes) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("NRoutes\n")
 	for _, r := range r {
 		ls.AddF("%s\n", r)

@@ -233,7 +233,7 @@ type EmailAuth struct {
 }
 
 func (r EmailAuth) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("Email Auth\n")
 	ls.AddF("File: %q\n", r.AuthFile)
 	ls.AddS(r.Auth.String())
@@ -250,7 +250,7 @@ type EmailAuthData struct {
 }
 
 func (r EmailAuthData) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("Email Auth Data\n")
 	ls.AddF("Account: %q\n", r.Account)
 	ls.AddS("Password: ******\n")
@@ -381,7 +381,7 @@ func (pd *ConfigData) indexCityServices() error {
 
 // String returns the represeentation of the ConfigData custom type.
 func (pd ConfigData) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
 	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
@@ -443,7 +443,7 @@ type Area struct {
 }
 
 func (a Area) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("%s (%s)\n", a.Name, a.ID)
 	for _, v := range a.Providers {
 		ls.AddF("%s\n", v)
@@ -463,7 +463,7 @@ type Provider struct {
 }
 
 func (p Provider) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddF("%s (ID: %d)\n", p.Name, p.ID)
 	ls.AddS(p.Email.String())
 	ls.AddS("---SERVICES:\n")
@@ -502,7 +502,7 @@ func (r EmailConfig) Template() (tmpl *template.Template) {
 }
 
 func (r EmailConfig) String() string {
-	ls := new(common.LogString)
+	ls := new(common.FmtBoxer)
 	ls.AddS("Email Config\n")
 	ls.AddF("To: %#v   From: %#v\n", r.To, r.From)
 	ls.AddF("Subject: %q\n", r.Subject)
