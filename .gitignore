@@ -9,3 +9,4 @@ adapters/citysourced/adp_cs
 adapters/email/adp_email
 monitor/monitor
 _background
+debug

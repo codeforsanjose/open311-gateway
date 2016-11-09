@@ -211,7 +211,7 @@ func (pd *ConfigData) settle() error {
 
 // Index() builds all required map indexes: Services by City,
 func (pd *ConfigData) index() error {
-	log.Info("   Building indexes:\n")
+	log.Info("   Building indexes:")
 	_ = pd.indexServiceMID()
 	_ = pd.indexServiceID()
 	_ = pd.indexProviderID()
@@ -223,7 +223,7 @@ func (pd *ConfigData) index() error {
 }
 
 func (pd *ConfigData) indexServiceMID() error {
-	log.Info("       Indexing ServiceID...\n")
+	log.Info("       Indexing ServiceID...")
 	pd.serviceMID = make(map[string]dataIndex)
 	for _, area := range pd.Areas {
 		for _, provider := range area.Providers {
@@ -236,7 +236,7 @@ func (pd *ConfigData) indexServiceMID() error {
 }
 
 func (pd *ConfigData) indexServiceID() error {
-	log.Info("       Indexing ServiceID...\n")
+	log.Info("        Indexing ServiceID...")
 	pd.serviceID = make(map[int]*structs.NService)
 	for _, area := range pd.Areas {
 		for _, provider := range area.Providers {
@@ -249,7 +249,7 @@ func (pd *ConfigData) indexServiceID() error {
 }
 
 func (pd *ConfigData) indexProviderID() error {
-	log.Info("       Indexing ProviderID...\n")
+	log.Info("       Indexing ProviderID...")
 	pd.providerID = make(map[int]*Provider)
 	for _, area := range pd.Areas {
 		for _, provider := range area.Providers {
@@ -260,7 +260,7 @@ func (pd *ConfigData) indexProviderID() error {
 }
 
 func (pd *ConfigData) indexCityCode() error {
-	log.Info("       Indexing CityCode...\n")
+	log.Info("         Indexing CityCode...")
 	pd.areaCode = make(map[string]string)
 	for areaKey, area := range pd.Areas {
 		pd.areaCode[strings.ToLower(area.Name)] = areaKey
@@ -269,7 +269,7 @@ func (pd *ConfigData) indexCityCode() error {
 }
 
 func (pd *ConfigData) indexAreaProvider() error {
-	log.Info("       Indexing AreaProvider...\n")
+	log.Info("     Indexing AreaProvider...")
 	pd.areaProvider = make(map[areaProvider]*Provider)
 	for _, area := range pd.Areas {
 		for _, provider := range area.Providers {
@@ -280,7 +280,7 @@ func (pd *ConfigData) indexAreaProvider() error {
 }
 
 func (pd *ConfigData) indexCityServices() error {
-	log.Info("       Indexing CityServices...\n")
+	log.Info("     Indexing CityServices...")
 	pd.areaServices = make(map[string]structs.NServices)
 	for areaKey, area := range pd.Areas {
 		pd.areaServices[areaKey] = make(structs.NServices, 0)
