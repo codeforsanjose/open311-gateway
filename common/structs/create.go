@@ -49,7 +49,7 @@ type NCreateResponse struct {
 //                                      STRINGS
 // =======================================================================================
 
-// Displays the NCreateRequest custom type.
+// String returns a representation of the NCreateRequest custom type.
 func (r NCreateRequest) String() string {
 	ls := new(common.FmtBoxer)
 	ls.AddF("NCreateRequest\n")
@@ -65,7 +65,7 @@ func (r NCreateRequest) String() string {
 	return ls.Box(80)
 }
 
-// Displays the NCreateResponse custom type.
+// String returns a representation of the NCreateResponse custom type.
 func (r NCreateResponse) String() string {
 	ls := new(common.FmtBoxer)
 	ls.AddS("NCreateResponse\n")

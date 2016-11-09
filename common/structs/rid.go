@@ -1,12 +1,56 @@
 package structs
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 // =======================================================================================
 //                                      RID
 // =======================================================================================
 
 const emInvalidRid = "Invalid RID: %q"
+
+// ------------------------------- ReportID -------------------------------
+
+// NewRID creates a ReportID by concatenating a Route (NRoute string) with a message
+// response ID.
+func NewRID(route NRoute, id string) ReportID {
+	return ReportID{
+		NRoute: route,
+		ID:     id,
+	}
+}
+
+// ReportID adds routing information to a ReportID returned by a call to a
+// Service Provider.
+type ReportID struct {
+	NRoute
+	ID string
+}
+
+// UnmarshalJSON implements the conversion from the JSON "ID" to the ReportID struct.
+func (s *ReportID) UnmarshalJSON(value []byte) error {
+	cnvInt := func(x string) int {
+		y, _ := strconv.ParseInt(x, 10, 64)
+		return int(y)
+	}
+	parts := strings.Split(strings.Trim(string(value), "\" "), "-")
+	// log.Debug("[UnmarshalJSON] parts: %+v\n", parts)
+	s.AdpID = parts[0]
+	s.AreaID = parts[1]
+	s.ProviderID = cnvInt(parts[2])
+	s.ID = parts[3]
+	// log.Debug("[UnmarshalJSON] AdpID: %#v  AreaID: %#v  ProviderID: %#v  ID: %#v\n", s.AdpID, s.AreaID, s.ProviderID, s.ID)
+	return nil
+}
+
+// MarshalJSON implements the conversion from the ReportID struct to the JSON "ID".
+func (s ReportID) MarshalJSON() ([]byte, error) {
+	// fmt.Printf("  Marshaling s: %#v\n", s)
+	return []byte(fmt.Sprintf("\"%s\"", s.RID())), nil
+}
 
 // RIDFromString converts a reportID string to a new ReportID struct.
 func RIDFromString(rids string) (ReportID, NRoute, error) {
@@ -27,20 +71,6 @@ func RIDFromString(rids string) (ReportID, NRoute, error) {
 		NRoute: nr,
 		ID:     fmt.Sprintf("%v", reportID),
 	}, nr, nil
-}
-
-// NRouteFromString converts a reportID string to a new NRoute struct.
-func NRouteFromString(rids string) (NRoute, error) {
-	adpID, areaID, providerID, _, err := SplitRID(rids)
-	if err != nil {
-		return NRoute{}, fmt.Errorf("invalid RID: %q", rids)
-	}
-	return NRoute{
-		AdpID:      adpID,
-		AreaID:     areaID,
-		ProviderID: providerID,
-	}, nil
-
 }
 
 // SplitRID breaks down an RID, and returns all subfields.

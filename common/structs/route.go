@@ -69,6 +69,20 @@ func (r NRoute) RouteType() NRouteType {
 	}
 }
 
+// NRouteFromString converts a reportID string to a new NRoute struct.
+func NRouteFromString(rids string) (NRoute, error) {
+	adpID, areaID, providerID, _, err := SplitRID(rids)
+	if err != nil {
+		return NRoute{}, fmt.Errorf("invalid RID: %q", rids)
+	}
+	return NRoute{
+		AdpID:      adpID,
+		AreaID:     areaID,
+		ProviderID: providerID,
+	}, nil
+
+}
+
 // =======================================================================================
 //                                      STRINGS
 // =======================================================================================
@@ -88,6 +102,7 @@ func (r NRoute) String() string {
 	return fmt.Sprintf("%s-%s-%d", r.AdpID, r.AreaID, r.ProviderID)
 }
 
+// String returns a representation of the NRouteType.
 func (r NRouteType) String() string {
 	switch r {
 	case NRtTypEmpty:
