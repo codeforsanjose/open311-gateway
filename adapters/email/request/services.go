@@ -2,7 +2,7 @@ package request
 
 import (
 	"github.com/codeforsanjose/open311-gateway/adapters/email/data"
-	"github.com/codeforsanjose/open311-gateway/adapters/email/structs"
+	"github.com/codeforsanjose/open311-gateway/common/structs"
 	"fmt"
 
 	"github.com/davecgh/go-spew/spew"

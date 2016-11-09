@@ -13,7 +13,7 @@ import (
 	"github.com/codeforsanjose/open311-gateway/common/sid"
 	"github.com/codeforsanjose/open311-gateway/engine/router"
 	"github.com/codeforsanjose/open311-gateway/engine/services"
-	"github.com/codeforsanjose/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/common/structs"
 	"github.com/codeforsanjose/open311-gateway/engine/telemetry"
 
 	"github.com/ant0ine/go-json-rest/rest"

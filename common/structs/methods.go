@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -56,4 +57,34 @@ func (s *ReportID) UnmarshalJSON(value []byte) error {
 func (s ReportID) MarshalJSON() ([]byte, error) {
 	// fmt.Printf("  Marshaling s: %#v\n", s)
 	return []byte(fmt.Sprintf("\"%s\"", s.RID())), nil
+}
+
+// ==============================================================================================================================
+//                                      NService
+// ==============================================================================================================================
+
+// UnmarshalJSON implements the conversion from the JSON "ID" to the ServiceID struct.
+func (srv *NService) UnmarshalJSON(value []byte) error {
+	type T struct {
+		ID            int
+		Name          string
+		Description   string
+		Metadata      bool
+		Group         string
+		Keywords      []string
+		ServiceNotice string `json:"service_notice"`
+	}
+	var t T
+	err := json.Unmarshal(value, &t)
+	if err != nil {
+		return err
+	}
+	srv.ID = t.ID
+	srv.Name = t.Name
+	srv.Description = t.Description
+	srv.Metadata = t.Metadata
+	srv.ServiceNotice = t.ServiceNotice
+	srv.Keywords = t.Keywords
+	srv.Group = t.Group
+	return nil
 }

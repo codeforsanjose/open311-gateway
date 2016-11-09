@@ -5,7 +5,7 @@ import (
 
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/data"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/search"
-	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/structs"
+	"github.com/codeforsanjose/open311-gateway/common/structs"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/telemetry"
 	"github.com/codeforsanjose/open311-gateway/common"
 )

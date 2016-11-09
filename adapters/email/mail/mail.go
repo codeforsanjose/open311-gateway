@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/codeforsanjose/open311-gateway/adapters/email/data"
-	"github.com/codeforsanjose/open311-gateway/adapters/email/structs"
+	"github.com/codeforsanjose/open311-gateway/common/structs"
 	"github.com/codeforsanjose/open311-gateway/common"
 
 	log "github.com/jeffizhungry/logrus"

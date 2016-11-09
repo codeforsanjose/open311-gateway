@@ -8,7 +8,7 @@ import (
 
 	"github.com/codeforsanjose/open311-gateway/common"
 	"github.com/codeforsanjose/open311-gateway/engine/router"
-	"github.com/codeforsanjose/open311-gateway/engine/structs"
+	"github.com/codeforsanjose/open311-gateway/common/structs"
 
 	log "github.com/jeffizhungry/logrus"
 )
