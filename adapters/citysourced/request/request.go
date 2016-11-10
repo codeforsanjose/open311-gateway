@@ -1,9 +1,11 @@
 package request
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/logs"
 	"github.com/codeforsanjose/open311-gateway/adapters/citysourced/telemetry"
-	"time"
 )
 
 var (
@@ -46,5 +48,12 @@ func runRequest(r processer) error {
 	// telemetry.SendRPC(r.getID(), data.AdapterName(), "", "", "adp-send")
 	telemetry.SendRPC(id, "done", r.getRoute(), "", resultCount, time.Now())
 	log.Debugf("Request COMPLETED:%s\n", r.String())
+	return nil
+}
+
+// Init should be called at startup to initialize the request package.
+func Init(keyfile string) error {
+	stdHeader.Load(&stdHeader, keyfile)
+	fmt.Printf("After initializing the Header:\n%s\n", stdHeader.String())
 	return nil
 }

@@ -1,0 +1,437 @@
+{
+    "adapter": {
+        "name": "CS1",
+        "type": "CitySourced",
+        "address": ":5001",
+        "keyfile": "/Users/james/Dropbox/Development/Keys/CFSJ/Gateway311/citysourced_api.json",
+        "url": "https://api.citysourced.net/cs/rest/",
+        "endpoints": {
+            "Create": ["createreport.ashx", "CreateReport"],
+            "CreateComment": ["createreportcomment.ashx", "GetReportComment"],
+            "CreateMedia": ["createreportmedia.ashx", "GetReportMedia"],
+            "CreateVote": ["createreportvote.ashx", "GetReportVote"],
+            "Update": ["updatereport.ashx", "Update"],
+            "Get": ["getreport.ashx", "GetReport"],
+            "GetLatLng": ["getreportsbylatlng.ashx", "GetReportsByLatLng"],
+            "GetAddr": ["getreportsbyaddress.ashx", "GetReportsByAddress"],
+            "GetAuthor": ["getreportsbyauthorid.ashx", "GetReportsByAuthorId"],
+            "GetDeviceID": ["getreportsbydeviceid.ashx", "GetReportsByDeviceID"],
+            "ServiceList": ["getmobileappconfig.ashx", "Location"] 
+        }
+    },
+    "monitor": {
+        "address": ":5081"
+    },
+    "serviceGroups": [
+        "Abandoned",
+        "Eyesore",
+        "Graffiti",
+        "Street",
+        "Trash"
+    ],
+    "serviceAreas": {
+        "SJ": {
+            "name": "San Jose",
+            "providers": [{
+                "id": 1,
+                "name": "CitySourced - SJ",
+                "url": "http://localhost:5051/api/",
+                "apiVersion": "1",
+                "key": "a01234567890z",
+                "responseType": "realtime",
+                "services": [{
+                    "id": 1,
+                    "name": "Abandoned Bicycle",
+                    "description": "Abandoned Bicycle",
+                    "group": "Abandoned"
+                }, {
+                    "id": 2,
+                    "name": "Abandoned Car",
+                    "description": "Abandoned Car",
+                    "group": "Abandoned"
+                }, {
+                    "id": 3,
+                    "name": "Abandoned Home",
+                    "description": "Abandoned Home",
+                    "group": "Abandoned"
+                }, {
+                    "id": 4,
+                    "name": "Abandoned Shopping Cart",
+                    "description": "Abandoned Shopping Cart",
+                    "group": "Abandoned"
+                }, {
+                    "id": 5,
+                    "name": "Abandoned Vehicle",
+                    "description": "Abandoned Vehicle",
+                    "group": "Abandoned"
+                }, {
+                    "id": 6,
+                    "name": "Animal Services (Not Permitted)",
+                    "description": "Animal Services (Not Permitted)",
+                    "group": "Animals"
+                }, {
+                    "id": 7,
+                    "name": "Crosswalk Re-Striping",
+                    "description": "Crosswalk Re-Striping",
+                    "group": "Streets"
+                }, {
+                    "id": 8,
+                    "name": "Dangerous Intersection",
+                    "description": "Dangerous Intersection",
+                    "group": "Streets"
+                }, {
+                    "id": 9,
+                    "name": "Dark Mill Smoke",
+                    "description": "Dark Mill Smoke",
+                    "group": "Pollution"
+                }, {
+                    "id": 10,
+                    "name": "Dilapidated Home",
+                    "description": "Dilapidated Home",
+                    "group": "Eyesore"
+                }, {
+                    "id": 11,
+                    "name": "Fire Hazard Potential",
+                    "description": "Fire Hazard Potential",
+                    "group": "Fire"
+                }, {
+                    "id": 12,
+                    "name": "Foreclosed Home",
+                    "description": "Foreclosed Home",
+                    "group": "Eyesore"
+                }, {
+                    "id": 13,
+                    "name": "Gang Activity",
+                    "description": "Gang Activity",
+                    "group": "Gang"
+                }, {
+                    "id": 14,
+                    "name": "Garbage Can Out Early",
+                    "description": "Garbage Can Out Early",
+                    "group": "Garbage"
+                }, {
+                    "id": 15,
+                    "name": "Garbage Cart Missed Pickup",
+                    "description": "Garbage Cart Missed Pickup",
+                    "group": "Garbage"
+                }, {
+                    "id": 16,
+                    "name": "Garbage from Shopping Center",
+                    "description": "Garbage from Shopping Center",
+                    "group": "Trash"
+                }, {
+                    "id": 17,
+                    "name": "Garbage Not Picked Up",
+                    "description": "Garbage Not Picked Up",
+                    "group": "Garbage"
+                }, {
+                    "id": 18,
+                    "name": "Graffiti",
+                    "description": "Graffiti",
+                    "group": "Graffiti"
+                }, {
+                    "id": 19,
+                    "name": "Graffiti - In Parks",
+                    "description": "Graffiti - In Parks",
+                    "group": "Graffiti"
+                }, {
+                    "id": 20,
+                    "name": "Graffiti Removal",
+                    "description": "Graffiti Removal",
+                    "group": "Graffiti"
+                }, {
+                    "id": 21,
+                    "name": "Homeless Encampment",
+                    "description": "Homeless Encampment",
+                    "group": "Eyesore"
+                }, {
+                    "id": 22,
+                    "name": "Illegal Dumping / Trash",
+                    "description": "Illegal Dumping / Trash",
+                    "group": "Trash"
+                }, {
+                    "id": 23,
+                    "name": "Illegal Dumping/Trash",
+                    "description": "Illegal Dumping/Trash",
+                    "group": "Trash"
+                }, {
+                    "id": 24,
+                    "name": "Illegal Signage",
+                    "description": "Illegal Signage",
+                    "group": "Eyesore"
+                }, {
+                    "id": 25,
+                    "name": "Illegal Signage ? Private Property",
+                    "description": "Illegal Signage ? Private Property",
+                    "group": "Eyesore"
+                }, {
+                    "id": 26,
+                    "name": "Illegal Signage ? Roadway",
+                    "description": "Illegal Signage ? Roadway",
+                    "group": "Eyesore"
+                }, {
+                    "id": 27,
+                    "name": "Illegal Signage (Private Property)",
+                    "description": "Illegal Signage (Private Property)",
+                    "group": "Eyesore"
+                }, {
+                    "id": 28,
+                    "name": "Illegal Signage (Roadway)",
+                    "description": "Illegal Signage (Roadway)",
+                    "group": "Eyesore"
+                }, {
+                    "id": 29,
+                    "name": "Illegal Trash / Dumping",
+                    "description": "Illegal Trash / Dumping",
+                    "group": "Trash"
+                }, {
+                    "id": 30,
+                    "name": "Illegal Trash / Dumping ? Private Property",
+                    "description": "Illegal Trash / Dumping ? Private Property",
+                    "group": "Trash"
+                }, {
+                    "id": 31,
+                    "name": "Illegal Trash / Dumping ? Roadway",
+                    "description": "Illegal Trash / Dumping ? Roadway",
+                    "group": "Trash"
+                }, {
+                    "id": 32,
+                    "name": "Illegal Trash / Dumping (Private Property)",
+                    "description": "Illegal Trash / Dumping (Private Property)",
+                    "group": "Trash"
+                }, {
+                    "id": 33,
+                    "name": "Illegal Trash / Dumping (Roadway)",
+                    "description": "Illegal Trash / Dumping (Roadway)",
+                    "group": "Trash"
+                }, {
+                    "id": 34,
+                    "name": "Illegally Parked Car",
+                    "description": "Illegally Parked Car",
+                    "group": "Parking"
+                }, {
+                    "id": 35,
+                    "name": "Illegally Parked in Driveway",
+                    "description": "Illegally Parked in Driveway",
+                    "group": "Parking"
+                }]
+            }, {
+                "id": 2,
+                "name": "CitySourced2 - SJ",
+                "interfaceType": "CitySourced",
+                "url": "http://localhost:5052/api/",
+                "apiVersion": "1",
+                "key": "a01234567890z",
+                "responseType": "realtime",
+                "services": [{
+                    "id": 36,
+                    "name": "Information Only (Please Describe)",
+                    "description": "Information Only (Please Describe)",
+                    "group": "Information"
+                }, {
+                    "id": 37,
+                    "name": "Other (Not Listed Please Describe)",
+                    "description": "Other (Not Listed Please Describe)",
+                    "group": "Other"
+                }, {
+                    "id": 38,
+                    "name": "Other (Please Describe)",
+                    "description": "Other (Please Describe)",
+                    "group": "Other"
+                }, {
+                    "id": 39,
+                    "name": "Parking Issue",
+                    "description": "Parking Issue",
+                    "group": "Parking"
+                }, {
+                    "id": 40,
+                    "name": "Parking Issues",
+                    "description": "Parking Issues",
+                    "group": "Parking"
+                }, {
+                    "id": 41,
+                    "name": "Parks General Issue",
+                    "description": "Parks General Issue",
+                    "group": "Parks"
+                }, {
+                    "id": 42,
+                    "name": "Photos for DAM",
+                    "description": "Photos for DAM",
+                    "group": "Other"
+                }, {
+                    "id": 43,
+                    "name": "Plants / Trees Danger",
+                    "description": "Plants / Trees Danger",
+                    "group": "Trees"
+                }, {
+                    "id": 44,
+                    "name": "Plants / Trees Diseased",
+                    "description": "Plants / Trees Diseased",
+                    "group": "Trees"
+                }, {
+                    "id": 45,
+                    "name": "Plants / Trees Dying",
+                    "description": "Plants / Trees Dying",
+                    "group": "Trees"
+                }, {
+                    "id": 46,
+                    "name": "Plants / Trees Overgrown",
+                    "description": "Plants / Trees Overgrown",
+                    "group": "Trees"
+                }, {
+                    "id": 47,
+                    "name": "Plants / Trees Trimming",
+                    "description": "Plants / Trees Trimming",
+                    "group": "Trees"
+                }, {
+                    "id": 48,
+                    "name": "Plants / Yard Clippings",
+                    "description": "Plants / Yard Clippings",
+                    "group": "Trees"
+                }, {
+                    "id": 49,
+                    "name": "Plants & Trees",
+                    "description": "Plants & Trees",
+                    "group": "Trees"
+                }, {
+                    "id": 50,
+                    "name": "Potholes",
+                    "description": "Potholes",
+                    "group": "Streets"
+                }, {
+                    "id": 51,
+                    "name": "Roadway Degradation (Pothole, etc.)",
+                    "description": "Roadway Degradation (Pothole, etc.)",
+                    "group": "Streets"
+                }, {
+                    "id": 52,
+                    "name": "Sidewalk Cracked",
+                    "description": "Sidewalk Cracked",
+                    "group": "Streets"
+                }, {
+                    "id": 53,
+                    "name": "Sidewalk Raised",
+                    "description": "Sidewalk Raised",
+                    "group": "Streets"
+                }, {
+                    "id": 54,
+                    "name": "Sidewalks",
+                    "description": "Sidewalks",
+                    "group": "Streets"
+                }, {
+                    "id": 55,
+                    "name": "SJ13-1458",
+                    "description": "SJ13-1458",
+                    "group": "Other"
+                }, {
+                    "id": 56,
+                    "name": "Street Light",
+                    "description": "Street Light",
+                    "group": "Streets"
+                }, {
+                    "id": 57,
+                    "name": "Streetlight Out/Broken",
+                    "description": "Streetlight Out/Broken",
+                    "group": "Streets"
+                }, {
+                    "id": 58,
+                    "name": "Streets & Roads",
+                    "description": "Streets & Roads",
+                    "group": "Streets"
+                }, {
+                    "id": 59,
+                    "name": "Traffic Violation (Speeding, etc.)",
+                    "description": "Traffic Violation (Speeding, etc.)",
+                    "group": "Traffic"
+                }, {
+                    "id": 60,
+                    "name": "Trash / Waste / Dumping",
+                    "description": "Trash / Waste / Dumping",
+                    "group": "Trash"
+                }, {
+                    "id": 61,
+                    "name": "Trash, Waste & Dumping",
+                    "description": "Trash, Waste & Dumping",
+                    "group": "Trash"
+                }, {
+                    "id": 62,
+                    "name": "Vehicle Issue",
+                    "description": "Vehicle Issue",
+                    "group": "Cars"
+                }, {
+                    "id": 63,
+                    "name": "Water Waste",
+                    "description": "Water Waste",
+                    "group": "Water"
+                }, {
+                    "id": 64,
+                    "name": "Yard Waste Removal",
+                    "description": "Yard Waste Removal",
+                    "group": "Garbage"
+                }]
+            }]
+        },
+        "SC": {
+            "name": "Santa Clara",
+            "providers": [{
+                "id": 1,
+                "name": "CitySourced - SJ",
+                "url": "http://localhost:5053/api/",
+                "apiVersion": "1",
+                "key": "a01234567890z",
+                "responseType": "realtime",
+                "services": [{
+                    "id": 1,
+                    "name": "Abandoned Bicycle",
+                    "description": "Abandoned Bicycle",
+                    "group": "Abandoned"
+                }, {
+                    "id": 2,
+                    "name": "Abandoned Car",
+                    "description": "Abandoned Car",
+                    "group": "Abandoned"
+                }, {
+                    "id": 3,
+                    "name": "Abandoned Home",
+                    "description": "Abandoned Home",
+                    "group": "Abandoned"
+                }, {
+                    "id": 4,
+                    "name": "Abandoned Shopping Cart",
+                    "description": "Abandoned Shopping Cart",
+                    "group": "Abandoned"
+                }, {
+                    "id": 5,
+                    "name": "Abandoned Vehicle",
+                    "description": "Abandoned Vehicle",
+                    "group": "Abandoned"
+                }, {
+                    "id": 6,
+                    "name": "Animal Services (Not Permitted)",
+                    "description": "Animal Services (Not Permitted)",
+                    "group": "Animals"
+                }, {
+                    "id": 7,
+                    "name": "Crosswalk Re-Striping",
+                    "description": "Crosswalk Re-Striping",
+                    "group": "Streets"
+                }, {
+                    "id": 8,
+                    "name": "Dangerous Intersection",
+                    "description": "Dangerous Intersection",
+                    "group": "Streets"
+                }, {
+                    "id": 9,
+                    "name": "Dark Mill Smoke",
+                    "description": "Dark Mill Smoke",
+                    "group": "Pollution"
+                }, {
+                    "id": 10,
+                    "name": "Dilapidated Home",
+                    "description": "Dilapidated Home",
+                    "group": "Eyesore"
+                }]
+            }]
+        }
+    }
+}

@@ -104,6 +104,11 @@ func GetMonitorAddress() string {
 	return configData.Monitor.Address
 }
 
+// KeyFile returns the Key File path and name from the config file.
+func KeyFile() string {
+	return configData.Adapter.KeyFile
+}
+
 // ==============================================================================================================================
 //                                      INIT
 // ==============================================================================================================================
@@ -161,11 +166,29 @@ type ConfigData struct {
 	areaServices map[string]structs.NServices // City Code (lowercase) -> List of Services
 }
 
-// AdapterData contains all of the config data.
+// AdapterData contains all of the Adapter config data.
 type AdapterData struct {
-	Name    string `json:"name"`
-	Type    string `json:"type"`
-	Address string `json:"address"`
+	Name      string              `json:"name"`
+	Type      string              `json:"type"`
+	Address   string              `json:"address"`
+	KeyFile   string              `json:"keyfile"`
+	URL       string              `json:"url"`
+	Endpoints map[string][]string `json:"endpoints"`
+}
+
+func (a *AdapterData) String() string {
+	ls := new(common.FmtBoxer)
+	ls.AddF("AdapterData\n")
+	ls.AddF("Name: %s   Type: %s   Address: %s\n", a.Name, a.Type, a.Address)
+	ls.AddF("KeyFile: %s\n", a.KeyFile)
+	ls.AddF("URL:     %s", a.URL)
+	lse := new(common.FmtBoxer)
+	lse.AddS("Endpoints\n")
+	for k, v := range a.Endpoints {
+		lse.AddF("%16s  %v\n", k, v)
+	}
+	ls.AddS(lse.Box(60))
+	return ls.Box(70)
 }
 
 type dataIndex struct {
@@ -298,7 +321,7 @@ func (pd ConfigData) String() string {
 	ls := new(common.FmtBoxer)
 	ls.AddF("[%s] ConfigData\n", pd.Adapter.Name)
 	ls.AddF("Loaded: %t\n", pd.Loaded)
-	ls.AddF("Adapter: %s   Type: %s   Address: %s\n", pd.Adapter.Name, pd.Adapter.Type, pd.Adapter.Address)
+	ls.AddS(pd.Adapter.String())
 	ls.AddF("Monitor - address: %s\n", pd.Monitor.Address)
 	ls.AddS("\n-----------INDEX: serviceID-----------\n")
 	for k, v := range pd.serviceID {

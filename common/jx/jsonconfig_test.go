@@ -19,12 +19,23 @@ var _ = Describe("JX", func() {
 			It("should load the struct", func() {
 				jc := new(JSONConfig)
 				ts := new(TestStruct1)
-				err := jc.Read(ts, "jsonconfig_testfile1.json")
+				err := jc.Load(ts, "jsonconfig_testfile1.json")
 				Ω(err).ShouldNot(HaveOccurred())
 				Ω(ts.Account).Should(Equal("xyz@gmail.com"))
 				Ω(ts.Password).Should(Equal("opensesame"))
 				Ω(ts.Server).Should(Equal("smtp.gmail.com"))
 				Ω(ts.Port).Should(Equal(587))
+
+				err = jc.Load(ts, "jsonconfig_testfile1.json")
+				Ω(err).Should(HaveOccurred())
+
+				err = jc.Reload()
+				Ω(err).ShouldNot(HaveOccurred())
+				Ω(ts.Account).Should(Equal("xyz@gmail.com"))
+				Ω(ts.Password).Should(Equal("opensesame"))
+				Ω(ts.Server).Should(Equal("smtp.gmail.com"))
+				Ω(ts.Port).Should(Equal(587))
+
 			})
 
 		})
